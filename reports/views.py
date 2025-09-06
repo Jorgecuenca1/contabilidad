@@ -1,0 +1,290 @@
+"""
+Vistas para el sistema de reportes.
+"""
+
+from django.shortcuts import render, get_object_or_404
+from django.contrib.auth.decorators import login_required
+from django.http import HttpResponse, JsonResponse
+from django.contrib import messages
+from django.utils import timezone
+from datetime import datetime, date
+import json
+
+from core.models import Company, Period
+from accounting.models_accounts import Account
+from .services import ReportService
+from .models import ReportTemplate, GeneratedReport
+
+
+@login_required
+def reports_dashboard(request):
+    """
+    Dashboard principal de reportes.
+    """
+    # Obtener empresas del usuario
+    companies = request.user.companies.filter(is_active=True)
+    
+    # Reportes recientes
+    recent_reports = GeneratedReport.objects.filter(
+        company__in=companies,
+        created_by=request.user
+    ).order_by('-created_at')[:10]
+    
+    context = {
+        'companies': companies,
+        'recent_reports': recent_reports,
+    }
+    
+    return render(request, 'reports/dashboard.html', context)
+
+
+@login_required
+def financial_reports(request):
+    """
+    Reportes financieros principales.
+    """
+    companies = request.user.companies.filter(is_active=True)
+    
+    context = {
+        'companies': companies,
+    }
+    
+    return render(request, 'reports/financial_reports.html', context)
+
+
+@login_required
+def generate_balance_sheet(request):
+    """
+    Generar Balance General.
+    """
+    if request.method == 'POST':
+        company_id = request.POST.get('company_id')
+        period_end = request.POST.get('period_end')
+        format_type = request.POST.get('format', 'pdf')
+        
+        try:
+            company = get_object_or_404(Company, id=company_id)
+            period_end_date = datetime.strptime(period_end, '%Y-%m-%d').date()
+            
+            # Verificar permisos
+            if not request.user.companies.filter(id=company_id).exists():
+                return JsonResponse({'error': 'No tiene permisos para esta empresa'}, status=403)
+            
+            # Generar reporte
+            report_service = ReportService(company)
+            report_buffer = report_service.generate_balance_sheet(period_end_date, format_type)
+            
+            # Preparar respuesta
+            if format_type == 'pdf':
+                response = HttpResponse(report_buffer.getvalue(), content_type='application/pdf')
+                response['Content-Disposition'] = f'attachment; filename="balance_general_{company.name}_{period_end}.pdf"'
+            else:
+                response = HttpResponse(report_buffer.getvalue(), content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+                response['Content-Disposition'] = f'attachment; filename="balance_general_{company.name}_{period_end}.xlsx"'
+            
+            return response
+            
+        except Exception as e:
+            messages.error(request, f'Error al generar el reporte: {str(e)}')
+            return JsonResponse({'error': str(e)}, status=500)
+    
+    return JsonResponse({'error': 'Método no permitido'}, status=405)
+
+
+@login_required
+def generate_income_statement(request):
+    """
+    Generar Estado de Resultados.
+    """
+    if request.method == 'POST':
+        company_id = request.POST.get('company_id')
+        period_start = request.POST.get('period_start')
+        period_end = request.POST.get('period_end')
+        format_type = request.POST.get('format', 'pdf')
+        
+        try:
+            company = get_object_or_404(Company, id=company_id)
+            period_start_date = datetime.strptime(period_start, '%Y-%m-%d').date()
+            period_end_date = datetime.strptime(period_end, '%Y-%m-%d').date()
+            
+            # Verificar permisos
+            if not request.user.companies.filter(id=company_id).exists():
+                return JsonResponse({'error': 'No tiene permisos para esta empresa'}, status=403)
+            
+            # Generar reporte
+            report_service = ReportService(company)
+            report_buffer = report_service.generate_income_statement(period_start_date, period_end_date, format_type)
+            
+            # Preparar respuesta
+            if format_type == 'pdf':
+                response = HttpResponse(report_buffer.getvalue(), content_type='application/pdf')
+                response['Content-Disposition'] = f'attachment; filename="estado_resultados_{company.name}_{period_start}_{period_end}.pdf"'
+            else:
+                response = HttpResponse(report_buffer.getvalue(), content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+                response['Content-Disposition'] = f'attachment; filename="estado_resultados_{company.name}_{period_start}_{period_end}.xlsx"'
+            
+            return response
+            
+        except Exception as e:
+            messages.error(request, f'Error al generar el reporte: {str(e)}')
+            return JsonResponse({'error': str(e)}, status=500)
+    
+    return JsonResponse({'error': 'Método no permitido'}, status=405)
+
+
+@login_required
+def generate_trial_balance(request):
+    """
+    Generar Balance de Prueba.
+    """
+    if request.method == 'POST':
+        company_id = request.POST.get('company_id')
+        period_end = request.POST.get('period_end')
+        format_type = request.POST.get('format', 'pdf')
+        
+        try:
+            company = get_object_or_404(Company, id=company_id)
+            period_end_date = datetime.strptime(period_end, '%Y-%m-%d').date()
+            
+            # Verificar permisos
+            if not request.user.companies.filter(id=company_id).exists():
+                return JsonResponse({'error': 'No tiene permisos para esta empresa'}, status=403)
+            
+            # Generar reporte
+            report_service = ReportService(company)
+            report_buffer = report_service.generate_trial_balance(period_end_date, format_type)
+            
+            # Preparar respuesta
+            if format_type == 'pdf':
+                response = HttpResponse(report_buffer.getvalue(), content_type='application/pdf')
+                response['Content-Disposition'] = f'attachment; filename="balance_prueba_{company.name}_{period_end}.pdf"'
+            else:
+                response = HttpResponse(report_buffer.getvalue(), content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+                response['Content-Disposition'] = f'attachment; filename="balance_prueba_{company.name}_{period_end}.xlsx"'
+            
+            return response
+            
+        except Exception as e:
+            messages.error(request, f'Error al generar el reporte: {str(e)}')
+            return JsonResponse({'error': str(e)}, status=500)
+    
+    return JsonResponse({'error': 'Método no permitido'}, status=405)
+
+
+@login_required
+def generate_aging_report(request):
+    """
+    Generar Reporte de Cartera Vencida.
+    """
+    if request.method == 'POST':
+        company_id = request.POST.get('company_id')
+        report_date = request.POST.get('report_date')
+        report_type = request.POST.get('report_type', 'receivables')
+        format_type = request.POST.get('format', 'pdf')
+        
+        try:
+            company = get_object_or_404(Company, id=company_id)
+            report_date_obj = datetime.strptime(report_date, '%Y-%m-%d').date()
+            
+            # Verificar permisos
+            if not request.user.companies.filter(id=company_id).exists():
+                return JsonResponse({'error': 'No tiene permisos para esta empresa'}, status=403)
+            
+            # Generar reporte
+            report_service = ReportService(company)
+            report_buffer = report_service.generate_aging_report(report_date_obj, report_type, format_type)
+            
+            # Preparar respuesta
+            report_name = 'cartera_cxc' if report_type == 'receivables' else 'cartera_cxp'
+            
+            if format_type == 'pdf':
+                response = HttpResponse(report_buffer.getvalue(), content_type='application/pdf')
+                response['Content-Disposition'] = f'attachment; filename="{report_name}_{company.name}_{report_date}.pdf"'
+            else:
+                response = HttpResponse(report_buffer.getvalue(), content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+                response['Content-Disposition'] = f'attachment; filename="{report_name}_{company.name}_{report_date}.xlsx"'
+            
+            return response
+            
+        except Exception as e:
+            messages.error(request, f'Error al generar el reporte: {str(e)}')
+            return JsonResponse({'error': str(e)}, status=500)
+    
+    return JsonResponse({'error': 'Método no permitido'}, status=405)
+
+
+@login_required
+def generate_general_ledger(request):
+    """
+    Generar Libro Mayor.
+    """
+    if request.method == 'POST':
+        company_id = request.POST.get('company_id')
+        account_id = request.POST.get('account_id')
+        period_start = request.POST.get('period_start')
+        period_end = request.POST.get('period_end')
+        format_type = request.POST.get('format', 'pdf')
+        
+        try:
+            company = get_object_or_404(Company, id=company_id)
+            account = get_object_or_404(Account, id=account_id, chart_of_accounts__company=company)
+            period_start_date = datetime.strptime(period_start, '%Y-%m-%d').date()
+            period_end_date = datetime.strptime(period_end, '%Y-%m-%d').date()
+            
+            # Verificar permisos
+            if not request.user.companies.filter(id=company_id).exists():
+                return JsonResponse({'error': 'No tiene permisos para esta empresa'}, status=403)
+            
+            # Generar reporte
+            report_service = ReportService(company)
+            report_buffer = report_service.generate_general_ledger(account_id, period_start_date, period_end_date, format_type)
+            
+            # Preparar respuesta
+            if format_type == 'pdf':
+                response = HttpResponse(report_buffer.getvalue(), content_type='application/pdf')
+                response['Content-Disposition'] = f'attachment; filename="mayor_{account.code}_{company.name}_{period_start}_{period_end}.pdf"'
+            else:
+                response = HttpResponse(report_buffer.getvalue(), content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+                response['Content-Disposition'] = f'attachment; filename="mayor_{account.code}_{company.name}_{period_start}_{period_end}.xlsx"'
+            
+            return response
+            
+        except Exception as e:
+            messages.error(request, f'Error al generar el reporte: {str(e)}')
+            return JsonResponse({'error': str(e)}, status=500)
+    
+    return JsonResponse({'error': 'Método no permitido'}, status=405)
+
+
+@login_required
+def get_company_accounts(request, company_id):
+    """
+    Obtener cuentas de una empresa para selección.
+    """
+    try:
+        company = get_object_or_404(Company, id=company_id)
+        
+        # Verificar permisos
+        if not request.user.companies.filter(id=company_id).exists():
+            return JsonResponse({'error': 'No tiene permisos para esta empresa'}, status=403)
+        
+        accounts = Account.objects.filter(
+            chart_of_accounts__company=company,
+            is_detail=True,
+            is_active=True
+        ).order_by('code')
+        
+        accounts_data = [
+            {
+                'id': str(account.id),
+                'code': account.code,
+                'name': account.name,
+                'full_name': f"{account.code} - {account.name}"
+            }
+            for account in accounts
+        ]
+        
+        return JsonResponse({'accounts': accounts_data})
+        
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)

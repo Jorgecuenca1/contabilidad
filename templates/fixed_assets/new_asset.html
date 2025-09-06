@@ -1,0 +1,205 @@
+{% extends 'base.html' %}
+
+{% block title %}Nuevo Activo Fijo - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1><i class="bi bi-plus-circle"></i> Nuevo Activo Fijo</h1>
+            <a href="{% url 'fixed_assets:asset_list' %}" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i> Volver a Lista
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h6><i class="bi bi-building"></i> Información del Activo Fijo</h6>
+            </div>
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+                    <div class="row">
+                        <!-- Información Básica -->
+                        <div class="col-md-6">
+                            <h6 class="text-primary mb-3">Información Básica</h6>
+                            
+                            <div class="mb-3">
+                                <label for="company" class="form-label">Empresa *</label>
+                                <select class="form-select" id="company" name="company" required>
+                                    <option value="">Seleccione una empresa</option>
+                                    {% for company in companies %}
+                                        <option value="{{ company.id }}">{{ company.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="code" class="form-label">Código *</label>
+                                <input type="text" class="form-control" id="code" name="code" required>
+                                <div class="form-text">Código único del activo</div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="name" class="form-label">Nombre *</label>
+                                <input type="text" class="form-control" id="name" name="name" required>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="description" class="form-label">Descripción</label>
+                                <textarea class="form-control" id="description" name="description" rows="3"></textarea>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="category" class="form-label">Categoría *</label>
+                                <select class="form-select" id="category" name="category" required>
+                                    <option value="">Seleccione una categoría</option>
+                                    {% for category in categories %}
+                                        <option value="{{ category.id }}">{{ category.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="brand" class="form-label">Marca</label>
+                                        <input type="text" class="form-control" id="brand" name="brand">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="model" class="form-label">Modelo</label>
+                                        <input type="text" class="form-control" id="model" name="model">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="serial_number" class="form-label">Número de Serie</label>
+                                <input type="text" class="form-control" id="serial_number" name="serial_number">
+                            </div>
+                        </div>
+                        
+                        <!-- Configuración Financiera -->
+                        <div class="col-md-6">
+                            <h6 class="text-primary mb-3">Información Financiera</h6>
+                            
+                            <div class="mb-3">
+                                <label for="currency" class="form-label">Moneda *</label>
+                                <select class="form-select" id="currency" name="currency" required>
+                                    <option value="">Seleccione una moneda</option>
+                                    {% for currency in currencies %}
+                                        <option value="{{ currency.id }}">{{ currency.code }} - {{ currency.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="acquisition_cost" class="form-label">Costo de Adquisición *</label>
+                                <input type="number" class="form-control" id="acquisition_cost" name="acquisition_cost" 
+                                       step="0.01" min="0" required>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="residual_value" class="form-label">Valor Residual</label>
+                                <input type="number" class="form-control" id="residual_value" name="residual_value" 
+                                       step="0.01" min="0" value="0">
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="acquisition_date" class="form-label">Fecha de Adquisición *</label>
+                                        <input type="date" class="form-control" id="acquisition_date" name="acquisition_date" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="useful_life_years" class="form-label">Vida Útil (años) *</label>
+                                        <input type="number" class="form-control" id="useful_life_years" 
+                                               name="useful_life_years" min="1" required>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="useful_life_months" class="form-label">Vida Útil (meses adicionales)</label>
+                                <input type="number" class="form-control" id="useful_life_months" 
+                                       name="useful_life_months" min="0" max="11" value="0">
+                            </div>
+                            
+                            <!-- Ubicación -->
+                            <h6 class="text-primary mb-3 mt-4">Ubicación y Responsable</h6>
+                            
+                            <div class="mb-3">
+                                <label for="location" class="form-label">Ubicación</label>
+                                <input type="text" class="form-control" id="location" name="location" 
+                                       placeholder="Ej: Oficina Principal, Planta 2, etc.">
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="cost_center" class="form-label">Centro de Costo</label>
+                                <select class="form-select" id="cost_center" name="cost_center">
+                                    <option value="">Seleccione un centro de costo</option>
+                                    {% for cost_center in cost_centers %}
+                                        <option value="{{ cost_center.id }}">{{ cost_center.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Información Adicional -->
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <h6 class="text-primary mb-3">Información Adicional</h6>
+                            
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label for="supplier" class="form-label">Proveedor</label>
+                                        <input type="text" class="form-control" id="supplier" name="supplier">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label for="invoice_number" class="form-label">Número de Factura</label>
+                                        <input type="text" class="form-control" id="invoice_number" name="invoice_number">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label for="warranty_expiration" class="form-label">Vencimiento de Garantía</label>
+                                        <input type="date" class="form-control" id="warranty_expiration" name="warranty_expiration">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Botones -->
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <hr>
+                            <div class="d-flex justify-content-end gap-2">
+                                <a href="{% url 'fixed_assets:asset_list' %}" class="btn btn-secondary">
+                                    <i class="bi bi-x-circle"></i> Cancelar
+                                </a>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-check-circle"></i> Guardar Activo
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

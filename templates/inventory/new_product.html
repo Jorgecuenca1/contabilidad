@@ -1,0 +1,223 @@
+{% extends 'base.html' %}
+
+{% block title %}Nuevo Producto - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1><i class="bi bi-plus-circle"></i> Nuevo Producto</h1>
+            <a href="{% url 'inventory:product_list' %}" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i> Volver a Lista
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h6><i class="bi bi-box-seam"></i> Información del Producto</h6>
+            </div>
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+                    <div class="row">
+                        <!-- Información Básica -->
+                        <div class="col-md-6">
+                            <h6 class="text-primary mb-3">Información Básica</h6>
+                            
+                            <div class="mb-3">
+                                <label for="company" class="form-label">Empresa *</label>
+                                <select class="form-select" id="company" name="company" required>
+                                    <option value="">Seleccione una empresa</option>
+                                    {% for company in companies %}
+                                        <option value="{{ company.id }}">{{ company.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="code" class="form-label">Código *</label>
+                                <input type="text" class="form-control" id="code" name="code" required>
+                                <div class="form-text">Código único del producto</div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="name" class="form-label">Nombre *</label>
+                                <input type="text" class="form-control" id="name" name="name" required>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="description" class="form-label">Descripción</label>
+                                <textarea class="form-control" id="description" name="description" rows="3"></textarea>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="category" class="form-label">Categoría *</label>
+                                <select class="form-select" id="category" name="category" required>
+                                    <option value="">Seleccione una categoría</option>
+                                    {% for category in categories %}
+                                        <option value="{{ category.id }}">{{ category.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="product_type" class="form-label">Tipo de Producto *</label>
+                                <select class="form-select" id="product_type" name="product_type" required>
+                                    <option value="">Seleccione un tipo</option>
+                                    {% for value, label in product_types %}
+                                        <option value="{{ value }}">{{ label }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <!-- Configuración -->
+                        <div class="col-md-6">
+                            <h6 class="text-primary mb-3">Configuración</h6>
+                            
+                            <div class="mb-3">
+                                <label for="unit_of_measure" class="form-label">Unidad de Medida *</label>
+                                <select class="form-select" id="unit_of_measure" name="unit_of_measure" required>
+                                    <option value="">Seleccione una unidad</option>
+                                    {% for unit in units %}
+                                        <option value="{{ unit.id }}">{{ unit.name }} ({{ unit.symbol }})</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="barcode" class="form-label">Código de Barras</label>
+                                <input type="text" class="form-control" id="barcode" name="barcode">
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="internal_reference" class="form-label">Referencia Interna</label>
+                                <input type="text" class="form-control" id="internal_reference" name="internal_reference">
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="supplier_reference" class="form-label">Referencia del Proveedor</label>
+                                <input type="text" class="form-control" id="supplier_reference" name="supplier_reference">
+                            </div>
+                            
+                            <!-- Precios -->
+                            <h6 class="text-primary mb-3 mt-4">Precios y Costos</h6>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="standard_cost" class="form-label">Costo Estándar</label>
+                                        <input type="number" class="form-control" id="standard_cost" name="standard_cost" 
+                                               step="0.01" min="0" value="0">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="sale_price" class="form-label">Precio de Venta</label>
+                                        <input type="number" class="form-control" id="sale_price" name="sale_price" 
+                                               step="0.01" min="0" value="0">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Control de Inventario -->
+                            <h6 class="text-primary mb-3 mt-4">Control de Inventario</h6>
+                            
+                            <div class="mb-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="track_inventory" 
+                                           name="track_inventory" checked>
+                                    <label class="form-check-label" for="track_inventory">
+                                        Controlar Inventario
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label for="minimum_stock" class="form-label">Stock Mínimo</label>
+                                        <input type="number" class="form-control" id="minimum_stock" 
+                                               name="minimum_stock" step="0.01" min="0" value="0">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label for="maximum_stock" class="form-label">Stock Máximo</label>
+                                        <input type="number" class="form-control" id="maximum_stock" 
+                                               name="maximum_stock" step="0.01" min="0" value="0">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label for="reorder_point" class="form-label">Punto de Reorden</label>
+                                        <input type="number" class="form-control" id="reorder_point" 
+                                               name="reorder_point" step="0.01" min="0" value="0">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Estado -->
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <h6 class="text-primary mb-3">Estado y Configuración</h6>
+                            
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="is_active" 
+                                               name="is_active" checked>
+                                        <label class="form-check-label" for="is_active">
+                                            Producto Activo
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="is_for_sale" 
+                                               name="is_for_sale" checked>
+                                        <label class="form-check-label" for="is_for_sale">
+                                            Para Venta
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="is_for_purchase" 
+                                               name="is_for_purchase" checked>
+                                        <label class="form-check-label" for="is_for_purchase">
+                                            Para Compra
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Botones -->
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <hr>
+                            <div class="d-flex justify-content-end gap-2">
+                                <a href="{% url 'inventory:product_list' %}" class="btn btn-secondary">
+                                    <i class="bi bi-x-circle"></i> Cancelar
+                                </a>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-check-circle"></i> Guardar Producto
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

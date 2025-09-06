@@ -1,0 +1,230 @@
+{% extends 'base.html' %}
+
+{% block title %}Editar {{ product.name }} - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1><i class="bi bi-pencil"></i> Editar Producto: {{ product.name }}</h1>
+            <div>
+                <a href="{% url 'inventory:product_detail' product.id %}" class="btn btn-outline-info">
+                    <i class="bi bi-eye"></i> Ver Detalle
+                </a>
+                <a href="{% url 'inventory:product_list' %}" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i> Volver a Lista
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h6><i class="bi bi-pencil-square"></i> Editar Información del Producto</h6>
+            </div>
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+                    <div class="row">
+                        <!-- Información Básica -->
+                        <div class="col-md-6">
+                            <h6 class="text-primary mb-3">Información Básica</h6>
+                            
+                            <div class="mb-3">
+                                <label for="code" class="form-label">Código</label>
+                                <input type="text" class="form-control" id="code" name="code" 
+                                       value="{{ product.code }}" readonly>
+                                <div class="form-text">El código no se puede modificar</div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="name" class="form-label">Nombre *</label>
+                                <input type="text" class="form-control" id="name" name="name" 
+                                       value="{{ product.name }}" required>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="description" class="form-label">Descripción</label>
+                                <textarea class="form-control" id="description" name="description" rows="3">{{ product.description }}</textarea>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="category" class="form-label">Categoría *</label>
+                                <select class="form-select" id="category" name="category" required>
+                                    {% for category in categories %}
+                                        <option value="{{ category.id }}" {% if category.id == product.category.id %}selected{% endif %}>
+                                            {{ category.name }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="product_type" class="form-label">Tipo de Producto *</label>
+                                <select class="form-select" id="product_type" name="product_type" required>
+                                    {% for value, label in product_types %}
+                                        <option value="{{ value }}" {% if value == product.product_type %}selected{% endif %}>
+                                            {{ label }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <!-- Configuración -->
+                        <div class="col-md-6">
+                            <h6 class="text-primary mb-3">Configuración</h6>
+                            
+                            <div class="mb-3">
+                                <label for="unit_of_measure" class="form-label">Unidad de Medida *</label>
+                                <select class="form-select" id="unit_of_measure" name="unit_of_measure" required>
+                                    {% for unit in units %}
+                                        <option value="{{ unit.id }}" {% if unit.id == product.unit_of_measure.id %}selected{% endif %}>
+                                            {{ unit.name }} ({{ unit.symbol }})
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="barcode" class="form-label">Código de Barras</label>
+                                <input type="text" class="form-control" id="barcode" name="barcode" 
+                                       value="{{ product.barcode }}">
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="internal_reference" class="form-label">Referencia Interna</label>
+                                <input type="text" class="form-control" id="internal_reference" name="internal_reference" 
+                                       value="{{ product.internal_reference }}">
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="supplier_reference" class="form-label">Referencia del Proveedor</label>
+                                <input type="text" class="form-control" id="supplier_reference" name="supplier_reference" 
+                                       value="{{ product.supplier_reference }}">
+                            </div>
+                            
+                            <!-- Precios -->
+                            <h6 class="text-primary mb-3 mt-4">Precios y Costos</h6>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="standard_cost" class="form-label">Costo Estándar</label>
+                                        <input type="number" class="form-control" id="standard_cost" name="standard_cost" 
+                                               step="0.01" min="0" value="{{ product.standard_cost }}">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="sale_price" class="form-label">Precio de Venta</label>
+                                        <input type="number" class="form-control" id="sale_price" name="sale_price" 
+                                               step="0.01" min="0" value="{{ product.sale_price }}">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Control de Inventario -->
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <h6 class="text-primary mb-3">Control de Inventario</h6>
+                            
+                            <div class="mb-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="track_inventory" 
+                                           name="track_inventory" {% if product.track_inventory %}checked{% endif %}>
+                                    <label class="form-check-label" for="track_inventory">
+                                        Controlar Inventario
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label for="minimum_stock" class="form-label">Stock Mínimo</label>
+                                        <input type="number" class="form-control" id="minimum_stock" 
+                                               name="minimum_stock" step="0.01" min="0" value="{{ product.minimum_stock }}">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label for="maximum_stock" class="form-label">Stock Máximo</label>
+                                        <input type="number" class="form-control" id="maximum_stock" 
+                                               name="maximum_stock" step="0.01" min="0" value="{{ product.maximum_stock }}">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label for="reorder_point" class="form-label">Punto de Reorden</label>
+                                        <input type="number" class="form-control" id="reorder_point" 
+                                               name="reorder_point" step="0.01" min="0" value="{{ product.reorder_point }}">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Estado -->
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <h6 class="text-primary mb-3">Estado y Configuración</h6>
+                            
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="is_active" 
+                                               name="is_active" {% if product.is_active %}checked{% endif %}>
+                                        <label class="form-check-label" for="is_active">
+                                            Producto Activo
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="is_for_sale" 
+                                               name="is_for_sale" {% if product.is_for_sale %}checked{% endif %}>
+                                        <label class="form-check-label" for="is_for_sale">
+                                            Para Venta
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="is_for_purchase" 
+                                               name="is_for_purchase" {% if product.is_for_purchase %}checked{% endif %}>
+                                        <label class="form-check-label" for="is_for_purchase">
+                                            Para Compra
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Botones -->
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <hr>
+                            <div class="d-flex justify-content-end gap-2">
+                                <a href="{% url 'inventory:product_detail' product.id %}" class="btn btn-secondary">
+                                    <i class="bi bi-x-circle"></i> Cancelar
+                                </a>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-check-circle"></i> Guardar Cambios
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,57 @@
+<!-- Modal Estado de Resultados -->
+<div class="modal fade" id="incomeStatementModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="bi bi-graph-up"></i> Generar Estado de Resultados
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="incomeStatementForm">
+                    {% csrf_token %}
+                    <input type="hidden" id="incomeStatementCompanyId" name="company_id">
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="incomeStatementPeriodStart" class="form-label">Fecha Inicial</label>
+                                <input type="date" class="form-control" id="incomeStatementPeriodStart" name="period_start" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="incomeStatementPeriodEnd" class="form-label">Fecha Final</label>
+                                <input type="date" class="form-control" id="incomeStatementPeriodEnd" name="period_end" required>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="incomeStatementFormat" class="form-label">Formato</label>
+                        <select class="form-select" id="incomeStatementFormat" name="format">
+                            <option value="pdf">PDF</option>
+                            <option value="excel">Excel</option>
+                        </select>
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle"></i>
+                        El estado de resultados mostrará los ingresos y gastos del período seleccionado.
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-success" onclick="generateIncomeStatement()">
+                    <i class="bi bi-download"></i> Generar Reporte
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+

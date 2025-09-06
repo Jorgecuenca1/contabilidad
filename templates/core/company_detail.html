@@ -1,0 +1,270 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ company.name }} - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1><i class="bi bi-building"></i> {{ company.name }}</h1>
+            <div>
+                <a href="{% url 'core:edit_company' company.id %}" class="btn btn-warning">
+                    <i class="bi bi-pencil"></i> Editar
+                </a>
+                <a href="{% url 'core:company_list' %}" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i> Volver
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Estadísticas -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card bg-primary text-white">
+            <div class="card-body text-center">
+                <h4>{{ stats.total_users }}</h4>
+                <p class="mb-0">Usuarios</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-success text-white">
+            <div class="card-body text-center">
+                <h4>{{ stats.total_customers }}</h4>
+                <p class="mb-0">Clientes</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-warning text-white">
+            <div class="card-body text-center">
+                <h4>{{ stats.total_suppliers }}</h4>
+                <p class="mb-0">Proveedores</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-info text-white">
+            <div class="card-body text-center">
+                <h4>{{ stats.total_accounts }}</h4>
+                <p class="mb-0">Cuentas Contables</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Información Principal -->
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h6><i class="bi bi-info-circle"></i> Información de la Empresa</h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <table class="table table-borderless">
+                            <tr>
+                                <td><strong>NIT/Cédula:</strong></td>
+                                <td><code>{{ company.tax_id }}{% if company.tax_id_dv %}-{{ company.tax_id_dv }}{% endif %}</code></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Nombre Comercial:</strong></td>
+                                <td>{{ company.name }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Razón Social:</strong></td>
+                                <td>{{ company.legal_name }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Régimen Tributario:</strong></td>
+                                <td><span class="badge bg-info">{{ company.get_regime_display }}</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Sector:</strong></td>
+                                <td><span class="badge bg-secondary">{{ company.get_sector_display }}</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Moneda Funcional:</strong></td>
+                                <td>{{ company.functional_currency }}</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="col-md-6">
+                        <table class="table table-borderless">
+                            <tr>
+                                <td><strong>País:</strong></td>
+                                <td>{{ company.country.name }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Ciudad:</strong></td>
+                                <td>{{ company.city }}, {{ company.state }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Teléfono:</strong></td>
+                                <td>{{ company.phone|default:"-" }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Email:</strong></td>
+                                <td>{{ company.email }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Sitio Web:</strong></td>
+                                <td>
+                                    {% if company.website %}
+                                        <a href="{{ company.website }}" target="_blank">{{ company.website }}</a>
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>Estado:</strong></td>
+                                <td>
+                                    {% if company.is_active %}
+                                        <span class="badge bg-success">Activa</span>
+                                    {% else %}
+                                        <span class="badge bg-danger">Inactiva</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <h6>Dirección:</h6>
+                        <p class="text-muted">{{ company.address }}</p>
+                        {% if company.postal_code %}
+                            <p class="text-muted">Código Postal: {{ company.postal_code }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Información Fiscal -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h6><i class="bi bi-calendar-event"></i> Información Fiscal</h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <strong>Año Fiscal Actual:</strong><br>
+                        {{ company.fiscal_year_start|date:"d/m/Y" }} - {{ company.fiscal_year_end|date:"d/m/Y" }}
+                    </div>
+                    <div class="col-md-6">
+                        <strong>Año Fiscal en Curso:</strong><br>
+                        {{ company.get_current_fiscal_year }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Representante Legal -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h6><i class="bi bi-person-badge"></i> Representante Legal</h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <strong>Nombre:</strong><br>
+                        {{ company.legal_representative }}
+                    </div>
+                    <div class="col-md-6">
+                        <strong>Documento:</strong><br>
+                        {{ company.legal_rep_document }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Panel Lateral -->
+    <div class="col-md-4">
+        <!-- Logo de la Empresa -->
+        <div class="card">
+            <div class="card-header">
+                <h6><i class="bi bi-image"></i> Logo</h6>
+            </div>
+            <div class="card-body text-center">
+                {% if company.logo %}
+                    <img src="{{ company.logo.url }}" alt="{{ company.name }}" class="img-fluid rounded" style="max-height: 200px;">
+                {% else %}
+                    <div class="bg-light rounded p-4">
+                        <i class="bi bi-building fs-1 text-muted"></i>
+                        <p class="text-muted mt-2">Sin logo</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Tipo de Empresa -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h6><i class="bi bi-info-square"></i> Tipo de Empresa</h6>
+            </div>
+            <div class="card-body">
+                {% if company.tax_id|length > 11 or '-' in company.tax_id %}
+                    <div class="alert alert-info mb-2">
+                        <i class="bi bi-building"></i>
+                        <strong>Persona Jurídica</strong>
+                    </div>
+                    <p class="small text-muted">
+                        Empresa constituida como sociedad, fundación u otra forma jurídica.
+                    </p>
+                {% else %}
+                    <div class="alert alert-success mb-2">
+                        <i class="bi bi-person"></i>
+                        <strong>Persona Natural</strong>
+                    </div>
+                    <p class="small text-muted">
+                        Persona natural que ejerce actividad comercial o empresarial.
+                    </p>
+                {% endif %}
+                
+                <div class="mt-3">
+                    <strong>Creada:</strong><br>
+                    <small class="text-muted">{{ company.created_at|date:"d/m/Y H:i" }}</small>
+                </div>
+                
+                <div class="mt-2">
+                    <strong>Actualizada:</strong><br>
+                    <small class="text-muted">{{ company.updated_at|date:"d/m/Y H:i" }}</small>
+                </div>
+                
+                <div class="mt-2">
+                    <strong>Creada por:</strong><br>
+                    <small class="text-muted">{{ company.created_by.get_full_name|default:company.created_by.username }}</small>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Acciones Rápidas -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h6><i class="bi bi-lightning"></i> Acciones Rápidas</h6>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{% url 'core:edit_company' company.id %}" class="btn btn-warning btn-sm">
+                        <i class="bi bi-pencil"></i> Editar Empresa
+                    </a>
+                    <a href="/admin/core/company/{{ company.id }}/change/" class="btn btn-info btn-sm">
+                        <i class="bi bi-gear"></i> Configuración Avanzada
+                    </a>
+                    <a href="{% url 'core:company_list' %}" class="btn btn-outline-secondary btn-sm">
+                        <i class="bi bi-list"></i> Ver Todas las Empresas
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

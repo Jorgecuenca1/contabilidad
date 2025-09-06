@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ title }}</title>
+</head>
+<body>
+    <div class="header">
+        <div class="company-name">{{ company.name }}</div>
+        <div>NIT: {{ company.tax_id }}{% if company.tax_id_dv %}-{{ company.tax_id_dv }}{% endif %}</div>
+        <div class="report-title">{{ title }}</div>
+        <div>Al {{ report_date|date:"d de F de Y" }}</div>
+        <div>Cifras en {{ company.functional_currency }}</div>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th style="width: 10%">Código</th>
+                <th style="width: 25%">{% if report_type == 'receivables' %}Cliente{% else %}Proveedor{% endif %}</th>
+                <th style="width: 12%">Factura</th>
+                <th style="width: 10%">Fecha</th>
+                <th style="width: 10%">Vencimiento</th>
+                <th style="width: 8%" class="number">Al Día</th>
+                <th style="width: 8%" class="number">1-30</th>
+                <th style="width: 8%" class="number">31-60</th>
+                <th style="width: 9%" class="number">61-90</th>
+                <th style="width: 8%" class="number">+90</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% regroup aging_data by 1 as customer_groups %}
+            {% for customer_group in customer_groups %}
+                {% for invoice in customer_group.list %}
+                <tr>
+                    {% if forloop.first %}
+                        <td rowspan="{{ customer_group.list|length }}">{{ invoice.0 }}</td>
+                        <td rowspan="{{ customer_group.list|length }}">{{ invoice.1 }}</td>
+                    {% endif %}
+                    <td>{{ invoice.2 }}</td>
+                    <td>{{ invoice.3|date:"d/m/Y" }}</td>
+                    <td>{{ invoice.4|date:"d/m/Y" }}</td>
+                    <td class="number">{% if invoice.7 == 'current' %}{{ invoice.6|floatformat:0 }}{% endif %}</td>
+                    <td class="number">{% if invoice.7 == '1-30' %}{{ invoice.6|floatformat:0 }}{% endif %}</td>
+                    <td class="number">{% if invoice.7 == '31-60' %}{{ invoice.6|floatformat:0 }}{% endif %}</td>
+                    <td class="number">{% if invoice.7 == '61-90' %}{{ invoice.6|floatformat:0 }}{% endif %}</td>
+                    <td class="number">{% if invoice.7 == '90+' %}{{ invoice.6|floatformat:0 }}{% endif %}</td>
+                </tr>
+                {% endfor %}
+            {% empty %}
+            <tr>
+                <td colspan="10" style="text-align: center; color: #666;">
+                    No hay facturas pendientes
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div style="margin-top: 30px; text-align: center; font-size: 9pt; color: #666;">
+        Reporte generado el {{ report_date|date:"d/m/Y H:i" }}
+    </div>
+</body>
+</html>
+
+
+
+

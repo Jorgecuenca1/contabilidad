@@ -1,0 +1,252 @@
+{% extends 'base.html' %}
+
+{% block title %}Editar {{ company.name }} - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1><i class="bi bi-pencil"></i> Editar Empresa: {{ company.name }}</h1>
+            <div>
+                <a href="{% url 'core:company_detail' company.id %}" class="btn btn-outline-info">
+                    <i class="bi bi-eye"></i> Ver Detalle
+                </a>
+                <a href="{% url 'core:company_list' %}" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i> Volver a Lista
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h6><i class="bi bi-pencil-square"></i> Editar Información de la Empresa</h6>
+            </div>
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+                    <div class="row">
+                        <!-- Información Básica -->
+                        <div class="col-md-6">
+                            <h6 class="text-primary mb-3">Información Básica</h6>
+                            
+                            <div class="mb-3">
+                                <label for="tax_id" class="form-label">NIT/Cédula</label>
+                                <input type="text" class="form-control" id="tax_id" name="tax_id" 
+                                       value="{{ company.tax_id }}" readonly>
+                                <div class="form-text">El NIT/Cédula no se puede modificar</div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="name" class="form-label">Nombre Comercial *</label>
+                                <input type="text" class="form-control" id="name" name="name" 
+                                       value="{{ company.name }}" required>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="legal_name" class="form-label">Razón Social *</label>
+                                <input type="text" class="form-control" id="legal_name" name="legal_name" 
+                                       value="{{ company.legal_name }}" required>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="address" class="form-label">Dirección *</label>
+                                <textarea class="form-control" id="address" name="address" rows="2" required>{{ company.address }}</textarea>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="city" class="form-label">Ciudad *</label>
+                                        <input type="text" class="form-control" id="city" name="city" 
+                                               value="{{ company.city }}" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="state" class="form-label">Departamento/Estado *</label>
+                                        <input type="text" class="form-control" id="state" name="state" 
+                                               value="{{ company.state }}" required>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="postal_code" class="form-label">Código Postal</label>
+                                <input type="text" class="form-control" id="postal_code" name="postal_code" 
+                                       value="{{ company.postal_code }}">
+                            </div>
+                        </div>
+                        
+                        <!-- Información de Contacto -->
+                        <div class="col-md-6">
+                            <h6 class="text-primary mb-3">Información de Contacto</h6>
+                            
+                            <div class="mb-3">
+                                <label for="phone" class="form-label">Teléfono</label>
+                                <input type="text" class="form-control" id="phone" name="phone" 
+                                       value="{{ company.phone }}">
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email *</label>
+                                <input type="email" class="form-control" id="email" name="email" 
+                                       value="{{ company.email }}" required>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="website" class="form-label">Sitio Web</label>
+                                <input type="url" class="form-control" id="website" name="website" 
+                                       value="{{ company.website }}">
+                            </div>
+                            
+                            <!-- Configuración Tributaria -->
+                            <h6 class="text-primary mb-3 mt-4">Configuración Tributaria</h6>
+                            
+                            <div class="mb-3">
+                                <label for="regime" class="form-label">Régimen Tributario *</label>
+                                <select class="form-select" id="regime" name="regime" required>
+                                    {% for value, label in regime_choices %}
+                                        <option value="{{ value }}" {% if value == company.regime %}selected{% endif %}>
+                                            {{ label }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="sector" class="form-label">Sector *</label>
+                                <select class="form-select" id="sector" name="sector" required>
+                                    {% for value, label in sector_choices %}
+                                        <option value="{{ value }}" {% if value == company.sector %}selected{% endif %}>
+                                            {{ label }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            
+                            <!-- Año Fiscal -->
+                            <h6 class="text-primary mb-3 mt-4">Configuración Fiscal</h6>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="fiscal_year_start" class="form-label">Inicio Año Fiscal</label>
+                                        <input type="date" class="form-control" id="fiscal_year_start" name="fiscal_year_start" 
+                                               value="{{ company.fiscal_year_start|date:'Y-m-d' }}">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="fiscal_year_end" class="form-label">Fin Año Fiscal</label>
+                                        <input type="date" class="form-control" id="fiscal_year_end" name="fiscal_year_end" 
+                                               value="{{ company.fiscal_year_end|date:'Y-m-d' }}">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Representante Legal -->
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <h6 class="text-primary mb-3">Representante Legal</h6>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="legal_representative" class="form-label">Nombre del Representante Legal *</label>
+                                        <input type="text" class="form-control" id="legal_representative" name="legal_representative" 
+                                               value="{{ company.legal_representative }}" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="legal_rep_document" class="form-label">Documento del Representante *</label>
+                                        <input type="text" class="form-control" id="legal_rep_document" name="legal_rep_document" 
+                                               value="{{ company.legal_rep_document }}" required>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Logo -->
+                    <div class="row mt-4">
+                        <div class="col-md-8">
+                            <h6 class="text-primary mb-3">Imagen Corporativa</h6>
+                            
+                            <div class="mb-3">
+                                <label for="logo" class="form-label">Logo de la Empresa</label>
+                                <input type="file" class="form-control" id="logo" name="logo" accept="image/*">
+                                <div class="form-text">Formatos permitidos: JPG, PNG, GIF. Tamaño máximo: 2MB</div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            {% if company.logo %}
+                                <h6 class="text-primary mb-3">Logo Actual</h6>
+                                <img src="{{ company.logo.url }}" alt="{{ company.name }}" class="img-fluid rounded" style="max-height: 100px;">
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <!-- Información de Solo Lectura -->
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <h6 class="text-primary mb-3">Información del Sistema (Solo Lectura)</h6>
+                            
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label class="form-label">País</label>
+                                        <input type="text" class="form-control" value="{{ company.country.name }}" readonly>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label class="form-label">Moneda Funcional</label>
+                                        <input type="text" class="form-control" value="{{ company.functional_currency }}" readonly>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label class="form-label">Estado</label>
+                                        <input type="text" class="form-control" 
+                                               value="{% if company.is_active %}Activa{% else %}Inactiva{% endif %}" readonly>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="alert alert-info">
+                                <i class="bi bi-info-circle"></i>
+                                <strong>Nota:</strong> Algunos campos como País, Moneda y Estado no se pueden modificar desde aquí. 
+                                Para cambios avanzados, utilice la administración del sistema.
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Botones -->
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <hr>
+                            <div class="d-flex justify-content-end gap-2">
+                                <a href="{% url 'core:company_detail' company.id %}" class="btn btn-secondary">
+                                    <i class="bi bi-x-circle"></i> Cancelar
+                                </a>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-check-circle"></i> Guardar Cambios
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

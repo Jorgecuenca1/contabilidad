@@ -1,0 +1,495 @@
+{% extends 'base.html' %}
+
+{% block title %}Nuevo Asiento Contable - Sistema Contable{% endblock %}
+
+{% block content %}
+<!-- Encabezado -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card bg-gradient-primary text-white shadow-lg">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h1><i class="bi bi-journal-plus"></i> Nuevo Asiento Contable</h1>
+                        <p class="lead mb-0">Registro de transacciones con partida doble automática</p>
+                    </div>
+                    <div class="col-md-4 text-end">
+                        <div class="display-4">
+                            <i class="bi bi-calculator-fill"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Explicación -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card border-info">
+            <div class="card-header bg-info text-white">
+                <h5><i class="bi bi-info-circle"></i> ¿Qué es un Asiento Contable?</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>Un asiento contable registra las transacciones comerciales usando el principio de partida doble:</strong></p>
+                <div class="row">
+                    <div class="col-md-4">
+                        <h6>⚖️ Partida Doble:</h6>
+                        <ul class="small">
+                            <li>📝 <strong>Cada transacción</strong> afecta al menos 2 cuentas</li>
+                            <li>⚖️ <strong>Débitos = Créditos</strong> (debe estar balanceado)</li>
+                            <li>📅 <strong>Fecha y referencia</strong> para trazabilidad</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-4">
+                        <h6>🏢 Control Empresarial:</h6>
+                        <ul class="small">
+                            <li>🏢 <strong>Por empresa</strong> (segregación de datos)</li>
+                            <li>📊 <strong>Tipo de comprobante</strong> (CI, CE, CG, etc.)</li>
+                            <li>🔍 <strong>Auditoría completa</strong> (quién, cuándo, qué)</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-4">
+                        <h6>📊 Centros de Costo:</h6>
+                        <ul class="small">
+                            <li>🎯 <strong>Segmentación</strong> por área/departamento</li>
+                            <li>📈 <strong>Análisis de rentabilidad</strong> por centro</li>
+                            <li>💰 <strong>Control de gastos</strong> específicos</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Formulario de Asiento -->
+<div class="row">
+    <div class="col-12">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h5><i class="bi bi-pencil-square"></i> Datos del Asiento Contable</h5>
+            </div>
+            <div class="card-body">
+                <form method="post" id="journalEntryForm">
+                    {% csrf_token %}
+                    
+                    <!-- Datos Generales -->
+                    <div class="row mb-4">
+                        <div class="col-md-3">
+                            <label for="company" class="form-label"><strong>Empresa *</strong></label>
+                            <select class="form-select" id="company" name="company" required>
+                                <option value="">Seleccione empresa...</option>
+                                {% for company in companies %}
+                                    <option value="{{ company.id }}">{{ company.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-3">
+                            <label for="journal_type" class="form-label"><strong>Tipo Comprobante *</strong></label>
+                            <select class="form-select" id="journal_type" name="journal_type" required>
+                                <option value="">Seleccione tipo...</option>
+                                {% for jtype in journal_types %}
+                                    <option value="{{ jtype.id }}">{{ jtype.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-3">
+                            <label for="date" class="form-label"><strong>Fecha *</strong></label>
+                            <input type="date" class="form-control" id="date" name="date" required>
+                        </div>
+                        
+                        <div class="col-md-3">
+                            <label for="reference" class="form-label"><strong>Referencia</strong></label>
+                            <input type="text" class="form-control" id="reference" name="reference" placeholder="Ej: FAC-001">
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <label for="description" class="form-label"><strong>Descripción General *</strong></label>
+                            <textarea class="form-control" id="description" name="description" rows="2" required placeholder="Descripción de la transacción..."></textarea>
+                        </div>
+                    </div>
+                    
+                    <!-- Líneas del Asiento -->
+                    <div class="card border-secondary">
+                        <div class="card-header bg-secondary text-white">
+                            <h6><i class="bi bi-list-ol"></i> Líneas del Asiento (Partida Doble)</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-bordered" id="journalLinesTable">
+                                    <thead class="table-dark">
+                                        <tr>
+                                            <th width="5%">#</th>
+                                            <th width="20%">Cuenta Contable *</th>
+                                            <th width="15%">Centro de Costo</th>
+                                            <th width="25%">Descripción</th>
+                                            <th width="12%">Débito</th>
+                                            <th width="12%">Crédito</th>
+                                            <th width="11%">Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="journalLinesBody">
+                                        <!-- Las líneas se generan dinámicamente -->
+                                    </tbody>
+                                    <tfoot class="table-light">
+                                        <tr>
+                                            <th colspan="3" class="text-end">TOTALES:</th>
+                                            <th><span id="totalDebits">$0.00</span></th>
+                                            <th><span id="totalCredits">$0.00</span></th>
+                                            <th></th>
+                                        </tr>
+                                        <tr>
+                                            <th colspan="3" class="text-end">DIFERENCIA:</th>
+                                            <th colspan="2" class="text-center">
+                                                <span id="difference" class="badge bg-warning">$0.00</span>
+                                            </th>
+                                            <th></th>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                            
+                            <div class="row mt-3">
+                                <div class="col-md-6">
+                                    <button type="button" class="btn btn-success" onclick="addJournalLine()">
+                                        <i class="bi bi-plus-circle"></i> Agregar Línea
+                                    </button>
+                                </div>
+                                <div class="col-md-6 text-end">
+                                    <div class="alert alert-info mb-0" role="alert">
+                                        <small><i class="bi bi-info-circle"></i> El asiento debe estar balanceado (Débitos = Créditos)</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Botones de Acción -->
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                <a href="/" class="btn btn-secondary me-md-2">
+                                    <i class="bi bi-arrow-left"></i> Cancelar
+                                </a>
+                                <button type="button" class="btn btn-warning me-md-2" onclick="clearForm()">
+                                    <i class="bi bi-arrow-clockwise"></i> Limpiar
+                                </button>
+                                <button type="submit" class="btn btn-primary" id="submitBtn" disabled>
+                                    <i class="bi bi-check-circle"></i> Guardar Asiento
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Tipos de Comprobantes Colombianos -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card bg-light">
+            <div class="card-header">
+                <h6><i class="bi bi-file-earmark-text"></i> Tipos de Comprobantes Contables Colombianos</h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        <h6>💰 Movimiento de Efectivo:</h6>
+                        <small>
+                            <strong>CI - Comprobante de Ingreso:</strong> Recibos de caja, transferencias recibidas<br>
+                            <strong>CE - Comprobante de Egreso:</strong> Pagos en efectivo, cheques girados<br>
+                            <strong>CB - Comprobante Bancario:</strong> Conciliaciones y movimientos bancarios
+                        </small>
+                    </div>
+                    <div class="col-md-3">
+                        <h6>📋 Operaciones Comerciales:</h6>
+                        <small>
+                            <strong>CF - Comprobante de Facturación:</strong> Registro de ventas<br>
+                            <strong>CC - Comprobante de Compras:</strong> Registro de compras<br>
+                            <strong>CV - Comprobante de Ventas:</strong> Ventas por canal específico
+                        </small>
+                    </div>
+                    <div class="col-md-3">
+                        <h6>⚙️ Ajustes y Provisiones:</h6>
+                        <small>
+                            <strong>CG - Comprobante General:</strong> Asientos sin movimiento de efectivo<br>
+                            <strong>CA - Comprobante de Ajuste:</strong> Ajustes de fin de período<br>
+                            <strong>CP - Comprobante de Provisión:</strong> Provisiones contables
+                        </small>
+                    </div>
+                    <div class="col-md-3">
+                        <h6>👥 Nómina y Otros:</h6>
+                        <small>
+                            <strong>CN - Comprobante de Nómina:</strong> Liquidación de nómina<br>
+                            <strong>CS - Comprobante Seguridad Social:</strong> Aportes sociales<br>
+                            <strong>CD - Comprobante Diario:</strong> Operaciones rutinarias
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Ayuda Rápida -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card bg-light">
+            <div class="card-header">
+                <h6><i class="bi bi-question-circle"></i> Ayuda Rápida - Ejemplos de Asientos con Centros de Costo</h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <h6>🛒 Compra de Mercancía:</h6>
+                        <small>
+                            <strong>Débito:</strong> Inventarios<br>
+                            <strong>Crédito:</strong> Proveedores<br>
+                            <strong>Centro Costo:</strong> Almacén<br>
+                            <em>Aumenta inventario, aumenta deuda</em>
+                        </small>
+                    </div>
+                    <div class="col-md-4">
+                        <h6>💰 Gasto Administrativo:</h6>
+                        <small>
+                            <strong>Débito:</strong> Gastos Administrativos<br>
+                            <strong>Crédito:</strong> Bancos<br>
+                            <strong>Centro Costo:</strong> Administración<br>
+                            <em>Permite analizar gastos por área</em>
+                        </small>
+                    </div>
+                    <div class="col-md-4">
+                        <h6>👥 Nómina por Departamento:</h6>
+                        <small>
+                            <strong>Débito:</strong> Sueldos y Salarios<br>
+                            <strong>Crédito:</strong> Bancos<br>
+                            <strong>Centro Costo:</strong> Ventas/Producción<br>
+                            <em>Control de costos laborales por área</em>
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.bg-gradient-primary {
+    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+}
+
+.table th, .table td {
+    vertical-align: middle;
+}
+
+.account-select {
+    width: 100%;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.badge.bg-success {
+    background-color: #198754 !important;
+}
+
+.badge.bg-danger {
+    background-color: #dc3545 !important;
+}
+
+.badge.bg-warning {
+    background-color: #ffc107 !important;
+    color: #000 !important;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+let lineCounter = 0;
+let accounts = [];
+
+// Cargar cuentas al cambiar empresa
+document.getElementById('company').addEventListener('change', function() {
+    loadAccounts(this.value);
+});
+
+// Establecer fecha actual
+document.getElementById('date').valueAsDate = new Date();
+
+// Agregar primera línea al cargar
+document.addEventListener('DOMContentLoaded', function() {
+    addJournalLine();
+    addJournalLine();
+});
+
+function loadAccounts(companyId) {
+    if (!companyId) return;
+    
+    fetch(`/accounting/api/accounts/?company=${companyId}`)
+        .then(response => response.json())
+        .then(data => {
+            accounts = data.accounts;
+            updateAccountSelects();
+        })
+        .catch(error => {
+            console.error('Error loading accounts:', error);
+        });
+}
+
+function updateAccountSelects() {
+    const selects = document.querySelectorAll('.account-select');
+    selects.forEach(select => {
+        const currentValue = select.value;
+        select.innerHTML = '<option value="">Seleccione cuenta...</option>';
+        
+        accounts.forEach(account => {
+            const option = document.createElement('option');
+            option.value = account.id;
+            option.textContent = account.full_name;
+            if (account.id == currentValue) {
+                option.selected = true;
+            }
+            select.appendChild(option);
+        });
+    });
+}
+
+function addJournalLine() {
+    lineCounter++;
+    const tbody = document.getElementById('journalLinesBody');
+    
+    const row = document.createElement('tr');
+    row.innerHTML = `
+        <td class="text-center">${lineCounter}</td>
+        <td>
+            <select class="form-select account-select" name="account_${lineCounter}" onchange="validateBalance()">
+                <option value="">Seleccione cuenta...</option>
+            </select>
+        </td>
+        <td>
+            <select class="form-select cost-center-select" name="cost_center_${lineCounter}">
+                <option value="">Sin centro de costo</option>
+                {% for cost_center in cost_centers %}
+                    <option value="{{ cost_center.id }}">{{ cost_center.code }} - {{ cost_center.name }}</option>
+                {% endfor %}
+            </select>
+        </td>
+        <td>
+            <input type="text" class="form-control" name="line_description_${lineCounter}" placeholder="Descripción específica...">
+        </td>
+        <td>
+            <input type="number" class="form-control text-end" name="debit_${lineCounter}" step="0.01" min="0" placeholder="0.00" onchange="validateBalance()" oninput="validateBalance()">
+        </td>
+        <td>
+            <input type="number" class="form-control text-end" name="credit_${lineCounter}" step="0.01" min="0" placeholder="0.00" onchange="validateBalance()" oninput="validateBalance()">
+        </td>
+        <td class="text-center">
+            <button type="button" class="btn btn-danger btn-sm" onclick="removeJournalLine(this)" title="Eliminar línea">
+                <i class="bi bi-trash"></i>
+            </button>
+        </td>
+    `;
+    
+    tbody.appendChild(row);
+    updateAccountSelects();
+}
+
+function removeJournalLine(button) {
+    const row = button.closest('tr');
+    row.remove();
+    validateBalance();
+}
+
+function validateBalance() {
+    let totalDebits = 0;
+    let totalCredits = 0;
+    
+    // Calcular totales
+    document.querySelectorAll('input[name^="debit_"]').forEach(input => {
+        const value = parseFloat(input.value) || 0;
+        totalDebits += value;
+    });
+    
+    document.querySelectorAll('input[name^="credit_"]').forEach(input => {
+        const value = parseFloat(input.value) || 0;
+        totalCredits += value;
+    });
+    
+    // Actualizar display
+    document.getElementById('totalDebits').textContent = `$${totalDebits.toLocaleString('es-CO', {minimumFractionDigits: 2})}`;
+    document.getElementById('totalCredits').textContent = `$${totalCredits.toLocaleString('es-CO', {minimumFractionDigits: 2})}`;
+    
+    // Calcular diferencia
+    const difference = Math.abs(totalDebits - totalCredits);
+    const differenceElement = document.getElementById('difference');
+    
+    if (difference < 0.01 && totalDebits > 0 && totalCredits > 0) {
+        differenceElement.textContent = 'BALANCEADO';
+        differenceElement.className = 'badge bg-success';
+        document.getElementById('submitBtn').disabled = false;
+    } else {
+        differenceElement.textContent = `$${difference.toLocaleString('es-CO', {minimumFractionDigits: 2})}`;
+        differenceElement.className = difference > 0.01 ? 'badge bg-danger' : 'badge bg-warning';
+        document.getElementById('submitBtn').disabled = true;
+    }
+}
+
+function clearForm() {
+    if (confirm('¿Está seguro de limpiar el formulario? Se perderán todos los datos ingresados.')) {
+        document.getElementById('journalEntryForm').reset();
+        document.getElementById('journalLinesBody').innerHTML = '';
+        lineCounter = 0;
+        addJournalLine();
+        addJournalLine();
+        validateBalance();
+    }
+}
+
+// Validar formulario antes de enviar
+document.getElementById('journalEntryForm').addEventListener('submit', function(e) {
+    const company = document.getElementById('company').value;
+    const journalType = document.getElementById('journal_type').value;
+    const date = document.getElementById('date').value;
+    const description = document.getElementById('description').value;
+    
+    if (!company || !journalType || !date || !description) {
+        e.preventDefault();
+        alert('Por favor complete todos los campos obligatorios.');
+        return;
+    }
+    
+    // Validar que hay al menos 2 líneas con cuentas
+    const accountSelects = document.querySelectorAll('.account-select');
+    let validLines = 0;
+    
+    accountSelects.forEach(select => {
+        if (select.value) validLines++;
+    });
+    
+    if (validLines < 2) {
+        e.preventDefault();
+        alert('El asiento debe tener al menos 2 líneas con cuentas seleccionadas.');
+        return;
+    }
+    
+    // Confirmar antes de guardar
+    if (!confirm('¿Confirma que desea guardar este asiento contable?')) {
+        e.preventDefault();
+    }
+});
+</script>
+{% endblock %}

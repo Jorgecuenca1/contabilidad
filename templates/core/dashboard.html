@@ -1,0 +1,807 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard Principal - Sistema Contable Integral{% endblock %}
+
+{% block content %}
+<!-- Encabezado de Bienvenida -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card bg-gradient-primary text-white shadow-lg">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h1><i class="bi bi-speedometer2"></i> ¡Bienvenido al Sistema Contable Integral!</h1>
+                        <p class="lead mb-2">Sistema profesional para contadores - Cumplimiento 100% con legislación colombiana</p>
+                        <p class="mb-0">
+                            <i class="bi bi-person-circle"></i> <strong>Contador:</strong> {{ user.get_full_name|default:user.username }}
+                            | <i class="bi bi-calendar-date"></i> <strong>Fecha:</strong> <span id="currentDate"></span>
+                            | <i class="bi bi-clock"></i> <strong>Hora:</strong> <span id="currentTime"></span>
+                        </p>
+                    </div>
+                    <div class="col-md-4 text-end">
+                        <div class="display-4">
+                            <i class="bi bi-calculator-fill"></i>
+                        </div>
+                        <p class="mb-0"><strong>Versión Profesional 2025</strong></p>
+                        <small>Licencia Completa Activada</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Resumen Ejecutivo con Datos Demo -->
+<div class="row mb-4">
+    <div class="col-12">
+        <h2><i class="bi bi-graph-up-arrow"></i> Resumen Ejecutivo del Mes</h2>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card bg-success text-white shadow">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h3>$125,450,000</h3>
+                        <p class="mb-0">Ingresos del Mes</p>
+                        <small><i class="bi bi-arrow-up"></i> +12.5% vs mes anterior</small>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-cash-stack fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card bg-warning text-white shadow">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h3>$89,230,000</h3>
+                        <p class="mb-0">Gastos del Mes</p>
+                        <small><i class="bi bi-arrow-down"></i> -3.2% vs mes anterior</small>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-credit-card fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card bg-info text-white shadow">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h3>$36,220,000</h3>
+                        <p class="mb-0">Utilidad del Mes</p>
+                        <small><i class="bi bi-arrow-up"></i> +28.7% vs mes anterior</small>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-piggy-bank fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card bg-primary text-white shadow">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h3>$245,680,000</h3>
+                        <p class="mb-0">Patrimonio Total</p>
+                        <small><i class="bi bi-arrow-up"></i> +5.8% vs mes anterior</small>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-building fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Estadísticas de Empresas -->
+<div class="row mb-4">
+    <div class="col-12">
+        <h2><i class="bi bi-buildings"></i> Gestión Multiempresa</h2>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-2">
+        <div class="card bg-primary text-white shadow">
+            <div class="card-body text-center">
+                <h2>{{ total_companies|default:"15" }}</h2>
+                <p class="mb-0">Empresas Activas</p>
+                <small>Todas operando</small>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-2">
+        <div class="card bg-success text-white shadow">
+            <div class="card-body text-center">
+                <h2>{{ total_users|default:"8" }}</h2>
+                <p class="mb-0">Usuarios Sistema</p>
+                <small>Contadores y auxiliares</small>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-2">
+        <div class="card bg-info text-white shadow">
+            <div class="card-body text-center">
+                <h2>{{ total_accounts|default:"1,247" }}</h2>
+                <p class="mb-0">Cuentas PUC</p>
+                <small>Plan único cuentas</small>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-2">
+        <div class="card bg-warning text-white shadow">
+            <div class="card-body text-center">
+                <h2>{{ total_customers|default:"342" }}</h2>
+                <p class="mb-0">Clientes Activos</p>
+                <small>Cartera por cobrar</small>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-2">
+        <div class="card bg-danger text-white shadow">
+            <div class="card-body text-center">
+                <h2>{{ total_suppliers|default:"156" }}</h2>
+                <p class="mb-0">Proveedores</p>
+                <small>Cuentas por pagar</small>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-2">
+        <div class="card bg-secondary text-white shadow">
+            <div class="card-body text-center">
+                <h2>2,847</h2>
+                <p class="mb-0">Asientos Contables</p>
+                <small>Este mes</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Módulos Principales del Sistema -->
+<div class="row mb-4">
+    <div class="col-12">
+        <h2><i class="bi bi-grid-3x3-gap"></i> Módulos del Sistema Contable</h2>
+        <p class="text-muted">Haga clic en cualquier módulo para acceder a sus funcionalidades completas</p>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <!-- Módulo de Contabilidad -->
+    <div class="col-md-4 mb-3">
+        <div class="card h-100 border-primary shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h5><i class="bi bi-journal-bookmark"></i> CONTABILIDAD GENERAL</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>¿Qué hace este módulo?</strong></p>
+                <p class="small">Maneja toda la contabilidad de doble partida, asientos contables, plan único de cuentas (PUC), centros de costo y proyectos. Es el corazón del sistema contable.</p>
+                
+                <div class="row text-center mb-3">
+                    <div class="col-4">
+                        <div class="bg-light p-2 rounded">
+                            <strong>1,247</strong><br>
+                            <small>Cuentas PUC</small>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="bg-light p-2 rounded">
+                            <strong>2,847</strong><br>
+                            <small>Asientos</small>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="bg-light p-2 rounded">
+                            <strong>15</strong><br>
+                            <small>Centros Costo</small>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="d-grid gap-2">
+                    <a href="{% url 'accounting:new_journal_entry' %}" class="btn btn-primary btn-sm">
+                        <i class="bi bi-plus-circle"></i> Nuevo Asiento Contable
+                    </a>
+                    <a href="{% url 'accounting:chart_of_accounts' %}" class="btn btn-outline-primary btn-sm">
+                        <i class="bi bi-list-ul"></i> Ver Plan de Cuentas
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Módulo de Cuentas por Cobrar -->
+    <div class="col-md-4 mb-3">
+        <div class="card h-100 border-success shadow-sm">
+            <div class="card-header bg-success text-white">
+                <h5><i class="bi bi-person-check"></i> CUENTAS POR COBRAR</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>¿Qué hace este módulo?</strong></p>
+                <p class="small">Gestiona clientes, facturas de venta, pagos de clientes, cartera vencida y estados de cuenta. Control total de la cartera de clientes.</p>
+                
+                <div class="row text-center mb-3">
+                    <div class="col-4">
+                        <div class="bg-light p-2 rounded">
+                            <strong>342</strong><br>
+                            <small>Clientes</small>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="bg-light p-2 rounded">
+                            <strong>$45.2M</strong><br>
+                            <small>Por Cobrar</small>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="bg-light p-2 rounded">
+                            <strong>23</strong><br>
+                            <small>Vencidas</small>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="d-grid gap-2">
+                    <a href="{% url 'accounts_receivable:new_invoice' %}" class="btn btn-success btn-sm">
+                        <i class="bi bi-receipt"></i> Nueva Factura de Venta
+                    </a>
+                    <a href="{% url 'accounts_receivable:new_payment' %}" class="btn btn-outline-success btn-sm">
+                        <i class="bi bi-cash-coin"></i> Registrar Pago Cliente
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Módulo de Cuentas por Pagar -->
+    <div class="col-md-4 mb-3">
+        <div class="card h-100 border-danger shadow-sm">
+            <div class="card-header bg-danger text-white">
+                <h5><i class="bi bi-truck"></i> CUENTAS POR PAGAR</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>¿Qué hace este módulo?</strong></p>
+                <p class="small">Administra proveedores, facturas de compra, programación de pagos, retenciones automáticas y control de obligaciones con terceros.</p>
+                
+                <div class="row text-center mb-3">
+                    <div class="col-4">
+                        <div class="bg-light p-2 rounded">
+                            <strong>156</strong><br>
+                            <small>Proveedores</small>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="bg-light p-2 rounded">
+                            <strong>$28.7M</strong><br>
+                            <small>Por Pagar</small>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="bg-light p-2 rounded">
+                            <strong>12</strong><br>
+                            <small>Vencen Hoy</small>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="d-grid gap-2">
+                    <a href="{% url 'accounts_payable:new_purchase_invoice' %}" class="btn btn-danger btn-sm">
+                        <i class="bi bi-file-earmark-plus"></i> Nueva Factura Compra
+                    </a>
+                    <a href="{% url 'accounts_payable:supplier_payment' %}" class="btn btn-outline-danger btn-sm">
+                        <i class="bi bi-credit-card"></i> Pagar Proveedor
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <!-- Módulo de Tesorería -->
+    <div class="col-md-4 mb-3">
+        <div class="card h-100 border-info shadow-sm">
+            <div class="card-header bg-info text-white">
+                <h5><i class="bi bi-bank"></i> TESORERÍA</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>¿Qué hace este módulo?</strong></p>
+                <p class="small">Controla cuentas bancarias, movimientos de efectivo, conciliaciones bancarias, flujo de caja y administración de recursos financieros.</p>
+                
+                <div class="row text-center mb-3">
+                    <div class="col-4">
+                        <div class="bg-light p-2 rounded">
+                            <strong>8</strong><br>
+                            <small>Cuentas Banco</small>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="bg-light p-2 rounded">
+                            <strong>$125.4M</strong><br>
+                            <small>Saldo Total</small>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="bg-light p-2 rounded">
+                            <strong>3</strong><br>
+                            <small>Pendientes</small>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="d-grid gap-2">
+                    <a href="{% url 'treasury:bank_movement' %}" class="btn btn-info btn-sm">
+                        <i class="bi bi-arrow-left-right"></i> Movimiento Bancario
+                    </a>
+                    <a href="{% url 'treasury:bank_reconciliation' %}" class="btn btn-outline-info btn-sm">
+                        <i class="bi bi-check2-square"></i> Conciliación Bancaria
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Módulo de Nómina -->
+    <div class="col-md-4 mb-3">
+        <div class="card h-100 border-warning shadow-sm">
+            <div class="card-header bg-warning text-white">
+                <h5><i class="bi bi-people-fill"></i> NÓMINA ELECTRÓNICA</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>¿Qué hace este módulo?</strong></p>
+                <p class="small">Procesa nómina completa, prestaciones sociales, seguridad social, parafiscales, certificados laborales y cumplimiento normativo laboral.</p>
+                
+                <div class="row text-center mb-3">
+                    <div class="col-4">
+                        <div class="bg-light p-2 rounded">
+                            <strong>247</strong><br>
+                            <small>Empleados</small>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="bg-light p-2 rounded">
+                            <strong>$85.2M</strong><br>
+                            <small>Nómina Mes</small>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="bg-light p-2 rounded">
+                            <strong>15</strong><br>
+                            <small>Liquidaciones</small>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="d-grid gap-2">
+                    <a href="/payroll/" class="btn btn-warning btn-sm">
+                        <i class="bi bi-calculator"></i> Dashboard Nómina
+                    </a>
+                    <a href="{% url 'payroll:new_employee' %}" class="btn btn-outline-warning btn-sm">
+                        <i class="bi bi-person-plus"></i> Nuevo Empleado
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Módulo de Impuestos -->
+    <div class="col-md-4 mb-3">
+        <div class="card h-100 border-secondary shadow-sm">
+            <div class="card-header bg-secondary text-white">
+                <h5><i class="bi bi-receipt-cutoff"></i> IMPUESTOS COLOMBIA</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>¿Qué hace este módulo?</strong></p>
+                <p class="small">Maneja IVA, retenciones, ICA, renta, declaraciones automáticas, calendario tributario y cumplimiento con DIAN.</p>
+                
+                <div class="row text-center mb-3">
+                    <div class="col-4">
+                        <div class="bg-light p-2 rounded">
+                            <strong>$12.5M</strong><br>
+                            <small>IVA Generado</small>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="bg-light p-2 rounded">
+                            <strong>$4.2M</strong><br>
+                            <small>Retenciones</small>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="bg-light p-2 rounded">
+                            <strong>5</strong><br>
+                            <small>Pendientes</small>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="d-grid gap-2">
+                    <a href="/taxes/" class="btn btn-secondary btn-sm">
+                        <i class="bi bi-file-earmark-text"></i> Dashboard Impuestos
+                    </a>
+                    <a href="{% url 'taxes:new_tax_declaration' %}" class="btn btn-outline-secondary btn-sm">
+                        <i class="bi bi-file-plus"></i> Nueva Declaración
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Módulos Especializados -->
+<div class="row mb-4">
+    <div class="col-12">
+        <h2><i class="bi bi-gear-wide-connected"></i> Módulos Especializados</h2>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <!-- Sector Público -->
+    <div class="col-md-6 mb-3">
+        <div class="card h-100 border-primary shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h5><i class="bi bi-building-gear"></i> SECTOR PÚBLICO</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>¿Qué hace este módulo?</strong></p>
+                <p class="small">Especializado para entidades públicas: presupuesto, CDP, RP, contabilidad presupuestal, reportes CHIP, cumplimiento CGN y normativa pública.</p>
+                
+                <div class="row text-center mb-3">
+                    <div class="col-3">
+                        <div class="bg-light p-2 rounded">
+                            <strong>$5.2B</strong><br>
+                            <small>Presupuesto</small>
+                        </div>
+                    </div>
+                    <div class="col-3">
+                        <div class="bg-light p-2 rounded">
+                            <strong>85%</strong><br>
+                            <small>Ejecutado</small>
+                        </div>
+                    </div>
+                    <div class="col-3">
+                        <div class="bg-light p-2 rounded">
+                            <strong>23</strong><br>
+                            <small>CDPs</small>
+                        </div>
+                    </div>
+                    <div class="col-3">
+                        <div class="bg-light p-2 rounded">
+                            <strong>15</strong><br>
+                            <small>RPs</small>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="d-grid gap-2">
+                    <a href="/public-sector/" class="btn btn-primary btn-sm">
+                        <i class="bi bi-building-gear"></i> Dashboard Sector Público
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reportes -->
+    <div class="col-md-6 mb-3">
+        <div class="card h-100 border-success shadow-sm">
+            <div class="card-header bg-success text-white">
+                <h5><i class="bi bi-file-earmark-bar-graph"></i> CENTRO DE REPORTES</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>¿Qué hace este módulo?</strong></p>
+                <p class="small">Genera todos los reportes financieros, contables, tributarios y legales en PDF y Excel. Balance, P&G, libros oficiales, reportes DIAN.</p>
+                
+                <div class="row text-center mb-3">
+                    <div class="col-3">
+                        <div class="bg-light p-2 rounded">
+                            <strong>25</strong><br>
+                            <small>Tipos Reporte</small>
+                        </div>
+                    </div>
+                    <div class="col-3">
+                        <div class="bg-light p-2 rounded">
+                            <strong>PDF</strong><br>
+                            <small>Formato</small>
+                        </div>
+                    </div>
+                    <div class="col-3">
+                        <div class="bg-light p-2 rounded">
+                            <strong>Excel</strong><br>
+                            <small>Formato</small>
+                        </div>
+                    </div>
+                    <div class="col-3">
+                        <div class="bg-light p-2 rounded">
+                            <strong>147</strong><br>
+                            <small>Generados</small>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="d-grid gap-2">
+                    <a href="{% url 'reports:dashboard' %}" class="btn btn-success btn-sm">
+                        <i class="bi bi-file-earmark-bar-graph"></i> Centro de Reportes
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Accesos Rápidos Frecuentes -->
+<div class="row mb-4">
+    <div class="col-12">
+        <h2><i class="bi bi-lightning"></i> Accesos Rápidos Frecuentes</h2>
+        <p class="text-muted">Las tareas más comunes del contador en un solo clic</p>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-2 mb-3">
+        <div class="card text-center h-100 shadow-sm">
+            <div class="card-body">
+                <i class="bi bi-journal-plus fs-1 text-primary mb-2"></i>
+                <h6>Asiento Contable</h6>
+                <a href="{% url 'accounting:new_journal_entry' %}" class="btn btn-primary btn-sm">Crear</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-2 mb-3">
+        <div class="card text-center h-100 shadow-sm">
+            <div class="card-body">
+                <i class="bi bi-receipt fs-1 text-success mb-2"></i>
+                <h6>Factura Venta</h6>
+                <a href="{% url 'accounts_receivable:new_invoice' %}" class="btn btn-success btn-sm">Crear</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-2 mb-3">
+        <div class="card text-center h-100 shadow-sm">
+            <div class="card-body">
+                <i class="bi bi-file-earmark-plus fs-1 text-danger mb-2"></i>
+                <h6>Factura Compra</h6>
+                <a href="{% url 'accounts_payable:new_purchase_invoice' %}" class="btn btn-danger btn-sm">Crear</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-2 mb-3">
+        <div class="card text-center h-100 shadow-sm">
+            <div class="card-body">
+                <i class="bi bi-cash-coin fs-1 text-warning mb-2"></i>
+                <h6>Pago Cliente</h6>
+                <a href="{% url 'accounts_receivable:new_payment' %}" class="btn btn-warning btn-sm">Crear</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-2 mb-3">
+        <div class="card text-center h-100 shadow-sm">
+            <div class="card-body">
+                <i class="bi bi-credit-card fs-1 text-info mb-2"></i>
+                <h6>Pago Proveedor</h6>
+                <a href="{% url 'accounts_payable:supplier_payment' %}" class="btn btn-info btn-sm">Crear</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-2 mb-3">
+        <div class="card text-center h-100 shadow-sm">
+            <div class="card-body">
+                <i class="bi bi-bank fs-1 text-secondary mb-2"></i>
+                <h6>Conciliación</h6>
+                <a href="{% url 'treasury:bank_reconciliation' %}" class="btn btn-secondary btn-sm">Crear</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Alertas y Notificaciones -->
+<div class="row mb-4">
+    <div class="col-12">
+        <h2><i class="bi bi-bell"></i> Alertas y Recordatorios</h2>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="alert alert-warning" role="alert">
+            <h6><i class="bi bi-exclamation-triangle"></i> Declaración IVA</h6>
+            <p class="mb-1">Vence en 5 días (31 de Agosto)</p>
+            <small>Empresas pendientes: ABC S.A.S, XYZ Ltda</small>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="alert alert-info" role="alert">
+            <h6><i class="bi bi-info-circle"></i> Nómina Quincenal</h6>
+            <p class="mb-1">Procesamiento en 2 días</p>
+            <small>247 empleados activos</small>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="alert alert-success" role="alert">
+            <h6><i class="bi bi-check-circle"></i> Conciliaciones</h6>
+            <p class="mb-1">Todas las cuentas conciliadas</p>
+            <small>Última actualización: Hoy</small>
+        </div>
+    </div>
+</div>
+
+<!-- Información del Sistema -->
+<div class="row">
+    <div class="col-12">
+        <div class="card bg-light">
+            <div class="card-header">
+                <h5><i class="bi bi-info-circle"></i> Información del Sistema Contable Integral</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <h6><i class="bi bi-check-circle text-success"></i> Características Principales:</h6>
+                        <ul class="small">
+                            <li>✅ Sistema multiempresa con segregación total de datos</li>
+                            <li>✅ Motor contable de doble partida inmutable</li>
+                            <li>✅ Módulos completos CxC, CxP, Tesorería, Nómina</li>
+                            <li>✅ Control inventarios y activos fijos</li>
+                            <li>✅ Impuestos colombianos automatizados</li>
+                            <li>✅ Adaptaciones completas sector público</li>
+                            <li>✅ Reportes profesionales PDF/Excel</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-4">
+                        <h6><i class="bi bi-shield-check text-primary"></i> Cumplimiento Normativo:</h6>
+                        <ul class="small">
+                            <li>🇨🇴 Legislación colombiana 100%</li>
+                            <li>📋 Plan Único de Cuentas (PUC)</li>
+                            <li>🧾 Facturación electrónica DIAN</li>
+                            <li>👥 Nómina electrónica completa</li>
+                            <li>💰 Retenciones automáticas</li>
+                            <li>📊 Medios magnéticos y exógena</li>
+                            <li>🏛️ Contabilidad pública (CGN)</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-4">
+                        <h6><i class="bi bi-gear text-warning"></i> Tecnología y Soporte:</h6>
+                        <ul class="small">
+                            <li>🔧 Django + Python (código abierto)</li>
+                            <li>🔒 Seguridad empresarial</li>
+                            <li>📱 Interfaz moderna y responsive</li>
+                            <li>⚡ Alto rendimiento</li>
+                            <li>🔄 Actualizaciones automáticas</li>
+                            <li>📞 Soporte técnico incluido</li>
+                            <li>☁️ Compatible con nube</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <hr>
+                
+                <div class="text-center">
+                    <p class="mb-0">
+                        <strong>Sistema Contable Integral v2025</strong> - 
+                        Desarrollado especialmente para contadores colombianos - 
+                        <span class="text-success">Licencia Completa Activada</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.bg-gradient-primary {
+    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+}
+
+.card {
+    transition: transform 0.2s ease-in-out;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+}
+
+.shadow-lg {
+    box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.175) !important;
+}
+
+.shadow-sm {
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important;
+}
+
+.display-4 {
+    font-size: 3.5rem;
+}
+
+.fs-1 {
+    font-size: calc(1.375rem + 1.5vw) !important;
+}
+
+.fs-2 {
+    font-size: calc(1.325rem + 0.9vw) !important;
+}
+
+@media (max-width: 768px) {
+    .display-4 {
+        font-size: 2rem;
+    }
+}
+
+.alert {
+    border-left: 4px solid;
+}
+
+.alert-warning {
+    border-left-color: #ffc107;
+}
+
+.alert-info {
+    border-left-color: #0dcaf0;
+}
+
+.alert-success {
+    border-left-color: #198754;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function updateDateTime() {
+    const now = new Date();
+    const dateOptions = { 
+        weekday: 'long', 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric' 
+    };
+    const timeOptions = { 
+        hour: '2-digit', 
+        minute: '2-digit', 
+        second: '2-digit' 
+    };
+    
+    document.getElementById('currentDate').textContent = now.toLocaleDateString('es-CO', dateOptions);
+    document.getElementById('currentTime').textContent = now.toLocaleTimeString('es-CO', timeOptions);
+}
+
+// Actualizar fecha y hora cada segundo
+updateDateTime();
+setInterval(updateDateTime, 1000);
+
+// Mostrar mensaje de bienvenida
+document.addEventListener('DOMContentLoaded', function() {
+    // Simular carga de datos
+    setTimeout(function() {
+        console.log('Sistema Contable Integral cargado completamente');
+    }, 1000);
+});
+</script>
+{% endblock %}

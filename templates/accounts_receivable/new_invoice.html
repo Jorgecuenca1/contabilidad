@@ -1,0 +1,521 @@
+{% extends 'base.html' %}
+
+{% block title %}Nueva Factura de Venta - Sistema Contable{% endblock %}
+
+{% block content %}
+<!-- Encabezado -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card bg-gradient-success text-white shadow-lg">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h1><i class="bi bi-receipt"></i> Nueva Factura de Venta</h1>
+                        <p class="lead mb-0">Registro de ventas con cálculo automático de impuestos</p>
+                    </div>
+                    <div class="col-md-4 text-end">
+                        <div class="display-4">
+                            <i class="bi bi-cash-stack"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Explicación -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card border-success">
+            <div class="card-header bg-success text-white">
+                <h5><i class="bi bi-info-circle"></i> ¿Qué es una Factura de Venta?</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>Una factura de venta registra la entrega de bienes o servicios a un cliente:</strong></p>
+                <div class="row">
+                    <div class="col-md-6">
+                        <ul>
+                            <li>📄 <strong>Documento legal</strong> que respalda la venta</li>
+                            <li>💰 <strong>Genera cuenta por cobrar</strong> si es a crédito</li>
+                            <li>🧾 <strong>Calcula IVA automáticamente</strong> (19%, 5%, 0%)</li>
+                            <li>📊 <strong>Afecta inventarios</strong> y contabilidad</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <ul>
+                            <li>🏢 <strong>Por empresa</strong> (numeración independiente)</li>
+                            <li>👤 <strong>Cliente específico</strong> con datos tributarios</li>
+                            <li>📅 <strong>Fecha de vencimiento</strong> para control de cartera</li>
+                            <li>🔍 <strong>Trazabilidad completa</strong> para auditoría</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Formulario de Factura -->
+<div class="row">
+    <div class="col-12">
+        <div class="card shadow">
+            <div class="card-header bg-success text-white">
+                <h5><i class="bi bi-pencil-square"></i> Datos de la Factura de Venta</h5>
+            </div>
+            <div class="card-body">
+                <form method="post" id="invoiceForm">
+                    {% csrf_token %}
+                    
+                    <!-- Datos Generales -->
+                    <div class="row mb-4">
+                        <div class="col-md-3">
+                            <label for="company" class="form-label"><strong>Empresa *</strong></label>
+                            <select class="form-select" id="company" name="company" required>
+                                <option value="">Seleccione empresa...</option>
+                                {% for company in companies %}
+                                    <option value="{{ company.id }}">{{ company.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-3">
+                            <label for="customer" class="form-label"><strong>Cliente *</strong></label>
+                            <select class="form-select" id="customer" name="customer" required>
+                                <option value="">Seleccione cliente...</option>
+                                {% for customer in customers %}
+                                    <option value="{{ customer.id }}">{{ customer.document_number }} - {{ customer.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-3">
+                            <label for="invoice_date" class="form-label"><strong>Fecha Factura *</strong></label>
+                            <input type="date" class="form-control" id="invoice_date" name="invoice_date" required>
+                        </div>
+                        
+                        <div class="col-md-3">
+                            <label for="due_date" class="form-label"><strong>Fecha Vencimiento *</strong></label>
+                            <input type="date" class="form-control" id="due_date" name="due_date" required>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <label for="reference" class="form-label"><strong>Referencia/Orden</strong></label>
+                            <input type="text" class="form-control" id="reference" name="reference" placeholder="Ej: OC-001, Pedido-123">
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="notes" class="form-label"><strong>Observaciones</strong></label>
+                            <textarea class="form-control" id="notes" name="notes" rows="2" placeholder="Observaciones adicionales..."></textarea>
+                        </div>
+                    </div>
+                    
+                    <!-- Líneas de la Factura -->
+                    <div class="card border-secondary">
+                        <div class="card-header bg-secondary text-white">
+                            <h6><i class="bi bi-list-ol"></i> Productos/Servicios Facturados</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-bordered" id="invoiceLinesTable">
+                                    <thead class="table-dark">
+                                        <tr>
+                                            <th width="5%">#</th>
+                                            <th width="40%">Descripción *</th>
+                                            <th width="15%">Cantidad</th>
+                                            <th width="15%">Precio Unit.</th>
+                                            <th width="15%">Total Línea</th>
+                                            <th width="10%">Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="invoiceLinesBody">
+                                        <!-- Las líneas se generan dinámicamente -->
+                                    </tbody>
+                                    <tfoot class="table-light">
+                                        <tr>
+                                            <th colspan="4" class="text-end">SUBTOTAL:</th>
+                                            <th><span id="subtotal">$0.00</span></th>
+                                            <th></th>
+                                        </tr>
+                                        <tr>
+                                            <th colspan="4" class="text-end">IVA (19%):</th>
+                                            <th><span id="taxAmount">$0.00</span></th>
+                                            <th></th>
+                                        </tr>
+                                        <tr class="table-success">
+                                            <th colspan="4" class="text-end">TOTAL FACTURA:</th>
+                                            <th><span id="totalAmount">$0.00</span></th>
+                                            <th></th>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                            
+                            <div class="row mt-3">
+                                <div class="col-md-6">
+                                    <button type="button" class="btn btn-success" onclick="addInvoiceLine()">
+                                        <i class="bi bi-plus-circle"></i> Agregar Producto/Servicio
+                                    </button>
+                                </div>
+                                <div class="col-md-6 text-end">
+                                    <div class="alert alert-info mb-0" role="alert">
+                                        <small><i class="bi bi-info-circle"></i> IVA se calcula automáticamente al 19%</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Información del Cliente -->
+                    <div class="row mt-4">
+                        <div class="col-md-6">
+                            <div class="card bg-light">
+                                <div class="card-header">
+                                    <h6><i class="bi bi-person-circle"></i> Información del Cliente</h6>
+                                </div>
+                                <div class="card-body" id="customerInfo">
+                                    <p class="text-muted">Seleccione un cliente para ver su información</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="card bg-light">
+                                <div class="card-header">
+                                    <h6><i class="bi bi-calculator"></i> Resumen de Facturación</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <strong>Subtotal:</strong><br>
+                                            <span class="fs-5 text-primary" id="summarySubtotal">$0.00</span>
+                                        </div>
+                                        <div class="col-6">
+                                            <strong>IVA (19%):</strong><br>
+                                            <span class="fs-5 text-warning" id="summaryTax">$0.00</span>
+                                        </div>
+                                    </div>
+                                    <hr>
+                                    <div class="text-center">
+                                        <strong>TOTAL A PAGAR:</strong><br>
+                                        <span class="fs-3 text-success" id="summaryTotal">$0.00</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Botones de Acción -->
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                <a href="/" class="btn btn-secondary me-md-2">
+                                    <i class="bi bi-arrow-left"></i> Cancelar
+                                </a>
+                                <button type="button" class="btn btn-warning me-md-2" onclick="clearForm()">
+                                    <i class="bi bi-arrow-clockwise"></i> Limpiar
+                                </button>
+                                <button type="submit" class="btn btn-success" id="submitBtn" disabled>
+                                    <i class="bi bi-check-circle"></i> Guardar Factura
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Ayuda Rápida -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card bg-light">
+            <div class="card-header">
+                <h6><i class="bi bi-question-circle"></i> Ayuda Rápida - Tipos de Facturación</h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <h6>🛍️ Venta de Productos:</h6>
+                        <small>
+                            • Descripción del producto<br>
+                            • Cantidad vendida<br>
+                            • Precio unitario<br>
+                            • IVA según clasificación
+                        </small>
+                    </div>
+                    <div class="col-md-4">
+                        <h6>🔧 Prestación de Servicios:</h6>
+                        <small>
+                            • Descripción del servicio<br>
+                            • Horas o unidades<br>
+                            • Tarifa por hora/unidad<br>
+                            • Retención si aplica
+                        </small>
+                    </div>
+                    <div class="col-md-4">
+                        <h6>📦 Venta Mixta:</h6>
+                        <small>
+                            • Productos + servicios<br>
+                            • IVA diferenciado<br>
+                            • Retenciones específicas<br>
+                            • Descuentos por línea
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.bg-gradient-success {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+}
+
+.table th, .table td {
+    vertical-align: middle;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #28a745;
+    box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+}
+
+.invoice-line-total {
+    font-weight: bold;
+    color: #28a745;
+}
+
+#customerInfo {
+    min-height: 120px;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+let lineCounter = 0;
+let customers = [];
+
+// Cargar clientes al cambiar empresa
+document.getElementById('company').addEventListener('change', function() {
+    loadCustomers(this.value);
+});
+
+// Mostrar info del cliente al seleccionarlo
+document.getElementById('customer').addEventListener('change', function() {
+    showCustomerInfo(this.value);
+});
+
+// Establecer fechas por defecto
+document.addEventListener('DOMContentLoaded', function() {
+    const today = new Date();
+    const dueDate = new Date(today);
+    dueDate.setDate(today.getDate() + 30); // 30 días de plazo
+    
+    document.getElementById('invoice_date').valueAsDate = today;
+    document.getElementById('due_date').valueAsDate = dueDate;
+    
+    // Agregar primera línea
+    addInvoiceLine();
+});
+
+function loadCustomers(companyId) {
+    if (!companyId) return;
+    
+    fetch(`/accounts_receivable/api/customers/?company=${companyId}`)
+        .then(response => response.json())
+        .then(data => {
+            customers = data.customers;
+            updateCustomerSelect();
+        })
+        .catch(error => {
+            console.error('Error loading customers:', error);
+        });
+}
+
+function updateCustomerSelect() {
+    const select = document.getElementById('customer');
+    const currentValue = select.value;
+    select.innerHTML = '<option value="">Seleccione cliente...</option>';
+    
+    customers.forEach(customer => {
+        const option = document.createElement('option');
+        option.value = customer.id;
+        option.textContent = customer.full_name;
+        if (customer.id == currentValue) {
+            option.selected = true;
+        }
+        select.appendChild(option);
+    });
+}
+
+function showCustomerInfo(customerId) {
+    const customerInfoDiv = document.getElementById('customerInfo');
+    
+    if (!customerId) {
+        customerInfoDiv.innerHTML = '<p class="text-muted">Seleccione un cliente para ver su información</p>';
+        return;
+    }
+    
+    const customer = customers.find(c => c.id == customerId);
+    if (customer) {
+        customerInfoDiv.innerHTML = `
+            <div class="row">
+                <div class="col-6">
+                    <strong>Nombre:</strong><br>
+                    ${customer.name}
+                </div>
+                <div class="col-6">
+                    <strong>Documento:</strong><br>
+                    ${customer.document_number}
+                </div>
+            </div>
+            <div class="row mt-2">
+                <div class="col-12">
+                    <strong>Email:</strong><br>
+                    ${customer.email || 'No registrado'}
+                </div>
+            </div>
+        `;
+    }
+}
+
+function addInvoiceLine() {
+    lineCounter++;
+    const tbody = document.getElementById('invoiceLinesBody');
+    
+    const row = document.createElement('tr');
+    row.innerHTML = `
+        <td class="text-center">${lineCounter}</td>
+        <td>
+            <input type="text" class="form-control" name="line_description_${lineCounter}" placeholder="Descripción del producto/servicio..." required>
+        </td>
+        <td>
+            <input type="number" class="form-control text-end" name="quantity_${lineCounter}" step="0.01" min="0.01" placeholder="1.00" value="1.00" onchange="calculateLineTotal(${lineCounter})" oninput="calculateLineTotal(${lineCounter})">
+        </td>
+        <td>
+            <input type="number" class="form-control text-end" name="unit_price_${lineCounter}" step="0.01" min="0" placeholder="0.00" onchange="calculateLineTotal(${lineCounter})" oninput="calculateLineTotal(${lineCounter})">
+        </td>
+        <td>
+            <span class="invoice-line-total" id="line_total_${lineCounter}">$0.00</span>
+        </td>
+        <td class="text-center">
+            <button type="button" class="btn btn-danger btn-sm" onclick="removeInvoiceLine(this)" title="Eliminar línea">
+                <i class="bi bi-trash"></i>
+            </button>
+        </td>
+    `;
+    
+    tbody.appendChild(row);
+    validateForm();
+}
+
+function removeInvoiceLine(button) {
+    const row = button.closest('tr');
+    row.remove();
+    calculateTotals();
+    validateForm();
+}
+
+function calculateLineTotal(lineNumber) {
+    const quantity = parseFloat(document.querySelector(`input[name="quantity_${lineNumber}"]`).value) || 0;
+    const unitPrice = parseFloat(document.querySelector(`input[name="unit_price_${lineNumber}"]`).value) || 0;
+    const lineTotal = quantity * unitPrice;
+    
+    document.getElementById(`line_total_${lineNumber}`).textContent = `$${lineTotal.toLocaleString('es-CO', {minimumFractionDigits: 2})}`;
+    
+    calculateTotals();
+    validateForm();
+}
+
+function calculateTotals() {
+    let subtotal = 0;
+    
+    // Sumar todas las líneas
+    document.querySelectorAll('.invoice-line-total').forEach(element => {
+        const value = parseFloat(element.textContent.replace(/[$,]/g, '')) || 0;
+        subtotal += value;
+    });
+    
+    // Calcular IVA (19%)
+    const taxRate = 0.19;
+    const taxAmount = subtotal * taxRate;
+    const totalAmount = subtotal + taxAmount;
+    
+    // Actualizar displays
+    document.getElementById('subtotal').textContent = `$${subtotal.toLocaleString('es-CO', {minimumFractionDigits: 2})}`;
+    document.getElementById('taxAmount').textContent = `$${taxAmount.toLocaleString('es-CO', {minimumFractionDigits: 2})}`;
+    document.getElementById('totalAmount').textContent = `$${totalAmount.toLocaleString('es-CO', {minimumFractionDigits: 2})}`;
+    
+    // Actualizar resumen
+    document.getElementById('summarySubtotal').textContent = `$${subtotal.toLocaleString('es-CO', {minimumFractionDigits: 2})}`;
+    document.getElementById('summaryTax').textContent = `$${taxAmount.toLocaleString('es-CO', {minimumFractionDigits: 2})}`;
+    document.getElementById('summaryTotal').textContent = `$${totalAmount.toLocaleString('es-CO', {minimumFractionDigits: 2})}`;
+}
+
+function validateForm() {
+    const company = document.getElementById('company').value;
+    const customer = document.getElementById('customer').value;
+    const invoiceDate = document.getElementById('invoice_date').value;
+    const dueDate = document.getElementById('due_date').value;
+    
+    // Verificar que hay al menos una línea con descripción y precio
+    const descriptions = document.querySelectorAll('input[name^="line_description_"]');
+    const prices = document.querySelectorAll('input[name^="unit_price_"]');
+    
+    let hasValidLine = false;
+    for (let i = 0; i < descriptions.length; i++) {
+        if (descriptions[i].value.trim() && parseFloat(prices[i].value) > 0) {
+            hasValidLine = true;
+            break;
+        }
+    }
+    
+    const isValid = company && customer && invoiceDate && dueDate && hasValidLine;
+    document.getElementById('submitBtn').disabled = !isValid;
+}
+
+function clearForm() {
+    if (confirm('¿Está seguro de limpiar el formulario? Se perderán todos los datos ingresados.')) {
+        document.getElementById('invoiceForm').reset();
+        document.getElementById('invoiceLinesBody').innerHTML = '';
+        document.getElementById('customerInfo').innerHTML = '<p class="text-muted">Seleccione un cliente para ver su información</p>';
+        lineCounter = 0;
+        
+        // Restablecer fechas
+        const today = new Date();
+        const dueDate = new Date(today);
+        dueDate.setDate(today.getDate() + 30);
+        
+        document.getElementById('invoice_date').valueAsDate = today;
+        document.getElementById('due_date').valueAsDate = dueDate;
+        
+        addInvoiceLine();
+        calculateTotals();
+    }
+}
+
+// Validar formulario en tiempo real
+document.addEventListener('input', validateForm);
+document.addEventListener('change', validateForm);
+
+// Validar antes de enviar
+document.getElementById('invoiceForm').addEventListener('submit', function(e) {
+    if (!confirm('¿Confirma que desea guardar esta factura de venta?')) {
+        e.preventDefault();
+    }
+});
+</script>
+{% endblock %}
+
+
+
+

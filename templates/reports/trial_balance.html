@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ title }}</title>
+</head>
+<body>
+    <div class="header">
+        <div class="company-name">{{ company.name }}</div>
+        <div>NIT: {{ company.tax_id }}{% if company.tax_id_dv %}-{{ company.tax_id_dv }}{% endif %}</div>
+        <div class="report-title">{{ title }}</div>
+        <div>Al {{ period_end|date:"d de F de Y" }}</div>
+        <div>Cifras en {{ company.functional_currency }}</div>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th style="width: 12%">Código</th>
+                <th style="width: 40%">Cuenta</th>
+                <th style="width: 16%" class="number">Débitos</th>
+                <th style="width: 16%" class="number">Créditos</th>
+                <th style="width: 16%" class="number">Saldo</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for account in accounts_data %}
+            <tr>
+                <td>{{ account.0 }}</td>
+                <td>{{ account.1 }}</td>
+                <td class="number">{{ account.2|floatformat:0 }}</td>
+                <td class="number">{{ account.3|floatformat:0 }}</td>
+                <td class="number">{{ account.4|floatformat:0 }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot>
+            <tr class="total-row">
+                <td colspan="2"><strong>TOTALES</strong></td>
+                <td class="number"><strong>{% widthratio accounts_data|length 1 1 as total_debits %}{{ total_debits|floatformat:0 }}</strong></td>
+                <td class="number"><strong>{% widthratio accounts_data|length 1 1 as total_credits %}{{ total_credits|floatformat:0 }}</strong></td>
+                <td class="number"><strong>{% widthratio accounts_data|length 1 1 as total_balance %}{{ total_balance|floatformat:0 }}</strong></td>
+            </tr>
+        </tfoot>
+    </table>
+
+    <div style="margin-top: 30px; text-align: center; font-size: 9pt; color: #666;">
+        Reporte generado el {{ report_date|date:"d/m/Y H:i" }}
+    </div>
+</body>
+</html>
+
+
+
+

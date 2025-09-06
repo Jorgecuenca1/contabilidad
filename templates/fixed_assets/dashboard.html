@@ -1,0 +1,211 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard de Activos Fijos - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1><i class="bi bi-building"></i> Dashboard de Activos Fijos</h1>
+            <div>
+                <a href="{% url 'fixed_assets:new_asset' %}" class="btn btn-primary">
+                    <i class="bi bi-plus-circle"></i> Nuevo Activo
+                </a>
+                <a href="{% url 'fixed_assets:asset_list' %}" class="btn btn-outline-primary">
+                    <i class="bi bi-list"></i> Ver Activos
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Estadísticas -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card bg-primary text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4 class="card-title">{{ total_assets }}</h4>
+                        <p class="card-text">Total Activos</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-building fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card bg-success text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4 class="card-title">${{ total_acquisition_cost|floatformat:0 }}</h4>
+                        <p class="card-text">Costo de Adquisición</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-currency-dollar fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card bg-warning text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4 class="card-title">${{ total_accumulated_depreciation|floatformat:0 }}</h4>
+                        <p class="card-text">Depreciación Acumulada</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-graph-down fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card bg-info text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4 class="card-title">${{ total_net_value|floatformat:0 }}</h4>
+                        <p class="card-text">Valor Neto</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-calculator fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Alertas -->
+{% if warranty_expiring > 0 %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="alert alert-warning">
+            <i class="bi bi-exclamation-triangle"></i>
+            <strong>Atención:</strong> Tienes {{ warranty_expiring }} activo{{ warranty_expiring|pluralize }} con garantía próxima a vencer.
+            <a href="{% url 'fixed_assets:asset_list' %}?warranty_expiring=true" class="alert-link">Ver detalles</a>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Acciones Rápidas -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="bi bi-lightning"></i> Acciones Rápidas</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        <a href="{% url 'fixed_assets:new_asset' %}" class="btn btn-outline-primary w-100 mb-2">
+                            <i class="bi bi-plus-circle"></i><br>
+                            Nuevo Activo
+                        </a>
+                    </div>
+                    <div class="col-md-3">
+                        <a href="{% url 'fixed_assets:depreciation_report' %}" class="btn btn-outline-success w-100 mb-2">
+                            <i class="bi bi-file-earmark-text"></i><br>
+                            Reporte de Depreciación
+                        </a>
+                    </div>
+                    <div class="col-md-3">
+                        <form method="post" action="{% url 'fixed_assets:calculate_depreciation' %}" class="d-inline w-100">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-outline-warning w-100 mb-2">
+                                <i class="bi bi-calculator"></i><br>
+                                Calcular Depreciación
+                            </button>
+                        </form>
+                    </div>
+                    <div class="col-md-3">
+                        <a href="{% url 'fixed_assets:asset_list' %}" class="btn btn-outline-secondary w-100 mb-2">
+                            <i class="bi bi-search"></i><br>
+                            Buscar Activos
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Resumen por Categorías -->
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h6><i class="bi bi-pie-chart"></i> Resumen por Categorías</h6>
+            </div>
+            <div class="card-body">
+                <div class="text-center py-4">
+                    <i class="bi bi-graph-up fs-1 text-muted"></i>
+                    <p class="text-muted mt-2">Gráfico de categorías</p>
+                    <small class="text-muted">Próximamente disponible</small>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h6><i class="bi bi-calendar-event"></i> Próximos Vencimientos</h6>
+            </div>
+            <div class="card-body">
+                <div class="text-center py-4">
+                    <i class="bi bi-calendar-x fs-1 text-muted"></i>
+                    <p class="text-muted mt-2">Garantías y mantenimientos</p>
+                    <small class="text-muted">Próximamente disponible</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Información Adicional -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h6><i class="bi bi-info-circle"></i> Información del Módulo</h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Funcionalidades Disponibles:</h6>
+                        <ul class="list-unstyled">
+                            <li><i class="bi bi-check-circle text-success"></i> Registro de activos fijos</li>
+                            <li><i class="bi bi-check-circle text-success"></i> Categorización de activos</li>
+                            <li><i class="bi bi-check-circle text-success"></i> Cálculo de depreciación</li>
+                            <li><i class="bi bi-check-circle text-success"></i> Reportes de depreciación</li>
+                            <li><i class="bi bi-check-circle text-success"></i> Control de ubicación</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Próximas Funcionalidades:</h6>
+                        <ul class="list-unstyled">
+                            <li><i class="bi bi-clock text-warning"></i> Mantenimientos programados</li>
+                            <li><i class="bi bi-clock text-warning"></i> Control de seguros</li>
+                            <li><i class="bi bi-clock text-warning"></i> Transferencias entre ubicaciones</li>
+                            <li><i class="bi bi-clock text-warning"></i> Códigos QR para activos</li>
+                            <li><i class="bi bi-clock text-warning"></i> Alertas automáticas</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

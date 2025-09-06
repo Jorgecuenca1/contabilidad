@@ -1,0 +1,257 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ asset.name }} - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1><i class="bi bi-building"></i> {{ asset.name }}</h1>
+            <div>
+                <a href="{% url 'fixed_assets:edit_asset' asset.id %}" class="btn btn-warning">
+                    <i class="bi bi-pencil"></i> Editar
+                </a>
+                <a href="{% url 'fixed_assets:asset_list' %}" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i> Volver
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Información Principal -->
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h6><i class="bi bi-info-circle"></i> Información del Activo</h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <table class="table table-borderless">
+                            <tr>
+                                <td><strong>Código:</strong></td>
+                                <td><code>{{ asset.code }}</code></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Nombre:</strong></td>
+                                <td>{{ asset.name }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Categoría:</strong></td>
+                                <td>{{ asset.category.name }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Marca:</strong></td>
+                                <td>{{ asset.brand|default:"-" }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Modelo:</strong></td>
+                                <td>{{ asset.model|default:"-" }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Serie:</strong></td>
+                                <td>{{ asset.serial_number|default:"-" }}</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="col-md-6">
+                        <table class="table table-borderless">
+                            <tr>
+                                <td><strong>Ubicación:</strong></td>
+                                <td>{{ asset.location|default:"-" }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Centro de Costo:</strong></td>
+                                <td>{{ asset.cost_center.name|default:"-" }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Responsable:</strong></td>
+                                <td>{{ asset.responsible_person.get_full_name|default:"-" }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Estado:</strong></td>
+                                <td>
+                                    {% if asset.status == 'active' %}
+                                        <span class="badge bg-success">{{ asset.get_status_display }}</span>
+                                    {% elif asset.status == 'inactive' %}
+                                        <span class="badge bg-warning">{{ asset.get_status_display }}</span>
+                                    {% else %}
+                                        <span class="badge bg-danger">{{ asset.get_status_display }}</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>Empresa:</strong></td>
+                                <td>{{ asset.company.name }}</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                
+                {% if asset.description %}
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <h6>Descripción:</h6>
+                        <p class="text-muted">{{ asset.description }}</p>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Información Financiera -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h6><i class="bi bi-currency-dollar"></i> Información Financiera</h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="text-center">
+                            <h5 class="text-primary">${{ asset.acquisition_cost|floatformat:2 }}</h5>
+                            <small class="text-muted">Costo de Adquisición</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="text-center">
+                            <h5 class="text-warning">${{ asset.accumulated_depreciation|floatformat:2 }}</h5>
+                            <small class="text-muted">Depreciación Acumulada</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="text-center">
+                            <h5 class="text-success">${{ asset.net_book_value|floatformat:2 }}</h5>
+                            <small class="text-muted">Valor Neto en Libros</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="text-center">
+                            <h5 class="text-info">${{ monthly_depreciation|floatformat:2 }}</h5>
+                            <small class="text-muted">Depreciación Mensual</small>
+                        </div>
+                    </div>
+                </div>
+                
+                <hr>
+                
+                <div class="row">
+                    <div class="col-md-4">
+                        <strong>Valor Residual:</strong> ${{ asset.residual_value|floatformat:2 }}
+                    </div>
+                    <div class="col-md-4">
+                        <strong>Vida Útil:</strong> {{ asset.useful_life_years }} años{% if asset.useful_life_months %}, {{ asset.useful_life_months }} meses{% endif %}
+                    </div>
+                    <div class="col-md-4">
+                        <strong>Método:</strong> {{ asset.get_depreciation_method_display }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Fechas Importantes -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h6><i class="bi bi-calendar-event"></i> Fechas Importantes</h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <strong>Fecha de Adquisición:</strong><br>
+                        {{ asset.acquisition_date|date:"d/m/Y" }}
+                    </div>
+                    <div class="col-md-4">
+                        <strong>Inicio de Depreciación:</strong><br>
+                        {{ asset.start_depreciation_date|date:"d/m/Y" }}
+                    </div>
+                    <div class="col-md-4">
+                        <strong>Vencimiento de Garantía:</strong><br>
+                        {% if asset.warranty_expiration %}
+                            {{ asset.warranty_expiration|date:"d/m/Y" }}
+                            {% if asset.warranty_expiration < today %}
+                                <span class="badge bg-danger ms-2">Vencida</span>
+                            {% endif %}
+                        {% else %}
+                            <span class="text-muted">No especificada</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Panel Lateral -->
+    <div class="col-md-4">
+        <!-- Imagen del Activo -->
+        <div class="card">
+            <div class="card-header">
+                <h6><i class="bi bi-image"></i> Imagen</h6>
+            </div>
+            <div class="card-body text-center">
+                {% if asset.image %}
+                    <img src="{{ asset.image.url }}" alt="{{ asset.name }}" class="img-fluid rounded">
+                {% else %}
+                    <div class="bg-light rounded p-4">
+                        <i class="bi bi-building fs-1 text-muted"></i>
+                        <p class="text-muted mt-2">Sin imagen</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Información Adicional -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h6><i class="bi bi-info-square"></i> Información Adicional</h6>
+            </div>
+            <div class="card-body">
+                <div class="mb-2">
+                    <strong>Proveedor:</strong><br>
+                    {{ asset.supplier|default:"No especificado" }}
+                </div>
+                
+                <div class="mb-2">
+                    <strong>Número de Factura:</strong><br>
+                    {{ asset.invoice_number|default:"No especificado" }}
+                </div>
+                
+                <div class="mb-2">
+                    <strong>Moneda:</strong><br>
+                    {{ asset.currency.code }} - {{ asset.currency.name }}
+                </div>
+                
+                <div class="mb-2">
+                    <strong>Creado:</strong><br>
+                    <small class="text-muted">{{ asset.created_at|date:"d/m/Y H:i" }}</small>
+                </div>
+                
+                <div class="mb-2">
+                    <strong>Actualizado:</strong><br>
+                    <small class="text-muted">{{ asset.updated_at|date:"d/m/Y H:i" }}</small>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Acciones Rápidas -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h6><i class="bi bi-lightning"></i> Acciones Rápidas</h6>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{% url 'fixed_assets:edit_asset' asset.id %}" class="btn btn-warning btn-sm">
+                        <i class="bi bi-pencil"></i> Editar Activo
+                    </a>
+                    <a href="{% url 'fixed_assets:depreciation_report' %}" class="btn btn-success btn-sm">
+                        <i class="bi bi-file-earmark-text"></i> Ver Depreciación
+                    </a>
+                    <a href="{% url 'fixed_assets:asset_list' %}" class="btn btn-outline-secondary btn-sm">
+                        <i class="bi bi-list"></i> Ver Todos los Activos
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

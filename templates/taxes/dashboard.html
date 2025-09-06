@@ -1,0 +1,803 @@
+{% extends 'base.html' %}
+
+{% block title %}Impuestos Colombia - Sistema Contable{% endblock %}
+
+{% block content %}
+<!-- Encabezado del Módulo -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card bg-gradient-danger text-white shadow-lg">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h1><i class="bi bi-receipt-cutoff"></i> Módulo de Impuestos Colombia</h1>
+                        <p class="lead mb-2">Gestión completa de impuestos con cumplimiento DIAN</p>
+                        <p class="mb-0">
+                            <i class="bi bi-calendar-check"></i> <strong>Período:</strong> Agosto 2025
+                            | <i class="bi bi-cash-stack"></i> <strong>IVA Generado:</strong> $12,450,000
+                            | <i class="bi bi-file-earmark-text"></i> <strong>Declaraciones Pendientes:</strong> 3
+                        </p>
+                    </div>
+                    <div class="col-md-4 text-end">
+                        <div class="display-4">
+                            <i class="bi bi-building-fill-gear"></i>
+                        </div>
+                        <p class="mb-0"><strong>DIAN Colombia</strong></p>
+                        <small>Dirección de Impuestos</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Explicación del Módulo -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card border-warning">
+            <div class="card-header bg-warning text-white">
+                <h5><i class="bi bi-info-circle"></i> ¿Qué hace el Módulo de Impuestos?</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>Este módulo maneja todos los impuestos colombianos de forma automática:</strong></p>
+                <div class="row">
+                    <div class="col-md-6">
+                        <ul>
+                            <li>💰 <strong>IVA (Impuesto al Valor Agregado):</strong> 19%, 5%, 0% según producto</li>
+                            <li>🏢 <strong>Impuesto de Renta:</strong> Declaración anual empresas y personas</li>
+                            <li>🏛️ <strong>ICA (Industria y Comercio):</strong> Por municipios según actividad</li>
+                            <li>📄 <strong>Retenciones Automáticas:</strong> Renta, IVA, ICA según tablas DIAN</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <ul>
+                            <li>📋 <strong>Declaraciones Automáticas:</strong> Formularios pre-llenados</li>
+                            <li>📅 <strong>Calendario Tributario:</strong> Alertas de vencimientos</li>
+                            <li>🎯 <strong>Certificados:</strong> Retenciones automáticas para terceros</li>
+                            <li>📊 <strong>Medios Magnéticos:</strong> Información exógena DIAN</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Resumen Tributario del Mes -->
+<div class="row mb-4">
+    <div class="col-12">
+        <h2><i class="bi bi-graph-up"></i> Resumen Tributario - Agosto 2025</h2>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card bg-success text-white shadow">
+            <div class="card-body text-center">
+                <i class="bi bi-cash-stack fs-1 mb-2"></i>
+                <h2>$12.45M</h2>
+                <p class="mb-0">IVA Generado</p>
+                <small>Ventas gravadas del mes</small>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card bg-primary text-white shadow">
+            <div class="card-body text-center">
+                <i class="bi bi-arrow-down-circle fs-1 mb-2"></i>
+                <h2>$4.25M</h2>
+                <p class="mb-0">Retenciones</p>
+                <small>Renta + IVA + ICA</small>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card bg-warning text-white shadow">
+            <div class="card-body text-center">
+                <i class="bi bi-building fs-1 mb-2"></i>
+                <h2>$850K</h2>
+                <p class="mb-0">ICA Municipal</p>
+                <small>Bogotá + otros municipios</small>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card bg-info text-white shadow">
+            <div class="card-body text-center">
+                <i class="bi bi-calendar-x fs-1 mb-2"></i>
+                <h2>3</h2>
+                <p class="mb-0">Pendientes</p>
+                <small>Declaraciones por presentar</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Selector de Empresa -->
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="bi bi-building"></i> Seleccionar Empresa</h5>
+            </div>
+            <div class="card-body">
+                <select class="form-select" id="companySelector">
+                    <option value="">Seleccione una empresa...</option>
+                    {% for company in companies %}
+                        <option value="{{ company.id }}">{{ company.name }} ({{ company.tax_id }})</option>
+                    {% endfor %}
+                    <option value="1">ABC Comercializadora S.A.S (900.123.456-7) - Régimen Común</option>
+                    <option value="2">XYZ Servicios Ltda (800.987.654-3) - Gran Contribuyente</option>
+                    <option value="3">Constructora DEF S.A (700.555.444-1) - Autorretenedor</option>
+                    <option value="4">Restaurante GHI (600.333.222-9) - Régimen Simple</option>
+                    <option value="5">Consultoría JKL (500.111.999-5) - Régimen Común</option>
+                </select>
+                <small class="text-muted">Cada empresa tiene configuración tributaria independiente</small>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card bg-light">
+            <div class="card-header">
+                <h5><i class="bi bi-calendar-event"></i> Calendario Tributario</h5>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-4">
+                        <div class="bg-danger text-white p-2 rounded mb-2">
+                            <strong>31 AGO</strong><br>
+                            <small>IVA Bimestral</small>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="bg-warning text-white p-2 rounded mb-2">
+                            <strong>15 SEP</strong><br>
+                            <small>Retenciones</small>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="bg-info text-white p-2 rounded mb-2">
+                            <strong>30 SEP</strong><br>
+                            <small>ICA Mensual</small>
+                        </div>
+                    </div>
+                </div>
+                <small class="text-muted">Próximo vencimiento: IVA en 3 días</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Tipos de Impuestos -->
+<div class="row mb-4">
+    <div class="col-12">
+        <h3><i class="bi bi-grid-3x3-gap"></i> Impuestos Colombianos Configurados</h3>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <!-- IVA -->
+    <div class="col-md-4 mb-3">
+        <div class="card h-100 border-success shadow-sm">
+            <div class="card-header bg-success text-white">
+                <h5><i class="bi bi-percent"></i> IVA - IMPUESTO AL VALOR AGREGADO</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>¿Qué es el IVA?</strong></p>
+                <p class="small">Impuesto que grava las ventas de bienes y servicios. Se declara bimestralmente.</p>
+                
+                <div class="row text-center mb-3">
+                    <div class="col-4">
+                        <div class="bg-light p-2 rounded">
+                            <strong>19%</strong><br>
+                            <small>Tarifa General</small>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="bg-light p-2 rounded">
+                            <strong>5%</strong><br>
+                            <small>Tarifa Reducida</small>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="bg-light p-2 rounded">
+                            <strong>0%</strong><br>
+                            <small>Exentos</small>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <strong>Este mes:</strong><br>
+                    <small>IVA Generado: $12,450,000</small><br>
+                    <small>IVA Descontable: $3,200,000</small><br>
+                    <small><strong>IVA a Pagar: $9,250,000</strong></small>
+                </div>
+                
+                <div class="d-grid gap-2">
+                    <button class="btn btn-success btn-sm" onclick="generateIVADeclaration()">
+                        <i class="bi bi-file-earmark-plus"></i> Declaración IVA
+                    </button>
+                    <button class="btn btn-outline-success btn-sm" onclick="ivaReport()">
+                        <i class="bi bi-file-text"></i> Reporte IVA
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Retenciones -->
+    <div class="col-md-4 mb-3">
+        <div class="card h-100 border-primary shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h5><i class="bi bi-arrow-down-circle"></i> RETENCIONES</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>¿Qué son las Retenciones?</strong></p>
+                <p class="small">Descuentos automáticos que se hacen en pagos a terceros según tablas DIAN.</p>
+                
+                <div class="row text-center mb-3">
+                    <div class="col-4">
+                        <div class="bg-light p-2 rounded">
+                            <strong>Renta</strong><br>
+                            <small>0.1% - 11%</small>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="bg-light p-2 rounded">
+                            <strong>IVA</strong><br>
+                            <small>15% - 100%</small>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="bg-light p-2 rounded">
+                            <strong>ICA</strong><br>
+                            <small>2‰ - 10‰</small>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <strong>Este mes:</strong><br>
+                    <small>Ret. Renta: $2,850,000</small><br>
+                    <small>Ret. IVA: $1,200,000</small><br>
+                    <small>Ret. ICA: $200,000</small><br>
+                    <small><strong>Total: $4,250,000</strong></small>
+                </div>
+                
+                <div class="d-grid gap-2">
+                    <button class="btn btn-primary btn-sm" onclick="generateRetentions()">
+                        <i class="bi bi-file-earmark-text"></i> Declarar Retenciones
+                    </button>
+                    <button class="btn btn-outline-primary btn-sm" onclick="retentionCertificates()">
+                        <i class="bi bi-award"></i> Certificados
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ICA -->
+    <div class="col-md-4 mb-3">
+        <div class="card h-100 border-warning shadow-sm">
+            <div class="card-header bg-warning text-white">
+                <h5><i class="bi bi-building"></i> ICA - INDUSTRIA Y COMERCIO</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>¿Qué es el ICA?</strong></p>
+                <p class="small">Impuesto municipal que grava actividades industriales, comerciales y de servicios.</p>
+                
+                <div class="row text-center mb-3">
+                    <div class="col-4">
+                        <div class="bg-light p-2 rounded">
+                            <strong>Bogotá</strong><br>
+                            <small>2‰ - 10‰</small>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="bg-light p-2 rounded">
+                            <strong>Medellín</strong><br>
+                            <small>2‰ - 7‰</small>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="bg-light p-2 rounded">
+                            <strong>Otros</strong><br>
+                            <small>Variable</small>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <strong>Este mes:</strong><br>
+                    <small>Bogotá: $650,000</small><br>
+                    <small>Medellín: $150,000</small><br>
+                    <small>Otros: $50,000</small><br>
+                    <small><strong>Total: $850,000</strong></small>
+                </div>
+                
+                <div class="d-grid gap-2">
+                    <button class="btn btn-warning btn-sm" onclick="generateICA()">
+                        <i class="bi bi-file-earmark-plus"></i> Declaración ICA
+                    </button>
+                    <button class="btn btn-outline-warning btn-sm" onclick="icaByMunicipality()">
+                        <i class="bi bi-geo-alt"></i> Por Municipio
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Impuesto de Renta -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card border-danger">
+            <div class="card-header bg-danger text-white">
+                <h5><i class="bi bi-file-earmark-bar-graph"></i> IMPUESTO DE RENTA - DECLARACIÓN ANUAL</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-8">
+                        <p><strong>¿Qué es el Impuesto de Renta?</strong></p>
+                        <p>Impuesto que grava las ganancias obtenidas durante el año gravable. Se declara anualmente entre marzo y abril del año siguiente.</p>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6>Personas Jurídicas:</h6>
+                                <ul class="small">
+                                    <li>Tarifa general: 35%</li>
+                                    <li>Régimen simple: 25%</li>
+                                    <li>Entidades sin ánimo de lucro: 20%</li>
+                                    <li>Cooperativas: 20%</li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <h6>Personas Naturales:</h6>
+                                <ul class="small">
+                                    <li>Tabla progresiva: 0% - 39%</li>
+                                    <li>Cedular dividendos: 0% - 15%</li>
+                                    <li>Cedular rentas capital: 0% - 15%</li>
+                                    <li>IMAN e IMAS según caso</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card bg-light">
+                            <div class="card-body text-center">
+                                <h6>Año Gravable 2024</h6>
+                                <div class="row">
+                                    <div class="col-6">
+                                        <strong>$2.1B</strong><br>
+                                        <small>Ingresos</small>
+                                    </div>
+                                    <div class="col-6">
+                                        <strong>$1.8B</strong><br>
+                                        <small>Costos/Gastos</small>
+                                    </div>
+                                </div>
+                                <hr>
+                                <div class="bg-success text-white p-2 rounded">
+                                    <strong>Renta Líquida</strong><br>
+                                    <strong>$300M</strong>
+                                </div>
+                                <div class="mt-2">
+                                    <button class="btn btn-danger btn-sm w-100" onclick="generateRentaDeclaration()">
+                                        <i class="bi bi-file-earmark-plus"></i> Declaración Renta
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Acciones Rápidas -->
+<div class="row mb-4">
+    <div class="col-12">
+        <h3><i class="bi bi-lightning"></i> Acciones Rápidas Tributarias</h3>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-2 mb-3">
+        <div class="card h-100 text-center">
+            <div class="card-body">
+                <i class="bi bi-file-earmark-plus fs-1 text-success mb-3"></i>
+                <h6>Declaración IVA</h6>
+                <p class="small">Formulario 300 bimestral</p>
+                <button class="btn btn-success btn-sm" onclick="generateIVADeclaration()">Crear</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-2 mb-3">
+        <div class="card h-100 text-center">
+            <div class="card-body">
+                <i class="bi bi-arrow-down-circle fs-1 text-primary mb-3"></i>
+                <h6>Retenciones</h6>
+                <p class="small">Formulario 350 mensual</p>
+                <button class="btn btn-primary btn-sm" onclick="generateRetentions()">Crear</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-2 mb-3">
+        <div class="card h-100 text-center">
+            <div class="card-body">
+                <i class="bi bi-building fs-1 text-warning mb-3"></i>
+                <h6>ICA Municipal</h6>
+                <p class="small">Por cada municipio</p>
+                <button class="btn btn-warning btn-sm" onclick="generateICA()">Crear</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-2 mb-3">
+        <div class="card h-100 text-center">
+            <div class="card-body">
+                <i class="bi bi-award fs-1 text-info mb-3"></i>
+                <h6>Certificados</h6>
+                <p class="small">Retenciones a terceros</p>
+                <button class="btn btn-info btn-sm" onclick="retentionCertificates()">Generar</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-2 mb-3">
+        <div class="card h-100 text-center">
+            <div class="card-body">
+                <i class="bi bi-file-earmark-spreadsheet fs-1 text-secondary mb-3"></i>
+                <h6>Medios Magnéticos</h6>
+                <p class="small">Información exógena</p>
+                <button class="btn btn-secondary btn-sm" onclick="magneticMedia()">Generar</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-2 mb-3">
+        <div class="card h-100 text-center">
+            <div class="card-body">
+                <i class="bi bi-calendar-check fs-1 text-danger mb-3"></i>
+                <h6>Calendario</h6>
+                <p class="small">Vencimientos DIAN</p>
+                <button class="btn btn-danger btn-sm" onclick="taxCalendar()">Ver</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Alertas Tributarias -->
+<div class="row mb-4">
+    <div class="col-12">
+        <h3><i class="bi bi-exclamation-triangle"></i> Alertas Tributarias</h3>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="alert alert-danger" role="alert">
+            <h6><i class="bi bi-exclamation-triangle"></i> IVA Vence Pronto</h6>
+            <p class="mb-1"><strong>31 de Agosto - Faltan 3 días</strong></p>
+            <small>Empresas pendientes: ABC S.A.S, XYZ Ltda, DEF S.A</small>
+            <hr>
+            <button class="btn btn-danger btn-sm" onclick="urgentIVA()">Procesar Urgente</button>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="alert alert-warning" role="alert">
+            <h6><i class="bi bi-clock"></i> Retenciones Próximas</h6>
+            <p class="mb-1"><strong>15 de Septiembre - Faltan 18 días</strong></p>
+            <small>5 empresas con retenciones por declarar</small>
+            <hr>
+            <button class="btn btn-warning btn-sm" onclick="prepareRetentions()">Preparar</button>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="alert alert-info" role="alert">
+            <h6><i class="bi bi-info-circle"></i> Certificados Listos</h6>
+            <p class="mb-1"><strong>247 certificados generados</strong></p>
+            <small>Listos para envío a terceros</small>
+            <hr>
+            <button class="btn btn-info btn-sm" onclick="sendCertificates()">Enviar</button>
+        </div>
+    </div>
+</div>
+
+<!-- Configuración Tributaria -->
+<div class="row mb-4">
+    <div class="col-12">
+        <h3><i class="bi bi-gear"></i> Configuración Tributaria por Empresa</h3>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Empresa</th>
+                        <th>Régimen</th>
+                        <th>Responsabilidades</th>
+                        <th>IVA</th>
+                        <th>Renta</th>
+                        <th>ICA</th>
+                        <th>Estado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>ABC Comercializadora S.A.S</strong><br><small>900.123.456-7</small></td>
+                        <td><span class="badge bg-primary">Común</span></td>
+                        <td><small>Gran Contribuyente<br>Autorretenedor<br>Agente Retenedor</small></td>
+                        <td><span class="badge bg-success">Bimestral</span></td>
+                        <td><span class="badge bg-warning">35%</span></td>
+                        <td><span class="badge bg-info">Bogotá 4‰</span></td>
+                        <td><span class="badge bg-success">Activo</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>XYZ Servicios Ltda</strong><br><small>800.987.654-3</small></td>
+                        <td><span class="badge bg-primary">Común</span></td>
+                        <td><small>Régimen Común<br>Agente Retenedor</small></td>
+                        <td><span class="badge bg-success">Bimestral</span></td>
+                        <td><span class="badge bg-warning">35%</span></td>
+                        <td><span class="badge bg-info">Medellín 7‰</span></td>
+                        <td><span class="badge bg-success">Activo</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Constructora DEF S.A</strong><br><small>700.555.444-1</small></td>
+                        <td><span class="badge bg-primary">Común</span></td>
+                        <td><small>Autorretenedor<br>Gran Contribuyente</small></td>
+                        <td><span class="badge bg-success">Bimestral</span></td>
+                        <td><span class="badge bg-warning">35%</span></td>
+                        <td><span class="badge bg-info">Bogotá 5‰</span></td>
+                        <td><span class="badge bg-success">Activo</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Restaurante GHI</strong><br><small>600.333.222-9</small></td>
+                        <td><span class="badge bg-success">Simple</span></td>
+                        <td><small>Régimen Simple<br>No Responsable IVA</small></td>
+                        <td><span class="badge bg-secondary">Exento</span></td>
+                        <td><span class="badge bg-success">25%</span></td>
+                        <td><span class="badge bg-info">Bogotá 8‰</span></td>
+                        <td><span class="badge bg-success">Activo</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Enlaces Directos Admin -->
+<div class="row">
+    <div class="col-12">
+        <div class="card bg-light">
+            <div class="card-header">
+                <h5><i class="bi bi-gear"></i> Administración Avanzada de Impuestos</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3 mb-2">
+                        <a href="/admin/taxes/taxtype/" class="btn btn-outline-primary w-100">
+                            <i class="bi bi-list-ul"></i> Tipos de Impuesto
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <a href="/admin/taxes/taxconfiguration/" class="btn btn-outline-success w-100">
+                            <i class="bi bi-gear"></i> Configuraciones
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <a href="/admin/taxes/taxdeclaration/" class="btn btn-outline-warning w-100">
+                            <i class="bi bi-file-earmark-text"></i> Declaraciones
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <a href="/admin/taxes/taxcalendar/" class="btn btn-outline-info w-100">
+                            <i class="bi bi-calendar-event"></i> Calendario
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.bg-gradient-danger {
+    background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+}
+
+.card {
+    transition: transform 0.2s ease-in-out;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+}
+
+.table-sm td, .table-sm th {
+    padding: 0.3rem;
+}
+
+.badge {
+    font-size: 0.75em;
+}
+
+.alert {
+    border-left: 4px solid;
+}
+
+.alert-danger {
+    border-left-color: #dc3545;
+}
+
+.alert-warning {
+    border-left-color: #ffc107;
+}
+
+.alert-info {
+    border-left-color: #0dcaf0;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+let selectedCompanyId = null;
+
+document.getElementById('companySelector').addEventListener('change', function() {
+    selectedCompanyId = this.value;
+    if (selectedCompanyId) {
+        console.log('Empresa seleccionada:', selectedCompanyId);
+        // Aquí se cargarían los datos tributarios específicos de la empresa
+    }
+});
+
+function validateCompanySelection() {
+    if (!selectedCompanyId) {
+        alert('Por favor seleccione una empresa primero.');
+        return false;
+    }
+    return true;
+}
+
+function generateIVADeclaration() {
+    if (!validateCompanySelection()) return;
+    alert('Generando Declaración de IVA (Formulario 300):\n\n' +
+          '1. Calculando IVA generado en ventas\n' +
+          '2. Calculando IVA descontable en compras\n' +
+          '3. Aplicando retenciones de IVA\n' +
+          '4. Generando formulario pre-diligenciado\n' +
+          '5. Validando información con libros contables');
+    window.open('/admin/taxes/taxdeclaration/add/', '_blank');
+}
+
+function generateRetentions() {
+    if (!validateCompanySelection()) return;
+    alert('Generando Declaración de Retenciones (Formulario 350):\n\n' +
+          '• Retenciones en la fuente practicadas\n' +
+          '• Retenciones de IVA\n' +
+          '• Retenciones de ICA\n' +
+          '• Autoretenciones\n' +
+          '• Formulario pre-diligenciado');
+}
+
+function generateICA() {
+    if (!validateCompanySelection()) return;
+    alert('Generando Declaraciones de ICA:\n\n' +
+          '• ICA Bogotá (según actividad económica)\n' +
+          '• ICA Medellín\n' +
+          '• ICA otros municipios\n' +
+          '• Cálculo automático por ingresos\n' +
+          '• Aplicación de tarifas por actividad');
+}
+
+function generateRentaDeclaration() {
+    if (!validateCompanySelection()) return;
+    alert('Generando Declaración de Renta:\n\n' +
+          '1. Conciliación contable vs fiscal\n' +
+          '2. Cálculo de renta líquida\n' +
+          '3. Aplicación de tarifas según régimen\n' +
+          '4. Descuentos tributarios\n' +
+          '5. Formulario 110 o 210 según tipo');
+}
+
+function retentionCertificates() {
+    if (!validateCompanySelection()) return;
+    alert('Generando Certificados de Retención:\n\n' +
+          '• Certificados individuales por tercero\n' +
+          '• Certificados masivos\n' +
+          '• Formato oficial DIAN\n' +
+          '• Envío automático por email\n' +
+          '• Control de entrega');
+}
+
+function magneticMedia() {
+    if (!validateCompanySelection()) return;
+    alert('Generando Medios Magnéticos (Información Exógena):\n\n' +
+          '• Formato 1001 - Pagos o abonos en cuenta\n' +
+          '• Formato 1003 - Retenciones practicadas\n' +
+          '• Formato 1005 - Ingresos recibidos\n' +
+          '• Formato 1007 - Saldos de cuentas por cobrar\n' +
+          '• Validación y generación de archivos');
+}
+
+function ivaReport() {
+    alert('Reportes de IVA disponibles:\n\n' +
+          '• Libro de ventas\n' +
+          '• Libro de compras\n' +
+          '• Auxiliar de IVA por pagar\n' +
+          '• Conciliación IVA contable vs declarado\n' +
+          '• Análisis de tarifas aplicadas');
+}
+
+function icaByMunicipality() {
+    alert('ICA por Municipio:\n\n' +
+          '• Bogotá: Actividades comerciales 4‰, industriales 7‰, servicios 10‰\n' +
+          '• Medellín: Según código CIIU\n' +
+          '• Cali: Tarifas diferenciadas\n' +
+          '• Barranquilla: Régimen especial\n' +
+          '• Otros municipios: Configuración manual');
+}
+
+function taxCalendar() {
+    alert('Calendario Tributario 2025:\n\n' +
+          'IVA Bimestral:\n' +
+          '• Ene-Feb: Vence 25 marzo\n' +
+          '• Mar-Abr: Vence 25 mayo\n' +
+          '• May-Jun: Vence 25 julio\n' +
+          '• Jul-Ago: Vence 25 septiembre\n' +
+          '• Sep-Oct: Vence 25 noviembre\n' +
+          '• Nov-Dic: Vence 25 enero 2026\n\n' +
+          'Retenciones: 15 de cada mes\n' +
+          'Renta: Marzo-Abril según último dígito NIT');
+}
+
+function urgentIVA() {
+    alert('Procesamiento Urgente de IVA:\n\n' +
+          '1. Validando información contable\n' +
+          '2. Generando declaraciones pendientes\n' +
+          '3. Calculando sanciones por extemporaneidad\n' +
+          '4. Preparando archivos para presentación\n' +
+          '5. Alertando sobre vencimientos');
+}
+
+function prepareRetentions() {
+    alert('Preparando Retenciones:\n\n' +
+          '• Revisando comprobantes de egreso\n' +
+          '• Validando retenciones aplicadas\n' +
+          '• Verificando certificados emitidos\n' +
+          '• Pre-calculando formulario 350\n' +
+          '• Generando borradores');
+}
+
+function sendCertificates() {
+    alert('Enviando Certificados:\n\n' +
+          '• 247 certificados listos\n' +
+          '• Envío masivo por email\n' +
+          '• Confirmación de entrega\n' +
+          '• Registro en sistema\n' +
+          '• Backup de certificados enviados');
+}
+
+// Actualizar alertas cada minuto
+setInterval(function() {
+    console.log('Verificando vencimientos tributarios...');
+}, 60000);
+</script>
+{% endblock %}

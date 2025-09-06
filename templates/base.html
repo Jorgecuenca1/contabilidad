@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Sistema de Contabilidad Multiempresa{% endblock %}</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="{% url 'core:dashboard' %}">
+                <i class="bi bi-calculator"></i> Contabilidad Pro
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'core:dashboard' %}">
+                            <i class="bi bi-house"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-journal-text"></i> Contabilidad
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/admin/accounting/account/">Plan de Cuentas</a></li>
+                            <li><a class="dropdown-item" href="/admin/accounting/journalentry/">Asientos Contables</a></li>
+                            <li><a class="dropdown-item" href="/admin/accounting/costcenter/">Centros de Costo</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-people"></i> CxC
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/admin/accounts_receivable/customer/">Clientes</a></li>
+                            <li><a class="dropdown-item" href="/admin/accounts_receivable/invoice/">Facturas</a></li>
+                            <li><a class="dropdown-item" href="/admin/accounts_receivable/payment/">Pagos</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-truck"></i> CxP
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/admin/accounts_payable/supplier/">Proveedores</a></li>
+                            <li><a class="dropdown-item" href="/admin/accounts_payable/purchaseinvoice/">Facturas de Compra</a></li>
+                            <li><a class="dropdown-item" href="/admin/accounts_payable/supplierpayment/">Pagos</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-bank"></i> Tesorería
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/admin/treasury/bankaccount/">Cuentas Bancarias</a></li>
+                            <li><a class="dropdown-item" href="/admin/treasury/cashaccount/">Cajas</a></li>
+                            <li><a class="dropdown-item" href="/admin/treasury/bankreconciliation/">Conciliaciones</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-people-fill"></i> Nómina
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/payroll/">Centro de Nómina</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="/admin/payroll/employee/">Empleados</a></li>
+                            <li><a class="dropdown-item" href="/admin/payroll/payrollperiod/">Períodos</a></li>
+                            <li><a class="dropdown-item" href="/admin/payroll/payroll/">Nóminas</a></li>
+                            <li><a class="dropdown-item" href="/admin/payroll/laborbenefit/">Prestaciones</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-receipt"></i> Impuestos
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/taxes/">Centro de Impuestos</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><h6 class="dropdown-header">Declaraciones</h6></li>
+                            <li><a class="dropdown-item" href="/admin/taxes/taxdeclaration/">IVA</a></li>
+                            <li><a class="dropdown-item" href="/admin/taxes/taxdeclaration/">Retenciones</a></li>
+                            <li><a class="dropdown-item" href="/admin/taxes/taxdeclaration/">ICA</a></li>
+                            <li><a class="dropdown-item" href="/admin/taxes/taxdeclaration/">Renta</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="/admin/taxes/taxtype/">Configuración</a></li>
+                            <li><a class="dropdown-item" href="/admin/taxes/taxcalendar/">Calendario</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-boxes"></i> Inventario
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{% url 'inventory:dashboard' %}">Centro de Inventario</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{% url 'inventory:product_list' %}">Productos</a></li>
+                            <li><a class="dropdown-item" href="{% url 'inventory:new_product' %}">Nuevo Producto</a></li>
+                            <li><a class="dropdown-item" href="{% url 'inventory:stock_movement' %}">Movimientos</a></li>
+                            <li><a class="dropdown-item" href="{% url 'inventory:stock_report' %}">Reporte de Stock</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="/admin/inventory/productcategory/">Categorías</a></li>
+                            <li><a class="dropdown-item" href="/admin/inventory/unitofmeasure/">Unidades de Medida</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-building"></i> Activos Fijos
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{% url 'fixed_assets:dashboard' %}">Centro de Activos</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{% url 'fixed_assets:asset_list' %}">Activos</a></li>
+                            <li><a class="dropdown-item" href="{% url 'fixed_assets:new_asset' %}">Nuevo Activo</a></li>
+                            <li><a class="dropdown-item" href="{% url 'fixed_assets:depreciation_report' %}">Depreciación</a></li>
+                            <li><a class="dropdown-item" href="{% url 'fixed_assets:calculate_depreciation' %}">Calcular Depreciación</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="/admin/fixed_assets/assetcategory/">Categorías</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-building-gear"></i> Sector Público
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/public-sector/">Centro Público</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><h6 class="dropdown-header">Presupuesto</h6></li>
+                            <li><a class="dropdown-item" href="/admin/public_sector/budget/">Presupuestos</a></li>
+                            <li><a class="dropdown-item" href="/admin/public_sector/cdp/">CDPs</a></li>
+                            <li><a class="dropdown-item" href="/admin/public_sector/rp/">RPs</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="/admin/public_sector/publicreport/">Reportes CHIP</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-file-earmark-bar-graph"></i> Reportes
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{% url 'reports:dashboard' %}">Centro de Reportes</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><h6 class="dropdown-header">Reportes Financieros</h6></li>
+                            <li><a class="dropdown-item" href="{% url 'reports:dashboard' %}">Balance General</a></li>
+                            <li><a class="dropdown-item" href="{% url 'reports:dashboard' %}">Estado de Resultados</a></li>
+                            <li><a class="dropdown-item" href="{% url 'reports:dashboard' %}">Balance de Prueba</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><h6 class="dropdown-header">Reportes de Cartera</h6></li>
+                            <li><a class="dropdown-item" href="{% url 'reports:dashboard' %}">Cartera CxC</a></li>
+                            <li><a class="dropdown-item" href="{% url 'reports:dashboard' %}">Cartera CxP</a></li>
+                        </ul>
+                    </li>
+                </ul>
+                
+                <ul class="navbar-nav">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-buildings"></i> Empresas
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{% url 'core:company_list' %}">Ver Empresas</a></li>
+                            <li><a class="dropdown-item" href="{% url 'core:new_company' %}">Nueva Empresa</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="/admin/core/company/">Administrar Empresas</a></li>
+                        </ul>
+                    </li>
+                    {% if user.is_authenticated %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                                <i class="bi bi-person-circle"></i> {{ user.get_full_name|default:user.username }}
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="/admin/">Administración</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="/admin/logout/">Cerrar Sesión</a></li>
+                            </ul>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="/admin/login/">Iniciar Sesión</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="container-fluid mt-4">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-light mt-5 py-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h6>Sistema de Contabilidad Multiempresa</h6>
+                    <p class="text-muted">Solución integral para contadores y empresas</p>
+                </div>
+                <div class="col-md-6 text-end">
+                    <p class="text-muted">© 2025 - Desarrollado con Django</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

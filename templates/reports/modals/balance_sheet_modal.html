@@ -1,0 +1,43 @@
+<!-- Modal Balance General -->
+<div class="modal fade" id="balanceSheetModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="bi bi-clipboard-data"></i> Generar Balance General
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="balanceSheetForm">
+                    {% csrf_token %}
+                    <input type="hidden" id="balanceSheetCompanyId" name="company_id">
+                    
+                    <div class="mb-3">
+                        <label for="balanceSheetPeriodEnd" class="form-label">Fecha de Corte</label>
+                        <input type="date" class="form-control" id="balanceSheetPeriodEnd" name="period_end" required>
+                        <div class="form-text">Seleccione la fecha hasta la cual desea el balance</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="balanceSheetFormat" class="form-label">Formato</label>
+                        <select class="form-select" id="balanceSheetFormat" name="format">
+                            <option value="pdf">PDF</option>
+                            <option value="excel">Excel</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" onclick="generateBalanceSheet()">
+                    <i class="bi bi-download"></i> Generar Reporte
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+

@@ -1,0 +1,414 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Movimiento Bancario{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h2><i class="bi bi-bank text-primary"></i> Movimiento Bancario</h2>
+                    <p class="text-muted">Registra depósitos, retiros y transferencias bancarias</p>
+                </div>
+                <div>
+                    <a href="{% url 'core:dashboard' %}" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-left"></i> Volver al Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Información sobre Movimientos Bancarios -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-primary">
+                <div class="card-header bg-primary text-white">
+                    <h5><i class="bi bi-info-circle"></i> ¿Qué es un Movimiento Bancario?</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Un movimiento bancario registra todas las transacciones que afectan las cuentas bancarias:</strong></p>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <h6>💰 Tipos de Movimiento:</h6>
+                            <ul class="small">
+                                <li>📈 <strong>Depósitos:</strong> Ingresos a la cuenta</li>
+                                <li>📉 <strong>Retiros:</strong> Salidas de la cuenta</li>
+                                <li>🔄 <strong>Transferencias:</strong> Entre cuentas propias</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-4">
+                            <h6>📋 Registro Contable:</h6>
+                            <ul class="small">
+                                <li>🏦 <strong>Actualización automática</strong> de saldos</li>
+                                <li>📝 <strong>Asiento contable</strong> automático</li>
+                                <li>🔍 <strong>Trazabilidad completa</strong> de movimientos</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-4">
+                            <h6>🎯 Control de Tesorería:</h6>
+                            <ul class="small">
+                                <li>💳 <strong>Flujo de caja</strong> en tiempo real</li>
+                                <li>📊 <strong>Conciliación bancaria</strong> facilitada</li>
+                                <li>📈 <strong>Reportes financieros</strong> actualizados</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Formulario de Movimiento -->
+        <div class="col-md-8">
+            <form method="post" id="bankMovementForm">
+                {% csrf_token %}
+                
+                <div class="card">
+                    <div class="card-header bg-success text-white">
+                        <h5><i class="bi bi-plus-circle"></i> Registrar Movimiento Bancario</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label for="company" class="form-label">Empresa *</label>
+                                <select class="form-select" id="company" name="company" required>
+                                    <option value="">Seleccione empresa...</option>
+                                    {% for company in companies %}
+                                        <option value="{{ company.id }}">{{ company.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="bank_account" class="form-label">Cuenta Bancaria *</label>
+                                <select class="form-select" id="bank_account" name="bank_account" required onchange="updateAccountInfo()">
+                                    <option value="">Seleccione cuenta...</option>
+                                    {% for account in bank_accounts %}
+                                        <option value="{{ account.id }}" 
+                                                data-bank="{{ account.bank.name }}"
+                                                data-number="{{ account.account_number }}"
+                                                data-balance="{{ account.current_balance }}">
+                                            {{ account.bank.name }} - {{ account.account_number }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="row mt-3">
+                            <div class="col-md-6">
+                                <label for="movement_type" class="form-label">Tipo de Movimiento *</label>
+                                <select class="form-select" id="movement_type" name="movement_type" required onchange="updateMovementType()">
+                                    <option value="">Seleccione tipo...</option>
+                                    <option value="deposit">💰 Depósito (Ingreso)</option>
+                                    <option value="withdrawal">💸 Retiro (Egreso)</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="amount" class="form-label">Monto *</label>
+                                <input type="number" class="form-control" id="amount" name="amount" 
+                                       step="0.01" min="0" placeholder="0.00" required onchange="calculateNewBalance()">
+                            </div>
+                        </div>
+                        
+                        <div class="row mt-3">
+                            <div class="col-md-6">
+                                <label for="date" class="form-label">Fecha del Movimiento *</label>
+                                <input type="date" class="form-control" id="date" name="date" 
+                                       value="{{ today|date:'Y-m-d' }}" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="reference" class="form-label">Referencia</label>
+                                <input type="text" class="form-control" id="reference" name="reference" 
+                                       placeholder="Ej: TRF-001, DEP-123">
+                            </div>
+                        </div>
+                        
+                        <div class="row mt-3">
+                            <div class="col-md-8">
+                                <label for="description" class="form-label">Descripción *</label>
+                                <input type="text" class="form-control" id="description" name="description" 
+                                       placeholder="Concepto del movimiento..." required>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="third_party" class="form-label">Tercero</label>
+                                <input type="text" class="form-control" id="third_party" name="third_party" 
+                                       placeholder="Nombre del tercero">
+                            </div>
+                        </div>
+                        
+                        <!-- Información de la Cuenta -->
+                        <div class="row mt-4" id="accountInfo" style="display: none;">
+                            <div class="col-12">
+                                <div class="alert alert-info">
+                                    <h6><i class="bi bi-info-circle"></i> Información de la Cuenta</h6>
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <strong>Banco:</strong> <span id="bankName">-</span>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <strong>Saldo Actual:</strong> <span id="currentBalance">$0.00</span>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <strong>Nuevo Saldo:</strong> <span id="newBalance">$0.00</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card-footer text-center">
+                        <button type="submit" class="btn btn-primary btn-lg me-3">
+                            <i class="bi bi-save"></i> Registrar Movimiento
+                        </button>
+                        <button type="reset" class="btn btn-secondary btn-lg" onclick="resetForm()">
+                            <i class="bi bi-arrow-clockwise"></i> Limpiar
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        
+        <!-- Movimientos Recientes -->
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h5><i class="bi bi-clock-history"></i> Movimientos Recientes</h5>
+                </div>
+                <div class="card-body">
+                    {% if recent_movements %}
+                        <div class="list-group list-group-flush">
+                            {% for movement in recent_movements %}
+                                <div class="list-group-item px-0">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div class="flex-grow-1">
+                                            <h6 class="mb-1">
+                                                {% if movement.movement_type == 'deposit' %}
+                                                    <i class="bi bi-arrow-down-circle text-success"></i>
+                                                {% else %}
+                                                    <i class="bi bi-arrow-up-circle text-danger"></i>
+                                                {% endif %}
+                                                {{ movement.description|truncatechars:25 }}
+                                            </h6>
+                                            <p class="mb-1 small text-muted">
+                                                {{ movement.bank_account.bank.name }} - {{ movement.bank_account.account_number }}
+                                            </p>
+                                            <small class="text-muted">{{ movement.date }}</small>
+                                        </div>
+                                        <div class="text-end">
+                                            <span class="badge {% if movement.movement_type == 'deposit' %}bg-success{% else %}bg-danger{% endif %}">
+                                                ${{ movement.amount|floatformat:0 }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center text-muted py-4">
+                            <i class="bi bi-inbox fs-1"></i>
+                            <p>No hay movimientos registrados</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ayuda Rápida -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card bg-light">
+                <div class="card-header">
+                    <h6><i class="bi bi-question-circle"></i> Ejemplos de Movimientos Bancarios</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <h6>💰 Depósito de Cliente:</h6>
+                            <small>
+                                <strong>Tipo:</strong> Depósito<br>
+                                <strong>Descripción:</strong> Pago factura cliente XYZ<br>
+                                <strong>Tercero:</strong> Cliente XYZ<br>
+                                <em>Aumenta el saldo bancario</em>
+                            </small>
+                        </div>
+                        <div class="col-md-4">
+                            <h6>💸 Pago a Proveedor:</h6>
+                            <small>
+                                <strong>Tipo:</strong> Retiro<br>
+                                <strong>Descripción:</strong> Pago factura proveedor ABC<br>
+                                <strong>Tercero:</strong> Proveedor ABC<br>
+                                <em>Disminuye el saldo bancario</em>
+                            </small>
+                        </div>
+                        <div class="col-md-4">
+                            <h6>🏦 Gastos Bancarios:</h6>
+                            <small>
+                                <strong>Tipo:</strong> Retiro<br>
+                                <strong>Descripción:</strong> Comisión manejo cuenta<br>
+                                <strong>Tercero:</strong> Banco<br>
+                                <em>Gastos financieros automáticos</em>
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.card-header {
+    font-weight: 500;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+.btn-lg {
+    padding: 0.75rem 2rem;
+    font-size: 1.1rem;
+}
+
+.list-group-item {
+    border-left: none;
+    border-right: none;
+}
+
+.list-group-item:first-child {
+    border-top: none;
+}
+
+.list-group-item:last-child {
+    border-bottom: none;
+}
+
+.alert-info {
+    background-color: #e7f3ff;
+    border-color: #b6d7ff;
+    color: #004085;
+}
+
+#newBalance.positive {
+    color: #28a745;
+    font-weight: bold;
+}
+
+#newBalance.negative {
+    color: #dc3545;
+    font-weight: bold;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+let currentBalance = 0;
+
+function updateAccountInfo() {
+    const select = document.getElementById('bank_account');
+    const selectedOption = select.options[select.selectedIndex];
+    const accountInfo = document.getElementById('accountInfo');
+    
+    if (selectedOption.value) {
+        const bankName = selectedOption.dataset.bank;
+        const balance = parseFloat(selectedOption.dataset.balance) || 0;
+        
+        document.getElementById('bankName').textContent = bankName;
+        document.getElementById('currentBalance').textContent = formatCurrency(balance);
+        
+        currentBalance = balance;
+        accountInfo.style.display = 'block';
+        
+        calculateNewBalance();
+    } else {
+        accountInfo.style.display = 'none';
+        currentBalance = 0;
+    }
+}
+
+function updateMovementType() {
+    calculateNewBalance();
+}
+
+function calculateNewBalance() {
+    const movementType = document.getElementById('movement_type').value;
+    const amount = parseFloat(document.getElementById('amount').value) || 0;
+    const newBalanceElement = document.getElementById('newBalance');
+    
+    if (!movementType || amount === 0) {
+        newBalanceElement.textContent = formatCurrency(currentBalance);
+        newBalanceElement.className = '';
+        return;
+    }
+    
+    let newBalance = currentBalance;
+    
+    if (movementType === 'deposit') {
+        newBalance += amount;
+    } else if (movementType === 'withdrawal') {
+        newBalance -= amount;
+    }
+    
+    newBalanceElement.textContent = formatCurrency(newBalance);
+    
+    // Aplicar clase según el saldo
+    if (newBalance >= 0) {
+        newBalanceElement.className = 'positive';
+    } else {
+        newBalanceElement.className = 'negative';
+    }
+}
+
+function formatCurrency(amount) {
+    return new Intl.NumberFormat('es-CO', { 
+        style: 'currency', 
+        currency: 'COP',
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+    }).format(amount);
+}
+
+function resetForm() {
+    document.getElementById('bankMovementForm').reset();
+    document.getElementById('accountInfo').style.display = 'none';
+    currentBalance = 0;
+}
+
+// Validación del formulario
+document.getElementById('bankMovementForm').addEventListener('submit', function(e) {
+    const movementType = document.getElementById('movement_type').value;
+    const amount = parseFloat(document.getElementById('amount').value) || 0;
+    
+    if (movementType === 'withdrawal' && amount > currentBalance) {
+        const confirm = window.confirm(
+            `El retiro de ${formatCurrency(amount)} dejará la cuenta con saldo negativo (${formatCurrency(currentBalance - amount)}). ¿Desea continuar?`
+        );
+        if (!confirm) {
+            e.preventDefault();
+            return false;
+        }
+    }
+});
+
+// Inicialización
+document.addEventListener('DOMContentLoaded', function() {
+    // Configurar fecha actual por defecto
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('date').value = today;
+});
+</script>
+{% endblock %}
+
+
+
+

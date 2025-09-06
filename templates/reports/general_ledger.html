@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ title }}</title>
+</head>
+<body>
+    <div class="header">
+        <div class="company-name">{{ company.name }}</div>
+        <div>NIT: {{ company.tax_id }}{% if company.tax_id_dv %}-{{ company.tax_id_dv }}{% endif %}</div>
+        <div class="report-title">{{ title }}</div>
+        <div>Del {{ period_start|date:"d de F de Y" }} al {{ period_end|date:"d de F de Y" }}</div>
+        <div>Cifras en {{ company.functional_currency }}</div>
+    </div>
+
+    <div style="margin-bottom: 20px;">
+        <strong>Cuenta:</strong> {{ account.code }} - {{ account.name }}
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th style="width: 10%">Fecha</th>
+                <th style="width: 15%">Comprobante</th>
+                <th style="width: 35%">Descripción</th>
+                <th style="width: 13%" class="number">Débito</th>
+                <th style="width: 13%" class="number">Crédito</th>
+                <th style="width: 14%" class="number">Saldo</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for movement in movements %}
+            <tr>
+                <td>{{ movement.journal_entry.date|date:"d/m/Y" }}</td>
+                <td>{{ movement.journal_entry.number }}</td>
+                <td>{{ movement.description }}</td>
+                <td class="number">{% if movement.debit %}{{ movement.debit|floatformat:0 }}{% endif %}</td>
+                <td class="number">{% if movement.credit %}{{ movement.credit|floatformat:0 }}{% endif %}</td>
+                <td class="number"><!-- Aquí iría el saldo acumulado --></td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6" style="text-align: center; color: #666;">
+                    No hay movimientos en el período seleccionado
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div style="margin-top: 30px; text-align: center; font-size: 9pt; color: #666;">
+        Reporte generado el {{ report_date|date:"d/m/Y H:i" }}
+    </div>
+</body>
+</html>
+
+
+
+

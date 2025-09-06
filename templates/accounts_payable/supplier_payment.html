@@ -1,0 +1,566 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Pagar Proveedor{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h2><i class="bi bi-credit-card text-warning"></i> Pagar Proveedor</h2>
+                    <p class="text-muted">Registra pagos a proveedores con aplicación automática a facturas</p>
+                </div>
+                <div>
+                    <a href="{% url 'core:dashboard' %}" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-left"></i> Volver al Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Información sobre Pagos a Proveedores -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-warning">
+                <div class="card-header bg-warning text-dark">
+                    <h5><i class="bi bi-info-circle"></i> ¿Qué es un Pago a Proveedor?</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Un pago a proveedor registra la cancelación de obligaciones con terceros:</strong></p>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <h6>📋 Registro Contable:</h6>
+                            <ul class="small">
+                                <li>📝 <strong>Débito:</strong> Cuentas por pagar</li>
+                                <li>📝 <strong>Crédito:</strong> Bancos o Caja</li>
+                                <li>🔄 <strong>Aplicación automática</strong> a facturas</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-4">
+                            <h6>💳 Métodos de Pago:</h6>
+                            <ul class="small">
+                                <li>🏦 <strong>Transferencia bancaria</strong> (más común)</li>
+                                <li>💰 <strong>Efectivo</strong> para montos menores</li>
+                                <li>📋 <strong>Cheque</strong> con seguimiento</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-4">
+                            <h6>📊 Control Financiero:</h6>
+                            <ul class="small">
+                                <li>📅 <strong>Flujo de caja</strong> actualizado</li>
+                                <li>💰 <strong>Saldos pendientes</strong> automáticos</li>
+                                <li>🧾 <strong>Retenciones</strong> si aplican</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Formulario de Pago -->
+    <form method="post" id="supplierPaymentForm">
+        {% csrf_token %}
+        
+        <!-- Datos del Pago -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h5><i class="bi bi-credit-card"></i> Datos del Pago</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <label for="company" class="form-label">Empresa *</label>
+                                <select class="form-select" id="company" name="company" required>
+                                    <option value="">Seleccione empresa...</option>
+                                    {% for company in companies %}
+                                        <option value="{{ company.id }}">{{ company.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="supplier" class="form-label">Proveedor *</label>
+                                <select class="form-select" id="supplier" name="supplier" required onchange="loadSupplierInvoices()">
+                                    <option value="">Seleccione proveedor...</option>
+                                    {% for supplier in suppliers %}
+                                        <option value="{{ supplier.id }}" data-tax-id="{{ supplier.tax_id }}">
+                                            {{ supplier.name }} - {{ supplier.tax_id }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="payment_method" class="form-label">Método de Pago *</label>
+                                <select class="form-select" id="payment_method" name="payment_method" required onchange="toggleBankAccount()">
+                                    <option value="">Seleccione método...</option>
+                                    <option value="bank_transfer">Transferencia Bancaria</option>
+                                    <option value="cash">Efectivo</option>
+                                    <option value="check">Cheque</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3" id="bankAccountDiv" style="display: none;">
+                                <label for="bank_account" class="form-label">Cuenta Bancaria</label>
+                                <select class="form-select" id="bank_account" name="bank_account">
+                                    <option value="">Seleccione cuenta...</option>
+                                    {% for account in bank_accounts %}
+                                        <option value="{{ account.id }}">
+                                            {{ account.bank.name }} - {{ account.account_number }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row mt-3">
+                            <div class="col-md-3">
+                                <label for="amount" class="form-label">Monto Total *</label>
+                                <input type="number" class="form-control" id="amount" name="amount" 
+                                       step="0.01" min="0" placeholder="0.00" required onchange="updateRemainingAmount()">
+                            </div>
+                            <div class="col-md-3">
+                                <label for="date" class="form-label">Fecha de Pago *</label>
+                                <input type="date" class="form-control" id="date" name="date" 
+                                       value="{{ today|date:'Y-m-d' }}" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="reference" class="form-label">Referencia</label>
+                                <input type="text" class="form-control" id="reference" name="reference" 
+                                       placeholder="Ej: TRF-001, CHE-123">
+                            </div>
+                            <div class="col-md-3">
+                                <label for="description" class="form-label">Descripción</label>
+                                <input type="text" class="form-control" id="description" name="description" 
+                                       placeholder="Concepto del pago...">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Aplicación a Facturas -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+                        <h5><i class="bi bi-receipt-cutoff"></i> Aplicar a Facturas Pendientes</h5>
+                        <div>
+                            <span class="badge bg-light text-dark me-2">Monto Disponible: <span id="remainingAmount">$0.00</span></span>
+                            <button type="button" class="btn btn-light btn-sm" onclick="autoApplyPayment()">
+                                <i class="bi bi-magic"></i> Aplicar Automático
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div id="supplierInvoicesSection" style="display: none;">
+                            <div class="table-responsive">
+                                <table class="table table-bordered" id="invoicesTable">
+                                    <thead class="table-dark">
+                                        <tr>
+                                            <th width="5%">
+                                                <input type="checkbox" id="selectAllInvoices" onchange="toggleAllInvoices()">
+                                            </th>
+                                            <th width="15%">Número</th>
+                                            <th width="12%">Fecha</th>
+                                            <th width="12%">Vencimiento</th>
+                                            <th width="15%">Total</th>
+                                            <th width="15%">Saldo</th>
+                                            <th width="15%">Aplicar</th>
+                                            <th width="11%">Estado</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="invoicesBody">
+                                        <!-- Las facturas se cargan dinámicamente -->
+                                    </tbody>
+                                    <tfoot class="table-light">
+                                        <tr>
+                                            <td colspan="6" class="text-end"><strong>Total Aplicado:</strong></td>
+                                            <td class="text-end"><strong id="totalApplied">$0.00</strong></td>
+                                            <td></td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </div>
+                        <div id="noSupplierSelected" class="text-center text-muted py-4">
+                            <i class="bi bi-arrow-up-circle fs-1"></i>
+                            <p>Seleccione un proveedor para ver las facturas pendientes</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Botones de Acción -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <button type="submit" class="btn btn-warning btn-lg me-3">
+                            <i class="bi bi-credit-card"></i> Procesar Pago
+                        </button>
+                        <button type="reset" class="btn btn-secondary btn-lg" onclick="resetForm()">
+                            <i class="bi bi-arrow-clockwise"></i> Limpiar Formulario
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <!-- Ayuda Rápida -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card bg-light">
+                <div class="card-header">
+                    <h6><i class="bi bi-question-circle"></i> Ejemplos de Pagos a Proveedores</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <h6>🏦 Transferencia Bancaria:</h6>
+                            <small>
+                                <strong>Método más común:</strong> Seguro y trazable<br>
+                                <strong>Débito:</strong> Cuentas por pagar<br>
+                                <strong>Crédito:</strong> Banco específico<br>
+                                <em>Requiere seleccionar cuenta bancaria</em>
+                            </small>
+                        </div>
+                        <div class="col-md-4">
+                            <h6>💰 Pago en Efectivo:</h6>
+                            <small>
+                                <strong>Para montos menores:</strong> Inmediato<br>
+                                <strong>Débito:</strong> Cuentas por pagar<br>
+                                <strong>Crédito:</strong> Caja general<br>
+                                <em>Control estricto de caja</em>
+                            </small>
+                        </div>
+                        <div class="col-md-4">
+                            <h6>📋 Aplicación Automática:</h6>
+                            <small>
+                                <strong>Por antigüedad:</strong> Facturas más viejas primero<br>
+                                <strong>Saldo automático:</strong> Actualización en tiempo real<br>
+                                <strong>Estado:</strong> Pagado/Parcial automático<br>
+                                <em>Facilita la gestión de cartera</em>
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.card-header {
+    font-weight: 500;
+}
+
+.table th {
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #ffc107;
+    box-shadow: 0 0 0 0.2rem rgba(255, 193, 7, 0.25);
+}
+
+.btn-lg {
+    padding: 0.75rem 2rem;
+    font-size: 1.1rem;
+}
+
+#invoicesTable input {
+    font-size: 0.9rem;
+}
+
+.text-end {
+    text-align: right !important;
+}
+
+.table-responsive {
+    border-radius: 0.375rem;
+}
+
+.badge {
+    font-size: 0.9rem;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Datos de facturas pendientes por proveedor
+let supplierInvoices = {};
+
+// Cargar facturas del proveedor seleccionado
+function loadSupplierInvoices() {
+    const supplierId = document.getElementById('supplier').value;
+    const invoicesSection = document.getElementById('supplierInvoicesSection');
+    const noSupplierSection = document.getElementById('noSupplierSelected');
+    
+    if (!supplierId) {
+        invoicesSection.style.display = 'none';
+        noSupplierSection.style.display = 'block';
+        return;
+    }
+    
+    // Simular carga de facturas (en producción sería AJAX)
+    const mockInvoices = [
+        {
+            id: 1,
+            number: 'FAC-001',
+            date: '2025-01-15',
+            due_date: '2025-02-14',
+            total: 1500000,
+            balance: 1500000,
+            status: 'pending'
+        },
+        {
+            id: 2,
+            number: 'FAC-002',
+            date: '2025-01-20',
+            due_date: '2025-02-19',
+            total: 850000,
+            balance: 425000,
+            status: 'partial'
+        }
+    ];
+    
+    supplierInvoices[supplierId] = mockInvoices;
+    displaySupplierInvoices(mockInvoices);
+    
+    invoicesSection.style.display = 'block';
+    noSupplierSection.style.display = 'none';
+}
+
+function displaySupplierInvoices(invoices) {
+    const tbody = document.getElementById('invoicesBody');
+    tbody.innerHTML = '';
+    
+    invoices.forEach((invoice, index) => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td class="text-center">
+                <input type="checkbox" class="invoice-checkbox" data-invoice-id="${invoice.id}" 
+                       onchange="toggleInvoiceSelection(${invoice.id})">
+            </td>
+            <td>
+                <strong>${invoice.number}</strong>
+                <input type="hidden" name="invoice_${index + 1}" value="${invoice.id}">
+            </td>
+            <td>${new Date(invoice.date).toLocaleDateString('es-CO')}</td>
+            <td class="${isOverdue(invoice.due_date) ? 'text-danger fw-bold' : ''}">
+                ${new Date(invoice.due_date).toLocaleDateString('es-CO')}
+                ${isOverdue(invoice.due_date) ? '<i class="bi bi-exclamation-triangle"></i>' : ''}
+            </td>
+            <td class="text-end">${formatCurrency(invoice.total)}</td>
+            <td class="text-end fw-bold">${formatCurrency(invoice.balance)}</td>
+            <td>
+                <input type="number" class="form-control text-end apply-amount" 
+                       name="applied_amount_${index + 1}" step="0.01" min="0" 
+                       max="${invoice.balance}" placeholder="0.00" 
+                       onchange="updateTotalApplied()" data-max="${invoice.balance}">
+            </td>
+            <td>
+                <span class="badge ${getStatusBadgeClass(invoice.status)}">
+                    ${getStatusText(invoice.status)}
+                </span>
+            </td>
+        `;
+        tbody.appendChild(row);
+    });
+}
+
+function isOverdue(dueDate) {
+    const today = new Date();
+    const due = new Date(dueDate);
+    return due < today;
+}
+
+function getStatusBadgeClass(status) {
+    switch(status) {
+        case 'pending': return 'bg-warning text-dark';
+        case 'partial': return 'bg-info';
+        case 'paid': return 'bg-success';
+        default: return 'bg-secondary';
+    }
+}
+
+function getStatusText(status) {
+    switch(status) {
+        case 'pending': return 'Pendiente';
+        case 'partial': return 'Parcial';
+        case 'paid': return 'Pagado';
+        default: return 'Desconocido';
+    }
+}
+
+function formatCurrency(amount) {
+    return new Intl.NumberFormat('es-CO', { 
+        style: 'currency', 
+        currency: 'COP',
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+    }).format(amount);
+}
+
+function toggleBankAccount() {
+    const paymentMethod = document.getElementById('payment_method').value;
+    const bankAccountDiv = document.getElementById('bankAccountDiv');
+    const bankAccountSelect = document.getElementById('bank_account');
+    
+    if (paymentMethod === 'bank_transfer') {
+        bankAccountDiv.style.display = 'block';
+        bankAccountSelect.required = true;
+    } else {
+        bankAccountDiv.style.display = 'none';
+        bankAccountSelect.required = false;
+        bankAccountSelect.value = '';
+    }
+}
+
+function updateRemainingAmount() {
+    const totalAmount = parseFloat(document.getElementById('amount').value) || 0;
+    const appliedAmount = calculateTotalApplied();
+    const remaining = totalAmount - appliedAmount;
+    
+    document.getElementById('remainingAmount').textContent = formatCurrency(remaining);
+}
+
+function calculateTotalApplied() {
+    let total = 0;
+    const applyInputs = document.querySelectorAll('.apply-amount');
+    
+    applyInputs.forEach(input => {
+        const value = parseFloat(input.value) || 0;
+        total += value;
+    });
+    
+    return total;
+}
+
+function updateTotalApplied() {
+    const total = calculateTotalApplied();
+    document.getElementById('totalApplied').textContent = formatCurrency(total);
+    updateRemainingAmount();
+}
+
+function toggleAllInvoices() {
+    const selectAll = document.getElementById('selectAllInvoices');
+    const checkboxes = document.querySelectorAll('.invoice-checkbox');
+    
+    checkboxes.forEach(checkbox => {
+        checkbox.checked = selectAll.checked;
+        if (selectAll.checked) {
+            const row = checkbox.closest('tr');
+            const applyInput = row.querySelector('.apply-amount');
+            const maxAmount = parseFloat(applyInput.dataset.max);
+            applyInput.value = maxAmount;
+        } else {
+            const row = checkbox.closest('tr');
+            const applyInput = row.querySelector('.apply-amount');
+            applyInput.value = '';
+        }
+    });
+    
+    updateTotalApplied();
+}
+
+function toggleInvoiceSelection(invoiceId) {
+    const checkbox = document.querySelector(`input[data-invoice-id="${invoiceId}"]`);
+    const row = checkbox.closest('tr');
+    const applyInput = row.querySelector('.apply-amount');
+    
+    if (checkbox.checked) {
+        const maxAmount = parseFloat(applyInput.dataset.max);
+        applyInput.value = maxAmount;
+    } else {
+        applyInput.value = '';
+    }
+    
+    updateTotalApplied();
+}
+
+function autoApplyPayment() {
+    const totalAmount = parseFloat(document.getElementById('amount').value) || 0;
+    if (totalAmount <= 0) {
+        alert('Ingrese el monto total del pago primero');
+        return;
+    }
+    
+    let remainingAmount = totalAmount;
+    const applyInputs = document.querySelectorAll('.apply-amount');
+    
+    // Limpiar aplicaciones previas
+    applyInputs.forEach(input => {
+        input.value = '';
+        const checkbox = input.closest('tr').querySelector('.invoice-checkbox');
+        checkbox.checked = false;
+    });
+    
+    // Aplicar por orden de antigüedad
+    applyInputs.forEach(input => {
+        if (remainingAmount <= 0) return;
+        
+        const maxAmount = parseFloat(input.dataset.max);
+        const applyAmount = Math.min(remainingAmount, maxAmount);
+        
+        if (applyAmount > 0) {
+            input.value = applyAmount;
+            remainingAmount -= applyAmount;
+            
+            const checkbox = input.closest('tr').querySelector('.invoice-checkbox');
+            checkbox.checked = true;
+        }
+    });
+    
+    updateTotalApplied();
+}
+
+function resetForm() {
+    document.getElementById('supplierPaymentForm').reset();
+    document.getElementById('supplierInvoicesSection').style.display = 'none';
+    document.getElementById('noSupplierSelected').style.display = 'block';
+    document.getElementById('bankAccountDiv').style.display = 'none';
+    document.getElementById('remainingAmount').textContent = '$0.00';
+    document.getElementById('totalApplied').textContent = '$0.00';
+}
+
+// Validación del formulario
+document.getElementById('supplierPaymentForm').addEventListener('submit', function(e) {
+    const totalAmount = parseFloat(document.getElementById('amount').value) || 0;
+    const appliedAmount = calculateTotalApplied();
+    
+    if (appliedAmount > totalAmount) {
+        e.preventDefault();
+        alert('El monto aplicado no puede ser mayor al monto total del pago');
+        return false;
+    }
+    
+    if (appliedAmount === 0) {
+        const confirm = window.confirm('No ha aplicado el pago a ninguna factura. ¿Desea continuar?');
+        if (!confirm) {
+            e.preventDefault();
+            return false;
+        }
+    }
+});
+
+// Inicialización
+document.addEventListener('DOMContentLoaded', function() {
+    updateRemainingAmount();
+});
+</script>
+{% endblock %}
+
+
+
+

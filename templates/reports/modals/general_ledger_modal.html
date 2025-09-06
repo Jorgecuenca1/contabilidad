@@ -1,0 +1,65 @@
+<!-- Modal Libro Mayor -->
+<div class="modal fade" id="generalLedgerModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="bi bi-journal-text"></i> Generar Libro Mayor
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="generalLedgerForm">
+                    {% csrf_token %}
+                    <input type="hidden" id="generalLedgerCompanyId" name="company_id">
+                    
+                    <div class="mb-3">
+                        <label for="generalLedgerAccountId" class="form-label">Cuenta Contable</label>
+                        <select class="form-select" id="generalLedgerAccountId" name="account_id" required>
+                            <option value="">Seleccione una cuenta...</option>
+                        </select>
+                        <div class="form-text">Seleccione la cuenta de la cual desea ver el libro mayor</div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="generalLedgerPeriodStart" class="form-label">Fecha Inicial</label>
+                                <input type="date" class="form-control" id="generalLedgerPeriodStart" name="period_start" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="generalLedgerPeriodEnd" class="form-label">Fecha Final</label>
+                                <input type="date" class="form-control" id="generalLedgerPeriodEnd" name="period_end" required>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="generalLedgerFormat" class="form-label">Formato</label>
+                        <select class="form-select" id="generalLedgerFormat" name="format">
+                            <option value="pdf">PDF</option>
+                            <option value="excel">Excel</option>
+                        </select>
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle"></i>
+                        El libro mayor mostrará todos los movimientos de la cuenta seleccionada en el período especificado.
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-info" onclick="generateGeneralLedger()">
+                    <i class="bi bi-download"></i> Generar Reporte
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+

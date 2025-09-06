@@ -1,0 +1,56 @@
+<!-- Modal Reporte de Cartera -->
+<div class="modal fade" id="agingReportModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="bi bi-clock-history"></i> Generar Reporte de Cartera Vencida
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="agingReportForm">
+                    {% csrf_token %}
+                    <input type="hidden" id="agingReportCompanyId" name="company_id">
+                    <input type="hidden" id="agingReportType" name="report_type">
+                    
+                    <div class="mb-3">
+                        <label for="agingReportDate" class="form-label">Fecha de Corte</label>
+                        <input type="date" class="form-control" id="agingReportDate" name="report_date" required>
+                        <div class="form-text">Fecha para el análisis de vencimientos</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="agingReportFormat" class="form-label">Formato</label>
+                        <select class="form-select" id="agingReportFormat" name="format">
+                            <option value="pdf">PDF</option>
+                            <option value="excel">Excel</option>
+                        </select>
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle"></i>
+                        El reporte mostrará las facturas agrupadas por rangos de vencimiento:
+                        <ul class="mb-0 mt-2">
+                            <li>Al día</li>
+                            <li>1-30 días vencidas</li>
+                            <li>31-60 días vencidas</li>
+                            <li>61-90 días vencidas</li>
+                            <li>Más de 90 días vencidas</li>
+                        </ul>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-danger" onclick="generateAgingReport()">
+                    <i class="bi bi-download"></i> Generar Reporte
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+

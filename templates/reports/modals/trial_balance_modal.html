@@ -1,0 +1,48 @@
+<!-- Modal Balance de Prueba -->
+<div class="modal fade" id="trialBalanceModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="bi bi-table"></i> Generar Balance de Prueba
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="trialBalanceForm">
+                    {% csrf_token %}
+                    <input type="hidden" id="trialBalanceCompanyId" name="company_id">
+                    
+                    <div class="mb-3">
+                        <label for="trialBalancePeriodEnd" class="form-label">Fecha de Corte</label>
+                        <input type="date" class="form-control" id="trialBalancePeriodEnd" name="period_end" required>
+                        <div class="form-text">Seleccione la fecha hasta la cual desea el balance de prueba</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="trialBalanceFormat" class="form-label">Formato</label>
+                        <select class="form-select" id="trialBalanceFormat" name="format">
+                            <option value="pdf">PDF</option>
+                            <option value="excel">Excel</option>
+                        </select>
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle"></i>
+                        El balance de prueba mostrará todas las cuentas con sus débitos, créditos y saldos.
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-warning" onclick="generateTrialBalance()">
+                    <i class="bi bi-download"></i> Generar Reporte
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+

@@ -1,0 +1,160 @@
+{% extends 'base.html' %}
+
+{% block title %}Reporte de Depreciación - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1><i class="bi bi-file-earmark-text"></i> Reporte de Depreciación</h1>
+            <div>
+                <form method="post" action="{% url 'fixed_assets:calculate_depreciation' %}" class="d-inline">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-warning">
+                        <i class="bi bi-calculator"></i> Calcular Depreciación
+                    </button>
+                </form>
+                <button class="btn btn-success" onclick="window.print()">
+                    <i class="bi bi-printer"></i> Imprimir
+                </button>
+                <a href="{% url 'fixed_assets:dashboard' %}" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i> Volver
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Resumen -->
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card bg-primary text-white">
+            <div class="card-body text-center">
+                <h4>${{ total_acquisition|floatformat:0 }}</h4>
+                <p class="mb-0">Total Costo de Adquisición</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card bg-warning text-white">
+            <div class="card-body text-center">
+                <h4>${{ total_depreciation|floatformat:0 }}</h4>
+                <p class="mb-0">Total Depreciación Acumulada</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card bg-success text-white">
+            <div class="card-body text-center">
+                <h4>${{ total_net_value|floatformat:0 }}</h4>
+                <p class="mb-0">Total Valor Neto en Libros</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Detalle de Activos -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h6><i class="bi bi-table"></i> Detalle de Depreciación por Activo</h6>
+            </div>
+            <div class="card-body">
+                {% if assets %}
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Código</th>
+                                    <th>Activo</th>
+                                    <th>Categoría</th>
+                                    <th>Fecha Adquisición</th>
+                                    <th>Costo Adquisición</th>
+                                    <th>Valor Residual</th>
+                                    <th>Depreciación Acumulada</th>
+                                    <th>Valor Neto</th>
+                                    <th>Vida Útil</th>
+                                    <th>% Depreciado</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for asset in assets %}
+                                <tr>
+                                    <td><code>{{ asset.code }}</code></td>
+                                    <td>
+                                        <a href="{% url 'fixed_assets:asset_detail' asset.id %}">
+                                            {{ asset.name }}
+                                        </a>
+                                        {% if asset.location %}
+                                            <br><small class="text-muted">{{ asset.location }}</small>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ asset.category.name }}</td>
+                                    <td>{{ asset.acquisition_date|date:"d/m/Y" }}</td>
+                                    <td class="text-end">${{ asset.acquisition_cost|floatformat:2 }}</td>
+                                    <td class="text-end">${{ asset.residual_value|floatformat:2 }}</td>
+                                    <td class="text-end">${{ asset.accumulated_depreciation|floatformat:2 }}</td>
+                                    <td class="text-end">${{ asset.net_book_value|floatformat:2 }}</td>
+                                    <td class="text-center">{{ asset.useful_life_years }} años</td>
+                                    <td class="text-center">
+                                        {% if asset.acquisition_cost > 0 %}
+                                            {% widthratio asset.accumulated_depreciation asset.acquisition_cost 100 %}%
+                                        {% else %}
+                                            0%
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                            <tfoot class="table-dark">
+                                <tr>
+                                    <th colspan="4">TOTALES</th>
+                                    <th class="text-end">${{ total_acquisition|floatformat:2 }}</th>
+                                    <th></th>
+                                    <th class="text-end">${{ total_depreciation|floatformat:2 }}</th>
+                                    <th class="text-end">${{ total_net_value|floatformat:2 }}</th>
+                                    <th colspan="2"></th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="text-center py-4">
+                        <i class="bi bi-inbox fs-1 text-muted"></i>
+                        <p class="text-muted mt-2">No hay activos fijos registrados</p>
+                        <a href="{% url 'fixed_assets:new_asset' %}" class="btn btn-primary">
+                            <i class="bi bi-plus-circle"></i> Crear Primer Activo
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Información Adicional -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h6><i class="bi bi-info-circle"></i> Información del Reporte</h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Fecha del Reporte:</strong> {{ today|date:"d/m/Y H:i" }}</p>
+                        <p><strong>Método de Depreciación:</strong> Línea Recta (principalmente)</p>
+                        <p><strong>Moneda:</strong> Pesos Colombianos (COP)</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Total de Activos:</strong> {{ assets.count }}</p>
+                        <p><strong>Activos Activos:</strong> {{ assets.count }}</p>
+                        <p><strong>Estado del Cálculo:</strong> Actualizado</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,194 @@
+{% extends 'base.html' %}
+
+{% block title %}Editar {{ asset.name }} - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1><i class="bi bi-pencil"></i> Editar Activo: {{ asset.name }}</h1>
+            <div>
+                <a href="{% url 'fixed_assets:asset_detail' asset.id %}" class="btn btn-outline-info">
+                    <i class="bi bi-eye"></i> Ver Detalle
+                </a>
+                <a href="{% url 'fixed_assets:asset_list' %}" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i> Volver a Lista
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h6><i class="bi bi-pencil-square"></i> Editar Información del Activo</h6>
+            </div>
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+                    <div class="row">
+                        <!-- Información Básica -->
+                        <div class="col-md-6">
+                            <h6 class="text-primary mb-3">Información Básica</h6>
+                            
+                            <div class="mb-3">
+                                <label for="code" class="form-label">Código</label>
+                                <input type="text" class="form-control" id="code" name="code" 
+                                       value="{{ asset.code }}" readonly>
+                                <div class="form-text">El código no se puede modificar</div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="name" class="form-label">Nombre *</label>
+                                <input type="text" class="form-control" id="name" name="name" 
+                                       value="{{ asset.name }}" required>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="description" class="form-label">Descripción</label>
+                                <textarea class="form-control" id="description" name="description" rows="3">{{ asset.description }}</textarea>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="category" class="form-label">Categoría *</label>
+                                <select class="form-select" id="category" name="category" required>
+                                    {% for category in categories %}
+                                        <option value="{{ category.id }}" {% if category.id == asset.category.id %}selected{% endif %}>
+                                            {{ category.name }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="location" class="form-label">Ubicación</label>
+                                <input type="text" class="form-control" id="location" name="location" 
+                                       value="{{ asset.location }}">
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="status" class="form-label">Estado</label>
+                                <select class="form-select" id="status" name="status">
+                                    {% for value, label in status_choices %}
+                                        <option value="{{ value }}" {% if value == asset.status %}selected{% endif %}>
+                                            {{ label }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <!-- Información Adicional -->
+                        <div class="col-md-6">
+                            <h6 class="text-primary mb-3">Información Adicional</h6>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="brand" class="form-label">Marca</label>
+                                        <input type="text" class="form-control" id="brand" name="brand" 
+                                               value="{{ asset.brand }}">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="model" class="form-label">Modelo</label>
+                                        <input type="text" class="form-control" id="model" name="model" 
+                                               value="{{ asset.model }}">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="serial_number" class="form-label">Número de Serie</label>
+                                <input type="text" class="form-control" id="serial_number" name="serial_number" 
+                                       value="{{ asset.serial_number }}">
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="supplier" class="form-label">Proveedor</label>
+                                <input type="text" class="form-control" id="supplier" name="supplier" 
+                                       value="{{ asset.supplier }}">
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="invoice_number" class="form-label">Número de Factura</label>
+                                <input type="text" class="form-control" id="invoice_number" name="invoice_number" 
+                                       value="{{ asset.invoice_number }}">
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="warranty_expiration" class="form-label">Vencimiento de Garantía</label>
+                                <input type="date" class="form-control" id="warranty_expiration" name="warranty_expiration" 
+                                       value="{{ asset.warranty_expiration|date:'Y-m-d' }}">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Información Financiera (Solo lectura) -->
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <h6 class="text-primary mb-3">Información Financiera (Solo Lectura)</h6>
+                            
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <div class="mb-3">
+                                        <label class="form-label">Costo de Adquisición</label>
+                                        <input type="text" class="form-control" 
+                                               value="${{ asset.acquisition_cost|floatformat:2 }}" readonly>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="mb-3">
+                                        <label class="form-label">Depreciación Acumulada</label>
+                                        <input type="text" class="form-control" 
+                                               value="${{ asset.accumulated_depreciation|floatformat:2 }}" readonly>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="mb-3">
+                                        <label class="form-label">Valor Neto</label>
+                                        <input type="text" class="form-control" 
+                                               value="${{ asset.net_book_value|floatformat:2 }}" readonly>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="mb-3">
+                                        <label class="form-label">Vida Útil</label>
+                                        <input type="text" class="form-control" 
+                                               value="{{ asset.useful_life_years }} años" readonly>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="alert alert-info">
+                                <i class="bi bi-info-circle"></i>
+                                <strong>Nota:</strong> Los valores financieros no se pueden modificar desde aquí. 
+                                Para ajustes contables, utilice el módulo de contabilidad.
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Botones -->
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <hr>
+                            <div class="d-flex justify-content-end gap-2">
+                                <a href="{% url 'fixed_assets:asset_detail' asset.id %}" class="btn btn-secondary">
+                                    <i class="bi bi-x-circle"></i> Cancelar
+                                </a>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-check-circle"></i> Guardar Cambios
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

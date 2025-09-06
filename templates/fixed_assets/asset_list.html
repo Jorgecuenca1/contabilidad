@@ -1,0 +1,175 @@
+{% extends 'base.html' %}
+
+{% block title %}Lista de Activos Fijos - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1><i class="bi bi-list-ul"></i> Lista de Activos Fijos</h1>
+            <a href="{% url 'fixed_assets:new_asset' %}" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> Nuevo Activo
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Filtros -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h6><i class="bi bi-funnel"></i> Filtros de Búsqueda</h6>
+            </div>
+            <div class="card-body">
+                <form method="get" class="row g-3">
+                    <div class="col-md-4">
+                        <label for="search" class="form-label">Buscar</label>
+                        <input type="text" class="form-control" id="search" name="search" 
+                               value="{{ search }}" placeholder="Código, nombre o serie">
+                    </div>
+                    <div class="col-md-3">
+                        <label for="category" class="form-label">Categoría</label>
+                        <select class="form-select" id="category" name="category">
+                            <option value="">Todas las categorías</option>
+                            {% for category in categories %}
+                                <option value="{{ category.id }}" {% if category.id|stringformat:"s" == selected_category %}selected{% endif %}>
+                                    {{ category.name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="status" class="form-label">Estado</label>
+                        <select class="form-select" id="status" name="status">
+                            <option value="">Todos los estados</option>
+                            {% for value, label in status_choices %}
+                                <option value="{{ value }}" {% if value == selected_status %}selected{% endif %}>
+                                    {{ label }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">&nbsp;</label>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-search"></i> Buscar
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Lista de Activos -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h6><i class="bi bi-building"></i> Activos Fijos</h6>
+                <span class="badge bg-primary">{{ page_obj.paginator.count }} activos</span>
+            </div>
+            <div class="card-body">
+                {% if page_obj %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Código</th>
+                                    <th>Nombre</th>
+                                    <th>Categoría</th>
+                                    <th>Costo Adquisición</th>
+                                    <th>Depreciación Acum.</th>
+                                    <th>Valor Neto</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for asset in page_obj %}
+                                <tr>
+                                    <td><code>{{ asset.code }}</code></td>
+                                    <td>
+                                        <strong>{{ asset.name }}</strong>
+                                        {% if asset.location %}
+                                            <br><small class="text-muted"><i class="bi bi-geo-alt"></i> {{ asset.location }}</small>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ asset.category.name }}</td>
+                                    <td>${{ asset.acquisition_cost|floatformat:2 }}</td>
+                                    <td>${{ asset.accumulated_depreciation|floatformat:2 }}</td>
+                                    <td>${{ asset.net_book_value|floatformat:2 }}</td>
+                                    <td>
+                                        {% if asset.status == 'active' %}
+                                            <span class="badge bg-success">{{ asset.get_status_display }}</span>
+                                        {% elif asset.status == 'inactive' %}
+                                            <span class="badge bg-warning">{{ asset.get_status_display }}</span>
+                                        {% else %}
+                                            <span class="badge bg-danger">{{ asset.get_status_display }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <a href="{% url 'fixed_assets:asset_detail' asset.id %}" 
+                                               class="btn btn-outline-primary" title="Ver">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+                                            <a href="{% url 'fixed_assets:edit_asset' asset.id %}" 
+                                               class="btn btn-outline-warning" title="Editar">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Paginación -->
+                    {% if page_obj.has_other_pages %}
+                        <nav aria-label="Paginación de activos">
+                            <ul class="pagination justify-content-center">
+                                {% if page_obj.has_previous %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page=1{% if search %}&search={{ search }}{% endif %}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if selected_status %}&status={{ selected_status }}{% endif %}">Primera</a>
+                                    </li>
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if search %}&search={{ search }}{% endif %}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if selected_status %}&status={{ selected_status }}{% endif %}">Anterior</a>
+                                    </li>
+                                {% endif %}
+
+                                <li class="page-item active">
+                                    <span class="page-link">
+                                        Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
+                                    </span>
+                                </li>
+
+                                {% if page_obj.has_next %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if search %}&search={{ search }}{% endif %}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if selected_status %}&status={{ selected_status }}{% endif %}">Siguiente</a>
+                                    </li>
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if search %}&search={{ search }}{% endif %}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if selected_status %}&status={{ selected_status }}{% endif %}">Última</a>
+                                    </li>
+                                {% endif %}
+                            </ul>
+                        </nav>
+                    {% endif %}
+                {% else %}
+                    <div class="text-center py-4">
+                        <i class="bi bi-inbox fs-1 text-muted"></i>
+                        <p class="text-muted mt-2">No se encontraron activos fijos</p>
+                        <a href="{% url 'fixed_assets:new_asset' %}" class="btn btn-primary">
+                            <i class="bi bi-plus-circle"></i> Crear Primer Activo
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

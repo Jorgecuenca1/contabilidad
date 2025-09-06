@@ -1,0 +1,567 @@
+INFO 2025-08-28 00:40:42,104 autoreload 8284 892 Watching for file changes with StatReloader
+INFO 2025-08-28 00:41:25,823 autoreload 8284 892 C:\Users\ROOM04\Documents\contabilidad\reports\admin.py changed, reloading.
+INFO 2025-08-28 00:41:27,191 autoreload 5124 2284 Watching for file changes with StatReloader
+INFO 2025-08-28 00:47:03,636 autoreload 5124 2284 C:\Users\ROOM04\Documents\contabilidad\payroll\models.py changed, reloading.
+INFO 2025-08-28 00:47:05,129 autoreload 9128 7132 Watching for file changes with StatReloader
+INFO 2025-08-28 00:48:24,543 autoreload 9128 7132 C:\Users\ROOM04\Documents\contabilidad\taxes\models.py changed, reloading.
+INFO 2025-08-28 00:48:25,980 autoreload 9096 5256 Watching for file changes with StatReloader
+INFO 2025-08-28 00:49:09,079 autoreload 9096 5256 C:\Users\ROOM04\Documents\contabilidad\public_sector\models.py changed, reloading.
+INFO 2025-08-28 00:49:10,524 autoreload 4192 1056 Watching for file changes with StatReloader
+INFO 2025-08-28 00:53:29,901 autoreload 4192 1056 C:\Users\ROOM04\Documents\contabilidad\public_sector\models.py changed, reloading.
+INFO 2025-08-28 00:53:32,370 autoreload 8676 3392 Watching for file changes with StatReloader
+ERROR 2025-08-28 00:53:34,964 log 8676 716 Internal Server Error: /
+Traceback (most recent call last):
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\ROOM04\Documents\contabilidad\core\views.py", line 21, in dashboard
+    return render(request, 'core/login.html')
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\shortcuts.py", line 24, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\template\loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\template\loader.py", line 19, in get_template
+    raise TemplateDoesNotExist(template_name, chain=chain)
+django.template.exceptions.TemplateDoesNotExist: core/login.html
+ERROR 2025-08-28 00:53:35,373 log 8676 716 Internal Server Error: /
+Traceback (most recent call last):
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\ROOM04\Documents\contabilidad\core\views.py", line 21, in dashboard
+    return render(request, 'core/login.html')
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\shortcuts.py", line 24, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\template\loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\template\loader.py", line 19, in get_template
+    raise TemplateDoesNotExist(template_name, chain=chain)
+django.template.exceptions.TemplateDoesNotExist: core/login.html
+WARNING 2025-08-28 00:53:36,872 log 8676 716 Not Found: /favicon.ico
+INFO 2025-08-28 00:55:15,482 autoreload 8676 3392 C:\Users\ROOM04\Documents\contabilidad\core\views.py changed, reloading.
+INFO 2025-08-28 00:55:16,873 autoreload 11440 10360 Watching for file changes with StatReloader
+INFO 2025-08-28 00:57:20,130 autoreload 11440 10360 C:\Users\ROOM04\Documents\contabilidad\contabilidad_multiempresa\urls.py changed, reloading.
+INFO 2025-08-28 00:57:21,572 autoreload 11568 4456 Watching for file changes with StatReloader
+INFO 2025-08-28 00:57:30,308 autoreload 11568 4456 C:\Users\ROOM04\Documents\contabilidad\payroll\views.py changed, reloading.
+INFO 2025-08-28 00:57:31,741 autoreload 4952 5256 Watching for file changes with StatReloader
+INFO 2025-08-28 00:58:23,759 autoreload 4952 5256 C:\Users\ROOM04\Documents\contabilidad\taxes\urls.py changed, reloading.
+INFO 2025-08-28 00:58:25,151 autoreload 3200 12148 Watching for file changes with StatReloader
+WARNING 2025-08-28 01:02:01,535 log 3200 7888 Not Found: /accounts/profile/
+WARNING 2025-08-28 01:18:49,091 log 3200 4952 Not Found: /accounts/profile/
+WARNING 2025-08-28 01:18:52,170 log 3200 4952 Not Found: /accounts/profile/
+INFO 2025-08-28 01:33:09,728 autoreload 3200 12148 C:\Users\ROOM04\Documents\contabilidad\contabilidad_multiempresa\urls.py changed, reloading.
+INFO 2025-08-28 01:33:10,869 autoreload 1492 4588 Watching for file changes with StatReloader
+INFO 2025-08-28 01:37:01,509 autoreload 1492 4588 C:\Users\ROOM04\Documents\contabilidad\contabilidad_multiempresa\urls.py changed, reloading.
+INFO 2025-08-28 01:37:02,704 autoreload 8968 8688 Watching for file changes with StatReloader
+INFO 2025-08-28 01:38:12,230 autoreload 8968 8688 C:\Users\ROOM04\Documents\contabilidad\accounting\urls.py changed, reloading.
+INFO 2025-08-28 01:38:13,465 autoreload 6776 3828 Watching for file changes with StatReloader
+WARNING 2025-08-28 01:39:12,728 log 6776 9876 Not Found: /admin/treasury/bankmovement/add/
+WARNING 2025-08-28 01:39:18,875 log 6776 9876 Not Found: /admin/treasury/bankreconciliation/add/
+INFO 2025-08-28 01:39:28,290 autoreload 6776 3828 C:\Users\ROOM04\Documents\contabilidad\accounting\views.py changed, reloading.
+INFO 2025-08-28 01:39:29,411 autoreload 6300 4796 Watching for file changes with StatReloader
+INFO 2025-08-28 01:42:28,128 autoreload 6300 4796 C:\Users\ROOM04\Documents\contabilidad\accounting\views.py changed, reloading.
+INFO 2025-08-28 01:42:29,837 autoreload 11716 1748 Watching for file changes with StatReloader
+INFO 2025-08-28 01:45:42,086 autoreload 11716 1748 C:\Users\ROOM04\Documents\contabilidad\contabilidad_multiempresa\urls.py changed, reloading.
+INFO 2025-08-28 01:45:43,276 autoreload 180 3708 Watching for file changes with StatReloader
+WARNING 2025-08-28 01:46:23,352 log 180 3360 Not Found: /admin/treasury/bankmovement/add/
+WARNING 2025-08-28 01:46:25,746 log 180 3360 Not Found: /admin/treasury/bankreconciliation/add/
+ERROR 2025-08-28 01:46:28,654 log 180 3360 Internal Server Error: /payroll/
+Traceback (most recent call last):
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\db\backends\utils.py", line 89, in _execute
+    return self.cursor.execute(sql, params)
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\db\backends\sqlite3\base.py", line 328, in execute
+    return super().execute(query, params)
+sqlite3.OperationalError: no such table: payroll_employees
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\contrib\auth\decorators.py", line 23, in _wrapper_view
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\ROOM04\Documents\contabilidad\payroll\views.py", line 24, in payroll_dashboard
+    total_employees = Employee.objects.filter(is_active=True).count()
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\db\models\query.py", line 608, in count
+    return self.query.get_count(using=self.db)
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\db\models\sql\query.py", line 568, in get_count
+    return obj.get_aggregation(using, {"__count": Count("*")})["__count"]
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\db\models\sql\query.py", line 554, in get_aggregation
+    result = compiler.execute_sql(SINGLE)
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\db\models\sql\compiler.py", line 1562, in execute_sql
+    cursor.execute(sql, params)
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\db\backends\utils.py", line 102, in execute
+    return super().execute(sql, params)
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\db\backends\utils.py", line 67, in execute
+    return self._execute_with_wrappers(
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\db\backends\utils.py", line 80, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\db\backends\utils.py", line 89, in _execute
+    return self.cursor.execute(sql, params)
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\db\utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\db\backends\utils.py", line 89, in _execute
+    return self.cursor.execute(sql, params)
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\db\backends\sqlite3\base.py", line 328, in execute
+    return super().execute(query, params)
+django.db.utils.OperationalError: no such table: payroll_employees
+WARNING 2025-08-28 01:46:33,699 log 180 3360 Not Found: /admin/payroll/employee/add/
+INFO 2025-08-28 01:47:01,614 autoreload 180 3708 C:\Users\ROOM04\Documents\contabilidad\accounts_payable\views.py changed, reloading.
+INFO 2025-08-28 01:47:02,767 autoreload 9924 11860 Watching for file changes with StatReloader
+INFO 2025-08-28 01:47:09,776 autoreload 9924 11860 C:\Users\ROOM04\Documents\contabilidad\accounts_payable\urls.py changed, reloading.
+INFO 2025-08-28 01:47:10,911 autoreload 6304 11556 Watching for file changes with StatReloader
+WARNING 2025-08-28 01:48:06,089 log 6304 5180 Not Found: /admin/treasury/bankreconciliation/add/
+INFO 2025-08-28 01:49:32,262 autoreload 6304 11556 C:\Users\ROOM04\Documents\contabilidad\contabilidad_multiempresa\urls.py changed, reloading.
+INFO 2025-08-28 01:49:33,384 autoreload 12216 8380 Watching for file changes with StatReloader
+INFO 2025-08-28 01:51:33,591 autoreload 12216 8380 C:\Users\ROOM04\Documents\contabilidad\accounts_payable\urls.py changed, reloading.
+INFO 2025-08-28 01:51:34,918 autoreload 11292 7876 Watching for file changes with StatReloader
+ERROR 2025-08-28 02:03:35,901 log 11292 4384 Internal Server Error: /treasury/bank-movement/
+Traceback (most recent call last):
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\contrib\auth\decorators.py", line 23, in _wrapper_view
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\ROOM04\Documents\contabilidad\treasury\views.py", line 126, in bank_movement
+    'bank_accounts': BankAccount.objects.filter(is_active=True),
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\db\models\manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\db\models\query.py", line 1436, in filter
+    return self._filter_or_exclude(False, args, kwargs)
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\db\models\query.py", line 1454, in _filter_or_exclude
+    clone._filter_or_exclude_inplace(negate, args, kwargs)
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\db\models\query.py", line 1461, in _filter_or_exclude_inplace
+    self._query.add_q(Q(*args, **kwargs))
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\db\models\sql\query.py", line 1546, in add_q
+    clause, _ = self._add_q(q_object, self.used_aliases)
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\db\models\sql\query.py", line 1577, in _add_q
+    child_clause, needed_inner = self.build_filter(
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\db\models\sql\query.py", line 1427, in build_filter
+    lookups, parts, reffed_expression = self.solve_lookup_type(arg, summarize)
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\db\models\sql\query.py", line 1237, in solve_lookup_type
+    _, field, _, lookup_parts = self.names_to_path(lookup_splitted, self.get_meta())
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\db\models\sql\query.py", line 1725, in names_to_path
+    raise FieldError(
+django.core.exceptions.FieldError: Cannot resolve keyword 'is_active' into field. Choices are: account_number, account_type, accounting_account, accounting_account_id, auto_reconcile, bank, bank_id, code, company, company_id, created_at, created_by, created_by_id, currency, currency_id, current_balance, daily_limit, id, movements, name, opening_balance, overdraft_limit, reconcile_tolerance, reconciliations, status, updated_at
+WARNING 2025-08-28 02:03:43,256 log 11292 4384 Not Found: /admin/treasury/bankreconciliation/add/
+INFO 2025-08-28 02:03:58,311 autoreload 11292 7876 C:\Users\ROOM04\Documents\contabilidad\treasury\views.py changed, reloading.
+INFO 2025-08-28 02:03:59,453 autoreload 11696 8848 Watching for file changes with StatReloader
+INFO 2025-08-28 02:04:07,711 autoreload 11696 8848 C:\Users\ROOM04\Documents\contabilidad\treasury\urls.py changed, reloading.
+INFO 2025-08-28 02:04:08,877 autoreload 6876 8788 Watching for file changes with StatReloader
+ERROR 2025-08-28 02:09:17,137 log 6876 5908 Internal Server Error: /treasury/bank-movement/
+Traceback (most recent call last):
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\contrib\auth\decorators.py", line 23, in _wrapper_view
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\ROOM04\Documents\contabilidad\treasury\views.py", line 126, in bank_movement
+    'bank_accounts': BankAccount.objects.filter(is_active=True),
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\db\models\manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\db\models\query.py", line 1436, in filter
+    return self._filter_or_exclude(False, args, kwargs)
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\db\models\query.py", line 1454, in _filter_or_exclude
+    clone._filter_or_exclude_inplace(negate, args, kwargs)
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\db\models\query.py", line 1461, in _filter_or_exclude_inplace
+    self._query.add_q(Q(*args, **kwargs))
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\db\models\sql\query.py", line 1546, in add_q
+    clause, _ = self._add_q(q_object, self.used_aliases)
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\db\models\sql\query.py", line 1577, in _add_q
+    child_clause, needed_inner = self.build_filter(
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\db\models\sql\query.py", line 1427, in build_filter
+    lookups, parts, reffed_expression = self.solve_lookup_type(arg, summarize)
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\db\models\sql\query.py", line 1237, in solve_lookup_type
+    _, field, _, lookup_parts = self.names_to_path(lookup_splitted, self.get_meta())
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\db\models\sql\query.py", line 1725, in names_to_path
+    raise FieldError(
+django.core.exceptions.FieldError: Cannot resolve keyword 'is_active' into field. Choices are: account_number, account_type, accounting_account, accounting_account_id, auto_reconcile, bank, bank_id, code, company, company_id, created_at, created_by, created_by_id, currency, currency_id, current_balance, daily_limit, id, movements, name, opening_balance, overdraft_limit, reconcile_tolerance, reconciliations, status, updated_at
+ERROR 2025-08-28 02:09:19,912 log 6876 5908 Internal Server Error: /payroll/
+Traceback (most recent call last):
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\db\backends\utils.py", line 89, in _execute
+    return self.cursor.execute(sql, params)
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\db\backends\sqlite3\base.py", line 328, in execute
+    return super().execute(query, params)
+sqlite3.OperationalError: no such table: payroll_employees
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\contrib\auth\decorators.py", line 23, in _wrapper_view
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\ROOM04\Documents\contabilidad\payroll\views.py", line 24, in payroll_dashboard
+    total_employees = Employee.objects.filter(is_active=True).count()
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\db\models\query.py", line 608, in count
+    return self.query.get_count(using=self.db)
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\db\models\sql\query.py", line 568, in get_count
+    return obj.get_aggregation(using, {"__count": Count("*")})["__count"]
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\db\models\sql\query.py", line 554, in get_aggregation
+    result = compiler.execute_sql(SINGLE)
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\db\models\sql\compiler.py", line 1562, in execute_sql
+    cursor.execute(sql, params)
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\db\backends\utils.py", line 102, in execute
+    return super().execute(sql, params)
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\db\backends\utils.py", line 67, in execute
+    return self._execute_with_wrappers(
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\db\backends\utils.py", line 80, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\db\backends\utils.py", line 89, in _execute
+    return self.cursor.execute(sql, params)
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\db\utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\db\backends\utils.py", line 89, in _execute
+    return self.cursor.execute(sql, params)
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\db\backends\sqlite3\base.py", line 328, in execute
+    return super().execute(query, params)
+django.db.utils.OperationalError: no such table: payroll_employees
+WARNING 2025-08-28 02:09:22,891 log 6876 5908 Not Found: /admin/payroll/employee/add/
+INFO 2025-08-28 02:09:24,737 autoreload 6876 8788 C:\Users\ROOM04\Documents\contabilidad\payroll\views.py changed, reloading.
+INFO 2025-08-28 02:09:25,976 autoreload 6724 12204 Watching for file changes with StatReloader
+INFO 2025-08-28 02:09:42,645 autoreload 6724 12204 C:\Users\ROOM04\Documents\contabilidad\payroll\views.py changed, reloading.
+INFO 2025-08-28 02:09:43,847 autoreload 5992 1528 Watching for file changes with StatReloader
+INFO 2025-08-28 02:09:56,597 autoreload 5992 1528 C:\Users\ROOM04\Documents\contabilidad\payroll\urls.py changed, reloading.
+INFO 2025-08-28 02:09:57,811 autoreload 11516 1032 Watching for file changes with StatReloader
+INFO 2025-08-28 02:12:04,000 autoreload 11516 1032 C:\Users\ROOM04\Documents\contabilidad\treasury\views.py changed, reloading.
+INFO 2025-08-28 02:12:05,236 autoreload 12268 4792 Watching for file changes with StatReloader
+INFO 2025-08-28 02:12:29,613 autoreload 12268 4792 C:\Users\ROOM04\Documents\contabilidad\treasury\views.py changed, reloading.
+INFO 2025-08-28 02:12:30,695 autoreload 8688 8172 Watching for file changes with StatReloader
+INFO 2025-08-28 02:13:11,471 autoreload 8688 8172 C:\Users\ROOM04\Documents\contabilidad\taxes\views.py changed, reloading.
+INFO 2025-08-28 02:13:12,594 autoreload 3272 1884 Watching for file changes with StatReloader
+INFO 2025-08-28 02:13:33,209 autoreload 3272 1884 C:\Users\ROOM04\Documents\contabilidad\taxes\views.py changed, reloading.
+INFO 2025-08-28 02:13:34,389 autoreload 9836 2452 Watching for file changes with StatReloader
+INFO 2025-08-28 02:13:44,779 autoreload 9836 2452 C:\Users\ROOM04\Documents\contabilidad\taxes\urls.py changed, reloading.
+INFO 2025-08-28 02:13:45,890 autoreload 11036 4984 Watching for file changes with StatReloader
+INFO 2025-08-28 02:16:06,460 autoreload 11036 4984 C:\Users\ROOM04\Documents\contabilidad\taxes\urls.py changed, reloading.
+INFO 2025-08-28 02:16:07,710 autoreload 9888 7360 Watching for file changes with StatReloader
+INFO 2025-08-28 02:16:50,056 autoreload 9736 6572 Watching for file changes with StatReloader
+INFO 2025-08-28 02:17:11,062 autoreload 9736 6572 C:\Users\ROOM04\Documents\contabilidad\accounting\views.py changed, reloading.
+INFO 2025-08-28 02:17:11,618 autoreload 9888 7360 C:\Users\ROOM04\Documents\contabilidad\accounting\views.py changed, reloading.
+INFO 2025-08-28 02:17:12,285 autoreload 5908 11548 Watching for file changes with StatReloader
+INFO 2025-08-28 02:17:12,900 autoreload 10768 5276 Watching for file changes with StatReloader
+INFO 2025-08-28 02:17:21,711 autoreload 5908 11548 C:\Users\ROOM04\Documents\contabilidad\accounting\views.py changed, reloading.
+INFO 2025-08-28 02:17:22,314 autoreload 10768 5276 C:\Users\ROOM04\Documents\contabilidad\accounting\views.py changed, reloading.
+INFO 2025-08-28 02:17:22,943 autoreload 12248 11648 Watching for file changes with StatReloader
+INFO 2025-08-28 02:17:23,545 autoreload 1916 11900 Watching for file changes with StatReloader
+INFO 2025-08-28 02:17:39,284 autoreload 12248 11648 C:\Users\ROOM04\Documents\contabilidad\accounts_receivable\views.py changed, reloading.
+INFO 2025-08-28 02:17:39,591 autoreload 1916 11900 C:\Users\ROOM04\Documents\contabilidad\accounts_receivable\views.py changed, reloading.
+INFO 2025-08-28 02:17:40,558 autoreload 10080 9696 Watching for file changes with StatReloader
+INFO 2025-08-28 02:17:40,840 autoreload 8380 9572 Watching for file changes with StatReloader
+INFO 2025-08-28 02:17:54,403 autoreload 10080 9696 C:\Users\ROOM04\Documents\contabilidad\accounts_payable\views.py changed, reloading.
+INFO 2025-08-28 02:17:54,711 autoreload 8380 9572 C:\Users\ROOM04\Documents\contabilidad\accounts_payable\views.py changed, reloading.
+INFO 2025-08-28 02:17:55,828 autoreload 7680 1856 Watching for file changes with StatReloader
+INFO 2025-08-28 02:17:55,992 autoreload 11636 12160 Watching for file changes with StatReloader
+INFO 2025-08-28 02:18:07,695 autoreload 7680 1856 C:\Users\ROOM04\Documents\contabilidad\accounts_payable\views.py changed, reloading.
+INFO 2025-08-28 02:18:07,816 autoreload 11636 12160 C:\Users\ROOM04\Documents\contabilidad\accounts_payable\views.py changed, reloading.
+INFO 2025-08-28 02:18:08,981 autoreload 9188 11480 Watching for file changes with StatReloader
+INFO 2025-08-28 02:18:09,078 autoreload 11708 11408 Watching for file changes with StatReloader
+INFO 2025-08-28 02:18:18,486 autoreload 9188 11480 C:\Users\ROOM04\Documents\contabilidad\accounts_payable\views.py changed, reloading.
+INFO 2025-08-28 02:18:18,495 autoreload 11708 11408 C:\Users\ROOM04\Documents\contabilidad\accounts_payable\views.py changed, reloading.
+INFO 2025-08-28 02:18:19,763 autoreload 8968 11436 Watching for file changes with StatReloader
+INFO 2025-08-28 02:18:19,764 autoreload 11660 3408 Watching for file changes with StatReloader
+INFO 2025-08-28 02:18:31,486 autoreload 8968 11436 C:\Users\ROOM04\Documents\contabilidad\accounts_payable\views.py changed, reloading.
+INFO 2025-08-28 02:18:31,497 autoreload 11660 3408 C:\Users\ROOM04\Documents\contabilidad\accounts_payable\views.py changed, reloading.
+INFO 2025-08-28 02:18:32,779 autoreload 1724 6836 Watching for file changes with StatReloader
+INFO 2025-08-28 02:18:32,785 autoreload 6304 8948 Watching for file changes with StatReloader
+INFO 2025-08-28 02:18:42,308 autoreload 1724 6836 C:\Users\ROOM04\Documents\contabilidad\accounts_payable\views.py changed, reloading.
+INFO 2025-08-28 02:18:42,320 autoreload 6304 8948 C:\Users\ROOM04\Documents\contabilidad\accounts_payable\views.py changed, reloading.
+INFO 2025-08-28 02:18:43,800 autoreload 10640 11516 Watching for file changes with StatReloader
+INFO 2025-08-28 02:18:43,819 autoreload 10684 4924 Watching for file changes with StatReloader
+INFO 2025-08-28 02:19:00,175 autoreload 10640 11516 C:\Users\ROOM04\Documents\contabilidad\accounts_payable\views.py changed, reloading.
+INFO 2025-08-28 02:19:00,238 autoreload 10684 4924 C:\Users\ROOM04\Documents\contabilidad\accounts_payable\views.py changed, reloading.
+INFO 2025-08-28 02:19:01,631 autoreload 9836 3908 Watching for file changes with StatReloader
+INFO 2025-08-28 02:19:01,650 autoreload 7536 9532 Watching for file changes with StatReloader
+INFO 2025-08-28 02:19:12,240 autoreload 9836 3908 C:\Users\ROOM04\Documents\contabilidad\accounts_payable\views.py changed, reloading.
+INFO 2025-08-28 02:19:12,252 autoreload 7536 9532 C:\Users\ROOM04\Documents\contabilidad\accounts_payable\views.py changed, reloading.
+INFO 2025-08-28 02:19:14,034 autoreload 11868 10360 Watching for file changes with StatReloader
+INFO 2025-08-28 02:19:14,038 autoreload 892 5036 Watching for file changes with StatReloader
+INFO 2025-08-28 02:19:23,608 autoreload 11868 10360 C:\Users\ROOM04\Documents\contabilidad\accounts_payable\views.py changed, reloading.
+INFO 2025-08-28 02:19:23,641 autoreload 892 5036 C:\Users\ROOM04\Documents\contabilidad\accounts_payable\views.py changed, reloading.
+INFO 2025-08-28 02:19:24,962 autoreload 4984 8380 Watching for file changes with StatReloader
+INFO 2025-08-28 02:19:24,978 autoreload 6696 8940 Watching for file changes with StatReloader
+INFO 2025-08-28 02:19:34,747 autoreload 6696 8940 C:\Users\ROOM04\Documents\contabilidad\accounts_payable\views.py changed, reloading.
+INFO 2025-08-28 02:19:35,024 autoreload 4984 8380 C:\Users\ROOM04\Documents\contabilidad\accounts_payable\views.py changed, reloading.
+INFO 2025-08-28 02:19:36,101 autoreload 11636 1980 Watching for file changes with StatReloader
+INFO 2025-08-28 02:19:36,556 autoreload 1884 1032 Watching for file changes with StatReloader
+INFO 2025-08-28 02:19:46,936 autoreload 11636 1980 C:\Users\ROOM04\Documents\contabilidad\accounts_payable\views.py changed, reloading.
+INFO 2025-08-28 02:19:47,119 autoreload 1884 1032 C:\Users\ROOM04\Documents\contabilidad\accounts_payable\views.py changed, reloading.
+INFO 2025-08-28 02:19:48,464 autoreload 8584 10660 Watching for file changes with StatReloader
+INFO 2025-08-28 02:19:48,581 autoreload 2696 5960 Watching for file changes with StatReloader
+INFO 2025-08-28 02:19:59,106 autoreload 8584 10660 C:\Users\ROOM04\Documents\contabilidad\accounts_payable\views.py changed, reloading.
+INFO 2025-08-28 02:19:59,205 autoreload 2696 5960 C:\Users\ROOM04\Documents\contabilidad\accounts_payable\views.py changed, reloading.
+INFO 2025-08-28 02:20:00,462 autoreload 6500 3588 Watching for file changes with StatReloader
+INFO 2025-08-28 02:20:00,535 autoreload 11016 9556 Watching for file changes with StatReloader
+ERROR 2025-08-28 02:20:07,493 log 6500 4560 Internal Server Error: /payroll/
+Traceback (most recent call last):
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\db\backends\utils.py", line 89, in _execute
+    return self.cursor.execute(sql, params)
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\db\backends\sqlite3\base.py", line 328, in execute
+    return super().execute(query, params)
+sqlite3.OperationalError: no such table: payroll_employees
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\contrib\auth\decorators.py", line 23, in _wrapper_view
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\ROOM04\Documents\contabilidad\payroll\views.py", line 26, in payroll_dashboard
+    total_employees = Employee.objects.filter(is_active=True).count()
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\db\models\query.py", line 608, in count
+    return self.query.get_count(using=self.db)
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\db\models\sql\query.py", line 568, in get_count
+    return obj.get_aggregation(using, {"__count": Count("*")})["__count"]
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\db\models\sql\query.py", line 554, in get_aggregation
+    result = compiler.execute_sql(SINGLE)
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\db\models\sql\compiler.py", line 1562, in execute_sql
+    cursor.execute(sql, params)
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\db\backends\utils.py", line 102, in execute
+    return super().execute(sql, params)
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\db\backends\utils.py", line 67, in execute
+    return self._execute_with_wrappers(
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\db\backends\utils.py", line 80, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\db\backends\utils.py", line 89, in _execute
+    return self.cursor.execute(sql, params)
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\db\utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\db\backends\utils.py", line 89, in _execute
+    return self.cursor.execute(sql, params)
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\db\backends\sqlite3\base.py", line 328, in execute
+    return super().execute(query, params)
+django.db.utils.OperationalError: no such table: payroll_employees
+INFO 2025-08-28 02:20:09,289 autoreload 11016 9556 C:\Users\ROOM04\Documents\contabilidad\accounts_payable\views.py changed, reloading.
+INFO 2025-08-28 02:20:09,563 autoreload 6500 3588 C:\Users\ROOM04\Documents\contabilidad\accounts_payable\views.py changed, reloading.
+INFO 2025-08-28 02:20:10,664 autoreload 8736 7700 Watching for file changes with StatReloader
+INFO 2025-08-28 02:20:10,907 autoreload 9284 5380 Watching for file changes with StatReloader
+ERROR 2025-08-28 02:20:14,686 log 8736 1236 Internal Server Error: /payroll/new-employee/
+Traceback (most recent call last):
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\db\backends\utils.py", line 89, in _execute
+    return self.cursor.execute(sql, params)
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\db\backends\sqlite3\base.py", line 328, in execute
+    return super().execute(query, params)
+sqlite3.OperationalError: no such table: payroll_employee_types
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\contrib\auth\decorators.py", line 23, in _wrapper_view
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\ROOM04\Documents\contabilidad\payroll\views.py", line 150, in new_employee
+    return render(request, 'payroll/new_employee.html', context)
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\shortcuts.py", line 24, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\template\loader.py", line 62, in render_to_string
+    return template.render(context, request)
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\template\backends\django.py", line 61, in render
+    return self.template.render(context)
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\template\base.py", line 175, in render
+    return self._render(context)
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\template\base.py", line 167, in _render
+    return self.nodelist.render(context)
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\template\base.py", line 1005, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\template\base.py", line 1005, in <listcomp>
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\template\base.py", line 966, in render_annotated
+    return self.render(context)
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\template\loader_tags.py", line 157, in render
+    return compiled_parent._render(context)
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\template\base.py", line 167, in _render
+    return self.nodelist.render(context)
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\template\base.py", line 1005, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\template\base.py", line 1005, in <listcomp>
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\template\base.py", line 966, in render_annotated
+    return self.render(context)
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\template\loader_tags.py", line 63, in render
+    result = block.nodelist.render(context)
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\template\base.py", line 1005, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\template\base.py", line 1005, in <listcomp>
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\template\base.py", line 966, in render_annotated
+    return self.render(context)
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\template\defaulttags.py", line 194, in render
+    len_values = len(values)
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\db\models\query.py", line 380, in __len__
+    self._fetch_all()
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\db\models\query.py", line 1881, in _fetch_all
+    self._result_cache = list(self._iterable_class(self))
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\db\models\query.py", line 91, in __iter__
+    results = compiler.execute_sql(
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\db\models\sql\compiler.py", line 1562, in execute_sql
+    cursor.execute(sql, params)
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\db\backends\utils.py", line 102, in execute
+    return super().execute(sql, params)
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\db\backends\utils.py", line 67, in execute
+    return self._execute_with_wrappers(
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\db\backends\utils.py", line 80, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\db\backends\utils.py", line 89, in _execute
+    return self.cursor.execute(sql, params)
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\db\utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\db\backends\utils.py", line 89, in _execute
+    return self.cursor.execute(sql, params)
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\db\backends\sqlite3\base.py", line 328, in execute
+    return super().execute(query, params)
+django.db.utils.OperationalError: no such table: payroll_employee_types
+INFO 2025-08-28 02:20:25,614 autoreload 8736 7700 C:\Users\ROOM04\Documents\contabilidad\treasury\views.py changed, reloading.
+INFO 2025-08-28 02:20:26,394 autoreload 9284 5380 C:\Users\ROOM04\Documents\contabilidad\treasury\views.py changed, reloading.
+INFO 2025-08-28 02:20:26,809 autoreload 8588 6940 Watching for file changes with StatReloader
+INFO 2025-08-28 02:20:27,751 autoreload 10684 7800 Watching for file changes with StatReloader
+ERROR 2025-08-28 02:20:31,363 log 8588 9544 Internal Server Error: /taxes/new-declaration/
+Traceback (most recent call last):
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\contrib\auth\decorators.py", line 23, in _wrapper_view
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\ROOM04\Documents\contabilidad\taxes\views.py", line 143, in new_tax_declaration
+    return render(request, 'taxes/new_tax_declaration.html', context)
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\shortcuts.py", line 24, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\template\loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\template\loader.py", line 15, in get_template
+    return engine.get_template(template_name)
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\template\backends\django.py", line 33, in get_template
+    return Template(self.engine.get_template(template_name), self)
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\template\engine.py", line 175, in get_template
+    template, origin = self.find_template(template_name)
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\template\engine.py", line 157, in find_template
+    template = loader.get_template(name, skip=skip)
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\template\loaders\cached.py", line 57, in get_template
+    template = super().get_template(template_name, skip)
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\template\loaders\base.py", line 28, in get_template
+    return Template(
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\template\base.py", line 154, in __init__
+    self.nodelist = self.compile_nodelist()
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\template\base.py", line 200, in compile_nodelist
+    return parser.parse()
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\template\base.py", line 513, in parse
+    raise self.error(token, e)
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\template\base.py", line 511, in parse
+    compiled_result = compile_func(self, token)
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\template\loader_tags.py", line 293, in do_extends
+    nodelist = parser.parse()
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\template\base.py", line 513, in parse
+    raise self.error(token, e)
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\template\base.py", line 511, in parse
+    compiled_result = compile_func(self, token)
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\template\loader_tags.py", line 232, in do_block
+    nodelist = parser.parse(("endblock",))
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\template\base.py", line 513, in parse
+    raise self.error(token, e)
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\template\base.py", line 511, in parse
+    compiled_result = compile_func(self, token)
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\template\defaulttags.py", line 852, in do_for
+    sequence = parser.compile_filter(bits[in_index + 1])
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\template\base.py", line 600, in compile_filter
+    return FilterExpression(token, self)
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\template\base.py", line 698, in __init__
+    filter_func = parser.find_filter(filter_name)
+  File "C:\Users\ROOM04\Documents\contabilidad\.venv\lib\site-packages\django\template\base.py", line 606, in find_filter
+    raise TemplateSyntaxError("Invalid filter: '%s'" % filter_name)
+django.template.exceptions.TemplateSyntaxError: Invalid filter: 'split'
+INFO 2025-08-28 02:20:39,979 autoreload 10684 7800 C:\Users\ROOM04\Documents\contabilidad\treasury\views.py changed, reloading.
+INFO 2025-08-28 02:20:40,106 autoreload 8588 6940 C:\Users\ROOM04\Documents\contabilidad\treasury\views.py changed, reloading.
+INFO 2025-08-28 02:20:41,412 autoreload 4120 11804 Watching for file changes with StatReloader
+INFO 2025-08-28 02:20:41,580 autoreload 2576 5712 Watching for file changes with StatReloader
+INFO 2025-08-28 02:20:51,542 autoreload 2576 5712 C:\Users\ROOM04\Documents\contabilidad\treasury\views.py changed, reloading.
+INFO 2025-08-28 02:20:51,727 autoreload 4120 11804 C:\Users\ROOM04\Documents\contabilidad\treasury\views.py changed, reloading.
+INFO 2025-08-28 02:20:52,874 autoreload 8544 4948 Watching for file changes with StatReloader
+INFO 2025-08-28 02:20:53,060 autoreload 7132 8136 Watching for file changes with StatReloader
+INFO 2025-08-28 02:21:03,654 autoreload 8544 4948 C:\Users\ROOM04\Documents\contabilidad\treasury\views.py changed, reloading.
+INFO 2025-08-28 02:21:03,829 autoreload 7132 8136 C:\Users\ROOM04\Documents\contabilidad\treasury\views.py changed, reloading.
+INFO 2025-08-28 02:21:04,984 autoreload 4012 3844 Watching for file changes with StatReloader
+INFO 2025-08-28 02:21:05,104 autoreload 7664 9148 Watching for file changes with StatReloader
+INFO 2025-08-28 02:21:14,459 autoreload 4012 3844 C:\Users\ROOM04\Documents\contabilidad\treasury\views.py changed, reloading.
+INFO 2025-08-28 02:21:14,574 autoreload 7664 9148 C:\Users\ROOM04\Documents\contabilidad\treasury\views.py changed, reloading.
+INFO 2025-08-28 02:21:15,733 autoreload 6492 11380 Watching for file changes with StatReloader
+INFO 2025-08-28 02:21:15,840 autoreload 4688 4104 Watching for file changes with StatReloader
+INFO 2025-08-28 02:21:25,328 autoreload 6492 11380 C:\Users\ROOM04\Documents\contabilidad\treasury\views.py changed, reloading.
+INFO 2025-08-28 02:21:25,484 autoreload 4688 4104 C:\Users\ROOM04\Documents\contabilidad\treasury\views.py changed, reloading.
+INFO 2025-08-28 02:21:26,617 autoreload 2920 10408 Watching for file changes with StatReloader
+INFO 2025-08-28 02:21:26,760 autoreload 3884 5400 Watching for file changes with StatReloader
+INFO 2025-08-28 02:23:19,445 autoreload 4716 8232 Watching for file changes with StatReloader
+INFO 2025-08-28 02:24:31,244 autoreload 2920 10408 C:\Users\ROOM04\Documents\contabilidad\accounts_payable\views.py changed, reloading.
+INFO 2025-08-28 02:24:31,469 autoreload 4716 8232 C:\Users\ROOM04\Documents\contabilidad\accounts_payable\views.py changed, reloading.
+INFO 2025-08-28 02:24:31,598 autoreload 3884 5400 C:\Users\ROOM04\Documents\contabilidad\accounts_receivable\views.py changed, reloading.
+INFO 2025-08-28 02:24:32,654 autoreload 12152 8136 Watching for file changes with StatReloader
+INFO 2025-08-28 02:24:32,895 autoreload 12140 10212 Watching for file changes with StatReloader
+INFO 2025-08-28 02:24:33,008 autoreload 7536 11708 Watching for file changes with StatReloader
+INFO 2025-08-28 02:35:10,819 autoreload 7536 11708 C:\Users\ROOM04\Documents\contabilidad\reports\services.py changed, reloading.
+INFO 2025-08-28 02:35:10,848 autoreload 12152 8136 C:\Users\ROOM04\Documents\contabilidad\reports\services.py changed, reloading.
+INFO 2025-08-28 02:35:10,906 autoreload 12140 10212 C:\Users\ROOM04\Documents\contabilidad\reports\services.py changed, reloading.
+INFO 2025-08-28 02:35:12,437 autoreload 6328 5992 Watching for file changes with StatReloader
+INFO 2025-08-28 02:35:12,450 autoreload 8848 5004 Watching for file changes with StatReloader
+INFO 2025-08-28 02:35:12,465 autoreload 3456 12116 Watching for file changes with StatReloader
+INFO 2025-08-28 02:35:21,796 autoreload 8848 5004 C:\Users\ROOM04\Documents\contabilidad\reports\services.py changed, reloading.
+INFO 2025-08-28 02:35:21,832 autoreload 3456 12116 C:\Users\ROOM04\Documents\contabilidad\reports\services.py changed, reloading.
+INFO 2025-08-28 02:35:21,854 autoreload 6328 5992 C:\Users\ROOM04\Documents\contabilidad\reports\services.py changed, reloading.
+INFO 2025-08-28 02:35:23,402 autoreload 10696 480 Watching for file changes with StatReloader
+INFO 2025-08-28 02:35:23,406 autoreload 344 1268 Watching for file changes with StatReloader
+INFO 2025-08-28 02:35:23,462 autoreload 1308 3212 Watching for file changes with StatReloader
+INFO 2025-08-28 02:36:49,079 autoreload 10696 480 C:\Users\ROOM04\Documents\contabilidad\reports\views.py changed, reloading.
+INFO 2025-08-28 02:36:49,117 autoreload 1308 3212 C:\Users\ROOM04\Documents\contabilidad\reports\views.py changed, reloading.
+INFO 2025-08-28 02:36:49,248 autoreload 344 1268 C:\Users\ROOM04\Documents\contabilidad\reports\views.py changed, reloading.
+INFO 2025-08-28 02:36:50,736 autoreload 1240 7352 Watching for file changes with StatReloader
+INFO 2025-08-28 02:36:50,755 autoreload 908 12076 Watching for file changes with StatReloader
+INFO 2025-08-28 02:36:51,140 autoreload 7748 8920 Watching for file changes with StatReloader
+WARNING 2025-08-28 02:42:10,059 log 908 5856 Not Found: /admin/taxes/taxtype/
+WARNING 2025-08-28 02:42:13,395 log 908 5856 Not Found: /admin/taxes/taxconfiguration/
+WARNING 2025-08-28 02:42:16,949 log 908 5856 Not Found: /admin/taxes/taxdeclaration/
+WARNING 2025-08-28 02:42:20,653 log 908 5856 Not Found: /admin/taxes/taxcalendar/
+INFO 2025-08-28 02:43:56,081 autoreload 908 12076 C:\Users\ROOM04\Documents\contabilidad\payroll\views.py changed, reloading.
+INFO 2025-08-28 02:43:56,116 autoreload 1240 7352 C:\Users\ROOM04\Documents\contabilidad\payroll\views.py changed, reloading.
+INFO 2025-08-28 02:43:56,132 autoreload 7748 8920 C:\Users\ROOM04\Documents\contabilidad\payroll\views.py changed, reloading.
+INFO 2025-08-28 02:43:57,698 autoreload 5012 608 Watching for file changes with StatReloader
+INFO 2025-08-28 02:43:57,702 autoreload 8524 10216 Watching for file changes with StatReloader
+INFO 2025-08-28 02:43:57,716 autoreload 8880 8136 Watching for file changes with StatReloader
+INFO 2025-08-28 02:44:05,384 autoreload 8524 10216 C:\Users\ROOM04\Documents\contabilidad\payroll\views.py changed, reloading.
+INFO 2025-08-28 02:44:05,397 autoreload 8880 8136 C:\Users\ROOM04\Documents\contabilidad\payroll\views.py changed, reloading.
+INFO 2025-08-28 02:44:05,417 autoreload 5012 608 C:\Users\ROOM04\Documents\contabilidad\payroll\views.py changed, reloading.
+INFO 2025-08-28 02:44:07,125 autoreload 3112 5312 Watching for file changes with StatReloader
+INFO 2025-08-28 02:44:07,132 autoreload 11840 5448 Watching for file changes with StatReloader
+INFO 2025-08-28 02:44:07,153 autoreload 2000 10584 Watching for file changes with StatReloader
+INFO 2025-08-28 02:44:28,964 autoreload 2000 10584 C:\Users\ROOM04\Documents\contabilidad\public_sector\views.py changed, reloading.
+INFO 2025-08-28 02:44:29,112 autoreload 11840 5448 C:\Users\ROOM04\Documents\contabilidad\public_sector\views.py changed, reloading.
+INFO 2025-08-28 02:44:29,211 autoreload 3112 5312 C:\Users\ROOM04\Documents\contabilidad\public_sector\views.py changed, reloading.
+INFO 2025-08-28 02:44:30,581 autoreload 6716 8492 Watching for file changes with StatReloader
+INFO 2025-08-28 02:44:30,678 autoreload 12244 4980 Watching for file changes with StatReloader
+INFO 2025-08-28 02:44:30,771 autoreload 5108 7016 Watching for file changes with StatReloader
+INFO 2025-08-28 02:44:58,720 autoreload 12244 4980 C:\Users\ROOM04\Documents\contabilidad\public_sector\views.py changed, reloading.
+INFO 2025-08-28 02:44:58,755 autoreload 5108 7016 C:\Users\ROOM04\Documents\contabilidad\payroll\views.py changed, reloading.
+INFO 2025-08-28 02:44:59,373 autoreload 6716 8492 C:\Users\ROOM04\Documents\contabilidad\reports\views.py changed, reloading.
+INFO 2025-08-28 02:45:00,630 autoreload 8404 8172 Watching for file changes with StatReloader
+INFO 2025-08-28 02:45:00,630 autoreload 5896 10748 Watching for file changes with StatReloader
+INFO 2025-08-28 02:45:01,207 autoreload 6572 8896 Watching for file changes with StatReloader
+INFO 2025-08-28 02:45:12,203 autoreload 8404 8172 C:\Users\ROOM04\Documents\contabilidad\payroll\urls.py changed, reloading.
+INFO 2025-08-28 02:45:12,215 autoreload 5896 10748 C:\Users\ROOM04\Documents\contabilidad\core\urls.py changed, reloading.
+INFO 2025-08-28 02:45:12,497 autoreload 6572 8896 C:\Users\ROOM04\Documents\contabilidad\public_sector\urls.py changed, reloading.
+INFO 2025-08-28 02:45:16,926 autoreload 6424 9900 Watching for file changes with StatReloader
+INFO 2025-08-28 02:45:16,954 autoreload 10068 3336 Watching for file changes with StatReloader
+INFO 2025-08-28 02:45:17,175 autoreload 8832 10188 Watching for file changes with StatReloader
+WARNING 2025-08-28 02:47:48,807 log 10068 10584 Not Found: /admin/public_sector/budget/add/
+INFO 2025-08-30 00:43:38,834 autoreload 7328 6532 Watching for file changes with StatReloader
+WARNING 2025-08-30 00:43:54,155 log 7328 10036 Not Found: /favicon.ico

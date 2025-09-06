@@ -1,0 +1,183 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard de Inventario - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1><i class="bi bi-boxes"></i> Dashboard de Inventario</h1>
+            <div>
+                <a href="{% url 'inventory:new_product' %}" class="btn btn-primary">
+                    <i class="bi bi-plus-circle"></i> Nuevo Producto
+                </a>
+                <a href="{% url 'inventory:product_list' %}" class="btn btn-outline-primary">
+                    <i class="bi bi-list"></i> Ver Productos
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Estadísticas -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card bg-primary text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4 class="card-title">{{ total_products }}</h4>
+                        <p class="card-text">Total Productos</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-box-seam fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card bg-success text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4 class="card-title">{{ total_categories }}</h4>
+                        <p class="card-text">Categorías</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-tags fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card bg-warning text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4 class="card-title">{{ low_stock_products }}</h4>
+                        <p class="card-text">Stock Bajo</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-exclamation-triangle fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card bg-info text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4 class="card-title">0</h4>
+                        <p class="card-text">Movimientos Hoy</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-arrow-left-right fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Acciones Rápidas -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="bi bi-lightning"></i> Acciones Rápidas</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        <a href="{% url 'inventory:new_product' %}" class="btn btn-outline-primary w-100 mb-2">
+                            <i class="bi bi-plus-circle"></i><br>
+                            Nuevo Producto
+                        </a>
+                    </div>
+                    <div class="col-md-3">
+                        <a href="{% url 'inventory:stock_movement' %}" class="btn btn-outline-success w-100 mb-2">
+                            <i class="bi bi-arrow-left-right"></i><br>
+                            Movimiento de Stock
+                        </a>
+                    </div>
+                    <div class="col-md-3">
+                        <a href="{% url 'inventory:stock_report' %}" class="btn btn-outline-info w-100 mb-2">
+                            <i class="bi bi-file-earmark-text"></i><br>
+                            Reporte de Stock
+                        </a>
+                    </div>
+                    <div class="col-md-3">
+                        <a href="{% url 'inventory:product_list' %}" class="btn btn-outline-secondary w-100 mb-2">
+                            <i class="bi bi-search"></i><br>
+                            Buscar Productos
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Productos Destacados -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="bi bi-star"></i> Productos Destacados</h5>
+            </div>
+            <div class="card-body">
+                {% if top_products %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Código</th>
+                                    <th>Nombre</th>
+                                    <th>Categoría</th>
+                                    <th>Precio de Venta</th>
+                                    <th>Stock Actual</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for product in top_products %}
+                                <tr>
+                                    <td><code>{{ product.code }}</code></td>
+                                    <td>{{ product.name }}</td>
+                                    <td>{{ product.category.name }}</td>
+                                    <td>${{ product.sale_price|floatformat:2 }}</td>
+                                    <td>
+                                        <span class="badge bg-success">{{ product.get_current_stock }}</span>
+                                    </td>
+                                    <td>
+                                        <a href="{% url 'inventory:product_detail' product.id %}" class="btn btn-sm btn-outline-primary">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="text-center py-4">
+                        <i class="bi bi-inbox fs-1 text-muted"></i>
+                        <p class="text-muted mt-2">No hay productos registrados</p>
+                        <a href="{% url 'inventory:new_product' %}" class="btn btn-primary">
+                            <i class="bi bi-plus-circle"></i> Crear Primer Producto
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

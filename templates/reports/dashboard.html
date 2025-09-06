@@ -1,0 +1,431 @@
+{% extends 'base.html' %}
+
+{% block title %}Reportes - Sistema de Contabilidad{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h1 class="mb-4">
+            <i class="bi bi-file-earmark-bar-graph"></i> Centro de Reportes
+        </h1>
+    </div>
+</div>
+
+<!-- Selector de Empresa -->
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="bi bi-building"></i> Seleccionar Empresa</h5>
+            </div>
+            <div class="card-body">
+                <select class="form-select" id="companySelector">
+                    <option value="">Seleccione una empresa...</option>
+                    {% for company in companies %}
+                        <option value="{{ company.id }}">{{ company.name }} ({{ company.tax_id }})</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card bg-info text-white">
+            <div class="card-body">
+                <h5><i class="bi bi-info-circle"></i> Información</h5>
+                <p class="mb-0">Seleccione una empresa para generar reportes específicos. Todos los reportes se generan en tiempo real con los datos más actualizados.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Reportes Financieros -->
+<div class="row mb-4">
+    <div class="col-12">
+        <h3>Reportes Financieros</h3>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-3 mb-3">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="bi bi-clipboard-data fs-1 text-primary mb-3"></i>
+                <h5 class="card-title">Balance General</h5>
+                <p class="card-text">Estado de situación financiera a una fecha específica</p>
+                <button class="btn btn-primary" onclick="openBalanceSheetModal()">Generar</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-3">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="bi bi-graph-up fs-1 text-success mb-3"></i>
+                <h5 class="card-title">Estado de Resultados</h5>
+                <p class="card-text">Ingresos y gastos en un período determinado</p>
+                <button class="btn btn-success" onclick="openIncomeStatementModal()">Generar</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-3">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="bi bi-table fs-1 text-warning mb-3"></i>
+                <h5 class="card-title">Balance de Prueba</h5>
+                <p class="card-text">Resumen de saldos de todas las cuentas</p>
+                <button class="btn btn-warning" onclick="openTrialBalanceModal()">Generar</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-3">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="bi bi-journal-text fs-1 text-info mb-3"></i>
+                <h5 class="card-title">Libro Mayor</h5>
+                <p class="card-text">Movimientos detallados de una cuenta específica</p>
+                <button class="btn btn-info" onclick="openGeneralLedgerModal()">Generar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Reportes de Cartera -->
+<div class="row mb-4">
+    <div class="col-12">
+        <h3>Reportes de Cartera</h3>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6 mb-3">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="bi bi-people fs-1 text-danger mb-3"></i>
+                <h5 class="card-title">Cartera CxC</h5>
+                <p class="card-text">Análisis de vencimiento de cuentas por cobrar</p>
+                <button class="btn btn-danger" onclick="openAgingReportModal('receivables')">Generar</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6 mb-3">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="bi bi-truck fs-1 text-secondary mb-3"></i>
+                <h5 class="card-title">Cartera CxP</h5>
+                <p class="card-text">Análisis de vencimiento de cuentas por pagar</p>
+                <button class="btn btn-secondary" onclick="openAgingReportModal('payables')">Generar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Reportes Recientes -->
+<div class="row">
+    <div class="col-12">
+        <h3>Reportes Recientes</h3>
+        <div class="card">
+            <div class="card-body">
+                {% if recent_reports %}
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Reporte</th>
+                                    <th>Empresa</th>
+                                    <th>Período</th>
+                                    <th>Fecha Generación</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for report in recent_reports %}
+                                <tr>
+                                    <td>{{ report.template.name }}</td>
+                                    <td>{{ report.company.name }}</td>
+                                    <td>{{ report.period_start }} - {{ report.period_end }}</td>
+                                    <td>{{ report.created_at|date:"d/m/Y H:i" }}</td>
+                                    <td>
+                                        {% if report.status == 'completed' %}
+                                            <span class="badge bg-success">Completado</span>
+                                        {% elif report.status == 'generating' %}
+                                            <span class="badge bg-warning">Generando</span>
+                                        {% else %}
+                                            <span class="badge bg-danger">Error</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if report.status == 'completed' %}
+                                            {% if report.pdf_file %}
+                                                <a href="{{ report.pdf_file.url }}" class="btn btn-sm btn-outline-primary" target="_blank">
+                                                    <i class="bi bi-file-pdf"></i> PDF
+                                                </a>
+                                            {% endif %}
+                                            {% if report.excel_file %}
+                                                <a href="{{ report.excel_file.url }}" class="btn btn-sm btn-outline-success">
+                                                    <i class="bi bi-file-excel"></i> Excel
+                                                </a>
+                                            {% endif %}
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p class="text-muted">No hay reportes generados recientemente.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modales para generación de reportes -->
+{% include 'reports/modals/balance_sheet_modal.html' %}
+{% include 'reports/modals/income_statement_modal.html' %}
+{% include 'reports/modals/trial_balance_modal.html' %}
+{% include 'reports/modals/general_ledger_modal.html' %}
+{% include 'reports/modals/aging_report_modal.html' %}
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+let selectedCompanyId = null;
+
+document.getElementById('companySelector').addEventListener('change', function() {
+    selectedCompanyId = this.value;
+});
+
+function validateCompanySelection() {
+    if (!selectedCompanyId) {
+        alert('Por favor seleccione una empresa primero.');
+        return false;
+    }
+    return true;
+}
+
+function openBalanceSheetModal() {
+    if (!validateCompanySelection()) return;
+    document.getElementById('balanceSheetCompanyId').value = selectedCompanyId;
+    new bootstrap.Modal(document.getElementById('balanceSheetModal')).show();
+}
+
+function openIncomeStatementModal() {
+    if (!validateCompanySelection()) return;
+    document.getElementById('incomeStatementCompanyId').value = selectedCompanyId;
+    new bootstrap.Modal(document.getElementById('incomeStatementModal')).show();
+}
+
+function openTrialBalanceModal() {
+    if (!validateCompanySelection()) return;
+    document.getElementById('trialBalanceCompanyId').value = selectedCompanyId;
+    new bootstrap.Modal(document.getElementById('trialBalanceModal')).show();
+}
+
+function openGeneralLedgerModal() {
+    if (!validateCompanySelection()) return;
+    document.getElementById('generalLedgerCompanyId').value = selectedCompanyId;
+    loadCompanyAccounts(selectedCompanyId);
+    new bootstrap.Modal(document.getElementById('generalLedgerModal')).show();
+}
+
+function openAgingReportModal(reportType) {
+    if (!validateCompanySelection()) return;
+    document.getElementById('agingReportCompanyId').value = selectedCompanyId;
+    document.getElementById('agingReportType').value = reportType;
+    new bootstrap.Modal(document.getElementById('agingReportModal')).show();
+}
+
+function loadCompanyAccounts(companyId) {
+    fetch(`/reports/api/company/${companyId}/accounts/`)
+        .then(response => response.json())
+        .then(data => {
+            const select = document.getElementById('generalLedgerAccountId');
+            select.innerHTML = '<option value="">Seleccione una cuenta...</option>';
+            data.accounts.forEach(account => {
+                const option = document.createElement('option');
+                option.value = account.id;
+                option.textContent = account.full_name;
+                select.appendChild(option);
+            });
+        })
+        .catch(error => {
+            console.error('Error loading accounts:', error);
+            alert('Error al cargar las cuentas');
+        });
+}
+
+// Funciones para generar reportes
+function generateBalanceSheet() {
+    const form = document.getElementById('balanceSheetForm');
+    const formData = new FormData(form);
+    
+    // Crear formulario temporal para envío
+    const tempForm = document.createElement('form');
+    tempForm.method = 'POST';
+    tempForm.action = '{% url "reports:generate_balance_sheet" %}';
+    tempForm.target = '_blank';
+    
+    // Agregar token CSRF
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    const csrfInput = document.createElement('input');
+    csrfInput.type = 'hidden';
+    csrfInput.name = 'csrfmiddlewaretoken';
+    csrfInput.value = csrfToken;
+    tempForm.appendChild(csrfInput);
+    
+    // Agregar datos del formulario
+    for (let [key, value] of formData.entries()) {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = key;
+        input.value = value;
+        tempForm.appendChild(input);
+    }
+    
+    document.body.appendChild(tempForm);
+    tempForm.submit();
+    document.body.removeChild(tempForm);
+    
+    bootstrap.Modal.getInstance(document.getElementById('balanceSheetModal')).hide();
+}
+
+function generateIncomeStatement() {
+    const form = document.getElementById('incomeStatementForm');
+    const formData = new FormData(form);
+    
+    const tempForm = document.createElement('form');
+    tempForm.method = 'POST';
+    tempForm.action = '{% url "reports:generate_income_statement" %}';
+    tempForm.target = '_blank';
+    
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    const csrfInput = document.createElement('input');
+    csrfInput.type = 'hidden';
+    csrfInput.name = 'csrfmiddlewaretoken';
+    csrfInput.value = csrfToken;
+    tempForm.appendChild(csrfInput);
+    
+    for (let [key, value] of formData.entries()) {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = key;
+        input.value = value;
+        tempForm.appendChild(input);
+    }
+    
+    document.body.appendChild(tempForm);
+    tempForm.submit();
+    document.body.removeChild(tempForm);
+    
+    bootstrap.Modal.getInstance(document.getElementById('incomeStatementModal')).hide();
+}
+
+function generateTrialBalance() {
+    const form = document.getElementById('trialBalanceForm');
+    const formData = new FormData(form);
+    
+    const tempForm = document.createElement('form');
+    tempForm.method = 'POST';
+    tempForm.action = '{% url "reports:generate_trial_balance" %}';
+    tempForm.target = '_blank';
+    
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    const csrfInput = document.createElement('input');
+    csrfInput.type = 'hidden';
+    csrfInput.name = 'csrfmiddlewaretoken';
+    csrfInput.value = csrfToken;
+    tempForm.appendChild(csrfInput);
+    
+    for (let [key, value] of formData.entries()) {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = key;
+        input.value = value;
+        tempForm.appendChild(input);
+    }
+    
+    document.body.appendChild(tempForm);
+    tempForm.submit();
+    document.body.removeChild(tempForm);
+    
+    bootstrap.Modal.getInstance(document.getElementById('trialBalanceModal')).hide();
+}
+
+function generateGeneralLedger() {
+    const form = document.getElementById('generalLedgerForm');
+    const formData = new FormData(form);
+    
+    if (!formData.get('account_id')) {
+        alert('Por favor seleccione una cuenta.');
+        return;
+    }
+    
+    const tempForm = document.createElement('form');
+    tempForm.method = 'POST';
+    tempForm.action = '{% url "reports:generate_general_ledger" %}';
+    tempForm.target = '_blank';
+    
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    const csrfInput = document.createElement('input');
+    csrfInput.type = 'hidden';
+    csrfInput.name = 'csrfmiddlewaretoken';
+    csrfInput.value = csrfToken;
+    tempForm.appendChild(csrfInput);
+    
+    for (let [key, value] of formData.entries()) {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = key;
+        input.value = value;
+        tempForm.appendChild(input);
+    }
+    
+    document.body.appendChild(tempForm);
+    tempForm.submit();
+    document.body.removeChild(tempForm);
+    
+    bootstrap.Modal.getInstance(document.getElementById('generalLedgerModal')).hide();
+}
+
+function generateAgingReport() {
+    const form = document.getElementById('agingReportForm');
+    const formData = new FormData(form);
+    
+    const tempForm = document.createElement('form');
+    tempForm.method = 'POST';
+    tempForm.action = '{% url "reports:generate_aging_report" %}';
+    tempForm.target = '_blank';
+    
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    const csrfInput = document.createElement('input');
+    csrfInput.type = 'hidden';
+    csrfInput.name = 'csrfmiddlewaretoken';
+    csrfInput.value = csrfToken;
+    tempForm.appendChild(csrfInput);
+    
+    for (let [key, value] of formData.entries()) {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = key;
+        input.value = value;
+        tempForm.appendChild(input);
+    }
+    
+    document.body.appendChild(tempForm);
+    tempForm.submit();
+    document.body.removeChild(tempForm);
+    
+    bootstrap.Modal.getInstance(document.getElementById('agingReportModal')).hide();
+}
+</script>
+{% endblock %}
+
+
+
+

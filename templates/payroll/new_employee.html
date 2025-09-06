@@ -1,0 +1,509 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Nuevo Empleado{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h2><i class="bi bi-person-plus text-primary"></i> Nuevo Empleado</h2>
+                    <p class="text-muted">Registra empleados con toda la información laboral y de seguridad social</p>
+                </div>
+                <div>
+                    <a href="{% url 'core:dashboard' %}" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-left"></i> Volver al Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Información sobre Empleados -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-primary">
+                <div class="card-header bg-primary text-white">
+                    <h5><i class="bi bi-info-circle"></i> Registro de Empleados en Colombia</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>El registro de empleados debe cumplir con toda la normativa laboral colombiana:</strong></p>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <h6>👥 Información Personal:</h6>
+                            <ul class="small">
+                                <li>📄 <strong>Documento de identidad</strong> válido</li>
+                                <li>📧 <strong>Datos de contacto</strong> actualizados</li>
+                                <li>🏠 <strong>Dirección de residencia</strong></li>
+                            </ul>
+                        </div>
+                        <div class="col-md-4">
+                            <h6>🏥 Seguridad Social:</h6>
+                            <ul class="small">
+                                <li>🏥 <strong>EPS:</strong> Entidad Promotora de Salud</li>
+                                <li>💰 <strong>Pensión:</strong> Fondo de pensiones</li>
+                                <li>⚠️ <strong>ARL:</strong> Riesgos laborales</li>
+                                <li>👨‍👩‍👧‍👦 <strong>CCF:</strong> Caja de compensación</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-4">
+                            <h6>💼 Información Laboral:</h6>
+                            <ul class="small">
+                                <li>📅 <strong>Fecha de ingreso</strong></li>
+                                <li>📋 <strong>Tipo de contrato</strong></li>
+                                <li>💵 <strong>Salario básico</strong></li>
+                                <li>🏦 <strong>Cuenta bancaria</strong> para pagos</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Formulario de Empleado -->
+    <form method="post" id="employeeForm">
+        {% csrf_token %}
+        
+        <!-- Datos Personales -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header bg-success text-white">
+                        <h5><i class="bi bi-person"></i> Datos Personales</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <label for="company" class="form-label">Empresa *</label>
+                                <select class="form-select" id="company" name="company" required>
+                                    <option value="">Seleccione empresa...</option>
+                                    {% for company in companies %}
+                                        <option value="{{ company.id }}">{{ company.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="employee_number" class="form-label">Número de Empleado *</label>
+                                <input type="text" class="form-control" id="employee_number" name="employee_number" 
+                                       placeholder="Ej: EMP-001" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="document_type" class="form-label">Tipo de Documento *</label>
+                                <select class="form-select" id="document_type" name="document_type" required>
+                                    <option value="">Seleccione...</option>
+                                    <option value="CC">Cédula de Ciudadanía</option>
+                                    <option value="CE">Cédula de Extranjería</option>
+                                    <option value="TI">Tarjeta de Identidad</option>
+                                    <option value="PP">Pasaporte</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="document_number" class="form-label">Número de Documento *</label>
+                                <input type="text" class="form-control" id="document_number" name="document_number" 
+                                       placeholder="Ej: 12345678" required>
+                            </div>
+                        </div>
+                        
+                        <div class="row mt-3">
+                            <div class="col-md-3">
+                                <label for="first_name" class="form-label">Nombres *</label>
+                                <input type="text" class="form-control" id="first_name" name="first_name" 
+                                       placeholder="Nombres completos" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="last_name" class="form-label">Apellidos *</label>
+                                <input type="text" class="form-control" id="last_name" name="last_name" 
+                                       placeholder="Apellidos completos" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="birth_date" class="form-label">Fecha de Nacimiento *</label>
+                                <input type="date" class="form-control" id="birth_date" name="birth_date" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="gender" class="form-label">Género *</label>
+                                <select class="form-select" id="gender" name="gender" required>
+                                    <option value="">Seleccione...</option>
+                                    <option value="M">Masculino</option>
+                                    <option value="F">Femenino</option>
+                                    <option value="O">Otro</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="row mt-3">
+                            <div class="col-md-3">
+                                <label for="marital_status" class="form-label">Estado Civil</label>
+                                <select class="form-select" id="marital_status" name="marital_status">
+                                    <option value="">Seleccione...</option>
+                                    <option value="single">Soltero(a)</option>
+                                    <option value="married">Casado(a)</option>
+                                    <option value="divorced">Divorciado(a)</option>
+                                    <option value="widowed">Viudo(a)</option>
+                                    <option value="union">Unión Libre</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="email" name="email" 
+                                       placeholder="correo@ejemplo.com">
+                            </div>
+                            <div class="col-md-3">
+                                <label for="phone" class="form-label">Teléfono</label>
+                                <input type="text" class="form-control" id="phone" name="phone" 
+                                       placeholder="Ej: 3001234567">
+                            </div>
+                            <div class="col-md-3">
+                                <label for="city" class="form-label">Ciudad</label>
+                                <input type="text" class="form-control" id="city" name="city" 
+                                       placeholder="Ciudad de residencia">
+                            </div>
+                        </div>
+                        
+                        <div class="row mt-3">
+                            <div class="col-md-12">
+                                <label for="address" class="form-label">Dirección</label>
+                                <input type="text" class="form-control" id="address" name="address" 
+                                       placeholder="Dirección completa de residencia">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Información Laboral -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header bg-warning text-dark">
+                        <h5><i class="bi bi-briefcase"></i> Información Laboral</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <label for="employee_type" class="form-label">Tipo de Empleado *</label>
+                                <select class="form-select" id="employee_type" name="employee_type" required>
+                                    <option value="">Seleccione tipo...</option>
+                                    {% for type in employee_types %}
+                                        <option value="{{ type.id }}">{{ type.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="hire_date" class="form-label">Fecha de Ingreso *</label>
+                                <input type="date" class="form-control" id="hire_date" name="hire_date" 
+                                       value="{{ today|date:'Y-m-d' }}" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="contract_type" class="form-label">Tipo de Contrato *</label>
+                                <select class="form-select" id="contract_type" name="contract_type" required>
+                                    <option value="">Seleccione...</option>
+                                    <option value="indefinite">Término Indefinido</option>
+                                    <option value="fixed">Término Fijo</option>
+                                    <option value="work">Por Obra o Labor</option>
+                                    <option value="apprentice">Aprendizaje</option>
+                                    <option value="service">Prestación de Servicios</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="row mt-3">
+                            <div class="col-md-4">
+                                <label for="basic_salary" class="form-label">Salario Básico *</label>
+                                <input type="number" class="form-control" id="basic_salary" name="basic_salary" 
+                                       step="1000" min="0" placeholder="1300000" required>
+                                <small class="form-text text-muted">Salario mínimo 2025: $1.300.000</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Seguridad Social -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header bg-info text-white">
+                        <h5><i class="bi bi-shield-check"></i> Seguridad Social</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <label for="eps" class="form-label">EPS (Salud) *</label>
+                                <select class="form-select" id="eps" name="eps" required>
+                                    <option value="">Seleccione EPS...</option>
+                                    <option value="SURA">SURA</option>
+                                    <option value="NUEVA_EPS">Nueva EPS</option>
+                                    <option value="SANITAS">Sanitas</option>
+                                    <option value="FAMISANAR">Famisanar</option>
+                                    <option value="COMPENSAR">Compensar</option>
+                                    <option value="SALUD_TOTAL">Salud Total</option>
+                                    <option value="COOMEVA">Coomeva</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="pension_fund" class="form-label">Fondo de Pensión *</label>
+                                <select class="form-select" id="pension_fund" name="pension_fund" required>
+                                    <option value="">Seleccione fondo...</option>
+                                    <option value="PORVENIR">Porvenir</option>
+                                    <option value="PROTECCION">Protección</option>
+                                    <option value="COLFONDOS">Colfondos</option>
+                                    <option value="OLD_MUTUAL">Old Mutual</option>
+                                    <option value="COLPENSIONES">Colpensiones</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="arl" class="form-label">ARL (Riesgos) *</label>
+                                <select class="form-select" id="arl" name="arl" required>
+                                    <option value="">Seleccione ARL...</option>
+                                    <option value="SURA">SURA ARL</option>
+                                    <option value="POSITIVA">Positiva</option>
+                                    <option value="COLMENA">Colmena Seguros</option>
+                                    <option value="LIBERTY">Liberty Seguros</option>
+                                    <option value="MAPFRE">Mapfre</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="ccf" class="form-label">Caja de Compensación *</label>
+                                <select class="form-select" id="ccf" name="ccf" required>
+                                    <option value="">Seleccione CCF...</option>
+                                    <option value="COMPENSAR">Compensar</option>
+                                    <option value="COLSUBSIDIO">Colsubsidio</option>
+                                    <option value="COMFAMA">Comfama</option>
+                                    <option value="COMFENALCO">Comfenalco</option>
+                                    <option value="CAFAM">Cafam</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Información Bancaria -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header bg-secondary text-white">
+                        <h5><i class="bi bi-bank"></i> Información Bancaria</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <label for="bank_name" class="form-label">Banco</label>
+                                <select class="form-select" id="bank_name" name="bank_name">
+                                    <option value="">Seleccione banco...</option>
+                                    <option value="BANCOLOMBIA">Bancolombia</option>
+                                    <option value="BANCO_BOGOTA">Banco de Bogotá</option>
+                                    <option value="DAVIVIENDA">Davivienda</option>
+                                    <option value="BBVA">BBVA</option>
+                                    <option value="BANCO_POPULAR">Banco Popular</option>
+                                    <option value="COLPATRIA">Colpatria</option>
+                                    <option value="CITIBANK">Citibank</option>
+                                    <option value="NEQUI">Nequi</option>
+                                    <option value="DAVIPLATA">Daviplata</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="account_type" class="form-label">Tipo de Cuenta</label>
+                                <select class="form-select" id="account_type" name="account_type">
+                                    <option value="">Seleccione tipo...</option>
+                                    <option value="savings">Ahorros</option>
+                                    <option value="checking">Corriente</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="account_number" class="form-label">Número de Cuenta</label>
+                                <input type="text" class="form-control" id="account_number" name="account_number" 
+                                       placeholder="Número de cuenta bancaria">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Botones de Acción -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <button type="submit" class="btn btn-primary btn-lg me-3">
+                            <i class="bi bi-person-plus"></i> Crear Empleado
+                        </button>
+                        <button type="reset" class="btn btn-secondary btn-lg" onclick="resetForm()">
+                            <i class="bi bi-arrow-clockwise"></i> Limpiar Formulario
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <!-- Ayuda Rápida -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card bg-light">
+                <div class="card-header">
+                    <h6><i class="bi bi-question-circle"></i> Información Importante sobre Empleados en Colombia</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <h6>📋 Documentos Requeridos:</h6>
+                            <small>
+                                <strong>Obligatorios:</strong> Cédula, hoja de vida, exámenes médicos<br>
+                                <strong>Seguridad Social:</strong> Afiliaciones EPS, pensión, ARL, CCF<br>
+                                <strong>Bancarios:</strong> Certificación bancaria para pagos<br>
+                                <em>Todos los empleados deben estar afiliados</em>
+                            </small>
+                        </div>
+                        <div class="col-md-4">
+                            <h6>💰 Salarios y Prestaciones:</h6>
+                            <small>
+                                <strong>Salario Mínimo 2025:</strong> $1.300.000<br>
+                                <strong>Prestaciones:</strong> Prima, cesantías, vacaciones<br>
+                                <strong>Aportes:</strong> Salud (4%), pensión (4%), ARL<br>
+                                <em>Cálculo automático en nómina</em>
+                            </small>
+                        </div>
+                        <div class="col-md-4">
+                            <h6>⚖️ Cumplimiento Legal:</h6>
+                            <small>
+                                <strong>Contratos:</strong> Según código sustantivo del trabajo<br>
+                                <strong>Afiliaciones:</strong> Máximo 30 días después del ingreso<br>
+                                <strong>Reportes:</strong> PILA mensual obligatorio<br>
+                                <em>Sistema genera automáticamente</em>
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.card-header {
+    font-weight: 500;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+.btn-lg {
+    padding: 0.75rem 2rem;
+    font-size: 1.1rem;
+}
+
+.form-text {
+    font-size: 0.8rem;
+}
+
+.alert-light {
+    background-color: #f8f9fa;
+    border-color: #dee2e6;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function resetForm() {
+    document.getElementById('employeeForm').reset();
+}
+
+// Validación del formulario
+document.getElementById('employeeForm').addEventListener('submit', function(e) {
+    const requiredFields = ['company', 'employee_number', 'document_type', 'document_number', 
+                           'first_name', 'last_name', 'birth_date', 'gender', 'employee_type', 
+                           'hire_date', 'contract_type', 'basic_salary', 'eps', 'pension_fund', 'arl', 'ccf'];
+    
+    let isValid = true;
+    let firstInvalidField = null;
+    
+    requiredFields.forEach(fieldName => {
+        const field = document.getElementById(fieldName);
+        if (field && !field.value.trim()) {
+            field.classList.add('is-invalid');
+            if (!firstInvalidField) {
+                firstInvalidField = field;
+            }
+            isValid = false;
+        } else if (field) {
+            field.classList.remove('is-invalid');
+        }
+    });
+    
+    if (!isValid) {
+        e.preventDefault();
+        alert('Por favor complete todos los campos obligatorios marcados con *');
+        if (firstInvalidField) {
+            firstInvalidField.focus();
+        }
+        return false;
+    }
+    
+    // Validar salario mínimo
+    const salary = parseFloat(document.getElementById('basic_salary').value) || 0;
+    const minimumWage = 1300000; // Salario mínimo 2025
+    
+    if (salary < minimumWage) {
+        const confirm = window.confirm(
+            `El salario ingresado (${formatCurrency(salary)}) es menor al salario mínimo (${formatCurrency(minimumWage)}). ¿Desea continuar?`
+        );
+        if (!confirm) {
+            e.preventDefault();
+            return false;
+        }
+    }
+});
+
+function formatCurrency(amount) {
+    return new Intl.NumberFormat('es-CO', { 
+        style: 'currency', 
+        currency: 'COP',
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+    }).format(amount);
+}
+
+// Generar número de empleado automático
+document.getElementById('company').addEventListener('change', function() {
+    if (this.value && !document.getElementById('employee_number').value) {
+        const companyName = this.options[this.selectedIndex].text.substring(0, 3).toUpperCase();
+        const timestamp = Date.now().toString().slice(-4);
+        document.getElementById('employee_number').value = `${companyName}-${timestamp}`;
+    }
+});
+
+// Validación de edad mínima (18 años)
+document.getElementById('birth_date').addEventListener('change', function() {
+    const birthDate = new Date(this.value);
+    const today = new Date();
+    const age = today.getFullYear() - birthDate.getFullYear();
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+    
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+        age--;
+    }
+    
+    if (age < 18) {
+        alert('El empleado debe ser mayor de edad (18 años)');
+        this.value = '';
+    }
+});
+</script>
+{% endblock %}
+
+
+
+

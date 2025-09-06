@@ -1,0 +1,480 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Conciliación Bancaria{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h2><i class="bi bi-check2-square text-success"></i> Conciliación Bancaria</h2>
+                    <p class="text-muted">Cuadra los saldos contables con los extractos bancarios</p>
+                </div>
+                <div>
+                    <a href="{% url 'core:dashboard' %}" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-left"></i> Volver al Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Información sobre Conciliación Bancaria -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-success">
+                <div class="card-header bg-success text-white">
+                    <h5><i class="bi bi-info-circle"></i> ¿Qué es una Conciliación Bancaria?</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>La conciliación bancaria verifica que los registros contables coincidan con el extracto del banco:</strong></p>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <h6>🎯 Objetivo Principal:</h6>
+                            <ul class="small">
+                                <li>✅ <strong>Verificar</strong> saldo contable vs bancario</li>
+                                <li>🔍 <strong>Identificar</strong> diferencias y errores</li>
+                                <li>⚖️ <strong>Cuadrar</strong> ambos saldos</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-4">
+                            <h6>📋 Diferencias Comunes:</h6>
+                            <ul class="small">
+                                <li>💰 <strong>Notas débito/crédito</strong> no registradas</li>
+                                <li>🕐 <strong>Cheques en tránsito</strong> no cobrados</li>
+                                <li>📅 <strong>Depósitos en tránsito</strong></li>
+                            </ul>
+                        </div>
+                        <div class="col-md-4">
+                            <h6>🔧 Proceso de Ajuste:</h6>
+                            <ul class="small">
+                                <li>📊 <strong>Comparar</strong> movimientos</li>
+                                <li>➕ <strong>Agregar</strong> movimientos faltantes</li>
+                                <li>✅ <strong>Confirmar</strong> cuadre final</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Formulario de Conciliación -->
+        <div class="col-md-8">
+            <form method="post" id="reconciliationForm">
+                {% csrf_token %}
+                
+                <!-- Datos Básicos -->
+                <div class="card mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h5><i class="bi bi-file-earmark-check"></i> Datos de la Conciliación</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label for="company" class="form-label">Empresa *</label>
+                                <select class="form-select" id="company" name="company" required>
+                                    <option value="">Seleccione empresa...</option>
+                                    {% for company in companies %}
+                                        <option value="{{ company.id }}">{{ company.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="bank_account" class="form-label">Cuenta Bancaria *</label>
+                                <select class="form-select" id="bank_account" name="bank_account" required onchange="loadAccountInfo()">
+                                    <option value="">Seleccione cuenta...</option>
+                                    {% for account in bank_accounts %}
+                                        <option value="{{ account.id }}" 
+                                                data-bank="{{ account.bank.name }}"
+                                                data-number="{{ account.account_number }}"
+                                                data-balance="{{ account.current_balance }}">
+                                            {{ account.bank.name }} - {{ account.account_number }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="row mt-3">
+                            <div class="col-md-6">
+                                <label for="statement_date" class="form-label">Fecha del Extracto *</label>
+                                <input type="date" class="form-control" id="statement_date" name="statement_date" 
+                                       value="{{ today|date:'Y-m-d' }}" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="statement_balance" class="form-label">Saldo según Extracto *</label>
+                                <input type="number" class="form-control" id="statement_balance" name="statement_balance" 
+                                       step="0.01" placeholder="0.00" required onchange="calculateDifference()">
+                            </div>
+                        </div>
+                        
+                        <!-- Información de Saldos -->
+                        <div class="row mt-4" id="balanceInfo" style="display: none;">
+                            <div class="col-12">
+                                <div class="alert alert-info">
+                                    <h6><i class="bi bi-calculator"></i> Comparación de Saldos</h6>
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <strong>Saldo Contable:</strong><br>
+                                            <span id="bookBalance" class="fs-5">$0.00</span>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <strong>Saldo Extracto:</strong><br>
+                                            <span id="statementBalanceDisplay" class="fs-5">$0.00</span>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <strong>Diferencia:</strong><br>
+                                            <span id="difference" class="fs-5 fw-bold">$0.00</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Ajustes de Conciliación -->
+                <div class="card mb-4">
+                    <div class="card-header bg-warning text-dark d-flex justify-content-between align-items-center">
+                        <h5><i class="bi bi-tools"></i> Ajustes de Conciliación</h5>
+                        <button type="button" class="btn btn-dark btn-sm" onclick="addAdjustment()">
+                            <i class="bi bi-plus-circle"></i> Agregar Ajuste
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered" id="adjustmentsTable">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th width="5%">#</th>
+                                        <th width="15%">Tipo</th>
+                                        <th width="15%">Monto</th>
+                                        <th width="50%">Descripción</th>
+                                        <th width="15%">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="adjustmentsBody">
+                                    <!-- Los ajustes se generan dinámicamente -->
+                                </tbody>
+                                <tfoot class="table-light">
+                                    <tr>
+                                        <td colspan="4" class="text-end"><strong>Total Ajustes:</strong></td>
+                                        <td class="text-end"><strong id="totalAdjustments">$0.00</strong></td>
+                                    </tr>
+                                    <tr class="table-success">
+                                        <td colspan="4" class="text-end"><strong>Saldo Final:</strong></td>
+                                        <td class="text-end"><strong id="finalBalance">$0.00</strong></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                        
+                        <div class="alert alert-light mt-3">
+                            <h6><i class="bi bi-lightbulb"></i> Tipos de Ajustes Comunes:</h6>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <strong>➕ Agregar al Saldo Contable:</strong>
+                                    <ul class="small mb-0">
+                                        <li>Notas crédito bancarias</li>
+                                        <li>Intereses ganados</li>
+                                        <li>Depósitos no registrados</li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6">
+                                    <strong>➖ Restar del Saldo Contable:</strong>
+                                    <ul class="small mb-0">
+                                        <li>Notas débito bancarias</li>
+                                        <li>Comisiones bancarias</li>
+                                        <li>Cheques devueltos</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Botones de Acción -->
+                <div class="card">
+                    <div class="card-body text-center">
+                        <button type="submit" class="btn btn-success btn-lg me-3">
+                            <i class="bi bi-check2-square"></i> Procesar Conciliación
+                        </button>
+                        <button type="reset" class="btn btn-secondary btn-lg" onclick="resetForm()">
+                            <i class="bi bi-arrow-clockwise"></i> Limpiar
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        
+        <!-- Movimientos Recientes -->
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h5><i class="bi bi-list-ul"></i> Movimientos Recientes</h5>
+                </div>
+                <div class="card-body">
+                    {% if recent_movements %}
+                        <div class="list-group list-group-flush">
+                            {% for movement in recent_movements %}
+                                <div class="list-group-item px-0">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div class="flex-grow-1">
+                                            <h6 class="mb-1">
+                                                {% if movement.movement_type == 'deposit' %}
+                                                    <i class="bi bi-arrow-down-circle text-success"></i>
+                                                {% else %}
+                                                    <i class="bi bi-arrow-up-circle text-danger"></i>
+                                                {% endif %}
+                                                {{ movement.description|truncatechars:20 }}
+                                            </h6>
+                                            <p class="mb-1 small text-muted">
+                                                {{ movement.date }} - {{ movement.reference }}
+                                            </p>
+                                            <small class="text-muted">{{ movement.bank_account.bank.name }}</small>
+                                        </div>
+                                        <div class="text-end">
+                                            <span class="badge {% if movement.movement_type == 'deposit' %}bg-success{% else %}bg-danger{% endif %}">
+                                                ${{ movement.amount|floatformat:0 }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center text-muted py-4">
+                            <i class="bi bi-inbox fs-1"></i>
+                            <p>No hay movimientos registrados</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.card-header {
+    font-weight: 500;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #198754;
+    box-shadow: 0 0 0 0.2rem rgba(25, 135, 84, 0.25);
+}
+
+.btn-lg {
+    padding: 0.75rem 2rem;
+    font-size: 1.1rem;
+}
+
+.list-group-item {
+    border-left: none;
+    border-right: none;
+}
+
+.alert-info {
+    background-color: #e7f3ff;
+    border-color: #b6d7ff;
+    color: #004085;
+}
+
+#difference.positive {
+    color: #28a745;
+}
+
+#difference.negative {
+    color: #dc3545;
+}
+
+#difference.balanced {
+    color: #28a745;
+    font-weight: bold;
+}
+
+.table th {
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+let adjustmentCounter = 0;
+let currentBookBalance = 0;
+
+function loadAccountInfo() {
+    const select = document.getElementById('bank_account');
+    const selectedOption = select.options[select.selectedIndex];
+    const balanceInfo = document.getElementById('balanceInfo');
+    
+    if (selectedOption.value) {
+        const balance = parseFloat(selectedOption.dataset.balance) || 0;
+        currentBookBalance = balance;
+        
+        document.getElementById('bookBalance').textContent = formatCurrency(balance);
+        balanceInfo.style.display = 'block';
+        
+        calculateDifference();
+    } else {
+        balanceInfo.style.display = 'none';
+        currentBookBalance = 0;
+    }
+}
+
+function calculateDifference() {
+    const statementBalance = parseFloat(document.getElementById('statement_balance').value) || 0;
+    const bookBalance = currentBookBalance;
+    const difference = statementBalance - bookBalance;
+    
+    document.getElementById('statementBalanceDisplay').textContent = formatCurrency(statementBalance);
+    
+    const differenceElement = document.getElementById('difference');
+    differenceElement.textContent = formatCurrency(Math.abs(difference));
+    
+    // Aplicar clase según la diferencia
+    differenceElement.className = 'fs-5 fw-bold';
+    if (Math.abs(difference) < 0.01) {
+        differenceElement.classList.add('balanced');
+    } else if (difference > 0) {
+        differenceElement.classList.add('positive');
+    } else {
+        differenceElement.classList.add('negative');
+    }
+    
+    calculateFinalBalance();
+}
+
+function addAdjustment() {
+    adjustmentCounter++;
+    const tbody = document.getElementById('adjustmentsBody');
+    
+    const row = document.createElement('tr');
+    row.innerHTML = `
+        <td class="text-center">${adjustmentCounter}</td>
+        <td>
+            <select class="form-select" name="adjustment_type_${adjustmentCounter}" onchange="calculateFinalBalance()">
+                <option value="">Seleccione...</option>
+                <option value="add">➕ Agregar</option>
+                <option value="subtract">➖ Restar</option>
+            </select>
+        </td>
+        <td>
+            <input type="number" class="form-control text-end" name="adjustment_amount_${adjustmentCounter}" 
+                   step="0.01" min="0" placeholder="0.00" onchange="calculateFinalBalance()">
+        </td>
+        <td>
+            <input type="text" class="form-control" name="adjustment_description_${adjustmentCounter}" 
+                   placeholder="Descripción del ajuste...">
+        </td>
+        <td class="text-center">
+            <button type="button" class="btn btn-danger btn-sm" onclick="removeAdjustment(this)">
+                <i class="bi bi-trash"></i>
+            </button>
+        </td>
+    `;
+    
+    tbody.appendChild(row);
+}
+
+function removeAdjustment(button) {
+    const row = button.closest('tr');
+    row.remove();
+    calculateFinalBalance();
+}
+
+function calculateFinalBalance() {
+    let totalAdjustments = 0;
+    
+    // Calcular total de ajustes
+    for (let i = 1; i <= adjustmentCounter; i++) {
+        const typeSelect = document.querySelector(`select[name="adjustment_type_${i}"]`);
+        const amountInput = document.querySelector(`input[name="adjustment_amount_${i}"]`);
+        
+        if (typeSelect && amountInput && typeSelect.value && amountInput.value) {
+            const amount = parseFloat(amountInput.value) || 0;
+            if (typeSelect.value === 'add') {
+                totalAdjustments += amount;
+            } else if (typeSelect.value === 'subtract') {
+                totalAdjustments -= amount;
+            }
+        }
+    }
+    
+    const finalBalance = currentBookBalance + totalAdjustments;
+    
+    document.getElementById('totalAdjustments').textContent = formatCurrency(totalAdjustments);
+    document.getElementById('finalBalance').textContent = formatCurrency(finalBalance);
+}
+
+function formatCurrency(amount) {
+    return new Intl.NumberFormat('es-CO', { 
+        style: 'currency', 
+        currency: 'COP',
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+    }).format(amount);
+}
+
+function resetForm() {
+    document.getElementById('reconciliationForm').reset();
+    document.getElementById('balanceInfo').style.display = 'none';
+    document.getElementById('adjustmentsBody').innerHTML = '';
+    adjustmentCounter = 0;
+    currentBookBalance = 0;
+    calculateFinalBalance();
+}
+
+// Validación del formulario
+document.getElementById('reconciliationForm').addEventListener('submit', function(e) {
+    const statementBalance = parseFloat(document.getElementById('statement_balance').value) || 0;
+    const finalBalance = currentBookBalance + calculateTotalAdjustments();
+    const difference = Math.abs(statementBalance - finalBalance);
+    
+    if (difference > 0.01) {
+        const confirm = window.confirm(
+            `La conciliación tiene una diferencia de ${formatCurrency(difference)}. ¿Desea continuar?`
+        );
+        if (!confirm) {
+            e.preventDefault();
+            return false;
+        }
+    }
+});
+
+function calculateTotalAdjustments() {
+    let total = 0;
+    for (let i = 1; i <= adjustmentCounter; i++) {
+        const typeSelect = document.querySelector(`select[name="adjustment_type_${i}"]`);
+        const amountInput = document.querySelector(`input[name="adjustment_amount_${i}"]`);
+        
+        if (typeSelect && amountInput && typeSelect.value && amountInput.value) {
+            const amount = parseFloat(amountInput.value) || 0;
+            if (typeSelect.value === 'add') {
+                total += amount;
+            } else if (typeSelect.value === 'subtract') {
+                total -= amount;
+            }
+        }
+    }
+    return total;
+}
+
+// Inicialización
+document.addEventListener('DOMContentLoaded', function() {
+    calculateFinalBalance();
+});
+</script>
+{% endblock %}
+
+
+
+

@@ -1,0 +1,257 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ product.name }} - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1><i class="bi bi-box-seam"></i> {{ product.name }}</h1>
+            <div>
+                <a href="{% url 'inventory:edit_product' product.id %}" class="btn btn-warning">
+                    <i class="bi bi-pencil"></i> Editar
+                </a>
+                <a href="{% url 'inventory:product_list' %}" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i> Volver
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Información Principal -->
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h6><i class="bi bi-info-circle"></i> Información del Producto</h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <table class="table table-borderless">
+                            <tr>
+                                <td><strong>Código:</strong></td>
+                                <td><code>{{ product.code }}</code></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Nombre:</strong></td>
+                                <td>{{ product.name }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Categoría:</strong></td>
+                                <td>{{ product.category.name }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Tipo:</strong></td>
+                                <td><span class="badge bg-secondary">{{ product.get_product_type_display }}</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Unidad:</strong></td>
+                                <td>{{ product.unit_of_measure.name }} ({{ product.unit_of_measure.symbol }})</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="col-md-6">
+                        <table class="table table-borderless">
+                            <tr>
+                                <td><strong>Código de Barras:</strong></td>
+                                <td>{{ product.barcode|default:"-" }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Ref. Interna:</strong></td>
+                                <td>{{ product.internal_reference|default:"-" }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Ref. Proveedor:</strong></td>
+                                <td>{{ product.supplier_reference|default:"-" }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Estado:</strong></td>
+                                <td>
+                                    {% if product.is_active %}
+                                        <span class="badge bg-success">Activo</span>
+                                    {% else %}
+                                        <span class="badge bg-danger">Inactivo</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>Empresa:</strong></td>
+                                <td>{{ product.company.name }}</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                
+                {% if product.description %}
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <h6>Descripción:</h6>
+                        <p class="text-muted">{{ product.description }}</p>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Precios y Costos -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h6><i class="bi bi-currency-dollar"></i> Precios y Costos</h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="text-center">
+                            <h5 class="text-primary">${{ product.standard_cost|floatformat:2 }}</h5>
+                            <small class="text-muted">Costo Estándar</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="text-center">
+                            <h5 class="text-info">${{ product.average_cost|floatformat:2 }}</h5>
+                            <small class="text-muted">Costo Promedio</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="text-center">
+                            <h5 class="text-warning">${{ product.last_cost|floatformat:2 }}</h5>
+                            <small class="text-muted">Último Costo</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="text-center">
+                            <h5 class="text-success">${{ product.sale_price|floatformat:2 }}</h5>
+                            <small class="text-muted">Precio de Venta</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Control de Inventario -->
+        {% if product.track_inventory %}
+        <div class="card mt-4">
+            <div class="card-header">
+                <h6><i class="bi bi-boxes"></i> Control de Inventario</h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="text-center">
+                            <h5 class="text-primary">{{ product.get_current_stock }}</h5>
+                            <small class="text-muted">Stock Actual</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="text-center">
+                            <h5 class="text-danger">{{ product.minimum_stock }}</h5>
+                            <small class="text-muted">Stock Mínimo</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="text-center">
+                            <h5 class="text-success">{{ product.maximum_stock }}</h5>
+                            <small class="text-muted">Stock Máximo</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="text-center">
+                            <h5 class="text-warning">{{ product.reorder_point }}</h5>
+                            <small class="text-muted">Punto de Reorden</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    
+    <!-- Panel Lateral -->
+    <div class="col-md-4">
+        <!-- Imagen del Producto -->
+        <div class="card">
+            <div class="card-header">
+                <h6><i class="bi bi-image"></i> Imagen</h6>
+            </div>
+            <div class="card-body text-center">
+                {% if product.image %}
+                    <img src="{{ product.image.url }}" alt="{{ product.name }}" class="img-fluid rounded">
+                {% else %}
+                    <div class="bg-light rounded p-4">
+                        <i class="bi bi-image fs-1 text-muted"></i>
+                        <p class="text-muted mt-2">Sin imagen</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Configuración -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h6><i class="bi bi-gear"></i> Configuración</h6>
+            </div>
+            <div class="card-body">
+                <div class="mb-2">
+                    <strong>Método de Costeo:</strong><br>
+                    <span class="badge bg-info">{{ product.get_costing_method_display }}</span>
+                </div>
+                
+                <div class="mb-2">
+                    <strong>Configuración:</strong><br>
+                    {% if product.is_for_sale %}
+                        <span class="badge bg-success me-1">Para Venta</span>
+                    {% endif %}
+                    {% if product.is_for_purchase %}
+                        <span class="badge bg-primary me-1">Para Compra</span>
+                    {% endif %}
+                    {% if product.track_lots %}
+                        <span class="badge bg-warning me-1">Control de Lotes</span>
+                    {% endif %}
+                    {% if product.track_serial_numbers %}
+                        <span class="badge bg-info me-1">Números de Serie</span>
+                    {% endif %}
+                </div>
+                
+                <div class="mb-2">
+                    <strong>Tasa de Impuesto:</strong><br>
+                    {{ product.tax_rate }}%
+                </div>
+                
+                <div class="mb-2">
+                    <strong>Creado:</strong><br>
+                    <small class="text-muted">{{ product.created_at|date:"d/m/Y H:i" }}</small>
+                </div>
+                
+                <div class="mb-2">
+                    <strong>Actualizado:</strong><br>
+                    <small class="text-muted">{{ product.updated_at|date:"d/m/Y H:i" }}</small>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Acciones Rápidas -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h6><i class="bi bi-lightning"></i> Acciones Rápidas</h6>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{% url 'inventory:edit_product' product.id %}" class="btn btn-warning btn-sm">
+                        <i class="bi bi-pencil"></i> Editar Producto
+                    </a>
+                    {% if product.track_inventory %}
+                        <a href="{% url 'inventory:stock_movement' %}" class="btn btn-success btn-sm">
+                            <i class="bi bi-arrow-left-right"></i> Movimiento de Stock
+                        </a>
+                    {% endif %}
+                    <a href="{% url 'inventory:product_list' %}" class="btn btn-outline-secondary btn-sm">
+                        <i class="bi bi-list"></i> Ver Todos los Productos
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,383 @@
+{% extends 'base.html' %}
+
+{% block title %}Sector Público - Sistema de Contabilidad{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h1 class="mb-4">
+            <i class="bi bi-building-gear"></i> Gestión Sector Público
+        </h1>
+    </div>
+</div>
+
+<!-- Selector de Empresa -->
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="bi bi-building"></i> Seleccionar Entidad</h5>
+            </div>
+            <div class="card-body">
+                <select class="form-select" id="companySelector">
+                    <option value="">Seleccione una entidad...</option>
+                    {% for company in companies %}
+                        <option value="{{ company.id }}">{{ company.name }} ({{ company.tax_id }})</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card bg-info text-white">
+            <div class="card-body">
+                <h5><i class="bi bi-graph-up"></i> Ejecución Presupuestal</h5>
+                <div class="progress mb-2" style="height: 20px;">
+                    <div class="progress-bar bg-warning" role="progressbar" style="width: {{ execution_percentage }}%">
+                        {{ execution_percentage|floatformat:1 }}%
+                    </div>
+                </div>
+                <p class="mb-0">
+                    <strong>${{ executed_budget|floatformat:0 }}</strong> de <strong>${{ total_budget|floatformat:0 }}</strong>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Estadísticas Presupuestales -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card border-primary">
+            <div class="card-body text-center">
+                <i class="bi bi-wallet2 fs-1 text-primary mb-2"></i>
+                <h3 class="text-primary">${{ total_budget|floatformat:0 }}</h3>
+                <p class="mb-0">Presupuesto Total</p>
+                <small class="text-muted">Vigencia actual</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-success">
+            <div class="card-body text-center">
+                <i class="bi bi-check-circle fs-1 text-success mb-2"></i>
+                <h3 class="text-success">${{ executed_budget|floatformat:0 }}</h3>
+                <p class="mb-0">Ejecutado</p>
+                <small class="text-muted">{{ execution_percentage|floatformat:1 }}% del total</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-warning">
+            <div class="card-body text-center">
+                <i class="bi bi-file-earmark-check fs-1 text-warning mb-2"></i>
+                <h3 class="text-warning">{{ pending_cdps }}</h3>
+                <p class="mb-0">CDPs Pendientes</p>
+                <small class="text-muted">Por aprobar</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-info">
+            <div class="card-body text-center">
+                <i class="bi bi-file-earmark-text fs-1 text-info mb-2"></i>
+                <h3 class="text-info">{{ pending_rps }}</h3>
+                <p class="mb-0">RPs Pendientes</p>
+                <small class="text-muted">Por ejecutar</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Acciones Rápidas -->
+<div class="row mb-4">
+    <div class="col-12">
+        <h3>Acciones Rápidas</h3>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-2 mb-3">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="bi bi-plus-circle fs-1 text-primary mb-3"></i>
+                <h6 class="card-title">Nuevo Presupuesto</h6>
+                <button class="btn btn-primary btn-sm" onclick="createBudget()">Crear</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-2 mb-3">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="bi bi-file-earmark-plus fs-1 text-success mb-3"></i>
+                <h6 class="card-title">Nuevo CDP</h6>
+                <button class="btn btn-success btn-sm" onclick="createCDP()">Crear</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-2 mb-3">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="bi bi-file-earmark-text fs-1 text-warning mb-3"></i>
+                <h6 class="card-title">Nuevo RP</h6>
+                <button class="btn btn-warning btn-sm" onclick="createRP()">Crear</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-2 mb-3">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="bi bi-graph-up fs-1 text-info mb-3"></i>
+                <h6 class="card-title">Ejecución</h6>
+                <button class="btn btn-info btn-sm" onclick="viewExecution()">Ver</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-2 mb-3">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="bi bi-file-earmark-bar-graph fs-1 text-secondary mb-3"></i>
+                <h6 class="card-title">Reporte CHIP</h6>
+                <button class="btn btn-secondary btn-sm" onclick="generateCHIP()">Generar</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-2 mb-3">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="bi bi-gear fs-1 text-dark mb-3"></i>
+                <h6 class="card-title">Configurar</h6>
+                <button class="btn btn-dark btn-sm" onclick="configure()">Configurar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Módulos del Sector Público -->
+<div class="row mb-4">
+    <div class="col-12">
+        <h3>Módulos Especializados</h3>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-4 mb-3">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5><i class="bi bi-wallet2"></i> Gestión Presupuestal</h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled">
+                    <li><i class="bi bi-check text-success"></i> Presupuesto por rubros</li>
+                    <li><i class="bi bi-check text-success"></i> Modificaciones presupuestales</li>
+                    <li><i class="bi bi-check text-success"></i> Traslados y adiciones</li>
+                    <li><i class="bi bi-check text-success"></i> Control de disponibilidad</li>
+                </ul>
+                <a href="/admin/public_sector/budget/" class="btn btn-outline-primary btn-sm w-100">
+                    <i class="bi bi-eye"></i> Ver Presupuestos
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4 mb-3">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h5><i class="bi bi-file-earmark-check"></i> CDPs y RPs</h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled">
+                    <li><i class="bi bi-check text-success"></i> Certificados de disponibilidad</li>
+                    <li><i class="bi bi-check text-success"></i> Registros presupuestales</li>
+                    <li><i class="bi bi-check text-success"></i> Control de compromisos</li>
+                    <li><i class="bi bi-check text-success"></i> Seguimiento de contratos</li>
+                </ul>
+                <div class="row">
+                    <div class="col-6">
+                        <a href="/admin/public_sector/cdp/" class="btn btn-outline-success btn-sm w-100">CDPs</a>
+                    </div>
+                    <div class="col-6">
+                        <a href="/admin/public_sector/rp/" class="btn btn-outline-warning btn-sm w-100">RPs</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4 mb-3">
+        <div class="card">
+            <div class="card-header bg-info text-white">
+                <h5><i class="bi bi-file-earmark-bar-graph"></i> Reportes Oficiales</h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled">
+                    <li><i class="bi bi-check text-success"></i> Reportes CHIP</li>
+                    <li><i class="bi bi-check text-success"></i> Ejecución presupuestal</li>
+                    <li><i class="bi bi-check text-success"></i> Balance CGN</li>
+                    <li><i class="bi bi-check text-success"></i> Estados financieros</li>
+                </ul>
+                <a href="/admin/public_sector/publicreport/" class="btn btn-outline-info btn-sm w-100">
+                    <i class="bi bi-file-text"></i> Ver Reportes
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Normatividad -->
+<div class="row">
+    <div class="col-12">
+        <div class="card bg-light">
+            <div class="card-header">
+                <h5><i class="bi bi-book"></i> Cumplimiento Normativo</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="text-center mb-3">
+                            <i class="bi bi-shield-check fs-2 text-success"></i>
+                            <h6>RCP - Régimen de Contabilidad Pública</h6>
+                            <small class="text-muted">Resolución 533 de 2015</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="text-center mb-3">
+                            <i class="bi bi-file-text fs-2 text-primary"></i>
+                            <h6>PGCP - Plan General de Contabilidad Pública</h6>
+                            <small class="text-muted">Resolución 620 de 2015</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="text-center mb-3">
+                            <i class="bi bi-globe fs-2 text-warning"></i>
+                            <h6>NICSP/IPSAS</h6>
+                            <small class="text-muted">Normas Internacionales</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="text-center mb-3">
+                            <i class="bi bi-building-gear fs-2 text-info"></i>
+                            <h6>CGN - Contaduría General</h6>
+                            <small class="text-muted">Instructivos y conceptos</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+let selectedCompanyId = null;
+
+// Restaurar selección al cargar la página
+document.addEventListener('DOMContentLoaded', function() {
+    const selector = document.getElementById('companySelector');
+    selectedCompanyId = localStorage.getItem('selectedPublicCompanyId') || null;
+    
+    if (selectedCompanyId) {
+        selector.value = selectedCompanyId;
+        updateDashboardData(selectedCompanyId);
+    }
+});
+
+document.getElementById('companySelector').addEventListener('change', function() {
+    selectedCompanyId = this.value;
+    
+    if (selectedCompanyId) {
+        // Guardar selección en localStorage
+        localStorage.setItem('selectedPublicCompanyId', selectedCompanyId);
+        updateDashboardData(selectedCompanyId);
+    } else {
+        localStorage.removeItem('selectedPublicCompanyId');
+        clearDashboardData();
+    }
+});
+
+function updateDashboardData(companyId) {
+    const companyName = document.querySelector(`#companySelector option[value="${companyId}"]`).textContent;
+    
+    // Actualizar título
+    const titleElement = document.querySelector('.page-title h1');
+    if (titleElement) {
+        titleElement.innerHTML = `<i class="bi bi-bank"></i> Gestión Sector Público - ${companyName}`;
+    }
+    
+    // Mostrar mensaje de éxito
+    showSuccessMessage(`Entidad seleccionada: ${companyName}`);
+}
+
+function clearDashboardData() {
+    const titleElement = document.querySelector('.page-title h1');
+    if (titleElement) {
+        titleElement.innerHTML = '<i class="bi bi-bank"></i> Gestión Sector Público';
+    }
+}
+
+function showSuccessMessage(message) {
+    const alertDiv = document.createElement('div');
+    alertDiv.className = 'alert alert-success alert-dismissible fade show mt-3';
+    alertDiv.innerHTML = `
+        <i class="bi bi-check-circle"></i> ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    
+    // Insertar después del selector
+    const selectorCard = document.querySelector('#companySelector').closest('.card');
+    selectorCard.parentNode.insertBefore(alertDiv, selectorCard.nextSibling);
+    
+    // Auto-ocultar después de 3 segundos
+    setTimeout(() => {
+        if (alertDiv.parentNode) {
+            alertDiv.remove();
+        }
+    }, 3000);
+}
+
+function validateCompanySelection() {
+    if (!selectedCompanyId) {
+        alert('Por favor seleccione una entidad primero.');
+        return false;
+    }
+    return true;
+}
+
+function createBudget() {
+    if (!validateCompanySelection()) return;
+    window.open('/admin/public_sector/budget/add/', '_blank');
+}
+
+function createCDP() {
+    if (!validateCompanySelection()) return;
+    window.open('/admin/public_sector/cdp/add/', '_blank');
+}
+
+function createRP() {
+    if (!validateCompanySelection()) return;
+    window.open('/admin/public_sector/rp/add/', '_blank');
+}
+
+function viewExecution() {
+    if (!validateCompanySelection()) return;
+    alert('Funcionalidad en desarrollo: Reporte de ejecución presupuestal');
+}
+
+function generateCHIP() {
+    if (!validateCompanySelection()) return;
+    alert('Funcionalidad en desarrollo: Generación de reportes CHIP');
+}
+
+function configure() {
+    if (!validateCompanySelection()) return;
+    window.open('/admin/public_sector/budgetitem/', '_blank');
+}
+</script>
+{% endblock %}

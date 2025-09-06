@@ -1,0 +1,267 @@
+{% extends 'base.html' %}
+
+{% block title %}Nueva Empresa - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1><i class="bi bi-plus-circle"></i> Nueva Empresa</h1>
+            <a href="{% url 'core:company_list' %}" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i> Volver a Lista
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Información Importante -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="alert alert-info">
+            <i class="bi bi-info-circle"></i>
+            <strong>Tipos de Empresa:</strong> Puede registrar tanto <strong>Personas Jurídicas</strong> (sociedades, fundaciones, etc.) 
+            como <strong>Personas Naturales</strong> (comerciantes individuales) que ejercen actividad empresarial.
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h6><i class="bi bi-building"></i> Información de la Empresa</h6>
+            </div>
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+                    <div class="row">
+                        <!-- Información Básica -->
+                        <div class="col-md-6">
+                            <h6 class="text-primary mb-3">Información Básica</h6>
+                            
+                            <div class="mb-3">
+                                <label for="name" class="form-label">Nombre Comercial *</label>
+                                <input type="text" class="form-control" id="name" name="name" required>
+                                <div class="form-text">Nombre con el que opera comercialmente</div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="legal_name" class="form-label">Razón Social *</label>
+                                <input type="text" class="form-control" id="legal_name" name="legal_name" required>
+                                <div class="form-text">Nombre legal registrado (para personas naturales: nombres y apellidos completos)</div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <div class="mb-3">
+                                        <label for="tax_id" class="form-label">NIT/Cédula *</label>
+                                        <input type="text" class="form-control" id="tax_id" name="tax_id" required>
+                                        <div class="form-text">NIT para personas jurídicas, Cédula para personas naturales</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label for="tax_id_dv" class="form-label">Dígito de Verificación</label>
+                                        <input type="text" class="form-control" id="tax_id_dv" name="tax_id_dv" maxlength="2">
+                                        <div class="form-text">Solo para NIT</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="country" class="form-label">País *</label>
+                                <select class="form-select" id="country" name="country" required>
+                                    <option value="">Seleccione un país</option>
+                                    {% for country in countries %}
+                                        <option value="{{ country.id }}" {% if country.code == 'CO' %}selected{% endif %}>
+                                            {{ country.name }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="address" class="form-label">Dirección *</label>
+                                <textarea class="form-control" id="address" name="address" rows="2" required></textarea>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="city" class="form-label">Ciudad *</label>
+                                        <input type="text" class="form-control" id="city" name="city" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="state" class="form-label">Departamento/Estado *</label>
+                                        <input type="text" class="form-control" id="state" name="state" required>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="postal_code" class="form-label">Código Postal</label>
+                                <input type="text" class="form-control" id="postal_code" name="postal_code">
+                            </div>
+                        </div>
+                        
+                        <!-- Información de Contacto -->
+                        <div class="col-md-6">
+                            <h6 class="text-primary mb-3">Información de Contacto</h6>
+                            
+                            <div class="mb-3">
+                                <label for="phone" class="form-label">Teléfono</label>
+                                <input type="text" class="form-control" id="phone" name="phone">
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email *</label>
+                                <input type="email" class="form-control" id="email" name="email" required>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="website" class="form-label">Sitio Web</label>
+                                <input type="url" class="form-control" id="website" name="website">
+                            </div>
+                            
+                            <!-- Configuración Tributaria -->
+                            <h6 class="text-primary mb-3 mt-4">Configuración Tributaria</h6>
+                            
+                            <div class="mb-3">
+                                <label for="regime" class="form-label">Régimen Tributario *</label>
+                                <select class="form-select" id="regime" name="regime" required>
+                                    <option value="">Seleccione un régimen</option>
+                                    {% for value, label in regime_choices %}
+                                        <option value="{{ value }}">{{ label }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="sector" class="form-label">Sector *</label>
+                                <select class="form-select" id="sector" name="sector" required>
+                                    {% for value, label in sector_choices %}
+                                        <option value="{{ value }}" {% if value == 'private' %}selected{% endif %}>{{ label }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="functional_currency" class="form-label">Moneda Funcional</label>
+                                <select class="form-select" id="functional_currency" name="functional_currency">
+                                    <option value="COP" selected>Peso Colombiano (COP)</option>
+                                    <option value="USD">Dólar Americano (USD)</option>
+                                    <option value="EUR">Euro (EUR)</option>
+                                </select>
+                            </div>
+                            
+                            <!-- Año Fiscal -->
+                            <h6 class="text-primary mb-3 mt-4">Configuración Fiscal</h6>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="fiscal_year_start" class="form-label">Inicio Año Fiscal *</label>
+                                        <input type="date" class="form-control" id="fiscal_year_start" name="fiscal_year_start" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="fiscal_year_end" class="form-label">Fin Año Fiscal *</label>
+                                        <input type="date" class="form-control" id="fiscal_year_end" name="fiscal_year_end" required>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Representante Legal -->
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <h6 class="text-primary mb-3">Representante Legal</h6>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="legal_representative" class="form-label">Nombre del Representante Legal *</label>
+                                        <input type="text" class="form-control" id="legal_representative" name="legal_representative" required>
+                                        <div class="form-text">Para personas naturales: el mismo propietario</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="legal_rep_document" class="form-label">Documento del Representante *</label>
+                                        <input type="text" class="form-control" id="legal_rep_document" name="legal_rep_document" required>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Logo -->
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <h6 class="text-primary mb-3">Imagen Corporativa</h6>
+                            
+                            <div class="mb-3">
+                                <label for="logo" class="form-label">Logo de la Empresa</label>
+                                <input type="file" class="form-control" id="logo" name="logo" accept="image/*">
+                                <div class="form-text">Formatos permitidos: JPG, PNG, GIF. Tamaño máximo: 2MB</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Botones -->
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <hr>
+                            <div class="d-flex justify-content-end gap-2">
+                                <a href="{% url 'core:company_list' %}" class="btn btn-secondary">
+                                    <i class="bi bi-x-circle"></i> Cancelar
+                                </a>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-check-circle"></i> Guardar Empresa
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Establecer fechas por defecto del año fiscal
+document.addEventListener('DOMContentLoaded', function() {
+    const currentYear = new Date().getFullYear();
+    const fiscalStart = document.getElementById('fiscal_year_start');
+    const fiscalEnd = document.getElementById('fiscal_year_end');
+    
+    if (!fiscalStart.value) {
+        fiscalStart.value = `${currentYear}-01-01`;
+    }
+    if (!fiscalEnd.value) {
+        fiscalEnd.value = `${currentYear}-12-31`;
+    }
+});
+
+// Copiar datos cuando es persona natural
+document.getElementById('tax_id').addEventListener('input', function() {
+    const taxId = this.value;
+    const legalName = document.getElementById('legal_name');
+    const legalRep = document.getElementById('legal_representative');
+    const legalRepDoc = document.getElementById('legal_rep_document');
+    
+    // Si parece ser cédula (solo números, menos de 12 dígitos), sugerir que es persona natural
+    if (/^\d{6,11}$/.test(taxId)) {
+        if (!legalRepDoc.value) {
+            legalRepDoc.value = taxId;
+        }
+    }
+});
+</script>
+{% endblock %}
+

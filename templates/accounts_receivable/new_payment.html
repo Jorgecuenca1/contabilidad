@@ -1,0 +1,529 @@
+{% extends 'base.html' %}
+
+{% block title %}Registrar Pago Cliente - Sistema Contable{% endblock %}
+
+{% block content %}
+<!-- Encabezado -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card bg-gradient-warning text-white shadow-lg">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h1><i class="bi bi-cash-coin"></i> Registrar Pago de Cliente</h1>
+                        <p class="lead mb-0">Aplicación automática de pagos a facturas pendientes</p>
+                    </div>
+                    <div class="col-md-4 text-end">
+                        <div class="display-4">
+                            <i class="bi bi-credit-card-fill"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Explicación -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card border-warning">
+            <div class="card-header bg-warning text-white">
+                <h5><i class="bi bi-info-circle"></i> ¿Qué es un Pago de Cliente?</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>Un pago de cliente registra el dinero recibido y lo aplica a facturas pendientes:</strong></p>
+                <div class="row">
+                    <div class="col-md-6">
+                        <ul>
+                            <li>💰 <strong>Aumenta el efectivo</strong> en caja o bancos</li>
+                            <li>📉 <strong>Disminuye cuentas por cobrar</strong> del cliente</li>
+                            <li>🔄 <strong>Aplicación automática</strong> a facturas vencidas primero</li>
+                            <li>📊 <strong>Actualiza estado</strong> de facturas (pagada/parcial)</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <ul>
+                            <li>🏦 <strong>Múltiples formas de pago:</strong> Efectivo, transferencia, cheque</li>
+                            <li>📅 <strong>Control de fechas</strong> para flujo de caja</li>
+                            <li>🔍 <strong>Trazabilidad completa</strong> del pago</li>
+                            <li>📋 <strong>Genera asientos</strong> contables automáticos</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Formulario de Pago -->
+<div class="row">
+    <div class="col-md-8">
+        <div class="card shadow">
+            <div class="card-header bg-warning text-white">
+                <h5><i class="bi bi-pencil-square"></i> Datos del Pago Recibido</h5>
+            </div>
+            <div class="card-body">
+                <form method="post" id="paymentForm">
+                    {% csrf_token %}
+                    
+                    <!-- Datos Generales -->
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <label for="company" class="form-label"><strong>Empresa *</strong></label>
+                            <select class="form-select" id="company" name="company" required>
+                                <option value="">Seleccione empresa...</option>
+                                {% for company in companies %}
+                                    <option value="{{ company.id }}">{{ company.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="customer" class="form-label"><strong>Cliente *</strong></label>
+                            <select class="form-select" id="customer" name="customer" required>
+                                <option value="">Seleccione cliente...</option>
+                                {% for customer in customers %}
+                                    <option value="{{ customer.id }}">{{ customer.document_number }} - {{ customer.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-4">
+                        <div class="col-md-4">
+                            <label for="payment_date" class="form-label"><strong>Fecha Pago *</strong></label>
+                            <input type="date" class="form-control" id="payment_date" name="payment_date" required>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <label for="amount" class="form-label"><strong>Monto Recibido *</strong></label>
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                <input type="number" class="form-control text-end" id="amount" name="amount" step="0.01" min="0.01" placeholder="0.00" required>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <label for="payment_method" class="form-label"><strong>Forma de Pago *</strong></label>
+                            <select class="form-select" id="payment_method" name="payment_method" required>
+                                <option value="">Seleccione forma...</option>
+                                <option value="cash">Efectivo</option>
+                                <option value="transfer">Transferencia</option>
+                                <option value="check">Cheque</option>
+                                <option value="card">Tarjeta</option>
+                                <option value="other">Otro</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <label for="reference" class="form-label"><strong>Referencia/Comprobante</strong></label>
+                            <input type="text" class="form-control" id="reference" name="reference" placeholder="Ej: Transferencia #123456">
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="notes" class="form-label"><strong>Observaciones</strong></label>
+                            <textarea class="form-control" id="notes" name="notes" rows="2" placeholder="Observaciones del pago..."></textarea>
+                        </div>
+                    </div>
+                    
+                    <!-- Botones de Acción -->
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                <a href="/" class="btn btn-secondary me-md-2">
+                                    <i class="bi bi-arrow-left"></i> Cancelar
+                                </a>
+                                <button type="button" class="btn btn-info me-md-2" onclick="clearForm()">
+                                    <i class="bi bi-arrow-clockwise"></i> Limpiar
+                                </button>
+                                <button type="submit" class="btn btn-warning" id="submitBtn" disabled>
+                                    <i class="bi bi-check-circle"></i> Registrar Pago
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Panel de Información del Cliente -->
+    <div class="col-md-4">
+        <div class="card bg-light">
+            <div class="card-header">
+                <h6><i class="bi bi-person-circle"></i> Información del Cliente</h6>
+            </div>
+            <div class="card-body" id="customerInfo">
+                <p class="text-muted">Seleccione un cliente para ver su información</p>
+            </div>
+        </div>
+        
+        <!-- Facturas Pendientes -->
+        <div class="card mt-3" id="pendingInvoicesCard" style="display: none;">
+            <div class="card-header bg-info text-white">
+                <h6><i class="bi bi-file-earmark-text"></i> Facturas Pendientes</h6>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-sm mb-0" id="pendingInvoicesTable">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Factura</th>
+                                <th>Vence</th>
+                                <th>Saldo</th>
+                            </tr>
+                        </thead>
+                        <tbody id="pendingInvoicesBody">
+                        </tbody>
+                        <tfoot class="table-light">
+                            <tr>
+                                <th colspan="2">TOTAL PENDIENTE:</th>
+                                <th id="totalPending">$0.00</th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Simulador de Aplicación -->
+        <div class="card mt-3" id="paymentSimulatorCard" style="display: none;">
+            <div class="card-header bg-success text-white">
+                <h6><i class="bi bi-calculator"></i> Simulador de Aplicación</h6>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info" role="alert">
+                    <small><i class="bi bi-info-circle"></i> El pago se aplicará automáticamente a las facturas más vencidas primero</small>
+                </div>
+                <div id="paymentSimulation">
+                    <p class="text-muted">Ingrese el monto para simular la aplicación</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Ayuda Rápida -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card bg-light">
+            <div class="card-header">
+                <h6><i class="bi bi-question-circle"></i> Ayuda Rápida - Formas de Pago</h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        <h6>💵 Efectivo:</h6>
+                        <small>
+                            • Pago inmediato<br>
+                            • Afecta cuenta Caja<br>
+                            • Requiere arqueo<br>
+                            • Control diario
+                        </small>
+                    </div>
+                    <div class="col-md-3">
+                        <h6>🏦 Transferencia:</h6>
+                        <small>
+                            • Pago electrónico<br>
+                            • Afecta cuenta Bancos<br>
+                            • Referencia bancaria<br>
+                            • Conciliación automática
+                        </small>
+                    </div>
+                    <div class="col-md-3">
+                        <h6>📝 Cheque:</h6>
+                        <small>
+                            • Pago diferido<br>
+                            • Requiere consignación<br>
+                            • Control de vencimiento<br>
+                            • Riesgo de devolución
+                        </small>
+                    </div>
+                    <div class="col-md-3">
+                        <h6>💳 Tarjeta:</h6>
+                        <small>
+                            • Pago con comisión<br>
+                            • Descuento automático<br>
+                            • Liquidación posterior<br>
+                            • Control de franquicia
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.bg-gradient-warning {
+    background: linear-gradient(135deg, #ffc107 0%, #ff8c00 100%);
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #ffc107;
+    box-shadow: 0 0 0 0.2rem rgba(255, 193, 7, 0.25);
+}
+
+#customerInfo {
+    min-height: 100px;
+}
+
+.table-sm td, .table-sm th {
+    padding: 0.3rem;
+    font-size: 0.875rem;
+}
+
+.overdue {
+    background-color: rgba(220, 53, 69, 0.1);
+    color: #dc3545;
+}
+
+.due-soon {
+    background-color: rgba(255, 193, 7, 0.1);
+    color: #856404;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+let customers = [];
+let pendingInvoices = [];
+
+// Cargar clientes al cambiar empresa
+document.getElementById('company').addEventListener('change', function() {
+    loadCustomers(this.value);
+});
+
+// Mostrar info del cliente y facturas pendientes
+document.getElementById('customer').addEventListener('change', function() {
+    showCustomerInfo(this.value);
+    loadPendingInvoices();
+});
+
+// Simular aplicación del pago al cambiar monto
+document.getElementById('amount').addEventListener('input', function() {
+    simulatePaymentApplication();
+});
+
+// Establecer fecha actual
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('payment_date').valueAsDate = new Date();
+});
+
+function loadCustomers(companyId) {
+    if (!companyId) return;
+    
+    fetch(`/accounts_receivable/api/customers/?company=${companyId}`)
+        .then(response => response.json())
+        .then(data => {
+            customers = data.customers;
+            updateCustomerSelect();
+        })
+        .catch(error => {
+            console.error('Error loading customers:', error);
+        });
+}
+
+function updateCustomerSelect() {
+    const select = document.getElementById('customer');
+    const currentValue = select.value;
+    select.innerHTML = '<option value="">Seleccione cliente...</option>';
+    
+    customers.forEach(customer => {
+        const option = document.createElement('option');
+        option.value = customer.id;
+        option.textContent = customer.full_name;
+        if (customer.id == currentValue) {
+            option.selected = true;
+        }
+        select.appendChild(option);
+    });
+}
+
+function showCustomerInfo(customerId) {
+    const customerInfoDiv = document.getElementById('customerInfo');
+    
+    if (!customerId) {
+        customerInfoDiv.innerHTML = '<p class="text-muted">Seleccione un cliente para ver su información</p>';
+        document.getElementById('pendingInvoicesCard').style.display = 'none';
+        document.getElementById('paymentSimulatorCard').style.display = 'none';
+        return;
+    }
+    
+    const customer = customers.find(c => c.id == customerId);
+    if (customer) {
+        customerInfoDiv.innerHTML = `
+            <div class="mb-2">
+                <strong>Nombre:</strong><br>
+                ${customer.name}
+            </div>
+            <div class="mb-2">
+                <strong>Documento:</strong><br>
+                ${customer.document_number}
+            </div>
+            <div class="mb-2">
+                <strong>Email:</strong><br>
+                ${customer.email || 'No registrado'}
+            </div>
+        `;
+    }
+}
+
+function loadPendingInvoices() {
+    const customerId = document.getElementById('customer').value;
+    const companyId = document.getElementById('company').value;
+    
+    if (!customerId || !companyId) return;
+    
+    fetch(`/accounts_receivable/api/customer-invoices/?customer_id=${customerId}&company_id=${companyId}`)
+        .then(response => response.json())
+        .then(data => {
+            pendingInvoices = data.invoices;
+            displayPendingInvoices();
+        })
+        .catch(error => {
+            console.error('Error loading pending invoices:', error);
+        });
+}
+
+function displayPendingInvoices() {
+    const tbody = document.getElementById('pendingInvoicesBody');
+    const card = document.getElementById('pendingInvoicesCard');
+    
+    if (pendingInvoices.length === 0) {
+        card.style.display = 'none';
+        document.getElementById('paymentSimulatorCard').style.display = 'none';
+        return;
+    }
+    
+    card.style.display = 'block';
+    document.getElementById('paymentSimulatorCard').style.display = 'block';
+    
+    tbody.innerHTML = '';
+    let totalPending = 0;
+    
+    pendingInvoices.forEach(invoice => {
+        const row = document.createElement('tr');
+        
+        // Determinar si está vencida
+        const today = new Date();
+        const dueDate = new Date(invoice.due_date);
+        const isOverdue = dueDate < today;
+        const isDueSoon = !isOverdue && (dueDate - today) / (1000 * 60 * 60 * 24) <= 7;
+        
+        if (isOverdue) {
+            row.classList.add('overdue');
+        } else if (isDueSoon) {
+            row.classList.add('due-soon');
+        }
+        
+        row.innerHTML = `
+            <td>
+                <small><strong>${invoice.number}</strong></small>
+                ${isOverdue ? '<br><span class="badge bg-danger">Vencida</span>' : ''}
+                ${isDueSoon ? '<br><span class="badge bg-warning">Vence Pronto</span>' : ''}
+            </td>
+            <td><small>${new Date(invoice.due_date).toLocaleDateString('es-CO')}</small></td>
+            <td class="text-end">
+                <strong>$${invoice.pending_amount.toLocaleString('es-CO', {minimumFractionDigits: 2})}</strong>
+            </td>
+        `;
+        
+        tbody.appendChild(row);
+        totalPending += invoice.pending_amount;
+    });
+    
+    document.getElementById('totalPending').textContent = `$${totalPending.toLocaleString('es-CO', {minimumFractionDigits: 2})}`;
+}
+
+function simulatePaymentApplication() {
+    const amount = parseFloat(document.getElementById('amount').value) || 0;
+    const simulationDiv = document.getElementById('paymentSimulation');
+    
+    if (amount <= 0 || pendingInvoices.length === 0) {
+        simulationDiv.innerHTML = '<p class="text-muted">Ingrese el monto para simular la aplicación</p>';
+        return;
+    }
+    
+    let remainingAmount = amount;
+    let applicationHtml = '<div class="small">';
+    
+    // Ordenar facturas por fecha de vencimiento (más vencidas primero)
+    const sortedInvoices = [...pendingInvoices].sort((a, b) => new Date(a.due_date) - new Date(b.due_date));
+    
+    sortedInvoices.forEach(invoice => {
+        if (remainingAmount <= 0) return;
+        
+        const pendingAmount = invoice.pending_amount;
+        const applicationAmount = Math.min(remainingAmount, pendingAmount);
+        
+        applicationHtml += `
+            <div class="d-flex justify-content-between mb-1">
+                <span>${invoice.number}:</span>
+                <span class="text-success">$${applicationAmount.toLocaleString('es-CO', {minimumFractionDigits: 2})}</span>
+            </div>
+        `;
+        
+        remainingAmount -= applicationAmount;
+    });
+    
+    if (remainingAmount > 0) {
+        applicationHtml += `
+            <hr>
+            <div class="d-flex justify-content-between">
+                <span><strong>Saldo a favor:</strong></span>
+                <span class="text-info"><strong>$${remainingAmount.toLocaleString('es-CO', {minimumFractionDigits: 2})}</strong></span>
+            </div>
+        `;
+    }
+    
+    applicationHtml += '</div>';
+    simulationDiv.innerHTML = applicationHtml;
+}
+
+function validateForm() {
+    const company = document.getElementById('company').value;
+    const customer = document.getElementById('customer').value;
+    const paymentDate = document.getElementById('payment_date').value;
+    const amount = parseFloat(document.getElementById('amount').value) || 0;
+    const paymentMethod = document.getElementById('payment_method').value;
+    
+    const isValid = company && customer && paymentDate && amount > 0 && paymentMethod;
+    document.getElementById('submitBtn').disabled = !isValid;
+}
+
+function clearForm() {
+    if (confirm('¿Está seguro de limpiar el formulario? Se perderán todos los datos ingresados.')) {
+        document.getElementById('paymentForm').reset();
+        document.getElementById('customerInfo').innerHTML = '<p class="text-muted">Seleccione un cliente para ver su información</p>';
+        document.getElementById('pendingInvoicesCard').style.display = 'none';
+        document.getElementById('paymentSimulatorCard').style.display = 'none';
+        document.getElementById('payment_date').valueAsDate = new Date();
+        pendingInvoices = [];
+    }
+}
+
+// Validar formulario en tiempo real
+document.addEventListener('input', validateForm);
+document.addEventListener('change', validateForm);
+
+// Validar antes de enviar
+document.getElementById('paymentForm').addEventListener('submit', function(e) {
+    const amount = parseFloat(document.getElementById('amount').value) || 0;
+    if (!confirm(`¿Confirma que desea registrar este pago por $${amount.toLocaleString('es-CO', {minimumFractionDigits: 2})}?`)) {
+        e.preventDefault();
+    }
+});
+</script>
+{% endblock %}
+
+
+
+

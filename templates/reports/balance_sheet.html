@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ title }}</title>
+</head>
+<body>
+    <div class="header">
+        <div class="company-name">{{ company.name }}</div>
+        <div>NIT: {{ company.tax_id }}{% if company.tax_id_dv %}-{{ company.tax_id_dv }}{% endif %}</div>
+        <div class="report-title">{{ title }}</div>
+        <div>Al {{ period_end|date:"d de F de Y" }}</div>
+        <div>Cifras en {{ company.functional_currency }}</div>
+    </div>
+
+    {% regroup accounts_data by 2 as account_groups %}
+    
+    {% for group in account_groups %}
+        {% if group.grouper == 'asset' %}
+            <h3>ACTIVOS</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 15%">Código</th>
+                        <th style="width: 60%">Cuenta</th>
+                        <th style="width: 25%" class="number">Saldo</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for account in group.list %}
+                    <tr>
+                        <td>{{ account.0 }}</td>
+                        <td>{{ account.1 }}</td>
+                        <td class="number">{{ account.4|floatformat:0 }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+    {% endfor %}
+
+    {% for group in account_groups %}
+        {% if group.grouper == 'liability' %}
+            <h3>PASIVOS</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 15%">Código</th>
+                        <th style="width: 60%">Cuenta</th>
+                        <th style="width: 25%" class="number">Saldo</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for account in group.list %}
+                    <tr>
+                        <td>{{ account.0 }}</td>
+                        <td>{{ account.1 }}</td>
+                        <td class="number">{{ account.4|floatformat:0 }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+    {% endfor %}
+
+    {% for group in account_groups %}
+        {% if group.grouper == 'equity' %}
+            <h3>PATRIMONIO</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 15%">Código</th>
+                        <th style="width: 60%">Cuenta</th>
+                        <th style="width: 25%" class="number">Saldo</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for account in group.list %}
+                    <tr>
+                        <td>{{ account.0 }}</td>
+                        <td>{{ account.1 }}</td>
+                        <td class="number">{{ account.4|floatformat:0 }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+    {% endfor %}
+
+    <div style="margin-top: 30px; text-align: center; font-size: 9pt; color: #666;">
+        Reporte generado el {{ report_date|date:"d/m/Y H:i" }}
+    </div>
+</body>
+</html>
+
+
+
+

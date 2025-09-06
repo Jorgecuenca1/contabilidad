@@ -1,0 +1,308 @@
+{% extends 'base.html' %}
+
+{% block title %}Nuevo Cliente - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1><i class="bi bi-person-plus"></i> Nuevo Cliente</h1>
+            <a href="/admin/accounts_receivable/customer/" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i> Volver a Lista
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h6><i class="bi bi-person-circle"></i> Información del Cliente</h6>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <div class="row">
+                        <!-- Información Básica -->
+                        <div class="col-md-6">
+                            <h6 class="text-primary mb-3">Información Básica</h6>
+                            
+                            <div class="mb-3">
+                                <label for="company" class="form-label">Empresa *</label>
+                                <select class="form-select" id="company" name="company" required>
+                                    <option value="">Seleccione una empresa</option>
+                                    {% for company in companies %}
+                                        <option value="{{ company.id }}">{{ company.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="code" class="form-label">Código *</label>
+                                <input type="text" class="form-control" id="code" name="code" required>
+                                <div class="form-text">Código único del cliente</div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label for="document_type" class="form-label">Tipo de Documento *</label>
+                                        <select class="form-select" id="document_type" name="document_type" required onchange="togglePersonType()">
+                                            <option value="">Seleccione...</option>
+                                            <option value="CC">Cédula de Ciudadanía</option>
+                                            <option value="NIT">NIT (Persona Jurídica)</option>
+                                            <option value="CE">Cédula de Extranjería</option>
+                                            <option value="PP">Pasaporte</option>
+                                            <option value="TI">Tarjeta de Identidad</option>
+                                            <option value="RC">Registro Civil</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="document_number" class="form-label">Número de Documento *</label>
+                                        <input type="text" class="form-control" id="document_number" name="document_number" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="mb-3">
+                                        <label for="verification_digit" class="form-label">DV</label>
+                                        <input type="text" class="form-control" id="verification_digit" name="verification_digit" maxlength="2">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Campos para Persona Jurídica -->
+                            <div id="juridica_fields">
+                                <div class="mb-3">
+                                    <label for="business_name" class="form-label">Razón Social *</label>
+                                    <input type="text" class="form-control" id="business_name" name="business_name">
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="trade_name" class="form-label">Nombre Comercial</label>
+                                    <input type="text" class="form-control" id="trade_name" name="trade_name">
+                                </div>
+                            </div>
+                            
+                            <!-- Campos para Persona Natural -->
+                            <div id="natural_fields" style="display: none;">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="first_name" class="form-label">Nombres *</label>
+                                            <input type="text" class="form-control" id="first_name" name="first_name">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="last_name" class="form-label">Apellidos *</label>
+                                            <input type="text" class="form-control" id="last_name" name="last_name">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="customer_type" class="form-label">Tipo de Cliente *</label>
+                                <select class="form-select" id="customer_type" name="customer_type" required>
+                                    <option value="">Seleccione un tipo</option>
+                                    {% for customer_type in customer_types %}
+                                        <option value="{{ customer_type.id }}">{{ customer_type.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="regime" class="form-label">Régimen Tributario</label>
+                                <select class="form-select" id="regime" name="regime">
+                                    <option value="common">Régimen Común</option>
+                                    <option value="simplified">Régimen Simplificado</option>
+                                    <option value="special">Régimen Especial</option>
+                                    <option value="no_resident">No Residente</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <!-- Información de Contacto -->
+                        <div class="col-md-6">
+                            <h6 class="text-primary mb-3">Información de Contacto</h6>
+                            
+                            <div class="mb-3">
+                                <label for="address" class="form-label">Dirección *</label>
+                                <textarea class="form-control" id="address" name="address" rows="2" required></textarea>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="city" class="form-label">Ciudad *</label>
+                                        <input type="text" class="form-control" id="city" name="city" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="state" class="form-label">Departamento *</label>
+                                        <input type="text" class="form-control" id="state" name="state" required>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="country" class="form-label">País</label>
+                                        <input type="text" class="form-control" id="country" name="country" value="Colombia">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="postal_code" class="form-label">Código Postal</label>
+                                        <input type="text" class="form-control" id="postal_code" name="postal_code">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="phone" class="form-label">Teléfono</label>
+                                        <input type="text" class="form-control" id="phone" name="phone">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="mobile" class="form-label">Móvil</label>
+                                        <input type="text" class="form-control" id="mobile" name="mobile">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="email" name="email">
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="website" class="form-label">Sitio Web</label>
+                                <input type="url" class="form-control" id="website" name="website">
+                            </div>
+                            
+                            <!-- Configuración Comercial -->
+                            <h6 class="text-primary mb-3 mt-4">Configuración Comercial</h6>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="credit_limit" class="form-label">Límite de Crédito</label>
+                                        <input type="number" class="form-control" id="credit_limit" name="credit_limit" 
+                                               step="0.01" min="0" value="0">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="credit_days" class="form-label">Días de Crédito</label>
+                                        <input type="number" class="form-control" id="credit_days" name="credit_days" 
+                                               min="0" value="30">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="discount_percentage" class="form-label">Descuento (%)</label>
+                                <input type="number" class="form-control" id="discount_percentage" name="discount_percentage" 
+                                       step="0.01" min="0" max="100" value="0">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Configuración Fiscal -->
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <h6 class="text-primary mb-3">Configuración Fiscal</h6>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="is_tax_responsible" 
+                                               name="is_tax_responsible" checked>
+                                        <label class="form-check-label" for="is_tax_responsible">
+                                            Responsable de IVA
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="is_active" 
+                                               name="is_active" checked>
+                                        <label class="form-check-label" for="is_active">
+                                            Cliente Activo
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Botones -->
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <hr>
+                            <div class="d-flex justify-content-end gap-2">
+                                <a href="/admin/accounts_receivable/customer/" class="btn btn-secondary">
+                                    <i class="bi bi-x-circle"></i> Cancelar
+                                </a>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-check-circle"></i> Guardar Cliente
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function togglePersonType() {
+    const documentType = document.getElementById('document_type').value;
+    const juridicaFields = document.getElementById('juridica_fields');
+    const naturalFields = document.getElementById('natural_fields');
+    const businessName = document.getElementById('business_name');
+    const firstName = document.getElementById('first_name');
+    const lastName = document.getElementById('last_name');
+    
+    if (documentType === 'NIT') {
+        // Persona Jurídica
+        juridicaFields.style.display = 'block';
+        naturalFields.style.display = 'none';
+        businessName.required = true;
+        firstName.required = false;
+        lastName.required = false;
+    } else if (documentType === 'CC' || documentType === 'CE' || documentType === 'PP' || documentType === 'TI') {
+        // Persona Natural
+        juridicaFields.style.display = 'none';
+        naturalFields.style.display = 'block';
+        businessName.required = false;
+        firstName.required = true;
+        lastName.required = true;
+    } else {
+        // Mostrar ambos por defecto
+        juridicaFields.style.display = 'block';
+        naturalFields.style.display = 'none';
+        businessName.required = false;
+        firstName.required = false;
+        lastName.required = false;
+    }
+}
+
+// Inicializar al cargar la página
+document.addEventListener('DOMContentLoaded', function() {
+    togglePersonType();
+});
+</script>
+{% endblock %}
+

@@ -1,0 +1,194 @@
+{% extends 'base.html' %}
+
+{% block title %}Lista de Empresas - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1><i class="bi bi-building"></i> Lista de Empresas</h1>
+            <a href="{% url 'core:new_company' %}" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> Nueva Empresa
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Filtros -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h6><i class="bi bi-funnel"></i> Filtros de Búsqueda</h6>
+            </div>
+            <div class="card-body">
+                <form method="get" class="row g-3">
+                    <div class="col-md-4">
+                        <label for="search" class="form-label">Buscar</label>
+                        <input type="text" class="form-control" id="search" name="search" 
+                               value="{{ search }}" placeholder="Nombre, razón social o NIT">
+                    </div>
+                    <div class="col-md-3">
+                        <label for="regime" class="form-label">Régimen Tributario</label>
+                        <select class="form-select" id="regime" name="regime">
+                            <option value="">Todos los regímenes</option>
+                            {% for value, label in regime_choices %}
+                                <option value="{{ value }}" {% if value == selected_regime %}selected{% endif %}>
+                                    {{ label }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="sector" class="form-label">Sector</label>
+                        <select class="form-select" id="sector" name="sector">
+                            <option value="">Todos los sectores</option>
+                            {% for value, label in sector_choices %}
+                                <option value="{{ value }}" {% if value == selected_sector %}selected{% endif %}>
+                                    {{ label }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">&nbsp;</label>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-search"></i> Buscar
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Lista de Empresas -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h6><i class="bi bi-building"></i> Empresas Registradas</h6>
+                <span class="badge bg-primary">{{ page_obj.paginator.count }} empresas</span>
+            </div>
+            <div class="card-body">
+                {% if page_obj %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>NIT</th>
+                                    <th>Empresa</th>
+                                    <th>Régimen</th>
+                                    <th>Sector</th>
+                                    <th>Ciudad</th>
+                                    <th>Representante Legal</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for company in page_obj %}
+                                <tr>
+                                    <td>
+                                        <code>{{ company.tax_id }}{% if company.tax_id_dv %}-{{ company.tax_id_dv }}{% endif %}</code>
+                                    </td>
+                                    <td>
+                                        <strong>{{ company.name }}</strong>
+                                        {% if company.legal_name != company.name %}
+                                            <br><small class="text-muted">{{ company.legal_name }}</small>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-info">{{ company.get_regime_display }}</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-secondary">{{ company.get_sector_display }}</span>
+                                    </td>
+                                    <td>{{ company.city }}, {{ company.state }}</td>
+                                    <td>
+                                        {{ company.legal_representative }}
+                                        <br><small class="text-muted">{{ company.legal_rep_document }}</small>
+                                    </td>
+                                    <td>
+                                        {% if company.is_active %}
+                                            <span class="badge bg-success">Activa</span>
+                                        {% else %}
+                                            <span class="badge bg-danger">Inactiva</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <a href="{% url 'core:company_detail' company.id %}" 
+                                               class="btn btn-outline-primary" title="Ver">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+                                            <a href="{% url 'core:edit_company' company.id %}" 
+                                               class="btn btn-outline-warning" title="Editar">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Paginación -->
+                    {% if page_obj.has_other_pages %}
+                        <nav aria-label="Paginación de empresas">
+                            <ul class="pagination justify-content-center">
+                                {% if page_obj.has_previous %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page=1{% if search %}&search={{ search }}{% endif %}{% if selected_regime %}&regime={{ selected_regime }}{% endif %}{% if selected_sector %}&sector={{ selected_sector }}{% endif %}">Primera</a>
+                                    </li>
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if search %}&search={{ search }}{% endif %}{% if selected_regime %}&regime={{ selected_regime }}{% endif %}{% if selected_sector %}&sector={{ selected_sector }}{% endif %}">Anterior</a>
+                                    </li>
+                                {% endif %}
+
+                                <li class="page-item active">
+                                    <span class="page-link">
+                                        Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
+                                    </span>
+                                </li>
+
+                                {% if page_obj.has_next %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if search %}&search={{ search }}{% endif %}{% if selected_regime %}&regime={{ selected_regime }}{% endif %}{% if selected_sector %}&sector={{ selected_sector }}{% endif %}">Siguiente</a>
+                                    </li>
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if search %}&search={{ search }}{% endif %}{% if selected_regime %}&regime={{ selected_regime }}{% endif %}{% if selected_sector %}&sector={{ selected_sector }}{% endif %}">Última</a>
+                                    </li>
+                                {% endif %}
+                            </ul>
+                        </nav>
+                    {% endif %}
+                {% else %}
+                    <div class="text-center py-4">
+                        <i class="bi bi-inbox fs-1 text-muted"></i>
+                        <p class="text-muted mt-2">No se encontraron empresas</p>
+                        <a href="{% url 'core:new_company' %}" class="btn btn-primary">
+                            <i class="bi bi-plus-circle"></i> Crear Primera Empresa
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Información Adicional -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="alert alert-info">
+            <i class="bi bi-info-circle"></i>
+            <strong>Información:</strong> Las empresas pueden ser personas jurídicas (con NIT) o personas naturales (con CC) que ejercen actividad comercial. 
+            Cada empresa tiene su propia contabilidad independiente en el sistema multiempresa.
+        </div>
+    </div>
+</div>
+{% endblock %}
+

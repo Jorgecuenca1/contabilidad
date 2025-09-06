@@ -1,0 +1,768 @@
+{% extends 'base.html' %}
+
+{% block title %}Nómina Electrónica - Sistema Contable{% endblock %}
+
+{% block content %}
+<!-- Encabezado del Módulo -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card bg-gradient-warning text-white shadow-lg">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h1><i class="bi bi-people-fill"></i> Módulo de Nómina Electrónica</h1>
+                        <p class="lead mb-2">Gestión completa de nómina con cumplimiento normativo colombiano</p>
+                        <p class="mb-0">
+                            <i class="bi bi-calendar-check"></i> <strong>Período Activo:</strong> Agosto 2025
+                            | <i class="bi bi-people"></i> <strong>Empleados Activos:</strong> 247
+                            | <i class="bi bi-cash-stack"></i> <strong>Nómina del Mes:</strong> $85,245,000
+                        </p>
+                    </div>
+                    <div class="col-md-4 text-end">
+                        <div class="display-4">
+                            <i class="bi bi-calculator-fill"></i>
+                        </div>
+                        <p class="mb-0"><strong>Nómina Electrónica</strong></p>
+                        <small>Ministerio del Trabajo</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Explicación del Módulo -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card border-info">
+            <div class="card-header bg-info text-white">
+                <h5><i class="bi bi-info-circle"></i> ¿Qué hace el Módulo de Nómina?</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>Este módulo maneja toda la gestión de recursos humanos y nómina de las empresas:</strong></p>
+                <div class="row">
+                    <div class="col-md-6">
+                        <ul>
+                            <li>📋 <strong>Gestión de Empleados:</strong> Información personal, contratos, salarios</li>
+                            <li>💰 <strong>Liquidación de Nómina:</strong> Devengos, deducciones, prestaciones</li>
+                            <li>🏥 <strong>Seguridad Social:</strong> EPS, Pensión, ARL, Caja de Compensación</li>
+                            <li>🎓 <strong>Parafiscales:</strong> SENA, ICBF, Cajas de Compensación</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <ul>
+                            <li>📄 <strong>Certificados Laborales:</strong> Ingresos, retenciones, cesantías</li>
+                            <li>⚖️ <strong>Cumplimiento Legal:</strong> Código Sustantivo del Trabajo</li>
+                            <li>📊 <strong>Reportes Oficiales:</strong> PILA, Medios Magnéticos</li>
+                            <li>🔄 <strong>Nómina Electrónica:</strong> Envío automático al MinTrabajo</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Estadísticas de Nómina -->
+<div class="row mb-4">
+    <div class="col-12">
+        <h2><i class="bi bi-graph-up"></i> Estadísticas del Mes - Agosto 2025</h2>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card bg-success text-white shadow">
+            <div class="card-body text-center">
+                <i class="bi bi-people fs-1 mb-2"></i>
+                <h2>247</h2>
+                <p class="mb-0">Empleados Activos</p>
+                <small>Todos los contratos vigentes</small>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card bg-primary text-white shadow">
+            <div class="card-body text-center">
+                <i class="bi bi-cash-stack fs-1 mb-2"></i>
+                <h2>$85.2M</h2>
+                <p class="mb-0">Nómina Total Mes</p>
+                <small>Incluye prestaciones</small>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card bg-warning text-white shadow">
+            <div class="card-body text-center">
+                <i class="bi bi-shield-check fs-1 mb-2"></i>
+                <h2>$32.1M</h2>
+                <p class="mb-0">Seguridad Social</p>
+                <small>EPS + Pensión + ARL</small>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card bg-info text-white shadow">
+            <div class="card-body text-center">
+                <i class="bi bi-file-earmark-check fs-1 mb-2"></i>
+                <h2>15</h2>
+                <p class="mb-0">Liquidaciones</p>
+                <small>Finiquitos procesados</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Selector de Empresa -->
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="bi bi-building"></i> Seleccionar Empresa</h5>
+            </div>
+            <div class="card-body">
+                <select class="form-select" id="companySelector">
+                    <option value="">Seleccione una empresa...</option>
+                    {% for company in companies %}
+                        <option value="{{ company.id }}">{{ company.name }} ({{ company.tax_id }})</option>
+                    {% endfor %}
+                    <option value="1">ABC Comercializadora S.A.S (900.123.456-7)</option>
+                    <option value="2">XYZ Servicios Ltda (800.987.654-3)</option>
+                    <option value="3">Constructora DEF S.A (700.555.444-1)</option>
+                    <option value="4">Restaurante GHI (600.333.222-9)</option>
+                    <option value="5">Consultoría JKL (500.111.999-5)</option>
+                </select>
+                <small class="text-muted">Cada empresa maneja su nómina independientemente</small>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card bg-light">
+            <div class="card-header">
+                <h5><i class="bi bi-calendar-event"></i> Calendario Nómina</h5>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-4">
+                        <div class="bg-success text-white p-2 rounded mb-2">
+                            <strong>15</strong><br>
+                            <small>Nómina Quincenal</small>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="bg-warning text-white p-2 rounded mb-2">
+                            <strong>30</strong><br>
+                            <small>Nómina Mensual</small>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="bg-info text-white p-2 rounded mb-2">
+                            <strong>31</strong><br>
+                            <small>Cierre Período</small>
+                        </div>
+                    </div>
+                </div>
+                <small class="text-muted">Próximo procesamiento: 30 de Agosto</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Tipos de Empleados -->
+<div class="row mb-4">
+    <div class="col-12">
+        <h3><i class="bi bi-person-badge"></i> Distribución por Tipo de Empleado</h3>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-2">
+        <div class="card text-center">
+            <div class="card-body">
+                <i class="bi bi-person-tie fs-2 text-primary mb-2"></i>
+                <h4>45</h4>
+                <h6>Administrativos</h6>
+                <small class="text-muted">Salario promedio: $2.8M</small>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-2">
+        <div class="card text-center">
+            <div class="card-body">
+                <i class="bi bi-tools fs-2 text-success mb-2"></i>
+                <h4>128</h4>
+                <h6>Operarios</h6>
+                <small class="text-muted">Salario promedio: $1.8M</small>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-2">
+        <div class="card text-center">
+            <div class="card-body">
+                <i class="bi bi-truck fs-2 text-warning mb-2"></i>
+                <h4>32</h4>
+                <h6>Conductores</h6>
+                <small class="text-muted">Salario promedio: $2.1M</small>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-2">
+        <div class="card text-center">
+            <div class="card-body">
+                <i class="bi bi-shield-check fs-2 text-info mb-2"></i>
+                <h4>18</h4>
+                <h6>Vigilantes</h6>
+                <small class="text-muted">Salario promedio: $1.6M</small>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-2">
+        <div class="card text-center">
+            <div class="card-body">
+                <i class="bi bi-broom fs-2 text-secondary mb-2"></i>
+                <h4>15</h4>
+                <h6>Servicios Generales</h6>
+                <small class="text-muted">Salario promedio: $1.4M</small>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-2">
+        <div class="card text-center">
+            <div class="card-body">
+                <i class="bi bi-person-workspace fs-2 text-danger mb-2"></i>
+                <h4>9</h4>
+                <h6>Directivos</h6>
+                <small class="text-muted">Salario promedio: $8.5M</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Acciones Rápidas de Nómina -->
+<div class="row mb-4">
+    <div class="col-12">
+        <h3><i class="bi bi-lightning"></i> Acciones Rápidas de Nómina</h3>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-2 mb-3">
+        <div class="card h-100 text-center">
+            <div class="card-body">
+                <i class="bi bi-person-plus fs-1 text-success mb-3"></i>
+                <h6>Nuevo Empleado</h6>
+                <p class="small">Registrar empleado con contrato</p>
+                <button class="btn btn-success btn-sm" onclick="newEmployee()">Crear</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-2 mb-3">
+        <div class="card h-100 text-center">
+            <div class="card-body">
+                <i class="bi bi-calculator fs-1 text-primary mb-3"></i>
+                <h6>Liquidar Nómina</h6>
+                <p class="small">Procesar nómina quincenal/mensual</p>
+                <button class="btn btn-primary btn-sm" onclick="processPayroll()">Liquidar</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-2 mb-3">
+        <div class="card h-100 text-center">
+            <div class="card-body">
+                <i class="bi bi-file-earmark-text fs-1 text-warning mb-3"></i>
+                <h6>Certificado Ingresos</h6>
+                <p class="small">Generar certificado laboral</p>
+                <button class="btn btn-warning btn-sm" onclick="generateCertificate()">Generar</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-2 mb-3">
+        <div class="card h-100 text-center">
+            <div class="card-body">
+                <i class="bi bi-person-x fs-1 text-danger mb-3"></i>
+                <h6>Liquidación Final</h6>
+                <p class="small">Finiquito y prestaciones</p>
+                <button class="btn btn-danger btn-sm" onclick="finalLiquidation()">Liquidar</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-2 mb-3">
+        <div class="card h-100 text-center">
+            <div class="card-body">
+                <i class="bi bi-shield-check fs-1 text-info mb-3"></i>
+                <h6>PILA Seguridad Social</h6>
+                <p class="small">Generar planilla PILA</p>
+                <button class="btn btn-info btn-sm" onclick="generatePILA()">Generar</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-2 mb-3">
+        <div class="card h-100 text-center">
+            <div class="card-body">
+                <i class="bi bi-file-earmark-bar-graph fs-1 text-secondary mb-3"></i>
+                <h6>Reportes Nómina</h6>
+                <p class="small">Informes y estadísticas</p>
+                <button class="btn btn-secondary btn-sm" onclick="payrollReports()">Ver</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Conceptos de Nómina -->
+<div class="row mb-4">
+    <div class="col-12">
+        <h3><i class="bi bi-list-check"></i> Conceptos de Nómina Configurados</h3>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h5><i class="bi bi-plus-circle"></i> Devengos (Ingresos)</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Concepto</th>
+                                <th>Tipo</th>
+                                <th>Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Salario Básico</td>
+                                <td>Fijo</td>
+                                <td><span class="badge bg-success">Activo</span></td>
+                            </tr>
+                            <tr>
+                                <td>Horas Extras</td>
+                                <td>Variable</td>
+                                <td><span class="badge bg-success">Activo</span></td>
+                            </tr>
+                            <tr>
+                                <td>Comisiones</td>
+                                <td>Variable</td>
+                                <td><span class="badge bg-success">Activo</span></td>
+                            </tr>
+                            <tr>
+                                <td>Auxilio Transporte</td>
+                                <td>Fijo</td>
+                                <td><span class="badge bg-success">Activo</span></td>
+                            </tr>
+                            <tr>
+                                <td>Bonificaciones</td>
+                                <td>Variable</td>
+                                <td><span class="badge bg-success">Activo</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-danger text-white">
+                <h5><i class="bi bi-dash-circle"></i> Deducciones (Descuentos)</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Concepto</th>
+                                <th>Tipo</th>
+                                <th>Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Salud (4%)</td>
+                                <td>Porcentual</td>
+                                <td><span class="badge bg-success">Activo</span></td>
+                            </tr>
+                            <tr>
+                                <td>Pensión (4%)</td>
+                                <td>Porcentual</td>
+                                <td><span class="badge bg-success">Activo</span></td>
+                            </tr>
+                            <tr>
+                                <td>Retención Fuente</td>
+                                <td>Tabla</td>
+                                <td><span class="badge bg-success">Activo</span></td>
+                            </tr>
+                            <tr>
+                                <td>Préstamos</td>
+                                <td>Fijo</td>
+                                <td><span class="badge bg-warning">Variable</span></td>
+                            </tr>
+                            <tr>
+                                <td>Embargos</td>
+                                <td>Fijo</td>
+                                <td><span class="badge bg-warning">Variable</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Prestaciones Sociales -->
+<div class="row mb-4">
+    <div class="col-12">
+        <h3><i class="bi bi-shield-fill-check"></i> Prestaciones Sociales y Parafiscales</h3>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card border-success">
+            <div class="card-header bg-success text-white">
+                <h6><i class="bi bi-heart-pulse"></i> Seguridad Social</h6>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-6 mb-2">
+                        <div class="bg-light p-2 rounded">
+                            <strong>EPS</strong><br>
+                            <small>8.5% total</small><br>
+                            <small class="text-muted">Empleado: 4% | Empleador: 4.5%</small>
+                        </div>
+                    </div>
+                    <div class="col-6 mb-2">
+                        <div class="bg-light p-2 rounded">
+                            <strong>Pensión</strong><br>
+                            <small>12% total</small><br>
+                            <small class="text-muted">Empleado: 4% | Empleador: 8%</small>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="bg-light p-2 rounded">
+                            <strong>ARL</strong><br>
+                            <small>0.522% - 6.96%</small><br>
+                            <small class="text-muted">Según nivel de riesgo</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card border-warning">
+            <div class="card-header bg-warning text-white">
+                <h6><i class="bi bi-gift"></i> Prestaciones Sociales</h6>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-6 mb-2">
+                        <div class="bg-light p-2 rounded">
+                            <strong>Prima</strong><br>
+                            <small>8.33%</small><br>
+                            <small class="text-muted">Junio y Diciembre</small>
+                        </div>
+                    </div>
+                    <div class="col-6 mb-2">
+                        <div class="bg-light p-2 rounded">
+                            <strong>Cesantías</strong><br>
+                            <small>8.33%</small><br>
+                            <small class="text-muted">Anual</small>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="bg-light p-2 rounded">
+                            <strong>Vacaciones</strong><br>
+                            <small>4.17%</small><br>
+                            <small class="text-muted">15 días hábiles/año</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card border-info">
+            <div class="card-header bg-info text-white">
+                <h6><i class="bi bi-building-gear"></i> Parafiscales</h6>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-4 mb-2">
+                        <div class="bg-light p-2 rounded">
+                            <strong>SENA</strong><br>
+                            <small>2%</small><br>
+                            <small class="text-muted">Capacitación</small>
+                        </div>
+                    </div>
+                    <div class="col-4 mb-2">
+                        <div class="bg-light p-2 rounded">
+                            <strong>ICBF</strong><br>
+                            <small>3%</small><br>
+                            <small class="text-muted">Bienestar</small>
+                        </div>
+                    </div>
+                    <div class="col-4 mb-2">
+                        <div class="bg-light p-2 rounded">
+                            <strong>CCF</strong><br>
+                            <small>4%</small><br>
+                            <small class="text-muted">Compensación</small>
+                        </div>
+                    </div>
+                </div>
+                <small class="text-muted">Solo para salarios > 10 SMMLV</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Empleados Recientes -->
+<div class="row mb-4">
+    <div class="col-12">
+        <h3><i class="bi bi-clock-history"></i> Actividad Reciente</h3>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h6><i class="bi bi-person-plus"></i> Empleados Ingresados (Últimos 30 días)</h6>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Empleado</th>
+                                <th>Cargo</th>
+                                <th>Fecha Ingreso</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>María González</td>
+                                <td>Contadora</td>
+                                <td>15/08/2025</td>
+                            </tr>
+                            <tr>
+                                <td>Carlos Rodríguez</td>
+                                <td>Vendedor</td>
+                                <td>10/08/2025</td>
+                            </tr>
+                            <tr>
+                                <td>Ana Martínez</td>
+                                <td>Auxiliar Administrativa</td>
+                                <td>05/08/2025</td>
+                            </tr>
+                            <tr>
+                                <td>Luis Pérez</td>
+                                <td>Conductor</td>
+                                <td>01/08/2025</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h6><i class="bi bi-person-x"></i> Liquidaciones Finales (Últimos 30 días)</h6>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Empleado</th>
+                                <th>Motivo</th>
+                                <th>Fecha Retiro</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Pedro Sánchez</td>
+                                <td>Renuncia</td>
+                                <td>20/08/2025</td>
+                            </tr>
+                            <tr>
+                                <td>Laura Torres</td>
+                                <td>Terminación Contrato</td>
+                                <td>12/08/2025</td>
+                            </tr>
+                            <tr>
+                                <td>Jorge Ramírez</td>
+                                <td>Pensión</td>
+                                <td>08/08/2025</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Enlaces Directos Admin -->
+<div class="row">
+    <div class="col-12">
+        <div class="card bg-light">
+            <div class="card-header">
+                <h5><i class="bi bi-gear"></i> Administración Avanzada de Nómina</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3 mb-2">
+                        <a href="/admin/payroll/employee/" class="btn btn-outline-primary w-100">
+                            <i class="bi bi-people"></i> Gestionar Empleados
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <a href="/admin/payroll/payrollconcept/" class="btn btn-outline-success w-100">
+                            <i class="bi bi-list-check"></i> Conceptos Nómina
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <a href="/admin/payroll/payroll/" class="btn btn-outline-warning w-100">
+                            <i class="bi bi-calculator"></i> Liquidaciones
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <a href="/admin/payroll/laborbenefit/" class="btn btn-outline-info w-100">
+                            <i class="bi bi-shield-check"></i> Prestaciones
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.bg-gradient-warning {
+    background: linear-gradient(135deg, #ffc107 0%, #ff8c00 100%);
+}
+
+.card {
+    transition: transform 0.2s ease-in-out;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+}
+
+.table-sm td, .table-sm th {
+    padding: 0.3rem;
+}
+
+.badge {
+    font-size: 0.75em;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+let selectedCompanyId = null;
+
+document.getElementById('companySelector').addEventListener('change', function() {
+    selectedCompanyId = this.value;
+    if (selectedCompanyId) {
+        console.log('Empresa seleccionada:', selectedCompanyId);
+        // Aquí se cargarían los datos específicos de la empresa
+    }
+});
+
+function validateCompanySelection() {
+    if (!selectedCompanyId) {
+        alert('Por favor seleccione una empresa primero.');
+        return false;
+    }
+    return true;
+}
+
+function newEmployee() {
+    if (!validateCompanySelection()) return;
+    window.open('/admin/payroll/employee/add/', '_blank');
+}
+
+function processPayroll() {
+    if (!validateCompanySelection()) return;
+    alert('Funcionalidad: Procesamiento de nómina\n\n' +
+          '1. Seleccionar período (quincenal/mensual)\n' +
+          '2. Calcular devengos y deducciones\n' +
+          '3. Aplicar prestaciones sociales\n' +
+          '4. Generar comprobantes de pago\n' +
+          '5. Crear asientos contables automáticos');
+}
+
+function generateCertificate() {
+    if (!validateCompanySelection()) return;
+    alert('Funcionalidad: Certificados laborales\n\n' +
+          '• Certificado de ingresos y retenciones\n' +
+          '• Certificado laboral\n' +
+          '• Certificado de cesantías\n' +
+          '• Paz y salvo laboral');
+}
+
+function finalLiquidation() {
+    if (!validateCompanySelection()) return;
+    alert('Funcionalidad: Liquidación final\n\n' +
+          '1. Calcular prestaciones sociales\n' +
+          '2. Vacaciones pendientes\n' +
+          '3. Indemnizaciones (si aplica)\n' +
+          '4. Descuentos pendientes\n' +
+          '5. Generar finiquito');
+}
+
+function generatePILA() {
+    if (!validateCompanySelection()) return;
+    alert('Funcionalidad: Planilla PILA\n\n' +
+          '• Generar archivo plano PILA\n' +
+          '• Validar información empleados\n' +
+          '• Calcular aportes seguridad social\n' +
+          '• Exportar para carga en operadores');
+}
+
+function payrollReports() {
+    if (!validateCompanySelection()) return;
+    alert('Reportes disponibles:\n\n' +
+          '• Resumen de nómina por período\n' +
+          '• Certificados masivos\n' +
+          '• Provisiones prestaciones sociales\n' +
+          '• Análisis de costos laborales\n' +
+          '• Reportes para contabilidad');
+}
+
+// Actualizar datos cada 30 segundos (simulado)
+setInterval(function() {
+    console.log('Actualizando datos de nómina...');
+}, 30000);
+</script>
+{% endblock %}
