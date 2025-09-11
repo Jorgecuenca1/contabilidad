@@ -11,6 +11,8 @@ from django.core.paginator import Paginator
 from decimal import Decimal
 
 from core.models import Company
+from core.utils import get_current_company, require_company_access
+
 from accounting.models_accounts import Account
 from .models_customer import Customer, CustomerType
 from .models_invoice import Invoice, InvoiceLine
@@ -19,26 +21,26 @@ from third_parties.models import ThirdParty
 
 
 @login_required
+@require_company_access
 def new_invoice(request):
     """
     Página para crear nueva factura de venta.
     """
-    companies = Company.objects.filter(is_active=True)
-    customers = Customer.objects.filter(is_active=True)
+    current_company = request.current_company
+    customers = Customer.objects.filter(company=current_company, is_active=True)
     customer_types = CustomerType.objects.filter(is_active=True)
     
     if request.method == 'POST':
         try:
             # Datos generales de la factura
-            company_id = request.POST.get('company')
             customer_id = request.POST.get('customer')
             invoice_date = request.POST.get('invoice_date')
             due_date = request.POST.get('due_date')
             reference = request.POST.get('reference')
             notes = request.POST.get('notes', '')
             
-            company = Company.objects.get(id=company_id)
-            customer = Customer.objects.get(id=customer_id)
+            company = current_company  # Usar la empresa del contexto
+            customer = Customer.objects.get(id=customer_id, company=company)
             
             # Generar número de factura
             last_invoice = Invoice.objects.filter(company=company).order_by('-invoice_number').first()
@@ -105,16 +107,19 @@ def new_invoice(request):
             messages.error(request, f'Error al crear la factura: {str(e)}')
     
     context = {
-        'companies': companies,
         'customers': customers,
         'customer_types': customer_types,
+        'current_company': current_company,
     }
     
     return render(request, 'accounts_receivable/new_invoice.html', context)
 
 
 @login_required
+@require_company_access
 def new_payment(request):
+    current_company = request.current_company
+
     """
     Página para registrar nuevo pago de cliente.
     """
@@ -196,7 +201,10 @@ def new_payment(request):
 
 
 @login_required
+@require_company_access
 def get_customer_invoices(request):
+    current_company = request.current_company
+
     """
     API para obtener facturas pendientes de un cliente.
     """
@@ -230,7 +238,10 @@ def get_customer_invoices(request):
 
 
 @login_required
+@require_company_access
 def get_customers_json(request):
+    current_company = request.current_company
+
     """
     API para obtener clientes en formato JSON.
     """
@@ -264,13 +275,19 @@ def get_customers_json(request):
 
 
 @login_required
+@require_company_access
 def index(request):
+    current_company = request.current_company
+
     """Dashboard principal de Cuentas por Cobrar."""
     return dashboard(request)
 
 
 @login_required
+@require_company_access
 def dashboard(request):
+    current_company = request.current_company
+
     """Dashboard con estadísticas de CxC."""
     companies = Company.objects.filter(is_active=True)
     
@@ -298,7 +315,10 @@ def dashboard(request):
 
 
 @login_required
+@require_company_access
 def customer_list(request):
+    current_company = request.current_company
+
     """Lista de clientes."""
     search = request.GET.get('search', '')
     company_filter = request.GET.get('company', '')
@@ -404,7 +424,10 @@ def edit_customer(request, customer_id):
 
 
 @login_required
+@require_company_access
 def invoice_list(request):
+    current_company = request.current_company
+
     """Lista de facturas."""
     search = request.GET.get('search', '')
     status_filter = request.GET.get('status', '')
@@ -483,7 +506,10 @@ def edit_invoice(request, invoice_id):
 
 
 @login_required
+@require_company_access
 def payment_list(request):
+    current_company = request.current_company
+
     """Lista de pagos."""
     search = request.GET.get('search', '')
     status_filter = request.GET.get('status', '')

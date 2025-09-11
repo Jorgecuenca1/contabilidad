@@ -75,6 +75,7 @@ class ChartOfAccounts(models.Model):
 class Account(models.Model):
     """
     Cuenta contable individual dentro del plan de cuentas.
+    Soporta cuentas estándar del PUC colombiano (compartidas) y cuentas personalizadas por empresa.
     """
     CONTROL_CHOICES = [
         ('none', 'Sin Control'),
@@ -88,7 +89,12 @@ class Account(models.Model):
     ]
     
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    chart_of_accounts = models.ForeignKey(ChartOfAccounts, on_delete=models.CASCADE, related_name='accounts')
+    chart_of_accounts = models.ForeignKey(ChartOfAccounts, on_delete=models.CASCADE, related_name='accounts', null=True, blank=True)
+    
+    # Soporte para PUC colombiano compartido vs cuentas personalizadas
+    is_custom = models.BooleanField(default=False, help_text="True para cuentas personalizadas de empresa, False para PUC estándar colombiano")
+    custom_company = models.ForeignKey(Company, on_delete=models.CASCADE, null=True, blank=True, 
+                                      help_text="Empresa propietaria de cuenta personalizada (null para PUC estándar)")
     
     # Jerarquía
     parent = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='children')
@@ -122,16 +128,43 @@ class Account(models.Model):
         db_table = 'accounting_accounts'
         verbose_name = 'Cuenta Contable'
         verbose_name_plural = 'Cuentas Contables'
-        unique_together = ['chart_of_accounts', 'code']
+        constraints = [
+            # Las cuentas estándar del PUC no pueden tener duplicados de código
+            models.UniqueConstraint(
+                fields=['code'],
+                condition=models.Q(is_custom=False),
+                name='unique_puc_standard_code'
+            ),
+            # Las cuentas personalizadas no pueden tener duplicados por empresa
+            models.UniqueConstraint(
+                fields=['custom_company', 'code'],
+                condition=models.Q(is_custom=True),
+                name='unique_custom_company_code'
+            ),
+        ]
         ordering = ['code']
         indexes = [
             models.Index(fields=['chart_of_accounts', 'code']),
             models.Index(fields=['account_type']),
             models.Index(fields=['is_active', 'is_detail']),
+            models.Index(fields=['is_custom', 'custom_company']),
         ]
     
     def __str__(self):
-        return f"{self.code} - {self.name}"
+        prefix = "[PERSONALIZADA] " if self.is_custom else ""
+        return f"{prefix}{self.code} - {self.name}"
+    
+    @classmethod
+    def get_company_accounts(cls, company):
+        """
+        Obtiene todas las cuentas visibles para una empresa:
+        - Cuentas estándar del PUC colombiano (is_custom=False)
+        - Cuentas personalizadas de la empresa (is_custom=True, custom_company=company)
+        """
+        from django.db.models import Q
+        return cls.objects.filter(
+            Q(is_custom=False) | Q(is_custom=True, custom_company=company)
+        ).order_by('code')
     
     def get_full_code(self):
         """Obtiene el código completo incluyendo jerarquía."""

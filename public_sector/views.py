@@ -9,11 +9,16 @@ from django.http import JsonResponse
 from django.utils import timezone
 
 from core.models import Company
+from core.utils import get_current_company, require_company_access
+
 from .models import Budget, CDP, RP, PublicReport, BudgetItem
 
 
 @login_required
+@require_company_access
 def public_sector_dashboard(request):
+    current_company = request.current_company
+
     """
     Dashboard principal de sector público.
     """
@@ -39,7 +44,10 @@ def public_sector_dashboard(request):
 
 
 @login_required
+@require_company_access
 def generate_chip_report(request):
+    current_company = request.current_company
+
     """
     Generar reporte CHIP (Clasificador de Ingresos y Gastos Públicos).
     """

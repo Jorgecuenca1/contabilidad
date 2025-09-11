@@ -4,6 +4,7 @@ Vistas del módulo core.
 
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth import logout
 from django.contrib import messages
 from django.http import JsonResponse
 from django.db.models import Count, Q
@@ -39,15 +40,39 @@ def dashboard(request):
 
 
 @login_required
-def company_selector(request):
+def select_company(request):
     """
-    Selector de empresa para usuarios multiempresa.
+    Seleccionar empresa activa para el usuario.
     """
-    # Filter companies that are active through the relationship
-    companies = Company.objects.filter(
-        id__in=request.user.companies.values_list('id', flat=True),
-        is_active=True
-    )
+    if request.method == 'POST':
+        company_id = request.POST.get('company_id')
+        
+        if company_id:
+            # Verificar que el usuario tenga acceso a esta empresa
+            accessible_companies = request.user.get_accessible_companies()
+            selected_company = accessible_companies.filter(id=company_id).first()
+            
+            if selected_company:
+                # Guardar en la sesión
+                request.session['selected_company_id'] = str(company_id)
+                messages.success(request, f'Empresa seleccionada: {selected_company.name}')
+                return JsonResponse({'success': True, 'company_name': selected_company.name})
+            else:
+                messages.error(request, 'No tiene acceso a esta empresa.')
+                return JsonResponse({'success': False, 'error': 'Sin acceso a la empresa'})
+        else:
+            messages.error(request, 'Empresa no válida.')
+            return JsonResponse({'success': False, 'error': 'Empresa no válida'})
+    
+    return JsonResponse({'success': False, 'error': 'Método no permitido'})
+
+
+@login_required
+def company_selector_api(request):
+    """
+    API para obtener las empresas accesibles del usuario.
+    """
+    accessible_companies = request.user.get_accessible_companies()
     return JsonResponse({
         'companies': [
             {
@@ -55,7 +80,7 @@ def company_selector(request):
                 'name': company.name,
                 'tax_id': company.tax_id
             }
-            for company in companies
+            for company in accessible_companies
         ]
     })
 
@@ -263,3 +288,10 @@ def user_profile(request):
         'user': request.user,
     }
     return render(request, 'registration/profile.html', context)
+
+
+def custom_logout(request):
+    """Vista personalizada de logout."""
+    logout(request)
+    messages.success(request, 'Has cerrado sesión correctamente.')
+    return redirect('/accounts/login/')

@@ -27,9 +27,7 @@
                         <label for="company_id" class="form-label">Empresa *</label>
                         <select class="form-select" name="company_id" id="company_id" required>
                             <option value="">Seleccione una empresa...</option>
-                            {% for company in companies %}
-                                <option value="{{ company.id }}">{{ company.name }} (NIT: {{ company.tax_id }})</option>
-                            {% endfor %}
+                            
                         </select>
                     </div>
                     

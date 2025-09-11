@@ -4,85 +4,13 @@
 {% block title %}Pagar Proveedor{% endblock %}
 
 {% block content %}
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-12">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <div>
-                    <h2><i class="bi bi-credit-card text-warning"></i> Pagar Proveedor</h2>
-                    <p class="text-muted">Registra pagos a proveedores con aplicación automática a facturas</p>
-                </div>
-                <div>
-                    <a href="{% url 'core:dashboard' %}" class="btn btn-outline-secondary">
-                        <i class="bi bi-arrow-left"></i> Volver al Dashboard
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Información sobre Pagos a Proveedores -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="card border-warning">
-                <div class="card-header bg-warning text-dark">
-                    <h5><i class="bi bi-info-circle"></i> ¿Qué es un Pago a Proveedor?</h5>
-                </div>
-                <div class="card-body">
-                    <p><strong>Un pago a proveedor registra la cancelación de obligaciones con terceros:</strong></p>
-                    <div class="row">
-                        <div class="col-md-4">
-                            <h6>📋 Registro Contable:</h6>
-                            <ul class="small">
-                                <li>📝 <strong>Débito:</strong> Cuentas por pagar</li>
-                                <li>📝 <strong>Crédito:</strong> Bancos o Caja</li>
-                                <li>🔄 <strong>Aplicación automática</strong> a facturas</li>
-                            </ul>
-                        </div>
-                        <div class="col-md-4">
-                            <h6>💳 Métodos de Pago:</h6>
-                            <ul class="small">
-                                <li>🏦 <strong>Transferencia bancaria</strong> (más común)</li>
-                                <li>💰 <strong>Efectivo</strong> para montos menores</li>
-                                <li>📋 <strong>Cheque</strong> con seguimiento</li>
-                            </ul>
-                        </div>
-                        <div class="col-md-4">
-                            <h6>📊 Control Financiero:</h6>
-                            <ul class="small">
-                                <li>📅 <strong>Flujo de caja</strong> actualizado</li>
-                                <li>💰 <strong>Saldos pendientes</strong> automáticos</li>
-                                <li>🧾 <strong>Retenciones</strong> si aplican</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Formulario de Pago -->
-    <form method="post" id="supplierPaymentForm">
-        {% csrf_token %}
-        
-        <!-- Datos del Pago -->
-        <div class="row">
-            <div class="col-12">
-                <div class="card">
-                    <div class="card-header bg-primary text-white">
-                        <h5><i class="bi bi-credit-card"></i> Datos del Pago</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-md-3">
-                                <label for="company" class="form-label">Empresa *</label>
-                                <select class="form-select" id="company" name="company" required>
-                                    <option value="">Seleccione empresa...</option>
-                                    {% for company in companies %}
-                                        <option value="{{ company.id }}">{{ company.name }}</option>
-                                    {% endfor %}
-                                </select>
+                        <!-- Empresa Seleccionada -->
+                        <div class="col-12 mb-3">
+                            <div class="alert alert-info">
+                                <i class="bi bi-building"></i> <strong>Empresa:</strong> {{ current_company.name }}{% if current_company.tax_id %} - {{ current_company.tax_id }}{% endif %}
+                                <small class="d-block">Trabajando con la empresa seleccionada en el dashboard</small>
                             </div>
+                        </div>
                             <div class="col-md-3">
                                 <label for="supplier" class="form-label">Proveedor *</label>
                                 <select class="form-select" id="supplier" name="supplier" required onchange="loadSupplierInvoices()">

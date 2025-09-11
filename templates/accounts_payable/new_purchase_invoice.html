@@ -3,86 +3,42 @@
 
 {% block title %}Nueva Factura de Compra{% endblock %}
 
-{% block contentdonde %}
+{% block content %}
 <div class="container-fluid">
-    <div class="row">
-        <div class="col-12">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <div>
-                    <h2><i class="bi bi-receipt text-danger"></i> Nueva Factura de Compra</h2>
-                    <p class="text-muted">Registra facturas de proveedores con contabilización automática</p>
-                </div>
-                <div>
-                    <a href="{% url 'core:dashboard' %}" class="btn btn-outline-secondary">
-                        <i class="bi bi-arrow-left"></i> Volver al Dashboard
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Información sobre Facturas de Compra -->
     <div class="row mb-4">
         <div class="col-12">
-            <div class="card border-danger">
-                <div class="card-header bg-danger text-white">
-                    <h5><i class="bi bi-info-circle"></i> ¿Qué es una Factura de Compra?</h5>
-                </div>
-                <div class="card-body">
-                    <p><strong>Una factura de compra registra las adquisiciones de bienes y servicios de proveedores:</strong></p>
-                    <div class="row">
-                        <div class="col-md-4">
-                            <h6>📋 Registro Contable:</h6>
-                            <ul class="small">
-                                <li>📝 <strong>Débito:</strong> Cuenta de gasto o activo</li>
-                                <li>📝 <strong>Débito:</strong> IVA descontable (si aplica)</li>
-                                <li>📝 <strong>Crédito:</strong> Cuentas por pagar</li>
-                            </ul>
-                        </div>
-                        <div class="col-md-4">
-                            <h6>🏢 Control de Proveedores:</h6>
-                            <ul class="small">
-                                <li>💰 <strong>Seguimiento</strong> de cuentas por pagar</li>
-                                <li>📅 <strong>Fechas de vencimiento</strong> para pagos</li>
-                                <li>📊 <strong>Análisis</strong> de compras por proveedor</li>
-                            </ul>
-                        </div>
-                        <div class="col-md-4">
-                            <h6>🧾 Cumplimiento Fiscal:</h6>
-                            <ul class="small">
-                                <li>🔢 <strong>Numeración</strong> consecutiva obligatoria</li>
-                                <li>📋 <strong>Soporte</strong> para declaraciones</li>
-                                <li>💳 <strong>IVA descontable</strong> automático</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'core:dashboard' %}">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="#">Cuentas por Pagar</a></li>
+                    <li class="breadcrumb-item active">Nueva Factura de Compra</li>
+                </ol>
+            </nav>
         </div>
     </div>
 
-    <!-- Formulario de Factura -->
     <form method="post" id="purchaseInvoiceForm">
         {% csrf_token %}
         
-        <!-- Datos Generales -->
+        <!-- Información de la Factura -->
         <div class="row">
             <div class="col-12">
                 <div class="card">
                     <div class="card-header bg-primary text-white">
-                        <h5><i class="bi bi-file-earmark-text"></i> Datos de la Factura</h5>
+                        <h4><i class="bi bi-receipt"></i> Nueva Factura de Compra</h4>
                     </div>
                     <div class="card-body">
+                        <!-- Empresa Seleccionada -->
                         <div class="row">
-                            <div class="col-md-3">
-                                <label for="company" class="form-label">Empresa *</label>
-                                <select class="form-select" id="company" name="company" required>
-                                    <option value="">Seleccione empresa...</option>
-                                    {% for company in companies %}
-                                        <option value="{{ company.id }}">{{ company.name }}</option>
-                                    {% endfor %}
-                                </select>
+                            <div class="col-12 mb-3">
+                                <div class="alert alert-info">
+                                    <i class="bi bi-building"></i> <strong>Empresa:</strong> {{ current_company.name }}{% if current_company.tax_id %} - {{ current_company.tax_id }}{% endif %}
+                                    <small class="d-block">Trabajando con la empresa seleccionada en el dashboard</small>
+                                </div>
                             </div>
+                        </div>
+                        
+                        <div class="row">
                             <div class="col-md-3">
                                 <label for="supplier" class="form-label">Proveedor *</label>
                                 <select class="form-select" id="supplier" name="supplier" required>
@@ -104,13 +60,13 @@
                                 <input type="date" class="form-control" id="date" name="date" 
                                        value="{{ today|date:'Y-m-d' }}" required>
                             </div>
-                        </div>
-                        <div class="row mt-3">
                             <div class="col-md-3">
                                 <label for="due_date" class="form-label">Fecha de Vencimiento *</label>
                                 <input type="date" class="form-control" id="due_date" name="due_date" required>
                             </div>
-                            <div class="col-md-9">
+                        </div>
+                        <div class="row mt-3">
+                            <div class="col-md-12">
                                 <label for="description" class="form-label">Descripción</label>
                                 <input type="text" class="form-control" id="description" name="description" 
                                        placeholder="Descripción general de la compra...">
@@ -455,7 +411,3 @@ document.getElementById('purchaseInvoiceForm').addEventListener('submit', functi
 });
 </script>
 {% endblock %}
-
-
-
-

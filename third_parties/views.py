@@ -11,18 +11,21 @@ from django.core.paginator import Paginator
 from .models import ThirdParty, ThirdPartyType, ThirdPartyContact, ThirdPartyAddress, ThirdPartyDocument
 from .forms import ThirdPartyForm, ThirdPartySearchForm, ThirdPartyContactForm, ThirdPartyAddressForm
 from core.models import Company
+from core.utils import get_current_company, require_company_access
+
 
 
 @login_required
+@require_company_access
 def third_party_list(request):
+    current_company = request.current_company
+
     """Lista de todos los terceros de la empresa"""
-    company = request.user.default_company if hasattr(request.user, 'default_company') else Company.objects.first()
-    
     # Filtros
     search = request.GET.get('search', '')
     filter_type = request.GET.get('type', '')
     
-    third_parties = ThirdParty.objects.filter(company=company)
+    third_parties = ThirdParty.objects.filter(company=current_company)
     
     if search:
         third_parties = third_parties.filter(
@@ -51,7 +54,6 @@ def third_party_list(request):
     page_obj = paginator.get_page(page_number)
     
     context = {
-        'company': company,
         'page_obj': page_obj,
         'search': search,
         'filter_type': filter_type,
@@ -61,15 +63,16 @@ def third_party_list(request):
 
 
 @login_required
+@require_company_access
 def third_party_create(request):
+    current_company = request.current_company
+
     """Crear nuevo tercero"""
-    company = request.user.default_company if hasattr(request.user, 'default_company') else Company.objects.first()
-    
     if request.method == 'POST':
         form = ThirdPartyForm(request.POST)
         if form.is_valid():
             third_party = form.save(commit=False)
-            third_party.company = company
+            third_party.company = current_company
             third_party.created_by = request.user
             third_party.save()
             
@@ -79,7 +82,6 @@ def third_party_create(request):
         form = ThirdPartyForm()
     
     context = {
-        'company': company,
         'form': form,
     }
     
@@ -155,13 +157,15 @@ def third_party_delete(request, pk):
 
 # API endpoints para búsqueda AJAX
 @login_required
+@require_company_access
 def api_search_third_parties(request):
+    current_company = request.current_company
+
     """API para búsqueda de terceros (usado en formularios)"""
-    company = request.user.default_company if hasattr(request.user, 'default_company') else Company.objects.first()
     query = request.GET.get('q', '')
     filter_type = request.GET.get('type', '')  # customer, supplier, etc.
     
-    third_parties = ThirdParty.objects.filter(company=company, is_active=True)
+    third_parties = ThirdParty.objects.filter(company=current_company, is_active=True)
     
     if filter_type == 'customer':
         third_parties = third_parties.filter(is_customer=True)
@@ -199,7 +203,10 @@ def api_search_third_parties(request):
 
 
 @login_required
+@require_company_access
 def api_verify_nit(request):
+    current_company = request.current_company
+
     """API para verificar dígito de verificación de NIT"""
     nit = request.GET.get('nit', '')
     

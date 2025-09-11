@@ -13,16 +13,20 @@ from accounting.models_journal import JournalEntry, JournalEntryLine
 from accounting.models_journal import JournalType
 from accounting.models_accounts import Account
 from core.models import Company, Period, Currency
+from core.utils import get_current_company, require_company_access
+
 
 
 @login_required
+@require_company_access
 def bank_movement(request):
     """Vista para registrar movimientos bancarios."""
+    current_company = request.current_company
+    
     if request.method == 'POST':
         try:
             with transaction.atomic():
                 # Datos del movimiento
-                company_id = request.POST.get('company')
                 bank_account_id = request.POST.get('bank_account')
                 movement_type = request.POST.get('movement_type')
                 amount = request.POST.get('amount')
@@ -31,7 +35,7 @@ def bank_movement(request):
                 description = request.POST.get('description', '')
                 third_party = request.POST.get('third_party', '')
                 
-                company = Company.objects.get(id=company_id)
+                company = current_company
                 bank_account = BankAccount.objects.get(id=bank_account_id)
                 amount = float(amount)
                 
@@ -137,9 +141,9 @@ def bank_movement(request):
     
     # Datos para el template
     context = {
-        'companies': Company.objects.filter(is_active=True),
-        'bank_accounts': BankAccount.objects.filter(status='active'),
-        'recent_movements': BankMovement.objects.all().order_by('-date', '-created_at')[:10],
+        'current_company': current_company,
+        'bank_accounts': BankAccount.objects.filter(company=current_company, status='active'),
+        'recent_movements': BankMovement.objects.filter(bank_account__company=current_company).order_by('-date', '-created_at')[:10],
         'today': timezone.now().date(),
     }
     
@@ -147,18 +151,20 @@ def bank_movement(request):
 
 
 @login_required
+@require_company_access
 def bank_reconciliation(request):
     """Vista para conciliación bancaria."""
+    current_company = request.current_company
+    
     if request.method == 'POST':
         try:
             with transaction.atomic():
                 # Datos de la conciliación
-                company_id = request.POST.get('company')
                 bank_account_id = request.POST.get('bank_account')
                 statement_date = request.POST.get('statement_date')
                 statement_balance = request.POST.get('statement_balance')
                 
-                company = Company.objects.get(id=company_id)
+                company = current_company
                 bank_account = BankAccount.objects.get(id=bank_account_id)
                 statement_balance = float(statement_balance)
                 
@@ -230,7 +236,7 @@ def bank_reconciliation(request):
     
     # Datos para el template
     context = {
-        'companies': Company.objects.filter(is_active=True),
+        'current_company': current_company,
         'bank_accounts': BankAccount.objects.filter(status='active'),
         'recent_movements': BankMovement.objects.all().order_by('-date')[:20],
         'today': timezone.now().date(),
@@ -243,7 +249,10 @@ These should be added to views.py
 """
 
 @login_required
+@require_company_access
 def treasury_dashboard(request):
+    current_company = request.current_company
+
     """Dashboard principal de tesorería."""
     # Obtener estadísticas generales
     total_bank_accounts = BankAccount.objects.filter(status='active').count()
@@ -278,7 +287,10 @@ def treasury_dashboard(request):
 
 
 @login_required
+@require_company_access
 def bank_account_list(request):
+    current_company = request.current_company
+
     """Lista de cuentas bancarias."""
     accounts = BankAccount.objects.all().order_by('code')
     
@@ -290,7 +302,10 @@ def bank_account_list(request):
 
 
 @login_required
+@require_company_access
 def bank_account_create(request):
+    current_company = request.current_company
+
     """Crear nueva cuenta bancaria."""
     if request.method == 'POST':
         try:
@@ -322,7 +337,7 @@ def bank_account_create(request):
             messages.error(request, f'Error al crear cuenta bancaria: {str(e)}')
     
     context = {
-        'companies': Company.objects.filter(is_active=True),
+        'current_company': current_company,
         'banks': Bank.objects.filter(is_active=True),
         'currencies': Currency.objects.filter(is_active=True),
         'accounts': Account.objects.filter(account_type='asset', code__startswith='11').order_by('code'),
@@ -359,7 +374,10 @@ def bank_account_edit(request, pk):
 
 
 @login_required
+@require_company_access
 def cash_account_list(request):
+    current_company = request.current_company
+
     """Lista de cuentas de caja."""
     accounts = CashAccount.objects.all().order_by('code')
     
@@ -371,13 +389,15 @@ def cash_account_list(request):
 
 
 @login_required
+@require_company_access
 def cash_account_create(request):
+    current_company = request.current_company
+
     """Crear nueva cuenta de caja."""
     if request.method == 'POST':
         try:
             with transaction.atomic():
-                company_id = request.POST.get('company')
-                company = Company.objects.get(id=company_id)
+                company = current_company
                 
                 account = CashAccount.objects.create(
                     company=company,
@@ -399,7 +419,7 @@ def cash_account_create(request):
             messages.error(request, f'Error al crear cuenta de caja: {str(e)}')
     
     context = {
-        'companies': Company.objects.filter(is_active=True),
+        'current_company': current_company,
         'currencies': Currency.objects.filter(is_active=True),
         'accounts': Account.objects.filter(account_type='asset', code__startswith='11').order_by('code'),
     }
@@ -435,7 +455,10 @@ def cash_account_edit(request, pk):
 
 
 @login_required
+@require_company_access
 def bank_movement_list(request):
+    current_company = request.current_company
+
     """Lista de movimientos bancarios."""
     movements = BankMovement.objects.all().order_by('-date', '-created_at')[:100]
     
@@ -447,7 +470,10 @@ def bank_movement_list(request):
 
 
 @login_required
+@require_company_access
 def cash_movement(request):
+    current_company = request.current_company
+
     """Vista para registrar movimientos de caja."""
     if request.method == 'POST':
         try:
@@ -491,7 +517,7 @@ def cash_movement(request):
             messages.error(request, f'Error al registrar movimiento de caja: {str(e)}')
     
     context = {
-        'companies': Company.objects.filter(is_active=True),
+        'current_company': current_company,
         'cash_accounts': CashAccount.objects.filter(status='active'),
         'recent_movements': CashMovement.objects.all().order_by('-date', '-created_at')[:10],
         'today': timezone.now().date(),
@@ -501,7 +527,10 @@ def cash_movement(request):
 
 
 @login_required
+@require_company_access
 def cash_movement_list(request):
+    current_company = request.current_company
+
     """Lista de movimientos de caja."""
     movements = CashMovement.objects.all().order_by('-date', '-created_at')[:100]
     
@@ -513,7 +542,10 @@ def cash_movement_list(request):
 
 
 @login_required
+@require_company_access
 def bank_reconciliation_list(request):
+    current_company = request.current_company
+
     """Lista de conciliaciones bancarias."""
     reconciliations = BankReconciliation.objects.all().order_by('-period_end')[:50]
     
@@ -525,7 +557,10 @@ def bank_reconciliation_list(request):
 
 
 @login_required
+@require_company_access
 def cash_flow(request):
+    current_company = request.current_company
+
     """Vista para flujo de caja."""
     # Obtener flujos de caja del período actual
     current_period = Period.objects.filter(status='open').first()
@@ -553,7 +588,10 @@ def cash_flow(request):
 
 
 @login_required
+@require_company_access
 def cash_flow_report(request):
+    current_company = request.current_company
+
     """Reporte de flujo de caja."""
     period_id = request.GET.get('period')
     

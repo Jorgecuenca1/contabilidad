@@ -3,37 +3,12 @@
 {% block title %}Certificados de Retención{% endblock %}
 
 {% block content %}
-<div class="container-fluid mt-4">
-    <div class="row mb-4">
-        <div class="col-md-8">
-            <h2 class="text-primary">
-                <i class="fas fa-certificate"></i> Certificados de Retención en la Fuente
-            </h2>
-        </div>
-        <div class="col-md-4 text-end">
-            <a href="{% url 'taxes:dashboard' %}" class="btn btn-outline-secondary">
-                <i class="fas fa-arrow-left"></i> Volver
-            </a>
-        </div>
-    </div>
-
-    <!-- Filtros y Búsqueda -->
-    <div class="row mb-4">
-        <div class="col-md-12">
-            <div class="card">
-                <div class="card-header bg-info text-white">
-                    <h6 class="mb-0"><i class="fas fa-search"></i> Buscar y Generar Certificados</h6>
-                </div>
-                <div class="card-body">
-                    <form method="get" class="row g-3">
-                        <div class="col-md-3">
-                            <label>Empresa</label>
-                            <select name="company" class="form-control" required>
-                                <option value="">Seleccione empresa...</option>
-                                {% for company in companies %}
-                                <option value="{{ company.id }}">{{ company.name }}</option>
-                                {% endfor %}
-                            </select>
+                        <!-- Empresa Seleccionada -->
+                        <div class="col-12 mb-3">
+                            <div class="alert alert-info">
+                                <i class="bi bi-building"></i> <strong>Empresa:</strong> {{ current_company.name }}{% if current_company.tax_id %} - {{ current_company.tax_id }}{% endif %}
+                                <small class="d-block">Trabajando con la empresa seleccionada en el dashboard</small>
+                            </div>
                         </div>
                         <div class="col-md-3">
                             <label>Tercero</label>

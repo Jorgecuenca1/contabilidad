@@ -4,48 +4,13 @@
 {% block title %}Liquidar Nómina{% endblock %}
 
 {% block content %}
-<div class="container-fluid mt-4">
-    <!-- Header -->
-    <div class="row mb-4">
-        <div class="col-md-8">
-            <h2 class="text-primary">
-                <i class="fas fa-calculator"></i> Liquidar Nómina
-            </h2>
-            {% if current_period %}
-                <p class="text-muted">{{ current_period.name }} - {{ current_period.company.name }}</p>
-            {% endif %}
-        </div>
-        <div class="col-md-4 text-end">
-            <a href="{% url 'payroll:dashboard' %}" class="btn btn-outline-secondary">
-                <i class="fas fa-arrow-left"></i> Volver
-            </a>
-        </div>
-    </div>
-
-    <!-- Crear nuevo período -->
-    {% if not current_period %}
-    <div class="row mb-4">
-        <div class="col-md-12">
-            <div class="card">
-                <div class="card-header bg-primary text-white">
-                    <h5 class="mb-0"><i class="fas fa-plus"></i> Crear Nuevo Período de Nómina</h5>
-                </div>
-                <div class="card-body">
-                    <form method="post">
-                        {% csrf_token %}
-                        <input type="hidden" name="action" value="create_period">
-                        
-                        <div class="row">
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label>Empresa</label>
-                                    <select name="company" class="form-control" required>
-                                        <option value="">Seleccione...</option>
-                                        {% for company in companies %}
-                                        <option value="{{ company.id }}">{{ company.name }}</option>
-                                        {% endfor %}
-                                    </select>
-                                </div>
+                        <!-- Empresa Seleccionada -->
+                        <div class="col-12 mb-3">
+                            <div class="alert alert-info">
+                                <i class="bi bi-building"></i> <strong>Empresa:</strong> {{ current_company.name }}{% if current_company.tax_id %} - {{ current_company.tax_id }}{% endif %}
+                                <small class="d-block">Trabajando con la empresa seleccionada en el dashboard</small>
+                            </div>
+                        </div>
                             </div>
                             <div class="col-md-3">
                                 <div class="form-group">

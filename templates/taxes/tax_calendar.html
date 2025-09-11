@@ -3,45 +3,12 @@
 {% block title %}Calendario Tributario{% endblock %}
 
 {% block content %}
-<div class="container-fluid mt-4">
-    <div class="row mb-4">
-        <div class="col-md-8">
-            <h2 class="text-primary">
-                <i class="fas fa-calendar-alt"></i> Calendario Tributario DIAN 2025
-            </h2>
-        </div>
-        <div class="col-md-4 text-end">
-            <a href="{% url 'taxes:dashboard' %}" class="btn btn-outline-secondary">
-                <i class="fas fa-arrow-left"></i> Volver
-            </a>
-        </div>
-    </div>
-
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="alert alert-info">
-                <i class="fas fa-info-circle"></i>
-                <strong>Calendario Tributario Colombia 2025:</strong>
-                Fechas de vencimiento para declaraciones y pagos de impuestos según normatividad DIAN.
-                Las fechas pueden variar según último dígito del NIT.
-            </div>
-        </div>
-    </div>
-
-    <!-- Filtros -->
-    <div class="row mb-4">
-        <div class="col-md-12">
-            <div class="card">
-                <div class="card-body">
-                    <form method="get" class="row g-3">
-                        <div class="col-md-3">
-                            <label>Empresa</label>
-                            <select name="company" class="form-control">
-                                <option value="">Todas las empresas</option>
-                                {% for company in companies %}
-                                <option value="{{ company.id }}">{{ company.name }}</option>
-                                {% endfor %}
-                            </select>
+                        <!-- Empresa Seleccionada -->
+                        <div class="col-12 mb-3">
+                            <div class="alert alert-info">
+                                <i class="bi bi-building"></i> <strong>Empresa:</strong> {{ current_company.name }}{% if current_company.tax_id %} - {{ current_company.tax_id }}{% endif %}
+                                <small class="d-block">Trabajando con la empresa seleccionada en el dashboard</small>
+                            </div>
                         </div>
                         <div class="col-md-3">
                             <label>Tipo de Obligación</label>

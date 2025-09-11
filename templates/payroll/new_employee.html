@@ -4,87 +4,13 @@
 {% block title %}Nuevo Empleado{% endblock %}
 
 {% block content %}
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-12">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <div>
-                    <h2><i class="bi bi-person-plus text-primary"></i> Nuevo Empleado</h2>
-                    <p class="text-muted">Registra empleados con toda la información laboral y de seguridad social</p>
-                </div>
-                <div>
-                    <a href="{% url 'core:dashboard' %}" class="btn btn-outline-secondary">
-                        <i class="bi bi-arrow-left"></i> Volver al Dashboard
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Información sobre Empleados -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="card border-primary">
-                <div class="card-header bg-primary text-white">
-                    <h5><i class="bi bi-info-circle"></i> Registro de Empleados en Colombia</h5>
-                </div>
-                <div class="card-body">
-                    <p><strong>El registro de empleados debe cumplir con toda la normativa laboral colombiana:</strong></p>
-                    <div class="row">
-                        <div class="col-md-4">
-                            <h6>👥 Información Personal:</h6>
-                            <ul class="small">
-                                <li>📄 <strong>Documento de identidad</strong> válido</li>
-                                <li>📧 <strong>Datos de contacto</strong> actualizados</li>
-                                <li>🏠 <strong>Dirección de residencia</strong></li>
-                            </ul>
-                        </div>
-                        <div class="col-md-4">
-                            <h6>🏥 Seguridad Social:</h6>
-                            <ul class="small">
-                                <li>🏥 <strong>EPS:</strong> Entidad Promotora de Salud</li>
-                                <li>💰 <strong>Pensión:</strong> Fondo de pensiones</li>
-                                <li>⚠️ <strong>ARL:</strong> Riesgos laborales</li>
-                                <li>👨‍👩‍👧‍👦 <strong>CCF:</strong> Caja de compensación</li>
-                            </ul>
-                        </div>
-                        <div class="col-md-4">
-                            <h6>💼 Información Laboral:</h6>
-                            <ul class="small">
-                                <li>📅 <strong>Fecha de ingreso</strong></li>
-                                <li>📋 <strong>Tipo de contrato</strong></li>
-                                <li>💵 <strong>Salario básico</strong></li>
-                                <li>🏦 <strong>Cuenta bancaria</strong> para pagos</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Formulario de Empleado -->
-    <form method="post" id="employeeForm">
-        {% csrf_token %}
-        
-        <!-- Datos Personales -->
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="card">
-                    <div class="card-header bg-success text-white">
-                        <h5><i class="bi bi-person"></i> Datos Personales</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-md-3">
-                                <label for="company" class="form-label">Empresa *</label>
-                                <select class="form-select" id="company" name="company" required>
-                                    <option value="">Seleccione empresa...</option>
-                                    {% for company in companies %}
-                                        <option value="{{ company.id }}">{{ company.name }}</option>
-                                    {% endfor %}
-                                </select>
+                        <!-- Empresa Seleccionada -->
+                        <div class="col-12 mb-3">
+                            <div class="alert alert-info">
+                                <i class="bi bi-building"></i> <strong>Empresa:</strong> {{ current_company.name }}{% if current_company.tax_id %} - {{ current_company.tax_id }}{% endif %}
+                                <small class="d-block">Trabajando con la empresa seleccionada en el dashboard</small>
                             </div>
+                        </div>
                             <div class="col-md-3">
                                 <label for="employee_number" class="form-label">Número de Empleado *</label>
                                 <input type="text" class="form-control" id="employee_number" name="employee_number" 

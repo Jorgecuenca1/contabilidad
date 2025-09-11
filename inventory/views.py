@@ -10,6 +10,8 @@ from django.db.models import Q, Sum, Count
 from django.core.paginator import Paginator
 
 from core.models import Company
+from core.utils import get_current_company, require_company_access
+
 from .models_product import Product, ProductCategory, UnitOfMeasure
 from .models import Warehouse, StockMovement, ProductStock
 from accounting.models_accounts import Account
@@ -19,7 +21,10 @@ from decimal import Decimal
 
 
 @login_required
+@require_company_access
 def inventory_dashboard(request):
+    current_company = request.current_company
+
     """
     Dashboard del módulo de inventario.
     """
@@ -59,7 +64,10 @@ def inventory_dashboard(request):
 
 
 @login_required
+@require_company_access
 def product_list(request):
+    current_company = request.current_company
+
     """
     Lista de productos.
     """
@@ -108,7 +116,10 @@ def product_list(request):
 
 
 @login_required
+@require_company_access
 def new_product(request):
+    current_company = request.current_company
+
     """
     Crear nuevo producto.
     """
@@ -272,7 +283,10 @@ def edit_product(request, product_id):
 
 
 @login_required
+@require_company_access
 def stock_movement(request):
+    current_company = request.current_company
+
     """
     Movimientos de inventario.
     """
@@ -512,7 +526,10 @@ def create_inventory_journal_entry(movement):
 
 
 @login_required
+@require_company_access
 def stock_report(request):
+    current_company = request.current_company
+
     """
     Reporte de inventario.
     """
@@ -529,7 +546,10 @@ def stock_report(request):
 
 
 @login_required
+@require_company_access
 def get_products_json(request):
+    current_company = request.current_company
+
     """
     API para obtener productos en formato JSON.
     """

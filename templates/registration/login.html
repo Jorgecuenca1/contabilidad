@@ -1,106 +1,214 @@
-{% extends 'base.html' %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar Sesión - Sistema Contable</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Main Content -->
+    <main class="container-fluid mt-4">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
 
-{% block title %}Iniciar Sesión - Sistema Contable{% endblock %}
-
-{% block content %}
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card mt-5">
-                <div class="card-header bg-primary text-white">
-                    <h4 class="mb-0">
-                        <i class="fas fa-sign-in-alt"></i> Iniciar Sesión
-                    </h4>
-                </div>
-                <div class="card-body">
-                    <div class="text-center mb-4">
-                        <h3 class="text-primary">Sistema Contable Multi-Empresa</h3>
-                        <p class="text-muted">Ingrese sus credenciales para acceder</p>
-                    </div>
-                    
-                    {% if form.errors %}
-                        <div class="alert alert-danger">
-                            <i class="fas fa-exclamation-triangle"></i>
-                            Por favor, corrija los errores a continuación.
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-md-6">
+                    <div class="card mt-5">
+                        <div class="card-header bg-primary text-white">
+                            <h4 class="mb-0">
+                                <i class="bi bi-person-check"></i> Iniciar Sesión
+                            </h4>
                         </div>
-                    {% endif %}
-                    
-                    <form method="post">
-                        {% csrf_token %}
-                        
-                        <div class="form-group mb-3">
-                            <label for="id_username" class="form-label">
-                                <i class="fas fa-user"></i> Usuario
-                            </label>
-                            <input type="text" name="username" id="id_username" class="form-control" required 
-                                   value="{{ form.username.value|default:'' }}" placeholder="Ingrese su usuario">
-                            {% if form.username.errors %}
-                                <div class="text-danger small">{{ form.username.errors.0 }}</div>
+                        <div class="card-body">
+                            <div class="text-center mb-4">
+                                <h3 class="text-primary">Sistema Contable Multi-Empresa</h3>
+                                <p class="text-muted">Solución integral para contabilidad colombiana</p>
+                            </div>
+                            
+                            {% if form.errors %}
+                                <div class="alert alert-danger">
+                                    <i class="bi bi-exclamation-triangle"></i>
+                                    Por favor, corrija los errores a continuación.
+                                </div>
                             {% endif %}
-                        </div>
-                        
-                        <div class="form-group mb-3">
-                            <label for="id_password" class="form-label">
-                                <i class="fas fa-lock"></i> Contraseña
-                            </label>
-                            <input type="password" name="password" id="id_password" class="form-control" required
-                                   placeholder="Ingrese su contraseña">
-                            {% if form.password.errors %}
-                                <div class="text-danger small">{{ form.password.errors.0 }}</div>
-                            {% endif %}
-                        </div>
-                        
-                        {% if next %}
-                            <input type="hidden" name="next" value="{{ next }}">
-                        {% endif %}
-                        
-                        <div class="d-grid">
-                            <button type="submit" class="btn btn-primary btn-lg">
-                                <i class="fas fa-sign-in-alt"></i> Iniciar Sesión
-                            </button>
-                        </div>
-                    </form>
-                </div>
-                
-                <div class="card-footer text-center">
-                    <small class="text-muted">
-                        Sistema de Contabilidad Multi-Empresa para Colombia<br>
-                        <strong>Versión 1.0</strong>
-                    </small>
-                </div>
-            </div>
-            
-            <div class="card mt-3">
-                <div class="card-body text-center">
-                    <h6 class="card-title">Características del Sistema</h6>
-                    <div class="row text-center">
-                        <div class="col-4">
-                            <i class="fas fa-calculator fa-2x text-primary mb-2"></i>
-                            <p><small>Nómina Electrónica</small></p>
-                        </div>
-                        <div class="col-4">
-                            <i class="fas fa-file-invoice fa-2x text-success mb-2"></i>
-                            <p><small>Gestión Tributaria</small></p>
-                        </div>
-                        <div class="col-4">
-                            <i class="fas fa-chart-bar fa-2x text-warning mb-2"></i>
-                            <p><small>Reportes NIIF</small></p>
+                            
+                            <form method="post">
+                                {% csrf_token %}
+                                
+                                <div class="form-group mb-3">
+                                    <label for="id_username" class="form-label">
+                                        <i class="bi bi-person-circle"></i> Usuario
+                                    </label>
+                                    <input type="text" name="username" id="id_username" class="form-control" required 
+                                           value="{{ form.username.value|default:'' }}" placeholder="Ingrese su usuario">
+                                    {% if form.username.errors %}
+                                        <div class="text-danger small">{{ form.username.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="form-group mb-3">
+                                    <label for="id_password" class="form-label">
+                                        <i class="bi bi-lock"></i> Contraseña
+                                    </label>
+                                    <div class="input-group">
+                                        <input type="password" name="password" id="id_password" class="form-control" required
+                                               placeholder="Ingrese su contraseña">
+                                        <button type="button" class="btn btn-outline-secondary" onclick="togglePassword()" title="Mostrar/Ocultar contraseña">
+                                            <i class="bi bi-eye" id="toggleIcon"></i>
+                                        </button>
+                                    </div>
+                                    {% if form.password.errors %}
+                                        <div class="text-danger small">{{ form.password.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                                
+                                {% if next %}
+                                    <input type="hidden" name="next" value="{{ next }}">
+                                {% endif %}
+                                
+                                <div class="d-grid">
+                                    <button type="submit" class="btn btn-primary btn-lg">
+                                        <i class="bi bi-box-arrow-in-right"></i> Iniciar Sesión
+                                    </button>
+                                </div>
+                            </form>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-</div>
 
-<style>
-body {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    min-height: 100vh;
-}
-.card {
-    border: none;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-}
-</style>
-{% endblock %}
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card bg-light">
+                    <div class="card-body">
+                        <h5 class="text-center mb-4">
+                            <i class="bi bi-star-fill text-warning"></i> 
+                            Sistema de Contabilidad Profesional
+                        </h5>
+                        
+                        <div class="row text-center">
+                            <div class="col-md-3 mb-3">
+                                <div class="feature-box">
+                                    <i class="bi bi-building fs-1 text-primary mb-2"></i>
+                                    <h6>Multiempresa</h6>
+                                    <small class="text-muted">Gestión ilimitada de empresas</small>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-3 mb-3">
+                                <div class="feature-box">
+                                    <i class="bi bi-people-fill fs-1 text-success mb-2"></i>
+                                    <h6>Nómina Completa</h6>
+                                    <small class="text-muted">Liquidación automática</small>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-3 mb-3">
+                                <div class="feature-box">
+                                    <i class="bi bi-receipt fs-1 text-warning mb-2"></i>
+                                    <h6>Impuestos</h6>
+                                    <small class="text-muted">Declaraciones automáticas</small>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-3 mb-3">
+                                <div class="feature-box">
+                                    <i class="bi bi-file-earmark-bar-graph fs-1 text-info mb-2"></i>
+                                    <h6>Reportes PDF</h6>
+                                    <small class="text-muted">Profesionales y oficiales</small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row mt-4">
+                            <div class="col-md-4 text-center">
+                                <div class="badge bg-success mb-2">✓ Cumplimiento Legal</div><br>
+                                <small>100% conforme con legislación colombiana</small>
+                            </div>
+                            <div class="col-md-4 text-center">
+                                <div class="badge bg-primary mb-2">✓ Sector Público</div><br>
+                                <small>CDP, RP, Presupuesto y reportes CHIP</small>
+                            </div>
+                            <div class="col-md-4 text-center">
+                                <div class="badge bg-warning mb-2">✓ Auditoría Total</div><br>
+                                <small>Logs inmutables y trazabilidad completa</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-light mt-5 py-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h6>Sistema de Contabilidad Multiempresa</h6>
+                    <p class="text-muted">Solución integral para contadores y empresas</p>
+                </div>
+                <div class="col-md-6 text-end">
+                    <p class="text-muted">© 2025 - Desarrollado con Django</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+    function togglePassword() {
+        const passwordField = document.getElementById('id_password');
+        const toggleIcon = document.getElementById('toggleIcon');
+        
+        if (passwordField.type === 'password') {
+            passwordField.type = 'text';
+            toggleIcon.classList.remove('bi-eye');
+            toggleIcon.classList.add('bi-eye-slash');
+        } else {
+            passwordField.type = 'password';
+            toggleIcon.classList.remove('bi-eye-slash');
+            toggleIcon.classList.add('bi-eye');
+        }
+    }
+    </script>
+
+    <style>
+    body {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+    }
+    .card {
+        border: none;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+    .feature-box {
+        padding: 20px;
+        border-radius: 10px;
+        transition: transform 0.2s;
+    }
+    .feature-box:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    .container-fluid {
+        background: rgba(255, 255, 255, 0.95);
+        min-height: 100vh;
+    }
+    </style>
+</body>
+</html>

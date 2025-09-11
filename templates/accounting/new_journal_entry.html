@@ -4,87 +4,12 @@
 
 {% block content %}
 <!-- Encabezado -->
-<div class="row mb-4">
-    <div class="col-12">
-        <div class="card bg-gradient-primary text-white shadow-lg">
-            <div class="card-body">
-                <div class="row align-items-center">
-                    <div class="col-md-8">
-                        <h1><i class="bi bi-journal-plus"></i> Nuevo Asiento Contable</h1>
-                        <p class="lead mb-0">Registro de transacciones con partida doble automática</p>
-                    </div>
-                    <div class="col-md-4 text-end">
-                        <div class="display-4">
-                            <i class="bi bi-calculator-fill"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Explicación -->
-<div class="row mb-4">
-    <div class="col-12">
-        <div class="card border-info">
-            <div class="card-header bg-info text-white">
-                <h5><i class="bi bi-info-circle"></i> ¿Qué es un Asiento Contable?</h5>
-            </div>
-            <div class="card-body">
-                <p><strong>Un asiento contable registra las transacciones comerciales usando el principio de partida doble:</strong></p>
-                <div class="row">
-                    <div class="col-md-4">
-                        <h6>⚖️ Partida Doble:</h6>
-                        <ul class="small">
-                            <li>📝 <strong>Cada transacción</strong> afecta al menos 2 cuentas</li>
-                            <li>⚖️ <strong>Débitos = Créditos</strong> (debe estar balanceado)</li>
-                            <li>📅 <strong>Fecha y referencia</strong> para trazabilidad</li>
-                        </ul>
-                    </div>
-                    <div class="col-md-4">
-                        <h6>🏢 Control Empresarial:</h6>
-                        <ul class="small">
-                            <li>🏢 <strong>Por empresa</strong> (segregación de datos)</li>
-                            <li>📊 <strong>Tipo de comprobante</strong> (CI, CE, CG, etc.)</li>
-                            <li>🔍 <strong>Auditoría completa</strong> (quién, cuándo, qué)</li>
-                        </ul>
-                    </div>
-                    <div class="col-md-4">
-                        <h6>📊 Centros de Costo:</h6>
-                        <ul class="small">
-                            <li>🎯 <strong>Segmentación</strong> por área/departamento</li>
-                            <li>📈 <strong>Análisis de rentabilidad</strong> por centro</li>
-                            <li>💰 <strong>Control de gastos</strong> específicos</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Formulario de Asiento -->
-<div class="row">
-    <div class="col-12">
-        <div class="card shadow">
-            <div class="card-header bg-primary text-white">
-                <h5><i class="bi bi-pencil-square"></i> Datos del Asiento Contable</h5>
-            </div>
-            <div class="card-body">
-                <form method="post" id="journalEntryForm">
-                    {% csrf_token %}
-                    
-                    <!-- Datos Generales -->
-                    <div class="row mb-4">
-                        <div class="col-md-3">
-                            <label for="company" class="form-label"><strong>Empresa *</strong></label>
-                            <select class="form-select" id="company" name="company" required>
-                                <option value="">Seleccione empresa...</option>
-                                {% for company in companies %}
-                                    <option value="{{ company.id }}">{{ company.name }}</option>
-                                {% endfor %}
-                            </select>
+                        <!-- Empresa Seleccionada -->
+                        <div class="col-12 mb-3">
+                            <div class="alert alert-info">
+                                <i class="bi bi-building"></i> <strong>Empresa:</strong> {{ current_company.name }}{% if current_company.tax_id %} - {{ current_company.tax_id }}{% endif %}
+                                <small class="d-block">Trabajando con la empresa seleccionada en el dashboard</small>
+                            </div>
                         </div>
                         
                         <div class="col-md-3">

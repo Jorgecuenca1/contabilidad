@@ -31,37 +31,6 @@
     </div>
 </div>
 
-<!-- Explicación del Módulo -->
-<div class="row mb-4">
-    <div class="col-12">
-        <div class="card border-info">
-            <div class="card-header bg-info text-white">
-                <h5><i class="bi bi-info-circle"></i> ¿Qué hace el Módulo de Nómina?</h5>
-            </div>
-            <div class="card-body">
-                <p><strong>Este módulo maneja toda la gestión de recursos humanos y nómina de las empresas:</strong></p>
-                <div class="row">
-                    <div class="col-md-6">
-                        <ul>
-                            <li>📋 <strong>Gestión de Empleados:</strong> Información personal, contratos, salarios</li>
-                            <li>💰 <strong>Liquidación de Nómina:</strong> Devengos, deducciones, prestaciones</li>
-                            <li>🏥 <strong>Seguridad Social:</strong> EPS, Pensión, ARL, Caja de Compensación</li>
-                            <li>🎓 <strong>Parafiscales:</strong> SENA, ICBF, Cajas de Compensación</li>
-                        </ul>
-                    </div>
-                    <div class="col-md-6">
-                        <ul>
-                            <li>📄 <strong>Certificados Laborales:</strong> Ingresos, retenciones, cesantías</li>
-                            <li>⚖️ <strong>Cumplimiento Legal:</strong> Código Sustantivo del Trabajo</li>
-                            <li>📊 <strong>Reportes Oficiales:</strong> PILA, Medios Magnéticos</li>
-                            <li>🔄 <strong>Nómina Electrónica:</strong> Envío automático al MinTrabajo</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
 
 <!-- Estadísticas de Nómina -->
 <div class="row mb-4">
@@ -126,9 +95,7 @@
             <div class="card-body">
                 <select class="form-select" id="companySelector">
                     <option value="">Seleccione una empresa...</option>
-                    {% for company in companies %}
-                        <option value="{{ company.id }}">{{ company.name }} ({{ company.tax_id }})</option>
-                    {% endfor %}
+                    
                     <option value="1">ABC Comercializadora S.A.S (900.123.456-7)</option>
                     <option value="2">XYZ Servicios Ltda (800.987.654-3)</option>
                     <option value="3">Constructora DEF S.A (700.555.444-1)</option>

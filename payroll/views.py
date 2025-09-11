@@ -10,6 +10,8 @@ from django.db import models, transaction
 from django.utils import timezone
 
 from core.models import Company
+from core.utils import get_current_company, require_company_access
+
 from .models_employee import Employee, EmployeeType
 from .models_payroll import PayrollPeriod, Payroll, PayrollConcept, PayrollDetail
 from decimal import Decimal
@@ -17,7 +19,10 @@ from datetime import datetime, date
 
 
 @login_required
+@require_company_access
 def payroll_dashboard(request):
+    current_company = request.current_company
+
     """
     Dashboard principal de nómina.
     """
@@ -66,7 +71,10 @@ def payroll_dashboard(request):
 
 
 @login_required
+@require_company_access
 def new_employee(request):
+    current_company = request.current_company
+
     """Vista para crear nuevo empleado."""
     if request.method == 'POST':
         try:
@@ -149,7 +157,7 @@ def new_employee(request):
     
     # Datos para el template
     context = {
-        'companies': Company.objects.filter(is_active=True),
+        'current_company': current_company,
         'employee_types': EmployeeType.objects.filter(is_active=True),
     }
     
@@ -469,7 +477,10 @@ def final_liquidation(request, employee_id=None):
 
 
 @login_required
+@require_company_access
 def generate_pila(request):
+    current_company = request.current_company
+
     """Vista para generar planilla PILA."""
     if request.method == 'POST':
         try:
@@ -655,7 +666,10 @@ def generate_pila_file(company, period, pila_type='N'):
 
 
 @login_required
+@require_company_access
 def payroll_reports(request):
+    current_company = request.current_company
+
     """Vista para reportes de nómina."""
     companies = Company.objects.filter(is_active=True)
     periods = PayrollPeriod.objects.filter(status__in=['calculated', 'approved', 'paid']).order_by('-start_date')[:12]

@@ -10,12 +10,17 @@ from django.db.models import Q
 from django.core.paginator import Paginator
 
 from core.models import Company
+from core.utils import get_current_company, require_company_access
+
 from .models_accounts import Account, ChartOfAccounts, AccountType, CostCenter
 from .models_journal import JournalEntry, JournalEntryLine, JournalType
 
 
 @login_required
+@require_company_access
 def new_journal_entry(request):
+    current_company = request.current_company
+
     """
     Página para crear nuevo asiento contable.
     """
@@ -113,18 +118,30 @@ def new_journal_entry(request):
 
 
 @login_required
+@require_company_access
 def chart_of_accounts(request):
+    current_company = request.current_company
+
     """
     Página para ver el plan de cuentas.
+    Muestra el PUC colombiano estándar sin duplicados.
     """
-    company_id = request.GET.get('company')
     search = request.GET.get('search', '')
     
-    companies = Company.objects.filter(is_active=True)
-    accounts = Account.objects.filter(is_active=True).order_by('code')
+    # Obtener todas las cuentas sin duplicados (agrupadas por código)
+    # Solo mostramos una cuenta por código único
+    from django.db.models import Min
     
-    if company_id:
-        accounts = accounts.filter(chart_of_accounts__company_id=company_id)
+    # Obtener los IDs de las primeras cuentas por cada código único
+    unique_account_ids = Account.objects.values('code').annotate(
+        first_id=Min('id')
+    ).values_list('first_id', flat=True)
+    
+    # Obtener las cuentas únicas
+    accounts = Account.objects.filter(
+        id__in=unique_account_ids,
+        is_active=True
+    ).order_by('code')
     
     if search:
         accounts = accounts.filter(
@@ -139,18 +156,20 @@ def chart_of_accounts(request):
     page_obj = paginator.get_page(page_number)
     
     context = {
-        'companies': companies,
         'page_obj': page_obj,
         'search': search,
-        'selected_company': company_id,
         'total_accounts': accounts.count(),
+        'is_standard_puc': True,  # Indicar que es el PUC estándar
     }
     
     return render(request, 'accounting/chart_of_accounts.html', context)
 
 
 @login_required
+@require_company_access
 def get_accounts_json(request):
+    current_company = request.current_company
+
     """
     API para obtener cuentas en formato JSON (para AJAX).
     """

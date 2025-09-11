@@ -4,88 +4,13 @@
 {% block title %}Nueva Declaración de Impuestos{% endblock %}
 
 {% block content %}
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-12">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <div>
-                    <h2><i class="bi bi-file-earmark-text text-danger"></i> Nueva Declaración de Impuestos</h2>
-                    <p class="text-muted">Registra declaraciones de IVA, Renta, ICA y otros impuestos DIAN</p>
-                </div>
-                <div>
-                    <a href="{% url 'core:dashboard' %}" class="btn btn-outline-secondary">
-                        <i class="bi bi-arrow-left"></i> Volver al Dashboard
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Información sobre Declaraciones -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="card border-danger">
-                <div class="card-header bg-danger text-white">
-                    <h5><i class="bi bi-info-circle"></i> Declaraciones de Impuestos en Colombia</h5>
-                </div>
-                <div class="card-body">
-                    <p><strong>Las declaraciones de impuestos deben cumplir con los calendarios y formatos de la DIAN:</strong></p>
-                    <div class="row">
-                        <div class="col-md-4">
-                            <h6>📋 Tipos Principales:</h6>
-                            <ul class="small">
-                                <li>🧾 <strong>IVA Bimestral:</strong> Cada 2 meses</li>
-                                <li>💰 <strong>Renta Anual:</strong> Personas y empresas</li>
-                                <li>🏢 <strong>ICA Municipal:</strong> Actividades comerciales</li>
-                                <li>👥 <strong>Retención en la Fuente:</strong> Mensual</li>
-                            </ul>
-                        </div>
-                        <div class="col-md-4">
-                            <h6>📅 Calendarios DIAN:</h6>
-                            <ul class="small">
-                                <li>📆 <strong>Fechas de vencimiento</strong> según último dígito NIT</li>
-                                <li>⏰ <strong>Presentación oportuna</strong> evita sanciones</li>
-                                <li>💳 <strong>Pago simultáneo</strong> con la declaración</li>
-                            </ul>
-                        </div>
-                        <div class="col-md-4">
-                            <h6>⚖️ Cumplimiento:</h6>
-                            <ul class="small">
-                                <li>✅ <strong>Formularios oficiales</strong> DIAN</li>
-                                <li>📊 <strong>Información exógena</strong> cuando aplique</li>
-                                <li>🔍 <strong>Soporte documental</strong> completo</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Formulario de Declaración -->
-    <form method="post" id="taxDeclarationForm">
-        {% csrf_token %}
-        
-        <!-- Datos Generales -->
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="card">
-                    <div class="card-header bg-primary text-white">
-                        <h5><i class="bi bi-building"></i> Datos de la Declaración</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-md-3">
-                                <label for="company" class="form-label">Empresa *</label>
-                                <select class="form-select" id="company" name="company" required>
-                                    <option value="">Seleccione empresa...</option>
-                                    {% for company in companies %}
-                                        <option value="{{ company.id }}" data-nit="{{ company.tax_id }}">
-                                            {{ company.name }} - {{ company.tax_id }}
-                                        </option>
-                                    {% endfor %}
-                                </select>
+                        <!-- Empresa Seleccionada -->
+                        <div class="col-12 mb-3">
+                            <div class="alert alert-info">
+                                <i class="bi bi-building"></i> <strong>Empresa:</strong> {{ current_company.name }}{% if current_company.tax_id %} - {{ current_company.tax_id }}{% endif %}
+                                <small class="d-block">Trabajando con la empresa seleccionada en el dashboard</small>
                             </div>
+                        </div>
                             <div class="col-md-3">
                                 <label for="tax_type" class="form-label">Tipo de Impuesto *</label>
                                 <select class="form-select" id="tax_type" name="tax_type" required onchange="updateTaxInfo()">

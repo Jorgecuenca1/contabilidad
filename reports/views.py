@@ -11,13 +11,18 @@ from datetime import datetime, date
 import json
 
 from core.models import Company, Period
+from core.utils import get_current_company, require_company_access
+
 from accounting.models_accounts import Account
 from .services import ReportService
 from .models import ReportTemplate, GeneratedReport
 
 
 @login_required
+@require_company_access
 def reports_dashboard(request):
+    current_company = request.current_company
+
     """
     Dashboard principal de reportes.
     """
@@ -70,7 +75,10 @@ def reports_dashboard(request):
 
 
 @login_required
+@require_company_access
 def balance_sheet(request):
+    current_company = request.current_company
+
     """Vista para el Balance General."""
     companies = Company.objects.filter(is_active=True)
     
@@ -82,7 +90,10 @@ def balance_sheet(request):
 
 
 @login_required
+@require_company_access
 def income_statement(request):
+    current_company = request.current_company
+
     """Vista para el Estado de Resultados."""
     companies = Company.objects.filter(is_active=True)
     
@@ -94,7 +105,10 @@ def income_statement(request):
 
 
 @login_required
+@require_company_access
 def trial_balance(request):
+    current_company = request.current_company
+
     """Vista para el Balance de Prueba."""
     companies = Company.objects.filter(is_active=True)
     
@@ -106,7 +120,10 @@ def trial_balance(request):
 
 
 @login_required
+@require_company_access
 def general_ledger(request):
+    current_company = request.current_company
+
     """Vista para el Libro Mayor."""
     companies = Company.objects.filter(is_active=True)
     accounts = Account.objects.filter(is_active=True)
@@ -133,7 +150,10 @@ def aging_report(request, report_type=None):
 
 
 @login_required
+@require_company_access
 def financial_reports(request):
+    current_company = request.current_company
+
     """
     Reportes financieros principales.
     """
@@ -147,7 +167,10 @@ def financial_reports(request):
 
 
 @login_required
+@require_company_access
 def generate_balance_sheet(request):
+    current_company = request.current_company
+
     """
     Generar Balance General.
     """
@@ -204,7 +227,10 @@ def generate_balance_sheet(request):
 
 
 @login_required
+@require_company_access
 def generate_income_statement(request):
+    current_company = request.current_company
+
     """
     Generar Estado de Resultados.
     """
@@ -268,7 +294,10 @@ def generate_income_statement(request):
 
 
 @login_required
+@require_company_access
 def generate_trial_balance(request):
+    current_company = request.current_company
+
     """
     Generar Balance de Prueba.
     """
@@ -325,7 +354,10 @@ def generate_trial_balance(request):
 
 
 @login_required
+@require_company_access
 def generate_aging_report(request):
+    current_company = request.current_company
+
     """
     Generar Reporte de Cartera Vencida.
     """
@@ -386,7 +418,10 @@ def generate_aging_report(request):
 
 
 @login_required
+@require_company_access
 def generate_general_ledger(request):
+    current_company = request.current_company
+
     """
     Generar Libro Mayor.
     """

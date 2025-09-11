@@ -1,196 +1,231 @@
-{% extends 'base.html' %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar Sesión - Sistema de Contabilidad</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
 
-{% block title %}Iniciar Sesión - Sistema de Contabilidad{% endblock %}
+        .feature-box {
+            padding: 20px;
+            border-radius: 10px;
+            transition: transform 0.2s;
+        }
 
-{% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-6 col-lg-4">
-        <div class="card shadow">
-            <div class="card-header bg-primary text-white text-center">
-                <h4><i class="bi bi-shield-lock"></i> Iniciar Sesión</h4>
-                <p class="mb-0">Sistema de Contabilidad Multiempresa</p>
-            </div>
-            <div class="card-body">
-                {% if messages %}
-                    {% for message in messages %}
-                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                            {{ message }}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        .feature-box:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .card-header {
+            border-radius: 15px 15px 0 0 !important;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #007bff, #0056b3);
+            border: none;
+            border-radius: 25px;
+            padding: 12px;
+            font-weight: bold;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(45deg, #0056b3, #004085);
+            transform: translateY(-1px);
+        }
+
+        .form-control {
+            border-radius: 10px;
+            border: 2px solid #e9ecef;
+            padding: 12px 15px;
+        }
+
+        .form-control:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+        }
+
+        .main-container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <div class="row justify-content-center">
+            <div class="col-md-6 col-lg-4">
+                <div class="card shadow">
+                    <div class="card-header bg-primary text-white text-center">
+                        <h4><i class="bi bi-shield-lock"></i> Iniciar Sesión</h4>
+                        <p class="mb-0">Sistema de Contabilidad Multiempresa</p>
+                    </div>
+                    <div class="card-body">
+                        {% if messages %}
+                            {% for message in messages %}
+                                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                    {{ message }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+
+                        <form method="post" action="{% url 'admin:login' %}">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label for="username" class="form-label">
+                                    <i class="bi bi-person"></i> Usuario
+                                </label>
+                                <input type="text" class="form-control" id="username" name="username" required>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="password" class="form-label">
+                                    <i class="bi bi-lock"></i> Contraseña
+                                </label>
+                                <div class="input-group">
+                                    <input type="password" class="form-control" id="password" name="password" required placeholder="Ingrese su contraseña">
+                                    <button type="button" class="btn btn-outline-secondary" onclick="togglePassword()" title="Mostrar/Ocultar contraseña">
+                                        <i class="bi bi-eye" id="toggleIcon"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3 form-check">
+                                <input type="checkbox" class="form-check-input" id="remember">
+                                <label class="form-check-label" for="remember">
+                                    Recordarme
+                                </label>
+                            </div>
+                            
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-box-arrow-in-right"></i> Iniciar Sesión
+                                </button>
+                            </div>
+                        </form>
+                        
+                        <hr>
+                        
+                        <div class="text-center">
+                            <small class="text-muted">
+                                <strong>Credenciales de prueba:</strong><br>
+                                Usuario: <code>admin</code><br>
+                                Contraseña: <code>admin</code>
+                            </small>
                         </div>
-                    {% endfor %}
-                {% endif %}
-
-                <form method="post" action="{% url 'admin:login' %}">
-                    {% csrf_token %}
-                    <div class="mb-3">
-                        <label for="username" class="form-label">
-                            <i class="bi bi-person"></i> Usuario
-                        </label>
-                        <input type="text" class="form-control" id="username" name="username" required>
                     </div>
-                    
-                    <div class="mb-3">
-                        <label for="password" class="form-label">
-                            <i class="bi bi-lock"></i> Contraseña
-                        </label>
-                        <input type="password" class="form-control" id="password" name="password" required>
+                    <div class="card-footer text-center text-muted">
+                        <small>
+                            <i class="bi bi-shield-check"></i> 
+                            Sistema seguro con auditoría completa
+                        </small>
                     </div>
-                    
-                    <div class="mb-3 form-check">
-                        <input type="checkbox" class="form-check-input" id="remember">
-                        <label class="form-check-label" for="remember">
-                            Recordarme
-                        </label>
-                    </div>
-                    
-                    <div class="d-grid">
-                        <button type="submit" class="btn btn-primary">
-                            <i class="bi bi-box-arrow-in-right"></i> Iniciar Sesión
-                        </button>
-                    </div>
-                </form>
-                
-                <hr>
-                
-                <div class="text-center">
-                    <small class="text-muted">
-                        <strong>Credenciales de prueba:</strong><br>
-                        Usuario: <code>admin</code><br>
-                        Contraseña: <code>admin</code>
-                    </small>
                 </div>
             </div>
-            <div class="card-footer text-center text-muted">
-                <small>
-                    <i class="bi bi-shield-check"></i> 
-                    Sistema seguro con auditoría completa
-                </small>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card bg-light">
+                    <div class="card-body">
+                        <h5 class="text-center mb-4">
+                            <i class="bi bi-star-fill text-warning"></i> 
+                            Sistema de Contabilidad Profesional
+                        </h5>
+                        
+                        <div class="row text-center">
+                            <div class="col-md-3 mb-3">
+                                <div class="feature-box">
+                                    <i class="bi bi-building fs-1 text-primary mb-2"></i>
+                                    <h6>Multiempresa</h6>
+                                    <small class="text-muted">Gestión ilimitada de empresas</small>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-3 mb-3">
+                                <div class="feature-box">
+                                    <i class="bi bi-people-fill fs-1 text-success mb-2"></i>
+                                    <h6>Nómina Completa</h6>
+                                    <small class="text-muted">Liquidación automática</small>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-3 mb-3">
+                                <div class="feature-box">
+                                    <i class="bi bi-receipt fs-1 text-warning mb-2"></i>
+                                    <h6>Impuestos</h6>
+                                    <small class="text-muted">Declaraciones automáticas</small>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-3 mb-3">
+                                <div class="feature-box">
+                                    <i class="bi bi-file-earmark-bar-graph fs-1 text-info mb-2"></i>
+                                    <h6>Reportes PDF</h6>
+                                    <small class="text-muted">Profesionales y oficiales</small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row mt-4">
+                            <div class="col-md-4 text-center">
+                                <div class="badge bg-success mb-2">✓ Cumplimiento Legal</div><br>
+                                <small>100% conforme con legislación colombiana</small>
+                            </div>
+                            <div class="col-md-4 text-center">
+                                <div class="badge bg-primary mb-2">✓ Sector Público</div><br>
+                                <small>CDP, RP, Presupuesto y reportes CHIP</small>
+                            </div>
+                            <div class="col-md-4 text-center">
+                                <div class="badge bg-warning mb-2">✓ Auditoría Total</div><br>
+                                <small>Logs inmutables y trazabilidad completa</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-<div class="row mt-4">
-    <div class="col-12">
-        <div class="card bg-light">
-            <div class="card-body">
-                <h5 class="text-center mb-4">
-                    <i class="bi bi-star-fill text-warning"></i> 
-                    Sistema de Contabilidad Profesional
-                </h5>
-                
-                <div class="row text-center">
-                    <div class="col-md-3 mb-3">
-                        <div class="feature-box">
-                            <i class="bi bi-building fs-1 text-primary mb-2"></i>
-                            <h6>Multiempresa</h6>
-                            <small class="text-muted">Gestión ilimitada de empresas</small>
-                        </div>
-                    </div>
-                    
-                    <div class="col-md-3 mb-3">
-                        <div class="feature-box">
-                            <i class="bi bi-people-fill fs-1 text-success mb-2"></i>
-                            <h6>Nómina Completa</h6>
-                            <small class="text-muted">Liquidación automática</small>
-                        </div>
-                    </div>
-                    
-                    <div class="col-md-3 mb-3">
-                        <div class="feature-box">
-                            <i class="bi bi-receipt fs-1 text-warning mb-2"></i>
-                            <h6>Impuestos</h6>
-                            <small class="text-muted">Declaraciones automáticas</small>
-                        </div>
-                    </div>
-                    
-                    <div class="col-md-3 mb-3">
-                        <div class="feature-box">
-                            <i class="bi bi-file-earmark-bar-graph fs-1 text-info mb-2"></i>
-                            <h6>Reportes PDF</h6>
-                            <small class="text-muted">Profesionales y oficiales</small>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="row mt-4">
-                    <div class="col-md-4 text-center">
-                        <div class="badge bg-success mb-2">✓ Cumplimiento Legal</div><br>
-                        <small>100% conforme con legislación colombiana</small>
-                    </div>
-                    <div class="col-md-4 text-center">
-                        <div class="badge bg-primary mb-2">✓ Sector Público</div><br>
-                        <small>CDP, RP, Presupuesto y reportes CHIP</small>
-                    </div>
-                    <div class="col-md-4 text-center">
-                        <div class="badge bg-warning mb-2">✓ Auditoría Total</div><br>
-                        <small>Logs inmutables y trazabilidad completa</small>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-{% endblock %}
-
-{% block extra_css %}
-<style>
-.feature-box {
-    padding: 20px;
-    border-radius: 10px;
-    transition: transform 0.2s;
-}
-
-.feature-box:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-}
-
-.card {
-    border: none;
-    border-radius: 15px;
-}
-
-.card-header {
-    border-radius: 15px 15px 0 0 !important;
-}
-
-.btn-primary {
-    background: linear-gradient(45deg, #007bff, #0056b3);
-    border: none;
-    border-radius: 25px;
-    padding: 12px;
-    font-weight: bold;
-}
-
-.btn-primary:hover {
-    background: linear-gradient(45deg, #0056b3, #004085);
-    transform: translateY(-1px);
-}
-
-.form-control {
-    border-radius: 10px;
-    border: 2px solid #e9ecef;
-    padding: 12px 15px;
-}
-
-.form-control:focus {
-    border-color: #007bff;
-    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
-}
-
-body {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    min-height: 100vh;
-}
-
-.container-fluid {
-    background: rgba(255, 255, 255, 0.95);
-    min-height: 100vh;
-}
-</style>
-{% endblock %}
-
-
-
-
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+    function togglePassword() {
+        const passwordField = document.getElementById('password');
+        const toggleIcon = document.getElementById('toggleIcon');
+        
+        if (passwordField.type === 'password') {
+            passwordField.type = 'text';
+            toggleIcon.classList.remove('bi-eye');
+            toggleIcon.classList.add('bi-eye-slash');
+        } else {
+            passwordField.type = 'password';
+            toggleIcon.classList.remove('bi-eye-slash');
+            toggleIcon.classList.add('bi-eye');
+        }
+    }
+    </script>
+</body>
+</html>

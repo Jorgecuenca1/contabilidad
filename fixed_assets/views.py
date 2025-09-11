@@ -12,13 +12,18 @@ from django.utils import timezone
 from datetime import datetime, date
 
 from core.models import Company, Currency
+from core.utils import get_current_company, require_company_access
+
 from accounting.models_accounts import CostCenter
 from .models_asset import FixedAsset, AssetCategory, DepreciationEntry
 from .services import DepreciationService
 
 
 @login_required
+@require_company_access
 def fixed_assets_dashboard(request):
+    current_company = request.current_company
+
     """
     Dashboard del módulo de activos fijos.
     """
@@ -76,7 +81,10 @@ def fixed_assets_dashboard(request):
 
 
 @login_required
+@require_company_access
 def asset_list(request):
+    current_company = request.current_company
+
     """
     Lista de activos fijos.
     """
@@ -126,7 +134,10 @@ def asset_list(request):
 
 
 @login_required
+@require_company_access
 def new_asset(request):
+    current_company = request.current_company
+
     """
     Crear nuevo activo fijo.
     """
@@ -241,7 +252,10 @@ def edit_asset(request, asset_id):
 
 
 @login_required
+@require_company_access
 def depreciation_report(request):
+    current_company = request.current_company
+
     """
     Reporte de depreciación.
     """
@@ -263,7 +277,10 @@ def depreciation_report(request):
 
 
 @login_required
+@require_company_access
 def calculate_depreciation(request):
+    current_company = request.current_company
+
     """
     Calcular depreciación mensual usando el servicio mejorado.
     """
@@ -369,7 +386,10 @@ def depreciation_schedule(request, asset_id):
 
 
 @login_required
+@require_company_access
 def depreciation_entries(request):
+    current_company = request.current_company
+
     """
     Lista de registros de depreciación.
     """
@@ -405,7 +425,10 @@ def depreciation_entries(request):
 
 
 @login_required
+@require_company_access
 def asset_categories(request):
+    current_company = request.current_company
+
     """
     Lista de categorías de activos.
     """
@@ -424,7 +447,10 @@ def asset_categories(request):
 
 
 @login_required
+@require_company_access
 def new_category(request):
+    current_company = request.current_company
+
     """
     Crear nueva categoría de activo.
     """

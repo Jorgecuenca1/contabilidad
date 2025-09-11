@@ -4,79 +4,12 @@
 
 {% block content %}
 <!-- Encabezado -->
-<div class="row mb-4">
-    <div class="col-12">
-        <div class="card bg-gradient-warning text-white shadow-lg">
-            <div class="card-body">
-                <div class="row align-items-center">
-                    <div class="col-md-8">
-                        <h1><i class="bi bi-cash-coin"></i> Registrar Pago de Cliente</h1>
-                        <p class="lead mb-0">Aplicación automática de pagos a facturas pendientes</p>
-                    </div>
-                    <div class="col-md-4 text-end">
-                        <div class="display-4">
-                            <i class="bi bi-credit-card-fill"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Explicación -->
-<div class="row mb-4">
-    <div class="col-12">
-        <div class="card border-warning">
-            <div class="card-header bg-warning text-white">
-                <h5><i class="bi bi-info-circle"></i> ¿Qué es un Pago de Cliente?</h5>
-            </div>
-            <div class="card-body">
-                <p><strong>Un pago de cliente registra el dinero recibido y lo aplica a facturas pendientes:</strong></p>
-                <div class="row">
-                    <div class="col-md-6">
-                        <ul>
-                            <li>💰 <strong>Aumenta el efectivo</strong> en caja o bancos</li>
-                            <li>📉 <strong>Disminuye cuentas por cobrar</strong> del cliente</li>
-                            <li>🔄 <strong>Aplicación automática</strong> a facturas vencidas primero</li>
-                            <li>📊 <strong>Actualiza estado</strong> de facturas (pagada/parcial)</li>
-                        </ul>
-                    </div>
-                    <div class="col-md-6">
-                        <ul>
-                            <li>🏦 <strong>Múltiples formas de pago:</strong> Efectivo, transferencia, cheque</li>
-                            <li>📅 <strong>Control de fechas</strong> para flujo de caja</li>
-                            <li>🔍 <strong>Trazabilidad completa</strong> del pago</li>
-                            <li>📋 <strong>Genera asientos</strong> contables automáticos</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Formulario de Pago -->
-<div class="row">
-    <div class="col-md-8">
-        <div class="card shadow">
-            <div class="card-header bg-warning text-white">
-                <h5><i class="bi bi-pencil-square"></i> Datos del Pago Recibido</h5>
-            </div>
-            <div class="card-body">
-                <form method="post" id="paymentForm">
-                    {% csrf_token %}
-                    
-                    <!-- Datos Generales -->
-                    <div class="row mb-4">
-                        <div class="col-md-6">
-                            <label for="company" class="form-label"><strong>Empresa *</strong></label>
-                            <select class="form-select" id="company" name="company" required>
-                                <option value="">Seleccione empresa...</option>
-                                {% for company in companies %}
-                                    <option value="{{ company.id }}">{{ company.name }}</option>
-                                {% endfor %}
-                            </select>
+                        <!-- Empresa Seleccionada -->
+                        <div class="col-12 mb-3">
+                            <div class="alert alert-info">
+                                <i class="bi bi-building"></i> <strong>Empresa:</strong> {{ current_company.name }}{% if current_company.tax_id %} - {{ current_company.tax_id }}{% endif %}
+                                <small class="d-block">Trabajando con la empresa seleccionada en el dashboard</small>
+                            </div>
                         </div>
                         
                         <div class="col-md-6">

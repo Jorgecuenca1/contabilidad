@@ -21,9 +21,7 @@
             <div class="card-body">
                 <select class="form-select" id="companySelector">
                     <option value="">Seleccione una entidad...</option>
-                    {% for company in companies %}
-                        <option value="{{ company.id }}">{{ company.name }} ({{ company.tax_id }})</option>
-                    {% endfor %}
+                    
                 </select>
             </div>
         </div>

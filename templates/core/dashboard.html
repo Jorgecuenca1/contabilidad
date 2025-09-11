@@ -31,151 +31,52 @@
     </div>
 </div>
 
-<!-- Resumen Ejecutivo con Datos Demo -->
+
+<!-- Selector de Empresa -->
+{% if can_select_company %}
 <div class="row mb-4">
     <div class="col-12">
-        <h2><i class="bi bi-graph-up-arrow"></i> Resumen Ejecutivo del Mes</h2>
-    </div>
-</div>
-
-<div class="row mb-4">
-    <div class="col-md-3">
-        <div class="card bg-success text-white shadow">
-            <div class="card-body">
-                <div class="d-flex justify-content-between">
-                    <div>
-                        <h3>$125,450,000</h3>
-                        <p class="mb-0">Ingresos del Mes</p>
-                        <small><i class="bi bi-arrow-up"></i> +12.5% vs mes anterior</small>
-                    </div>
-                    <div class="align-self-center">
-                        <i class="bi bi-cash-stack fs-1"></i>
-                    </div>
-                </div>
+        <div class="card border-primary">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="bi bi-building-gear"></i> Seleccionar Empresa</h5>
             </div>
-        </div>
-    </div>
-    
-    <div class="col-md-3">
-        <div class="card bg-warning text-white shadow">
             <div class="card-body">
-                <div class="d-flex justify-content-between">
-                    <div>
-                        <h3>$89,230,000</h3>
-                        <p class="mb-0">Gastos del Mes</p>
-                        <small><i class="bi bi-arrow-down"></i> -3.2% vs mes anterior</small>
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <p class="mb-2"><strong>Empresa Activa:</strong> 
+                            {% if current_company %}
+                                <span class="badge bg-success fs-6">{{ current_company.name }} ({{ current_company.tax_id }})</span>
+                            {% else %}
+                                <span class="badge bg-warning fs-6">Ninguna empresa seleccionada</span>
+                            {% endif %}
+                        </p>
+                        <p class="text-muted mb-0">Como {{ user_role|title }}, puedes seleccionar la empresa que deseas administrar.</p>
                     </div>
-                    <div class="align-self-center">
-                        <i class="bi bi-credit-card fs-1"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <div class="col-md-3">
-        <div class="card bg-info text-white shadow">
-            <div class="card-body">
-                <div class="d-flex justify-content-between">
-                    <div>
-                        <h3>$36,220,000</h3>
-                        <p class="mb-0">Utilidad del Mes</p>
-                        <small><i class="bi bi-arrow-up"></i> +28.7% vs mes anterior</small>
-                    </div>
-                    <div class="align-self-center">
-                        <i class="bi bi-piggy-bank fs-1"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <div class="col-md-3">
-        <div class="card bg-primary text-white shadow">
-            <div class="card-body">
-                <div class="d-flex justify-content-between">
-                    <div>
-                        <h3>$245,680,000</h3>
-                        <p class="mb-0">Patrimonio Total</p>
-                        <small><i class="bi bi-arrow-up"></i> +5.8% vs mes anterior</small>
-                    </div>
-                    <div class="align-self-center">
-                        <i class="bi bi-building fs-1"></i>
+                    <div class="col-md-4 text-end">
+                        <select class="form-select" id="companySelector" onchange="selectCompany()">
+                            <option value="">Seleccionar empresa...</option>
+                            {% for company in user_companies %}
+                                <option value="{{ company.id }}" {% if current_company.id == company.id %}selected{% endif %}>
+                                    {{ company.name }} ({{ company.tax_id }})
+                                </option>
+                            {% endfor %}
+                        </select>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
-
-<!-- Estadísticas de Empresas -->
+{% elif current_company %}
 <div class="row mb-4">
     <div class="col-12">
-        <h2><i class="bi bi-buildings"></i> Gestión Multiempresa</h2>
+        <div class="alert alert-info" role="alert">
+            <i class="bi bi-building-check"></i> <strong>Empresa:</strong> {{ current_company.name }} ({{ current_company.tax_id }})
+        </div>
     </div>
 </div>
+{% endif %}
 
-<div class="row mb-4">
-    <div class="col-md-2">
-        <div class="card bg-primary text-white shadow">
-            <div class="card-body text-center">
-                <h2>{{ total_companies|default:"15" }}</h2>
-                <p class="mb-0">Empresas Activas</p>
-                <small>Todas operando</small>
-            </div>
-        </div>
-    </div>
-    
-    <div class="col-md-2">
-        <div class="card bg-success text-white shadow">
-            <div class="card-body text-center">
-                <h2>{{ total_users|default:"8" }}</h2>
-                <p class="mb-0">Usuarios Sistema</p>
-                <small>Contadores y auxiliares</small>
-            </div>
-        </div>
-    </div>
-    
-    <div class="col-md-2">
-        <div class="card bg-info text-white shadow">
-            <div class="card-body text-center">
-                <h2>{{ total_accounts|default:"1,247" }}</h2>
-                <p class="mb-0">Cuentas PUC</p>
-                <small>Plan único cuentas</small>
-            </div>
-        </div>
-    </div>
-    
-    <div class="col-md-2">
-        <div class="card bg-warning text-white shadow">
-            <div class="card-body text-center">
-                <h2>{{ total_customers|default:"342" }}</h2>
-                <p class="mb-0">Clientes Activos</p>
-                <small>Cartera por cobrar</small>
-            </div>
-        </div>
-    </div>
-    
-    <div class="col-md-2">
-        <div class="card bg-danger text-white shadow">
-            <div class="card-body text-center">
-                <h2>{{ total_suppliers|default:"156" }}</h2>
-                <p class="mb-0">Proveedores</p>
-                <small>Cuentas por pagar</small>
-            </div>
-        </div>
-    </div>
-    
-    <div class="col-md-2">
-        <div class="card bg-secondary text-white shadow">
-            <div class="card-body text-center">
-                <h2>2,847</h2>
-                <p class="mb-0">Asientos Contables</p>
-                <small>Este mes</small>
-            </div>
-        </div>
-    </div>
-</div>
 
 <!-- Módulos Principales del Sistema -->
 <div class="row mb-4">
@@ -193,29 +94,6 @@
                 <h5><i class="bi bi-journal-bookmark"></i> CONTABILIDAD GENERAL</h5>
             </div>
             <div class="card-body">
-                <p><strong>¿Qué hace este módulo?</strong></p>
-                <p class="small">Maneja toda la contabilidad de doble partida, asientos contables, plan único de cuentas (PUC), centros de costo y proyectos. Es el corazón del sistema contable.</p>
-                
-                <div class="row text-center mb-3">
-                    <div class="col-4">
-                        <div class="bg-light p-2 rounded">
-                            <strong>1,247</strong><br>
-                            <small>Cuentas PUC</small>
-                        </div>
-                    </div>
-                    <div class="col-4">
-                        <div class="bg-light p-2 rounded">
-                            <strong>2,847</strong><br>
-                            <small>Asientos</small>
-                        </div>
-                    </div>
-                    <div class="col-4">
-                        <div class="bg-light p-2 rounded">
-                            <strong>15</strong><br>
-                            <small>Centros Costo</small>
-                        </div>
-                    </div>
-                </div>
                 
                 <div class="d-grid gap-2">
                     <a href="{% url 'accounting:new_journal_entry' %}" class="btn btn-primary btn-sm">
@@ -236,29 +114,6 @@
                 <h5><i class="bi bi-person-check"></i> CUENTAS POR COBRAR</h5>
             </div>
             <div class="card-body">
-                <p><strong>¿Qué hace este módulo?</strong></p>
-                <p class="small">Gestiona clientes, facturas de venta, pagos de clientes, cartera vencida y estados de cuenta. Control total de la cartera de clientes.</p>
-                
-                <div class="row text-center mb-3">
-                    <div class="col-4">
-                        <div class="bg-light p-2 rounded">
-                            <strong>342</strong><br>
-                            <small>Clientes</small>
-                        </div>
-                    </div>
-                    <div class="col-4">
-                        <div class="bg-light p-2 rounded">
-                            <strong>$45.2M</strong><br>
-                            <small>Por Cobrar</small>
-                        </div>
-                    </div>
-                    <div class="col-4">
-                        <div class="bg-light p-2 rounded">
-                            <strong>23</strong><br>
-                            <small>Vencidas</small>
-                        </div>
-                    </div>
-                </div>
                 
                 <div class="d-grid gap-2">
                     <a href="{% url 'accounts_receivable:new_invoice' %}" class="btn btn-success btn-sm">
@@ -279,29 +134,6 @@
                 <h5><i class="bi bi-truck"></i> CUENTAS POR PAGAR</h5>
             </div>
             <div class="card-body">
-                <p><strong>¿Qué hace este módulo?</strong></p>
-                <p class="small">Administra proveedores, facturas de compra, programación de pagos, retenciones automáticas y control de obligaciones con terceros.</p>
-                
-                <div class="row text-center mb-3">
-                    <div class="col-4">
-                        <div class="bg-light p-2 rounded">
-                            <strong>156</strong><br>
-                            <small>Proveedores</small>
-                        </div>
-                    </div>
-                    <div class="col-4">
-                        <div class="bg-light p-2 rounded">
-                            <strong>$28.7M</strong><br>
-                            <small>Por Pagar</small>
-                        </div>
-                    </div>
-                    <div class="col-4">
-                        <div class="bg-light p-2 rounded">
-                            <strong>12</strong><br>
-                            <small>Vencen Hoy</small>
-                        </div>
-                    </div>
-                </div>
                 
                 <div class="d-grid gap-2">
                     <a href="{% url 'accounts_payable:new_purchase_invoice' %}" class="btn btn-danger btn-sm">
@@ -324,29 +156,6 @@
                 <h5><i class="bi bi-bank"></i> TESORERÍA</h5>
             </div>
             <div class="card-body">
-                <p><strong>¿Qué hace este módulo?</strong></p>
-                <p class="small">Controla cuentas bancarias, movimientos de efectivo, conciliaciones bancarias, flujo de caja y administración de recursos financieros.</p>
-                
-                <div class="row text-center mb-3">
-                    <div class="col-4">
-                        <div class="bg-light p-2 rounded">
-                            <strong>8</strong><br>
-                            <small>Cuentas Banco</small>
-                        </div>
-                    </div>
-                    <div class="col-4">
-                        <div class="bg-light p-2 rounded">
-                            <strong>$125.4M</strong><br>
-                            <small>Saldo Total</small>
-                        </div>
-                    </div>
-                    <div class="col-4">
-                        <div class="bg-light p-2 rounded">
-                            <strong>3</strong><br>
-                            <small>Pendientes</small>
-                        </div>
-                    </div>
-                </div>
                 
                 <div class="d-grid gap-2">
                     <a href="{% url 'treasury:bank_movement' %}" class="btn btn-info btn-sm">
@@ -367,29 +176,6 @@
                 <h5><i class="bi bi-people-fill"></i> NÓMINA ELECTRÓNICA</h5>
             </div>
             <div class="card-body">
-                <p><strong>¿Qué hace este módulo?</strong></p>
-                <p class="small">Procesa nómina completa, prestaciones sociales, seguridad social, parafiscales, certificados laborales y cumplimiento normativo laboral.</p>
-                
-                <div class="row text-center mb-3">
-                    <div class="col-4">
-                        <div class="bg-light p-2 rounded">
-                            <strong>247</strong><br>
-                            <small>Empleados</small>
-                        </div>
-                    </div>
-                    <div class="col-4">
-                        <div class="bg-light p-2 rounded">
-                            <strong>$85.2M</strong><br>
-                            <small>Nómina Mes</small>
-                        </div>
-                    </div>
-                    <div class="col-4">
-                        <div class="bg-light p-2 rounded">
-                            <strong>15</strong><br>
-                            <small>Liquidaciones</small>
-                        </div>
-                    </div>
-                </div>
                 
                 <div class="d-grid gap-2">
                     <a href="/payroll/" class="btn btn-warning btn-sm">
@@ -410,29 +196,6 @@
                 <h5><i class="bi bi-receipt-cutoff"></i> IMPUESTOS COLOMBIA</h5>
             </div>
             <div class="card-body">
-                <p><strong>¿Qué hace este módulo?</strong></p>
-                <p class="small">Maneja IVA, retenciones, ICA, renta, declaraciones automáticas, calendario tributario y cumplimiento con DIAN.</p>
-                
-                <div class="row text-center mb-3">
-                    <div class="col-4">
-                        <div class="bg-light p-2 rounded">
-                            <strong>$12.5M</strong><br>
-                            <small>IVA Generado</small>
-                        </div>
-                    </div>
-                    <div class="col-4">
-                        <div class="bg-light p-2 rounded">
-                            <strong>$4.2M</strong><br>
-                            <small>Retenciones</small>
-                        </div>
-                    </div>
-                    <div class="col-4">
-                        <div class="bg-light p-2 rounded">
-                            <strong>5</strong><br>
-                            <small>Pendientes</small>
-                        </div>
-                    </div>
-                </div>
                 
                 <div class="d-grid gap-2">
                     <a href="/taxes/" class="btn btn-secondary btn-sm">
@@ -462,35 +225,6 @@
                 <h5><i class="bi bi-building-gear"></i> SECTOR PÚBLICO</h5>
             </div>
             <div class="card-body">
-                <p><strong>¿Qué hace este módulo?</strong></p>
-                <p class="small">Especializado para entidades públicas: presupuesto, CDP, RP, contabilidad presupuestal, reportes CHIP, cumplimiento CGN y normativa pública.</p>
-                
-                <div class="row text-center mb-3">
-                    <div class="col-3">
-                        <div class="bg-light p-2 rounded">
-                            <strong>$5.2B</strong><br>
-                            <small>Presupuesto</small>
-                        </div>
-                    </div>
-                    <div class="col-3">
-                        <div class="bg-light p-2 rounded">
-                            <strong>85%</strong><br>
-                            <small>Ejecutado</small>
-                        </div>
-                    </div>
-                    <div class="col-3">
-                        <div class="bg-light p-2 rounded">
-                            <strong>23</strong><br>
-                            <small>CDPs</small>
-                        </div>
-                    </div>
-                    <div class="col-3">
-                        <div class="bg-light p-2 rounded">
-                            <strong>15</strong><br>
-                            <small>RPs</small>
-                        </div>
-                    </div>
-                </div>
                 
                 <div class="d-grid gap-2">
                     <a href="/public-sector/" class="btn btn-primary btn-sm">
@@ -508,35 +242,6 @@
                 <h5><i class="bi bi-file-earmark-bar-graph"></i> CENTRO DE REPORTES</h5>
             </div>
             <div class="card-body">
-                <p><strong>¿Qué hace este módulo?</strong></p>
-                <p class="small">Genera todos los reportes financieros, contables, tributarios y legales en PDF y Excel. Balance, P&G, libros oficiales, reportes DIAN.</p>
-                
-                <div class="row text-center mb-3">
-                    <div class="col-3">
-                        <div class="bg-light p-2 rounded">
-                            <strong>25</strong><br>
-                            <small>Tipos Reporte</small>
-                        </div>
-                    </div>
-                    <div class="col-3">
-                        <div class="bg-light p-2 rounded">
-                            <strong>PDF</strong><br>
-                            <small>Formato</small>
-                        </div>
-                    </div>
-                    <div class="col-3">
-                        <div class="bg-light p-2 rounded">
-                            <strong>Excel</strong><br>
-                            <small>Formato</small>
-                        </div>
-                    </div>
-                    <div class="col-3">
-                        <div class="bg-light p-2 rounded">
-                            <strong>147</strong><br>
-                            <small>Generados</small>
-                        </div>
-                    </div>
-                </div>
                 
                 <div class="d-grid gap-2">
                     <a href="{% url 'reports:dashboard' %}" class="btn btn-success btn-sm">
@@ -651,61 +356,33 @@
     </div>
 </div>
 
-<!-- Información del Sistema -->
+<!-- Módulos Disponibles -->
 <div class="row">
     <div class="col-12">
         <div class="card bg-light">
             <div class="card-header">
-                <h5><i class="bi bi-info-circle"></i> Información del Sistema Contable Integral</h5>
+                <h5><i class="bi bi-grid-3x3-gap"></i> Módulos del Sistema</h5>
             </div>
             <div class="card-body">
                 <div class="row">
-                    <div class="col-md-4">
-                        <h6><i class="bi bi-check-circle text-success"></i> Características Principales:</h6>
-                        <ul class="small">
-                            <li>✅ Sistema multiempresa con segregación total de datos</li>
-                            <li>✅ Motor contable de doble partida inmutable</li>
-                            <li>✅ Módulos completos CxC, CxP, Tesorería, Nómina</li>
-                            <li>✅ Control inventarios y activos fijos</li>
-                            <li>✅ Impuestos colombianos automatizados</li>
-                            <li>✅ Adaptaciones completas sector público</li>
-                            <li>✅ Reportes profesionales PDF/Excel</li>
+                    <div class="col-md-6">
+                        <ul class="list-unstyled">
+                            <li>📊 <strong>Contabilidad General</strong> - Plan de cuentas PUC, asientos contables</li>
+                            <li>💰 <strong>Cuentas por Cobrar</strong> - Facturación, clientes, cartera</li>
+                            <li>🏪 <strong>Cuentas por Pagar</strong> - Proveedores, compras, pagos</li>
+                            <li>🏦 <strong>Tesorería</strong> - Bancos, flujo de caja, conciliaciones</li>
+                            <li>👥 <strong>Nómina</strong> - Empleados, liquidaciones, prestaciones sociales</li>
                         </ul>
                     </div>
-                    <div class="col-md-4">
-                        <h6><i class="bi bi-shield-check text-primary"></i> Cumplimiento Normativo:</h6>
-                        <ul class="small">
-                            <li>🇨🇴 Legislación colombiana 100%</li>
-                            <li>📋 Plan Único de Cuentas (PUC)</li>
-                            <li>🧾 Facturación electrónica DIAN</li>
-                            <li>👥 Nómina electrónica completa</li>
-                            <li>💰 Retenciones automáticas</li>
-                            <li>📊 Medios magnéticos y exógena</li>
-                            <li>🏛️ Contabilidad pública (CGN)</li>
+                    <div class="col-md-6">
+                        <ul class="list-unstyled">
+                            <li>📋 <strong>Impuestos</strong> - IVA, retenciones, declaraciones DIAN</li>
+                            <li>🏛️ <strong>Sector Público</strong> - Presupuesto, CDP, RP, contabilidad pública</li>
+                            <li>📈 <strong>Reportes</strong> - Estados financieros, informes legales</li>
+                            <li>📦 <strong>Inventarios</strong> - Control de mercancías y productos</li>
+                            <li>🏢 <strong>Activos Fijos</strong> - Depreciaciones, mantenimientos</li>
                         </ul>
                     </div>
-                    <div class="col-md-4">
-                        <h6><i class="bi bi-gear text-warning"></i> Tecnología y Soporte:</h6>
-                        <ul class="small">
-                            <li>🔧 Django + Python (código abierto)</li>
-                            <li>🔒 Seguridad empresarial</li>
-                            <li>📱 Interfaz moderna y responsive</li>
-                            <li>⚡ Alto rendimiento</li>
-                            <li>🔄 Actualizaciones automáticas</li>
-                            <li>📞 Soporte técnico incluido</li>
-                            <li>☁️ Compatible con nube</li>
-                        </ul>
-                    </div>
-                </div>
-                
-                <hr>
-                
-                <div class="text-center">
-                    <p class="mb-0">
-                        <strong>Sistema Contable Integral v2025</strong> - 
-                        Desarrollado especialmente para contadores colombianos - 
-                        <span class="text-success">Licencia Completa Activada</span>
-                    </p>
                 </div>
             </div>
         </div>
@@ -795,6 +472,44 @@ function updateDateTime() {
 // Actualizar fecha y hora cada segundo
 updateDateTime();
 setInterval(updateDateTime, 1000);
+
+// Función para seleccionar empresa
+function selectCompany() {
+    const selector = document.getElementById('companySelector');
+    const companyId = selector.value;
+    
+    if (!companyId) {
+        return;
+    }
+    
+    // Mostrar indicador de carga
+    selector.disabled = true;
+    
+    // Enviar solicitud AJAX
+    fetch('{% url "core:select_company" %}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-CSRFToken': '{{ csrf_token }}'
+        },
+        body: 'company_id=' + encodeURIComponent(companyId)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Recargar la página para mostrar los datos de la empresa seleccionada
+            window.location.reload();
+        } else {
+            alert('Error al seleccionar empresa: ' + data.error);
+            selector.disabled = false;
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error al comunicarse con el servidor');
+        selector.disabled = false;
+    });
+}
 
 // Mostrar mensaje de bienvenida
 document.addEventListener('DOMContentLoaded', function() {

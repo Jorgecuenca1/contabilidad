@@ -14,6 +14,8 @@ urlpatterns = [
     path('companies/new/', views.new_company, name='new_company'),
     path('companies/<uuid:company_id>/', views.company_detail, name='company_detail'),
     path('companies/<uuid:company_id>/edit/', views.edit_company, name='edit_company'),
-    path('api/companies/', views.company_selector, name='company_selector'),
+    path('select-company/', views.select_company, name='select_company'),
+    path('api/companies/', views.company_selector_api, name='company_selector_api'),
+    path('logout/', views.custom_logout, name='logout'),
 ]
 

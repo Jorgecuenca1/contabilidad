@@ -126,9 +126,7 @@
             <div class="card-body">
                 <select class="form-select" id="companySelector">
                     <option value="">Seleccione una empresa...</option>
-                    {% for company in companies %}
-                        <option value="{{ company.id }}">{{ company.name }} ({{ company.tax_id }})</option>
-                    {% endfor %}
+                    
                     <option value="1">ABC Comercializadora S.A.S (900.123.456-7) - Régimen Común</option>
                     <option value="2">XYZ Servicios Ltda (800.987.654-3) - Gran Contribuyente</option>
                     <option value="3">Constructora DEF S.A (700.555.444-1) - Autorretenedor</option>

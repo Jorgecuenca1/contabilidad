@@ -18,7 +18,8 @@ class User(AbstractUser):
     """
     ROLE_CHOICES = [
         ('admin', 'Administrador del Sistema'),
-        ('contador_general', 'Contador General'),
+        ('contador', 'Contador'),
+        ('dueno_empresa', 'Dueño de Empresa'),
         ('auxiliar_contable', 'Auxiliar Contable'),
         ('tesorero', 'Tesorero'),
         ('jefe_nomina', 'Jefe de Nómina'),
@@ -35,6 +36,7 @@ class User(AbstractUser):
     last_login_ip = models.GenericIPAddressField(null=True, blank=True)
     companies = models.ManyToManyField('Company', through='UserCompanyPermission', blank=True)
     default_company = models.ForeignKey('Company', on_delete=models.SET_NULL, null=True, blank=True, related_name='default_users')
+    owned_company = models.ForeignKey('Company', on_delete=models.SET_NULL, null=True, blank=True, related_name='owners', help_text='Empresa propietaria para usuarios dueño de empresa')
     
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -46,6 +48,32 @@ class User(AbstractUser):
     
     def __str__(self):
         return f"{self.get_full_name()} ({self.username})"
+    
+    def get_accessible_companies(self):
+        """Obtiene las empresas a las que el usuario tiene acceso según su rol."""
+        if self.role == 'dueno_empresa':
+            # Dueños de empresa solo ven su propia empresa
+            return Company.objects.filter(id=self.owned_company_id) if self.owned_company else Company.objects.none()
+        elif self.role in ['admin', 'contador']:
+            # Administradores y contadores pueden ver todas las empresas o las asignadas
+            if self.role == 'admin':
+                return Company.objects.filter(is_active=True)
+            else:
+                # Contadores ven las empresas donde tienen permisos
+                return Company.objects.filter(
+                    usercompanypermission__user=self,
+                    is_active=True
+                ).distinct()
+        else:
+            # Otros roles ven solo las empresas asignadas específicamente
+            return Company.objects.filter(
+                usercompanypermission__user=self,
+                is_active=True
+            ).distinct()
+    
+    def can_access_company(self, company):
+        """Verifica si el usuario puede acceder a una empresa específica."""
+        return company in self.get_accessible_companies()
 
 
 class Country(models.Model):

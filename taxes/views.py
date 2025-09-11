@@ -10,13 +10,18 @@ from django.db import transaction
 from django.utils import timezone
 
 from core.models import Company
+from core.utils import get_current_company, require_company_access
+
 from .models_tax_types import TaxType, TaxCalendar
 from accounting.models_accounts import Account
 from accounting.models_journal import JournalEntry, JournalEntryLine, JournalType
 
 
 @login_required
+@require_company_access
 def taxes_dashboard(request):
+    current_company = request.current_company
+
     """
     Dashboard principal de impuestos.
     """
@@ -41,7 +46,10 @@ def taxes_dashboard(request):
 
 
 @login_required
+@require_company_access
 def iva_declaration(request):
+    current_company = request.current_company
+
     """Vista para declaración de IVA."""
     companies = Company.objects.filter(is_active=True)
     
@@ -53,7 +61,10 @@ def iva_declaration(request):
 
 
 @login_required
+@require_company_access
 def retention_declaration(request):
+    current_company = request.current_company
+
     """Vista para declaración de retenciones."""
     companies = Company.objects.filter(is_active=True)
     
@@ -65,7 +76,10 @@ def retention_declaration(request):
 
 
 @login_required
+@require_company_access
 def ica_declaration(request):
+    current_company = request.current_company
+
     """Vista para declaración de ICA."""
     companies = Company.objects.filter(is_active=True)
     
@@ -77,7 +91,10 @@ def ica_declaration(request):
 
 
 @login_required
+@require_company_access
 def retention_certificates(request):
+    current_company = request.current_company
+
     """Vista para certificados de retención."""
     companies = Company.objects.filter(is_active=True)
     
@@ -89,7 +106,10 @@ def retention_certificates(request):
 
 
 @login_required
+@require_company_access
 def magnetic_media(request):
+    current_company = request.current_company
+
     """Vista para medios magnéticos."""
     companies = Company.objects.filter(is_active=True)
     
@@ -101,7 +121,10 @@ def magnetic_media(request):
 
 
 @login_required
+@require_company_access
 def tax_calendar(request):
+    current_company = request.current_company
+
     """Vista para calendario tributario."""
     companies = Company.objects.filter(is_active=True)
     calendars = TaxCalendar.objects.all().order_by('due_date')
@@ -115,7 +138,10 @@ def tax_calendar(request):
 
 
 @login_required
+@require_company_access
 def iva_report(request):
+    current_company = request.current_company
+
     """Vista para reportes de IVA."""
     companies = Company.objects.filter(is_active=True)
     
@@ -127,7 +153,10 @@ def iva_report(request):
 
 
 @login_required
+@require_company_access
 def renta_declaration(request):
+    current_company = request.current_company
+
     """Vista para declaración de renta."""
     companies = Company.objects.filter(is_active=True)
     
@@ -139,7 +168,10 @@ def renta_declaration(request):
 
 
 @login_required
+@require_company_access
 def new_tax_declaration(request):
+    current_company = request.current_company
+
     """Vista para crear nueva declaración de impuestos."""
     if request.method == 'POST':
         try:
@@ -234,7 +266,7 @@ def new_tax_declaration(request):
     
     # Datos para el template
     context = {
-        'companies': Company.objects.filter(is_active=True),
+        'current_company': current_company,
         'tax_types': TaxType.objects.filter(is_active=True),
         'current_year': timezone.now().year,
     }

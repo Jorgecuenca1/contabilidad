@@ -22,9 +22,7 @@
                                 <label for="company_id" class="form-label">Entidad <span class="text-danger">*</span></label>
                                 <select class="form-select" id="company_id" name="company_id" required>
                                     <option value="">Seleccione una entidad...</option>
-                                    {% for company in companies %}
-                                        <option value="{{ company.id }}">{{ company.name }} ({{ company.tax_id }})</option>
-                                    {% endfor %}
+                                    
                                 </select>
                             </div>
                             <div class="col-md-3">

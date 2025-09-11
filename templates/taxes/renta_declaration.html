@@ -3,40 +3,13 @@
 {% block title %}Declaración de Renta{% endblock %}
 
 {% block content %}
-<div class="container-fluid mt-4">
-    <div class="row mb-4">
-        <div class="col-md-8">
-            <h2 class="text-primary">
-                <i class="fas fa-file-contract"></i> Declaración de Renta y Complementarios
-            </h2>
-        </div>
-        <div class="col-md-4 text-end">
-            <a href="{% url 'taxes:dashboard' %}" class="btn btn-outline-secondary">
-                <i class="fas fa-arrow-left"></i> Volver
-            </a>
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="col-md-12">
-            <div class="card">
-                <div class="card-header bg-success text-white">
-                    <h5 class="mb-0"><i class="fas fa-coins"></i> Declaración de Renta Empresarial</h5>
-                </div>
-                <div class="card-body">
-                    <form method="post">
-                        {% csrf_token %}
-                        
-                        <div class="row mb-3">
-                            <div class="col-md-4">
-                                <label>Empresa</label>
-                                <select name="company" class="form-control" required>
-                                    <option value="">Seleccione empresa...</option>
-                                    {% for company in companies %}
-                                    <option value="{{ company.id }}">{{ company.name }}</option>
-                                    {% endfor %}
-                                </select>
+                        <!-- Empresa Seleccionada -->
+                        <div class="col-12 mb-3">
+                            <div class="alert alert-info">
+                                <i class="bi bi-building"></i> <strong>Empresa:</strong> {{ current_company.name }}{% if current_company.tax_id %} - {{ current_company.tax_id }}{% endif %}
+                                <small class="d-block">Trabajando con la empresa seleccionada en el dashboard</small>
                             </div>
+                        </div>
                             <div class="col-md-4">
                                 <label>Año Gravable</label>
                                 <select name="tax_year" class="form-control" required>

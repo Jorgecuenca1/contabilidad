@@ -2910,3 +2910,466 @@ Traceback (most recent call last):
     ...<2 lines>...
     )
 django.core.exceptions.FieldError: Cannot resolve keyword 'is_employee' into field. Choices are: address, addresses, bank_account_number, bank_account_type, bank_name, block_reason, chamber_commerce_file, ciiu_code, city, company, company_id, contact_email, contact_person, contact_phone, contact_position, contacts, country, created_at, created_by, created_by_id, credit_limit, discount_percentage, document_number, document_type, documents, economic_activity, email, fax, first_name, great_contributor_resolution, has_rut, id, internal_notes, is_active, is_bank, is_blocked, is_customer, is_government, is_great_contributor, is_ica_agent, is_self_withholding, is_shareholder, is_supplier, is_vat_responsible, is_withholding_agent, last_name, legal_rep_document, legal_representative, middle_name, mobile, neighborhood, nombre, notes, payment_term_days, person_type, phone, postal_code, primer_apellido, rating, razon_social, rut_file, second_last_name, segundo_apellido, segundo_nombre, state, tax_code, tax_regime, taxpayer_type, third_party_types, trade_name, updated_at, updated_by, updated_by_id, verification_digit, website
+INFO 2025-09-11 12:24:58,204 autoreload 22352 9544 C:\Users\HOME\PycharmProjects\contabilidad\core\models.py changed, reloading.
+INFO 2025-09-11 12:24:59,478 autoreload 21652 7808 Watching for file changes with StatReloader
+INFO 2025-09-11 12:25:06,521 autoreload 21652 7808 C:\Users\HOME\PycharmProjects\contabilidad\core\models.py changed, reloading.
+INFO 2025-09-11 12:25:07,811 autoreload 20536 10412 Watching for file changes with StatReloader
+INFO 2025-09-11 12:25:18,032 autoreload 20536 10412 C:\Users\HOME\PycharmProjects\contabilidad\core\models.py changed, reloading.
+INFO 2025-09-11 12:25:19,295 autoreload 7684 19140 Watching for file changes with StatReloader
+INFO 2025-09-11 12:26:23,178 autoreload 7684 19140 C:\Users\HOME\PycharmProjects\contabilidad\core\views.py changed, reloading.
+INFO 2025-09-11 12:26:24,401 autoreload 24904 1304 Watching for file changes with StatReloader
+INFO 2025-09-11 12:27:13,046 autoreload 24904 1304 C:\Users\HOME\PycharmProjects\contabilidad\core\urls.py changed, reloading.
+INFO 2025-09-11 12:27:14,188 autoreload 22876 15620 Watching for file changes with StatReloader
+INFO 2025-09-11 12:27:29,768 autoreload 22876 15620 C:\Users\HOME\PycharmProjects\contabilidad\contabilidad_multiempresa\settings.py changed, reloading.
+INFO 2025-09-11 12:27:31,055 autoreload 17096 20056 Watching for file changes with StatReloader
+INFO 2025-09-11 12:28:03,764 autoreload 12440 7824 Watching for file changes with StatReloader
+WARNING 2025-09-11 12:28:57,216 base 17096 21464 Session data corrupted
+WARNING 2025-09-11 12:29:05,288 base 17096 21464 Session data corrupted
+INFO 2025-09-11 12:30:28,425 autoreload 19264 22076 Watching for file changes with StatReloader
+INFO 2025-09-11 13:02:15,631 autoreload 17096 20056 C:\Users\HOME\PycharmProjects\contabilidad\accounting\models_accounts.py changed, reloading.
+INFO 2025-09-11 13:02:15,690 autoreload 19264 22076 C:\Users\HOME\PycharmProjects\contabilidad\accounting\models_accounts.py changed, reloading.
+INFO 2025-09-11 13:02:17,818 autoreload 13288 3500 Watching for file changes with StatReloader
+INFO 2025-09-11 13:02:17,823 autoreload 4876 5340 Watching for file changes with StatReloader
+INFO 2025-09-11 13:02:25,702 autoreload 13288 3500 C:\Users\HOME\PycharmProjects\contabilidad\accounting\models_accounts.py changed, reloading.
+INFO 2025-09-11 13:02:25,735 autoreload 4876 5340 C:\Users\HOME\PycharmProjects\contabilidad\accounting\models_accounts.py changed, reloading.
+INFO 2025-09-11 13:02:27,485 autoreload 21612 9840 Watching for file changes with StatReloader
+INFO 2025-09-11 13:02:27,486 autoreload 17396 20932 Watching for file changes with StatReloader
+INFO 2025-09-11 13:02:34,683 autoreload 21612 9840 C:\Users\HOME\PycharmProjects\contabilidad\accounting\models_accounts.py changed, reloading.
+INFO 2025-09-11 13:02:34,686 autoreload 17396 20932 C:\Users\HOME\PycharmProjects\contabilidad\accounting\models_accounts.py changed, reloading.
+INFO 2025-09-11 13:02:36,548 autoreload 9528 17200 Watching for file changes with StatReloader
+INFO 2025-09-11 13:02:36,550 autoreload 15416 26112 Watching for file changes with StatReloader
+INFO 2025-09-11 13:10:36,284 autoreload 15416 26112 C:\Users\HOME\PycharmProjects\contabilidad\accounting\views.py changed, reloading.
+INFO 2025-09-11 13:10:36,303 autoreload 9528 17200 C:\Users\HOME\PycharmProjects\contabilidad\accounting\views.py changed, reloading.
+INFO 2025-09-11 13:10:37,936 autoreload 21388 23208 Watching for file changes with StatReloader
+INFO 2025-09-11 13:10:37,937 autoreload 21000 8984 Watching for file changes with StatReloader
+INFO 2025-09-11 13:12:15,436 autoreload 21388 23208 C:\Users\HOME\PycharmProjects\contabilidad\accounts_receivable\views.py changed, reloading.
+INFO 2025-09-11 13:12:15,443 autoreload 21000 8984 C:\Users\HOME\PycharmProjects\contabilidad\accounts_receivable\views.py changed, reloading.
+INFO 2025-09-11 13:12:17,062 autoreload 17560 9056 Watching for file changes with StatReloader
+INFO 2025-09-11 13:12:17,062 autoreload 17668 13800 Watching for file changes with StatReloader
+INFO 2025-09-11 13:12:23,706 autoreload 17668 13800 C:\Users\HOME\PycharmProjects\contabilidad\accounts_receivable\views.py changed, reloading.
+INFO 2025-09-11 13:12:23,719 autoreload 17560 9056 C:\Users\HOME\PycharmProjects\contabilidad\accounts_receivable\views.py changed, reloading.
+INFO 2025-09-11 13:12:25,249 autoreload 20736 24896 Watching for file changes with StatReloader
+INFO 2025-09-11 13:12:25,253 autoreload 14772 26028 Watching for file changes with StatReloader
+INFO 2025-09-11 13:12:31,606 autoreload 14772 26028 C:\Users\HOME\PycharmProjects\contabilidad\accounts_receivable\views.py changed, reloading.
+INFO 2025-09-11 13:12:31,606 autoreload 20736 24896 C:\Users\HOME\PycharmProjects\contabilidad\accounts_receivable\views.py changed, reloading.
+INFO 2025-09-11 13:12:33,252 autoreload 26232 14136 Watching for file changes with StatReloader
+INFO 2025-09-11 13:12:33,253 autoreload 19976 22768 Watching for file changes with StatReloader
+INFO 2025-09-11 13:12:59,457 autoreload 26232 14136 C:\Users\HOME\PycharmProjects\contabilidad\accounts_receivable\views.py changed, reloading.
+INFO 2025-09-11 13:12:59,460 autoreload 19976 22768 C:\Users\HOME\PycharmProjects\contabilidad\accounts_receivable\views.py changed, reloading.
+INFO 2025-09-11 13:13:00,948 autoreload 7264 21956 Watching for file changes with StatReloader
+INFO 2025-09-11 13:13:00,948 autoreload 20780 19148 Watching for file changes with StatReloader
+WARNING 2025-09-11 13:15:50,870 base 20780 7208 Session data corrupted
+WARNING 2025-09-11 13:15:51,048 base 20780 7208 Session data corrupted
+WARNING 2025-09-11 13:15:58,327 base 20780 7208 Session data corrupted
+ERROR 2025-09-11 13:16:01,069 log 20780 7208 Internal Server Error: /accounting/chart-of-accounts/
+Traceback (most recent call last):
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\backends\utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\backends\sqlite3\base.py", line 354, in execute
+    return super().execute(query, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+sqlite3.OperationalError: no such column: accounting_accounts.is_custom
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\contrib\auth\decorators.py", line 60, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\HOME\PycharmProjects\contabilidad\accounting\views.py", line 157, in chart_of_accounts
+    return render(request, 'accounting/chart_of_accounts.html', context)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\backends\django.py", line 107, in render
+    return self.template.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 171, in render
+    return self._render(context)
+           ~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 1008, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 969, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\loader_tags.py", line 159, in render
+    return compiled_parent._render(context)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 1008, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 969, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\loader_tags.py", line 65, in render
+    result = block.nodelist.render(context)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 1008, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 969, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\defaulttags.py", line 199, in render
+    len_values = len(values)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\paginator.py", line 191, in __len__
+    return len(self.object_list)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\query.py", line 382, in __len__
+    self._fetch_all()
+    ~~~~~~~~~~~~~~~^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\query.py", line 1928, in _fetch_all
+    self._result_cache = list(self._iterable_class(self))
+                         ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\query.py", line 91, in __iter__
+    results = compiler.execute_sql(
+        chunked_fetch=self.chunked_fetch, chunk_size=self.chunk_size
+    )
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\sql\compiler.py", line 1574, in execute_sql
+    cursor.execute(sql, params)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\backends\utils.py", line 122, in execute
+    return super().execute(sql, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\backends\utils.py", line 79, in execute
+    return self._execute_with_wrappers(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        sql, params, many=False, executor=self._execute
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\backends\utils.py", line 92, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\backends\utils.py", line 100, in _execute
+    with self.db.wrap_database_errors:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\backends\utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\backends\sqlite3\base.py", line 354, in execute
+    return super().execute(query, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+django.db.utils.OperationalError: no such column: accounting_accounts.is_custom
+ERROR 2025-09-11 13:17:29,873 log 20780 7208 Internal Server Error: /accounting/chart-of-accounts/
+Traceback (most recent call last):
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\backends\utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\backends\sqlite3\base.py", line 354, in execute
+    return super().execute(query, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+sqlite3.OperationalError: no such column: accounting_accounts.is_custom
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\contrib\auth\decorators.py", line 60, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\HOME\PycharmProjects\contabilidad\accounting\views.py", line 157, in chart_of_accounts
+    return render(request, 'accounting/chart_of_accounts.html', context)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\backends\django.py", line 107, in render
+    return self.template.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 171, in render
+    return self._render(context)
+           ~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 1008, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 969, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\loader_tags.py", line 159, in render
+    return compiled_parent._render(context)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 1008, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 969, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\loader_tags.py", line 65, in render
+    result = block.nodelist.render(context)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 1008, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 969, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\defaulttags.py", line 199, in render
+    len_values = len(values)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\paginator.py", line 191, in __len__
+    return len(self.object_list)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\query.py", line 382, in __len__
+    self._fetch_all()
+    ~~~~~~~~~~~~~~~^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\query.py", line 1928, in _fetch_all
+    self._result_cache = list(self._iterable_class(self))
+                         ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\query.py", line 91, in __iter__
+    results = compiler.execute_sql(
+        chunked_fetch=self.chunked_fetch, chunk_size=self.chunk_size
+    )
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\sql\compiler.py", line 1574, in execute_sql
+    cursor.execute(sql, params)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\backends\utils.py", line 122, in execute
+    return super().execute(sql, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\backends\utils.py", line 79, in execute
+    return self._execute_with_wrappers(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        sql, params, many=False, executor=self._execute
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\backends\utils.py", line 92, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\backends\utils.py", line 100, in _execute
+    with self.db.wrap_database_errors:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\backends\utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\backends\sqlite3\base.py", line 354, in execute
+    return super().execute(query, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+django.db.utils.OperationalError: no such column: accounting_accounts.is_custom
+ERROR 2025-09-11 13:23:31,991 log 20780 24752 Internal Server Error: /accounting/chart-of-accounts/
+Traceback (most recent call last):
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\backends\utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\backends\sqlite3\base.py", line 354, in execute
+    return super().execute(query, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+sqlite3.OperationalError: no such column: accounting_accounts.is_custom
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\contrib\auth\decorators.py", line 60, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\HOME\PycharmProjects\contabilidad\accounting\views.py", line 157, in chart_of_accounts
+    return render(request, 'accounting/chart_of_accounts.html', context)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\backends\django.py", line 107, in render
+    return self.template.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 171, in render
+    return self._render(context)
+           ~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 1008, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 969, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\loader_tags.py", line 159, in render
+    return compiled_parent._render(context)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 1008, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 969, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\loader_tags.py", line 65, in render
+    result = block.nodelist.render(context)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 1008, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 969, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\defaulttags.py", line 199, in render
+    len_values = len(values)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\paginator.py", line 191, in __len__
+    return len(self.object_list)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\query.py", line 382, in __len__
+    self._fetch_all()
+    ~~~~~~~~~~~~~~~^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\query.py", line 1928, in _fetch_all
+    self._result_cache = list(self._iterable_class(self))
+                         ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\query.py", line 91, in __iter__
+    results = compiler.execute_sql(
+        chunked_fetch=self.chunked_fetch, chunk_size=self.chunk_size
+    )
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\sql\compiler.py", line 1574, in execute_sql
+    cursor.execute(sql, params)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\backends\utils.py", line 122, in execute
+    return super().execute(sql, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\backends\utils.py", line 79, in execute
+    return self._execute_with_wrappers(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        sql, params, many=False, executor=self._execute
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\backends\utils.py", line 92, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\backends\utils.py", line 100, in _execute
+    with self.db.wrap_database_errors:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\backends\utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\backends\sqlite3\base.py", line 354, in execute
+    return super().execute(query, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+django.db.utils.OperationalError: no such column: accounting_accounts.is_custom
+INFO 2025-09-11 13:28:41,486 autoreload 18888 26112 Watching for file changes with StatReloader
+INFO 2025-09-11 13:31:14,020 autoreload 18888 26112 C:\Users\HOME\PycharmProjects\contabilidad\treasury\views.py changed, reloading.
+INFO 2025-09-11 13:31:14,024 autoreload 7264 21956 C:\Users\HOME\PycharmProjects\contabilidad\treasury\views.py changed, reloading.
+INFO 2025-09-11 13:31:14,033 autoreload 20780 19148 C:\Users\HOME\PycharmProjects\contabilidad\treasury\views.py changed, reloading.
+INFO 2025-09-11 13:31:15,848 autoreload 5996 18936 Watching for file changes with StatReloader
+INFO 2025-09-11 13:31:15,859 autoreload 24356 21276 Watching for file changes with StatReloader
+INFO 2025-09-11 13:31:15,980 autoreload 11552 19168 Watching for file changes with StatReloader
+INFO 2025-09-11 13:31:24,598 autoreload 24356 21276 C:\Users\HOME\PycharmProjects\contabilidad\treasury\views.py changed, reloading.
+INFO 2025-09-11 13:31:24,600 autoreload 5996 18936 C:\Users\HOME\PycharmProjects\contabilidad\treasury\views.py changed, reloading.
+INFO 2025-09-11 13:31:24,613 autoreload 11552 19168 C:\Users\HOME\PycharmProjects\contabilidad\treasury\views.py changed, reloading.
+INFO 2025-09-11 13:31:26,395 autoreload 25752 19132 Watching for file changes with StatReloader
+INFO 2025-09-11 13:31:26,396 autoreload 11216 22532 Watching for file changes with StatReloader
+INFO 2025-09-11 13:31:26,405 autoreload 25512 22744 Watching for file changes with StatReloader
+INFO 2025-09-11 13:31:39,202 autoreload 25512 22744 C:\Users\HOME\PycharmProjects\contabilidad\treasury\views.py changed, reloading.
+INFO 2025-09-11 13:31:39,223 autoreload 25752 19132 C:\Users\HOME\PycharmProjects\contabilidad\treasury\views.py changed, reloading.
+INFO 2025-09-11 13:31:39,229 autoreload 11216 22532 C:\Users\HOME\PycharmProjects\contabilidad\treasury\views.py changed, reloading.
+INFO 2025-09-11 13:31:41,009 autoreload 23024 1440 Watching for file changes with StatReloader
+INFO 2025-09-11 13:31:41,011 autoreload 9080 7760 Watching for file changes with StatReloader
+INFO 2025-09-11 13:31:41,012 autoreload 836 26356 Watching for file changes with StatReloader
+INFO 2025-09-11 13:31:47,976 autoreload 836 26356 C:\Users\HOME\PycharmProjects\contabilidad\treasury\views.py changed, reloading.
+INFO 2025-09-11 13:31:47,982 autoreload 9080 7760 C:\Users\HOME\PycharmProjects\contabilidad\treasury\views.py changed, reloading.
+INFO 2025-09-11 13:31:48,002 autoreload 23024 1440 C:\Users\HOME\PycharmProjects\contabilidad\treasury\views.py changed, reloading.
+INFO 2025-09-11 13:31:49,976 autoreload 7112 10624 Watching for file changes with StatReloader
+INFO 2025-09-11 13:31:49,977 autoreload 26164 22100 Watching for file changes with StatReloader
+INFO 2025-09-11 13:31:49,978 autoreload 17024 5892 Watching for file changes with StatReloader
+INFO 2025-09-11 13:32:20,098 autoreload 26164 22100 C:\Users\HOME\PycharmProjects\contabilidad\accounts_receivable\views.py changed, reloading.
+INFO 2025-09-11 13:32:20,105 autoreload 7112 10624 C:\Users\HOME\PycharmProjects\contabilidad\inventory\views.py changed, reloading.
+INFO 2025-09-11 13:32:20,111 autoreload 17024 5892 C:\Users\HOME\PycharmProjects\contabilidad\payroll\views.py changed, reloading.
+INFO 2025-09-11 13:32:21,804 autoreload 25252 12048 Watching for file changes with StatReloader
+INFO 2025-09-11 13:32:21,806 autoreload 22040 17576 Watching for file changes with StatReloader
+INFO 2025-09-11 13:32:21,812 autoreload 11712 23148 Watching for file changes with StatReloader
+INFO 2025-09-11 13:33:06,916 autoreload 25252 12048 C:\Users\HOME\PycharmProjects\contabilidad\accounting\views.py changed, reloading.
+INFO 2025-09-11 13:33:06,921 autoreload 22040 17576 C:\Users\HOME\PycharmProjects\contabilidad\accounting\views.py changed, reloading.
+INFO 2025-09-11 13:33:07,691 autoreload 24792 8708 Watching for file changes with StatReloader
+INFO 2025-09-11 13:33:07,691 autoreload 17076 18508 Watching for file changes with StatReloader
+INFO 2025-09-11 13:33:34,145 autoreload 17076 18508 C:\Users\HOME\PycharmProjects\contabilidad\accounts_receivable\views.py changed, reloading.
+INFO 2025-09-11 13:33:34,151 autoreload 24792 8708 C:\Users\HOME\PycharmProjects\contabilidad\accounts_payable\views.py changed, reloading.
+INFO 2025-09-11 13:33:34,968 autoreload 23364 17088 Watching for file changes with StatReloader
+INFO 2025-09-11 13:33:34,968 autoreload 26540 8200 Watching for file changes with StatReloader
+INFO 2025-09-11 13:34:23,266 autoreload 23364 17088 C:\Users\HOME\PycharmProjects\contabilidad\accounting\views.py changed, reloading.
+INFO 2025-09-11 13:34:23,271 autoreload 26540 8200 C:\Users\HOME\PycharmProjects\contabilidad\accounting\views.py changed, reloading.
+INFO 2025-09-11 13:34:24,007 autoreload 12732 18268 Watching for file changes with StatReloader
+INFO 2025-09-11 13:34:24,008 autoreload 23444 23388 Watching for file changes with StatReloader
+INFO 2025-09-11 13:36:59,490 autoreload 23444 23388 C:\Users\HOME\PycharmProjects\contabilidad\accounting\views.py changed, reloading.
+INFO 2025-09-11 13:36:59,496 autoreload 12732 18268 C:\Users\HOME\PycharmProjects\contabilidad\accounting\views.py changed, reloading.
+INFO 2025-09-11 13:37:00,240 autoreload 16332 12796 Watching for file changes with StatReloader
+INFO 2025-09-11 13:37:00,241 autoreload 4152 23836 Watching for file changes with StatReloader
+INFO 2025-09-11 13:37:14,128 autoreload 4152 23836 C:\Users\HOME\PycharmProjects\contabilidad\accounts_receivable\views.py changed, reloading.
+INFO 2025-09-11 13:37:14,133 autoreload 16332 12796 C:\Users\HOME\PycharmProjects\contabilidad\accounts_receivable\views.py changed, reloading.
+INFO 2025-09-11 13:37:14,828 autoreload 15680 25444 Watching for file changes with StatReloader
+INFO 2025-09-11 13:37:14,828 autoreload 3780 18216 Watching for file changes with StatReloader
+INFO 2025-09-11 13:37:55,602 autoreload 23460 19828 Watching for file changes with StatReloader
+INFO 2025-09-11 13:38:08,960 autoreload 3780 18216 C:\Users\HOME\PycharmProjects\contabilidad\reports\views.py changed, reloading.
+INFO 2025-09-11 13:38:08,960 autoreload 23460 19828 C:\Users\HOME\PycharmProjects\contabilidad\reports\views.py changed, reloading.
+INFO 2025-09-11 13:38:09,740 autoreload 17576 22452 Watching for file changes with StatReloader
+INFO 2025-09-11 13:38:09,741 autoreload 9540 11416 Watching for file changes with StatReloader
+INFO 2025-09-11 13:38:48,149 autoreload 17576 22452 C:\Users\HOME\PycharmProjects\contabilidad\public_sector\views.py changed, reloading.
+INFO 2025-09-11 13:38:48,150 autoreload 9540 11416 C:\Users\HOME\PycharmProjects\contabilidad\public_sector\views.py changed, reloading.
+INFO 2025-09-11 13:38:48,922 autoreload 24448 19260 Watching for file changes with StatReloader
+INFO 2025-09-11 13:38:48,922 autoreload 13652 1276 Watching for file changes with StatReloader
+INFO 2025-09-11 13:39:12,712 autoreload 13652 1276 C:\Users\HOME\PycharmProjects\contabilidad\inventory\views.py changed, reloading.
+INFO 2025-09-11 13:39:12,720 autoreload 24448 19260 C:\Users\HOME\PycharmProjects\contabilidad\inventory\views.py changed, reloading.
+INFO 2025-09-11 13:39:13,476 autoreload 14416 16272 Watching for file changes with StatReloader
+INFO 2025-09-11 13:39:13,482 autoreload 20556 17352 Watching for file changes with StatReloader
+INFO 2025-09-11 13:39:45,627 autoreload 14416 16272 C:\Users\HOME\PycharmProjects\contabilidad\fixed_assets\views.py changed, reloading.
+INFO 2025-09-11 13:39:45,633 autoreload 20556 17352 C:\Users\HOME\PycharmProjects\contabilidad\fixed_assets\views.py changed, reloading.
+INFO 2025-09-11 13:39:46,448 autoreload 14352 20252 Watching for file changes with StatReloader
+INFO 2025-09-11 13:39:46,449 autoreload 17888 14260 Watching for file changes with StatReloader
+INFO 2025-09-11 14:30:24,881 autoreload 17888 14260 C:\Users\HOME\PycharmProjects\contabilidad\public_sector\views.py changed, reloading.
+INFO 2025-09-11 14:30:24,882 autoreload 14352 20252 C:\Users\HOME\PycharmProjects\contabilidad\public_sector\views.py changed, reloading.
+INFO 2025-09-11 14:30:25,910 autoreload 13896 1704 Watching for file changes with StatReloader
+INFO 2025-09-11 14:30:25,910 autoreload 6884 23840 Watching for file changes with StatReloader
+INFO 2025-09-11 14:30:32,685 autoreload 13896 1704 C:\Users\HOME\PycharmProjects\contabilidad\public_sector\views.py changed, reloading.
+INFO 2025-09-11 14:30:32,689 autoreload 6884 23840 C:\Users\HOME\PycharmProjects\contabilidad\public_sector\views.py changed, reloading.
+INFO 2025-09-11 14:30:33,452 autoreload 1036 5376 Watching for file changes with StatReloader
+INFO 2025-09-11 14:30:33,453 autoreload 4148 21660 Watching for file changes with StatReloader
+INFO 2025-09-11 14:30:41,903 autoreload 4148 21660 C:\Users\HOME\PycharmProjects\contabilidad\inventory\views.py changed, reloading.
+INFO 2025-09-11 14:30:41,905 autoreload 1036 5376 C:\Users\HOME\PycharmProjects\contabilidad\inventory\views.py changed, reloading.
+INFO 2025-09-11 14:30:42,746 autoreload 9164 22100 Watching for file changes with StatReloader
+INFO 2025-09-11 14:30:42,746 autoreload 10672 8492 Watching for file changes with StatReloader
+INFO 2025-09-11 14:30:47,784 autoreload 9164 22100 C:\Users\HOME\PycharmProjects\contabilidad\inventory\views.py changed, reloading.
+INFO 2025-09-11 14:30:47,786 autoreload 10672 8492 C:\Users\HOME\PycharmProjects\contabilidad\inventory\views.py changed, reloading.
+INFO 2025-09-11 14:30:48,567 autoreload 11832 14572 Watching for file changes with StatReloader
+INFO 2025-09-11 14:30:48,576 autoreload 24492 22892 Watching for file changes with StatReloader
+INFO 2025-09-11 14:30:59,106 autoreload 11832 14572 C:\Users\HOME\PycharmProjects\contabilidad\fixed_assets\views.py changed, reloading.
+INFO 2025-09-11 14:30:59,111 autoreload 24492 22892 C:\Users\HOME\PycharmProjects\contabilidad\fixed_assets\views.py changed, reloading.
+INFO 2025-09-11 14:30:59,903 autoreload 5036 13636 Watching for file changes with StatReloader
+INFO 2025-09-11 14:30:59,904 autoreload 17956 18032 Watching for file changes with StatReloader
+INFO 2025-09-11 14:31:03,885 autoreload 5036 13636 C:\Users\HOME\PycharmProjects\contabilidad\fixed_assets\views.py changed, reloading.
+INFO 2025-09-11 14:31:03,894 autoreload 17956 18032 C:\Users\HOME\PycharmProjects\contabilidad\fixed_assets\views.py changed, reloading.
+INFO 2025-09-11 14:31:04,641 autoreload 13800 18448 Watching for file changes with StatReloader
+INFO 2025-09-11 14:31:04,641 autoreload 17944 18676 Watching for file changes with StatReloader
+WARNING 2025-09-11 14:40:41,967 base 13800 20016 Method Not Allowed (GET): /accounts/logout/
+WARNING 2025-09-11 14:40:41,975 log 13800 20016 Method Not Allowed: /accounts/logout/
+INFO 2025-09-11 14:41:13,826 autoreload 17944 18676 C:\Users\HOME\PycharmProjects\contabilidad\core\urls.py changed, reloading.
+INFO 2025-09-11 14:41:14,493 autoreload 13800 18448 C:\Users\HOME\PycharmProjects\contabilidad\core\urls.py changed, reloading.
+INFO 2025-09-11 14:41:14,593 autoreload 1468 19744 Watching for file changes with StatReloader
+INFO 2025-09-11 14:41:15,256 autoreload 16796 21600 Watching for file changes with StatReloader
+INFO 2025-09-11 14:41:25,376 autoreload 1468 19744 C:\Users\HOME\PycharmProjects\contabilidad\core\views.py changed, reloading.
+INFO 2025-09-11 14:41:25,968 autoreload 16796 21600 C:\Users\HOME\PycharmProjects\contabilidad\core\views.py changed, reloading.
+INFO 2025-09-11 14:41:26,068 autoreload 4608 6896 Watching for file changes with StatReloader
+INFO 2025-09-11 14:41:26,643 autoreload 23800 10172 Watching for file changes with StatReloader
+INFO 2025-09-11 14:41:43,597 autoreload 23800 10172 C:\Users\HOME\PycharmProjects\contabilidad\core\views.py changed, reloading.
+INFO 2025-09-11 14:41:44,049 autoreload 4608 6896 C:\Users\HOME\PycharmProjects\contabilidad\core\views.py changed, reloading.
+INFO 2025-09-11 14:41:44,295 autoreload 18428 11420 Watching for file changes with StatReloader
+INFO 2025-09-11 14:41:44,728 autoreload 2556 18304 Watching for file changes with StatReloader

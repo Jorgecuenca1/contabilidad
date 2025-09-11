@@ -67,19 +67,19 @@
                 <form method="post" id="invoiceForm">
                     {% csrf_token %}
                     
+                    <!-- Empresa Seleccionada -->
+                    <div class="row mb-3">
+                        <div class="col-12">
+                            <div class="alert alert-info">
+                                <i class="bi bi-building"></i> <strong>Empresa:</strong> {{ current_company.name }} - {{ current_company.tax_id }}
+                                <small class="d-block">Facturando para la empresa seleccionada en el dashboard</small>
+                            </div>
+                        </div>
+                    </div>
+                    
                     <!-- Datos Generales -->
                     <div class="row mb-4">
-                        <div class="col-md-3">
-                            <label for="company" class="form-label"><strong>Empresa *</strong></label>
-                            <select class="form-select" id="company" name="company" required>
-                                <option value="">Seleccione empresa...</option>
-                                {% for company in companies %}
-                                    <option value="{{ company.id }}">{{ company.name }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        
-                        <div class="col-md-3">
+                        <div class="col-md-4">
                             <label for="customer" class="form-label"><strong>Cliente *</strong></label>
                             <select class="form-select" id="customer" name="customer" required>
                                 <option value="">Seleccione cliente...</option>
@@ -89,12 +89,12 @@
                             </select>
                         </div>
                         
-                        <div class="col-md-3">
+                        <div class="col-md-4">
                             <label for="invoice_date" class="form-label"><strong>Fecha Factura *</strong></label>
                             <input type="date" class="form-control" id="invoice_date" name="invoice_date" required>
                         </div>
                         
-                        <div class="col-md-3">
+                        <div class="col-md-4">
                             <label for="due_date" class="form-label"><strong>Fecha Vencimiento *</strong></label>
                             <input type="date" class="form-control" id="due_date" name="due_date" required>
                         </div>

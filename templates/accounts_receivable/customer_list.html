@@ -3,44 +3,13 @@
 {% block title %}Lista de Clientes - Sistema Contable{% endblock %}
 
 {% block content %}
-<div class="row mb-4">
-    <div class="col-12">
-        <div class="d-flex justify-content-between align-items-center">
-            <h1><i class="bi bi-people"></i> Lista de Clientes</h1>
-            <div>
-                <a href="{% url 'accounts_receivable:new_customer' %}" class="btn btn-primary">
-                    <i class="bi bi-person-plus"></i> Nuevo Cliente
-                </a>
-                <a href="{% url 'accounts_receivable:dashboard' %}" class="btn btn-outline-secondary">
-                    <i class="bi bi-arrow-left"></i> Volver
-                </a>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Filtros de búsqueda -->
-<div class="row mb-4">
-    <div class="col-12">
-        <div class="card">
-            <div class="card-body">
-                <form method="get" class="row g-3">
-                    <div class="col-md-4">
-                        <label for="search" class="form-label">Buscar Cliente</label>
-                        <input type="text" class="form-control" id="search" name="search" value="{{ search }}" 
-                               placeholder="Nombre, documento, email...">
-                    </div>
-                    <div class="col-md-3">
-                        <label for="company" class="form-label">Empresa</label>
-                        <select class="form-select" name="company">
-                            <option value="">Todas las empresas</option>
-                            {% for company in companies %}
-                                <option value="{{ company.id }}" {% if company.id|stringformat:"s" == company_filter %}selected{% endif %}>
-                                    {{ company.name }}
-                                </option>
-                            {% endfor %}
-                        </select>
-                    </div>
+                        <!-- Empresa Seleccionada -->
+                        <div class="col-12 mb-3">
+                            <div class="alert alert-info">
+                                <i class="bi bi-building"></i> <strong>Empresa:</strong> {{ current_company.name }}{% if current_company.tax_id %} - {{ current_company.tax_id }}{% endif %}
+                                <small class="d-block">Trabajando con la empresa seleccionada en el dashboard</small>
+                            </div>
+                        </div>
                     <div class="col-md-3 d-flex align-items-end">
                         <button type="submit" class="btn btn-primary me-2">
                             <i class="bi bi-search"></i> Buscar

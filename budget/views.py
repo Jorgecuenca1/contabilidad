@@ -1,3 +1,4 @@
+from core.utils import get_current_company, require_company_access
 """
 Vistas para el Sistema de Presupuesto Público
 CDP, RP, Obligaciones, PAC y gestión presupuestal
@@ -19,6 +20,7 @@ from .models import (
     BudgetModification, BudgetModificationDetail, BudgetExecution
 )
 from core.models import Company
+
 from accounting.models import JournalEntry, JournalEntryLine, JournalType, ChartOfAccounts
 
 
@@ -46,7 +48,10 @@ def get_user_company(request):
 
 
 @login_required
+@require_company_access
 def budget_dashboard(request):
+    current_company = request.current_company
+
     """Dashboard principal del módulo de presupuesto"""
     company = get_user_company(request)
     
@@ -115,7 +120,10 @@ def budget_dashboard(request):
 
 
 @login_required
+@require_company_access
 def cdp_create(request):
+    current_company = request.current_company
+
     """Crear nuevo CDP"""
     company = get_user_company(request)
     
@@ -223,7 +231,10 @@ def cdp_detail(request, pk):
 
 
 @login_required
+@require_company_access
 def rp_create(request):
+    current_company = request.current_company
+
     """Crear nuevo RP"""
     company = get_user_company(request)
     
@@ -343,7 +354,10 @@ def rp_detail(request, pk):
 
 
 @login_required
+@require_company_access
 def obligation_create(request):
+    current_company = request.current_company
+
     """Crear nueva Obligación Presupuestal"""
     company = get_user_company(request)
     current_year = timezone.now().year
@@ -457,7 +471,10 @@ def obligation_detail(request, pk):
 
 
 @login_required
+@require_company_access
 def pac_management(request):
+    current_company = request.current_company
+
     """Gestión del PAC - Plan Anual de Caja"""
     company = get_user_company(request)
     current_year = timezone.now().year
@@ -534,7 +551,10 @@ def pac_management(request):
 
 
 @login_required
+@require_company_access
 def budget_execution_report(request):
+    current_company = request.current_company
+
     """Reporte de Ejecución Presupuestal"""
     company = get_user_company(request)
     current_year = timezone.now().year
@@ -578,7 +598,10 @@ def budget_execution_report(request):
 
 
 @login_required
+@require_company_access
 def budget_modifications(request):
+    current_company = request.current_company
+
     """Gestión de Modificaciones Presupuestales"""
     company = get_user_company(request)
     current_year = timezone.now().year

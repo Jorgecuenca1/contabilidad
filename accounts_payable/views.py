@@ -9,11 +9,16 @@ from .models_payment import SupplierPayment, PaymentAllocation
 from accounting.models import Account, JournalEntry, JournalEntryLine, JournalType
 from treasury.models import BankAccount
 from core.models import Company
+from core.utils import get_current_company, require_company_access
+
 from taxes.models import TaxType
 
 
 @login_required
+@require_company_access
 def new_purchase_invoice(request):
+    current_company = request.current_company
+
     """Vista para crear nueva factura de compra."""
     if request.method == 'POST':
         try:
@@ -90,6 +95,7 @@ def new_purchase_invoice(request):
                 
                 if journal_type:
                     from core.models import Period, Currency
+
                     current_period = Period.objects.filter(
                         fiscal_year__company=company, 
                         status='open'
@@ -156,7 +162,7 @@ def new_purchase_invoice(request):
     
     # Datos para el template
     context = {
-        'companies': Company.objects.filter(is_active=True),
+        'current_company': current_company,
         'suppliers': Supplier.objects.filter(is_active=True),
         'accounts': Account.objects.filter(is_detail=True, is_active=True),
         'tax_types': TaxType.objects.filter(is_active=True),
@@ -166,7 +172,10 @@ def new_purchase_invoice(request):
 
 
 @login_required
+@require_company_access
 def supplier_payment(request):
+    current_company = request.current_company
+
     """Vista para pagar proveedores."""
     if request.method == 'POST':
         try:
@@ -233,6 +242,7 @@ def supplier_payment(request):
                 
                 if journal_type:
                     from core.models import Period, Currency
+
                     current_period = Period.objects.filter(
                         fiscal_year__company=company, 
                         status='open'
@@ -298,7 +308,7 @@ def supplier_payment(request):
     
     # Datos para el template
     context = {
-        'companies': Company.objects.filter(is_active=True),
+        'current_company': current_company,
         'suppliers': Supplier.objects.filter(is_active=True),
         'bank_accounts': BankAccount.objects.filter(status='active'),
         'pending_invoices': PurchaseInvoice.objects.filter(

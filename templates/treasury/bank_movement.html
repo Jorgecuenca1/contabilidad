@@ -4,84 +4,13 @@
 {% block title %}Movimiento Bancario{% endblock %}
 
 {% block content %}
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-12">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <div>
-                    <h2><i class="bi bi-bank text-primary"></i> Movimiento Bancario</h2>
-                    <p class="text-muted">Registra depósitos, retiros y transferencias bancarias</p>
-                </div>
-                <div>
-                    <a href="{% url 'core:dashboard' %}" class="btn btn-outline-secondary">
-                        <i class="bi bi-arrow-left"></i> Volver al Dashboard
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Información sobre Movimientos Bancarios -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="card border-primary">
-                <div class="card-header bg-primary text-white">
-                    <h5><i class="bi bi-info-circle"></i> ¿Qué es un Movimiento Bancario?</h5>
-                </div>
-                <div class="card-body">
-                    <p><strong>Un movimiento bancario registra todas las transacciones que afectan las cuentas bancarias:</strong></p>
-                    <div class="row">
-                        <div class="col-md-4">
-                            <h6>💰 Tipos de Movimiento:</h6>
-                            <ul class="small">
-                                <li>📈 <strong>Depósitos:</strong> Ingresos a la cuenta</li>
-                                <li>📉 <strong>Retiros:</strong> Salidas de la cuenta</li>
-                                <li>🔄 <strong>Transferencias:</strong> Entre cuentas propias</li>
-                            </ul>
-                        </div>
-                        <div class="col-md-4">
-                            <h6>📋 Registro Contable:</h6>
-                            <ul class="small">
-                                <li>🏦 <strong>Actualización automática</strong> de saldos</li>
-                                <li>📝 <strong>Asiento contable</strong> automático</li>
-                                <li>🔍 <strong>Trazabilidad completa</strong> de movimientos</li>
-                            </ul>
-                        </div>
-                        <div class="col-md-4">
-                            <h6>🎯 Control de Tesorería:</h6>
-                            <ul class="small">
-                                <li>💳 <strong>Flujo de caja</strong> en tiempo real</li>
-                                <li>📊 <strong>Conciliación bancaria</strong> facilitada</li>
-                                <li>📈 <strong>Reportes financieros</strong> actualizados</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="row">
-        <!-- Formulario de Movimiento -->
-        <div class="col-md-8">
-            <form method="post" id="bankMovementForm">
-                {% csrf_token %}
-                
-                <div class="card">
-                    <div class="card-header bg-success text-white">
-                        <h5><i class="bi bi-plus-circle"></i> Registrar Movimiento Bancario</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <label for="company" class="form-label">Empresa *</label>
-                                <select class="form-select" id="company" name="company" required>
-                                    <option value="">Seleccione empresa...</option>
-                                    {% for company in companies %}
-                                        <option value="{{ company.id }}">{{ company.name }}</option>
-                                    {% endfor %}
-                                </select>
+                        <!-- Empresa Seleccionada -->
+                        <div class="col-12 mb-3">
+                            <div class="alert alert-info">
+                                <i class="bi bi-building"></i> <strong>Empresa:</strong> {{ current_company.name }}{% if current_company.tax_id %} - {{ current_company.tax_id }}{% endif %}
+                                <small class="d-block">Trabajando con la empresa seleccionada en el dashboard</small>
                             </div>
+                        </div>
                             <div class="col-md-6">
                                 <label for="bank_account" class="form-label">Cuenta Bancaria *</label>
                                 <select class="form-select" id="bank_account" name="bank_account" required onchange="updateAccountInfo()">
