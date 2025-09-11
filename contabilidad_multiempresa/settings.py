@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-8p_o_)$xuh-gud)(u4vlp38@9j%w!d@hd5ckt&+2j(r&3@q*@3
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['contabilidad.corpofuturo.org']
 
 
 # Application definition
@@ -174,6 +174,11 @@ REST_FRAMEWORK = {
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
+    "https://contabilidad.corpofuturo.org",
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://contabilidad.corpofuturo.org",
 ]
 
 # Crispy Forms
