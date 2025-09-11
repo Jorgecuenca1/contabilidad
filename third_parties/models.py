@@ -70,6 +70,13 @@ class ThirdParty(models.Model):
         ('REGIMEN_SIMPLIFICADO', 'Régimen Simplificado')
     ]
     
+    # Género
+    GENDER_CHOICES = [
+        ('M', 'Masculino'),
+        ('F', 'Femenino'),
+        ('O', 'Otro')
+    ]
+    
     # Información básica
     company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='third_parties')
     person_type = models.CharField(max_length=10, choices=PERSON_TYPE_CHOICES)
@@ -93,6 +100,10 @@ class ThirdParty(models.Model):
     last_name = models.CharField(max_length=100, blank=True)
     second_last_name = models.CharField(max_length=100, blank=True)
     trade_name = models.CharField(max_length=200, blank=True)  # Nombre comercial
+    
+    # Información personal adicional
+    birth_date = models.DateField('Fecha de Nacimiento', null=True, blank=True)
+    gender = models.CharField('Género', max_length=10, choices=GENDER_CHOICES, blank=True)
     
     # Clasificación
     third_party_types = models.ManyToManyField(ThirdPartyType, blank=True)

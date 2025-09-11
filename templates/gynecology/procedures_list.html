@@ -1,0 +1,316 @@
+{% extends 'base.html' %}
+
+{% block title %}Procedimientos Ginecológicos{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1><i class="bi bi-clipboard2-pulse me-2"></i>Procedimientos Ginecológicos</h1>
+                <div>
+                    <a href="{% url 'gynecology:new_procedure' %}" class="btn btn-primary">
+                        <i class="bi bi-plus-circle me-1"></i>Nuevo Procedimiento
+                    </a>
+                    <a href="{% url 'gynecology:dashboard' %}" class="btn btn-outline-secondary">
+                        <i class="bi bi-house me-1"></i>Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Breadcrumb -->
+    <div class="row mb-3">
+        <div class="col-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'core:dashboard' %}">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'gynecology:dashboard' %}">Ginecología</a></li>
+                    <li class="breadcrumb-item active">Procedimientos</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Filtros -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-funnel me-2"></i>Filtros de Búsqueda</h5>
+                </div>
+                <div class="card-body">
+                    <form method="get" class="row g-3">
+                        <div class="col-md-3">
+                            <label for="category" class="form-label">Categoría</label>
+                            <select class="form-select" id="category" name="category">
+                                <option value="">Todas las categorías</option>
+                                {% for value, label in category_choices %}
+                                <option value="{{ value }}" {% if filters.category == value %}selected{% endif %}>{{ label }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="search" class="form-label">Buscar</label>
+                            <input type="text" class="form-control" id="search" name="search" 
+                                   placeholder="Código, nombre o descripción..." value="{{ filters.search }}">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">&nbsp;</label>
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-search"></i> Buscar
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lista de Procedimientos -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="bi bi-list me-2"></i>Lista de Procedimientos</h5>
+                    <span class="badge bg-primary">{{ procedures|length }} procedimientos</span>
+                </div>
+                <div class="card-body">
+                    {% if procedures %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Código</th>
+                                        <th>Nombre</th>
+                                        <th>Categoría</th>
+                                        <th>Duración</th>
+                                        <th>Precio</th>
+                                        <th>Características</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for procedure in procedures %}
+                                    <tr>
+                                        <td>
+                                            <strong class="text-primary">{{ procedure.code }}</strong>
+                                        </td>
+                                        <td>
+                                            <div>
+                                                <strong>{{ procedure.name }}</strong>
+                                                {% if procedure.description %}
+                                                    <br><small class="text-muted">{{ procedure.description|truncatechars:80 }}</small>
+                                                {% endif %}
+                                            </div>
+                                        </td>
+                                        <td>
+                                            {% if procedure.category == 'diagnostico' %}
+                                                <span class="badge bg-info">Diagnóstico</span>
+                                            {% elif procedure.category == 'terapeutico' %}
+                                                <span class="badge bg-success">Terapéutico</span>
+                                            {% elif procedure.category == 'quirurgico_menor' %}
+                                                <span class="badge bg-warning">Cirugía Menor</span>
+                                            {% elif procedure.category == 'quirurgico_mayor' %}
+                                                <span class="badge bg-danger">Cirugía Mayor</span>
+                                            {% else %}
+                                                <span class="badge bg-secondary">{{ procedure.get_category_display }}</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <strong>{{ procedure.estimated_duration }} min</strong>
+                                        </td>
+                                        <td>
+                                            {% if procedure.base_price %}
+                                                <strong class="text-success">${{ procedure.base_price|floatformat:0 }}</strong>
+                                            {% else %}
+                                                <small class="text-muted">No definido</small>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <div class="d-flex gap-1 flex-wrap">
+                                                {% if procedure.requires_anesthesia %}
+                                                    <span class="badge bg-warning text-dark" title="Requiere Anestesia">
+                                                        <i class="bi bi-shield-exclamation"></i> Anestesia
+                                                    </span>
+                                                {% endif %}
+                                                {% if procedure.requires_hospitalization %}
+                                                    <span class="badge bg-danger" title="Requiere Hospitalización">
+                                                        <i class="bi bi-hospital"></i> Hospital
+                                                    </span>
+                                                {% endif %}
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="btn-group btn-group-sm" role="group">
+                                                <a href="{% url 'gynecology:procedure_detail' procedure.id %}" 
+                                                   class="btn btn-outline-primary" title="Ver Detalles">
+                                                    <i class="bi bi-eye"></i>
+                                                </a>
+                                                <button type="button" class="btn btn-outline-success" 
+                                                        onclick="scheduleWithProcedure('{{ procedure.id }}')" title="Programar Cita">
+                                                    <i class="bi bi-calendar-plus"></i>
+                                                </button>
+                                                <button type="button" class="btn btn-outline-secondary" 
+                                                        onclick="editProcedure('{{ procedure.id }}')" title="Editar">
+                                                    <i class="bi bi-pencil"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Estadísticas por categoría -->
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <h6>Distribución por Categoría:</h6>
+                                <div class="row">
+                                    {% regroup procedures by category as procedures_by_category %}
+                                    {% for category in procedures_by_category %}
+                                    <div class="col-md-2 col-sm-4 col-6 mb-2">
+                                        <div class="card border-0 bg-light text-center">
+                                            <div class="card-body p-2">
+                                                <h6 class="card-title mb-1">{{ category.list|length }}</h6>
+                                                <small class="text-muted">
+                                                    {% for value, label in category_choices %}
+                                                        {% if value == category.grouper %}{{ label }}{% endif %}
+                                                    {% endfor %}
+                                                </small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Paginación -->
+                        {% if procedures.has_other_pages %}
+                        <nav aria-label="Paginación" class="mt-3">
+                            <ul class="pagination justify-content-center">
+                                {% if procedures.has_previous %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page=1{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">&laquo; Primera</a>
+                                    </li>
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ procedures.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">Anterior</a>
+                                    </li>
+                                {% endif %}
+
+                                <li class="page-item active">
+                                    <span class="page-link">
+                                        Página {{ procedures.number }} de {{ procedures.paginator.num_pages }}
+                                    </span>
+                                </li>
+
+                                {% if procedures.has_next %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ procedures.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">Siguiente</a>
+                                    </li>
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ procedures.paginator.num_pages }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">Última &raquo;</a>
+                                    </li>
+                                {% endif %}
+                            </ul>
+                        </nav>
+                        {% endif %}
+                    {% else %}
+                        <div class="text-center py-5">
+                            <i class="bi bi-clipboard2-x display-1 text-muted"></i>
+                            <h3 class="mt-3">No hay procedimientos disponibles</h3>
+                            <p class="text-muted">No se encontraron procedimientos que coincidan con los filtros seleccionados.</p>
+                            <a href="{% url 'gynecology:new_procedure' %}" class="btn btn-primary">
+                                <i class="bi bi-plus-circle me-1"></i>Crear Primer Procedimiento
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function scheduleWithProcedure(procedureId) {
+    // Redirigir a crear cita con el procedimiento preseleccionado
+    window.location.href = "{% url 'gynecology:new_appointment' %}?procedure=" + procedureId;
+}
+
+function editProcedure(procedureId) {
+    // Funcionalidad para editar procedimiento
+    window.location.href = `/gynecology/procedures/${procedureId}/edit/`;
+}
+
+// Filtros dinámicos
+document.addEventListener('DOMContentLoaded', function() {
+    const categoryFilter = document.getElementById('category');
+    const searchFilter = document.getElementById('search');
+    
+    // Auto-submit en cambio de categoría
+    categoryFilter.addEventListener('change', function() {
+        this.form.submit();
+    });
+    
+    // Búsqueda con delay
+    let searchTimeout;
+    searchFilter.addEventListener('input', function() {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+            this.form.submit();
+        }, 500);
+    });
+});
+</script>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.table th {
+    font-weight: 600;
+    background-color: #f8f9fa;
+}
+
+.badge {
+    font-size: 0.75em;
+}
+
+.btn-group-sm .btn {
+    padding: 0.25rem 0.5rem;
+}
+
+.card-header {
+    background-color: #f8f9fa;
+    border-bottom: 2px solid #dee2e6;
+}
+
+.table td {
+    vertical-align: middle;
+}
+
+.text-primary {
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+}
+
+.pagination {
+    margin-top: 1rem;
+}
+
+.badge i {
+    font-size: 0.8em;
+}
+
+.card-title {
+    font-size: 1.1rem;
+    margin-bottom: 0.25rem;
+}
+</style>
+{% endblock %}

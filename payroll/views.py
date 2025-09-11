@@ -14,6 +14,7 @@ from core.utils import get_current_company, require_company_access
 
 from .models_employee import Employee, EmployeeType
 from .models_payroll import PayrollPeriod, Payroll, PayrollConcept, PayrollDetail
+from .models_healthcare import HealthcareRole, MedicalSpecialty, NursingSpecialty, EmployeeHealthcareProfile
 from decimal import Decimal
 from datetime import datetime, date
 
@@ -113,6 +114,15 @@ def new_employee(request):
                 account_type = request.POST.get('account_type')
                 account_number = request.POST.get('account_number')
                 
+                # Información de salud (solo para empresas del sector salud)
+                healthcare_role_id = request.POST.get('healthcare_role')
+                medical_specialty_id = request.POST.get('medical_specialty')
+                nursing_specialty_id = request.POST.get('nursing_specialty')
+                medical_license_number = request.POST.get('medical_license_number')
+                medical_license_expiry = request.POST.get('medical_license_expiry')
+                assigned_department = request.POST.get('assigned_department')
+                years_experience = request.POST.get('years_experience')
+                
                 company = Company.objects.get(id=company_id)
                 employee_type = EmployeeType.objects.get(id=employee_type_id) if employee_type_id else None
                 
@@ -149,7 +159,28 @@ def new_employee(request):
                     created_by=request.user
                 )
                 
-                messages.success(request, f'Empleado {employee.first_name} {employee.last_name} creado exitosamente')
+                # Crear perfil de salud si la empresa es del sector salud y se proporcionaron datos
+                if company.is_healthcare_company() and healthcare_role_id:
+                    healthcare_role = HealthcareRole.objects.get(id=healthcare_role_id) if healthcare_role_id else None
+                    medical_specialty = MedicalSpecialty.objects.get(id=medical_specialty_id) if medical_specialty_id else None
+                    nursing_specialty = NursingSpecialty.objects.get(id=nursing_specialty_id) if nursing_specialty_id else None
+                    
+                    healthcare_profile = EmployeeHealthcareProfile.objects.create(
+                        employee=employee,
+                        healthcare_role=healthcare_role,
+                        medical_specialty=medical_specialty,
+                        nursing_specialty=nursing_specialty,
+                        medical_license_number=medical_license_number or '',
+                        medical_license_expiry=medical_license_expiry if medical_license_expiry else None,
+                        assigned_department=assigned_department or '',
+                        years_experience=int(years_experience) if years_experience else 0,
+                        created_by=request.user
+                    )
+                    
+                    messages.success(request, f'Empleado {employee.first_name} {employee.last_name} creado exitosamente con perfil de salud')
+                else:
+                    messages.success(request, f'Empleado {employee.first_name} {employee.last_name} creado exitosamente')
+                
                 return redirect('payroll:new_employee')
                 
         except Exception as e:
@@ -159,6 +190,10 @@ def new_employee(request):
     context = {
         'current_company': current_company,
         'employee_types': EmployeeType.objects.filter(is_active=True),
+        'is_healthcare_company': current_company.is_healthcare_company(),
+        'healthcare_roles': HealthcareRole.objects.filter(is_active=True).order_by('category', 'name'),
+        'medical_specialties': MedicalSpecialty.objects.filter(is_active=True, specialty_type='medica').order_by('category', 'name'),
+        'nursing_specialties': NursingSpecialty.objects.filter(is_active=True).order_by('name'),
     }
     
     return render(request, 'payroll/new_employee.html', context)

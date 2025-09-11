@@ -4,6 +4,39 @@
 {% block title %}Nuevo Empleado{% endblock %}
 
 {% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'core:dashboard' %}">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'payroll:dashboard' %}">Nómina</a></li>
+                    <li class="breadcrumb-item active">Nuevo Empleado</li>
+                </ol>
+            </nav>
+            
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h2 class="text-primary">
+                        <i class="bi bi-person-plus"></i> Nuevo Empleado
+                    </h2>
+                    <p class="text-muted">Registrar un nuevo empleado en el sistema de nómina</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <form id="employeeForm" method="post" class="needs-validation" novalidate>
+        {% csrf_token %}
+        
+        <!-- Información Personal -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h5><i class="bi bi-person-circle"></i> Información Personal</h5>
+                    </div>
+                    <div class="card-body">
                         <!-- Empresa Seleccionada -->
                         <div class="col-12 mb-3">
                             <div class="alert alert-info">
@@ -11,6 +44,9 @@
                                 <small class="d-block">Trabajando con la empresa seleccionada en el dashboard</small>
                             </div>
                         </div>
+                        <input type="hidden" name="company" id="company" value="{{ current_company.id }}">
+                        
+                        <div class="row">
                             <div class="col-md-3">
                                 <label for="employee_number" class="form-label">Número de Empleado *</label>
                                 <input type="text" class="form-control" id="employee_number" name="employee_number" 
@@ -148,6 +184,80 @@
                 </div>
             </div>
         </div>
+        
+        <!-- Información de Salud (Solo para empresas del sector salud) -->
+        {% if is_healthcare_company %}
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header bg-success text-white">
+                        <h5><i class="bi bi-heart-pulse"></i> Información de Salud</h5>
+                        <small>Campos específicos para personal del sector salud</small>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <label for="healthcare_role" class="form-label">Rol en Salud *</label>
+                                <select class="form-select" id="healthcare_role" name="healthcare_role" required>
+                                    <option value="">Seleccione rol...</option>
+                                    {% for role in healthcare_roles %}
+                                        <option value="{{ role.id }}">{{ role.name }}</option>
+                                    {% endfor %}
+                                </select>
+                                <small class="form-text text-muted">Rol específico en el sector salud</small>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="medical_specialty" class="form-label">Especialidad Médica</label>
+                                <select class="form-select" id="medical_specialty" name="medical_specialty">
+                                    <option value="">Seleccione especialidad...</option>
+                                    {% for specialty in medical_specialties %}
+                                        <option value="{{ specialty.id }}">{{ specialty.name }}</option>
+                                    {% endfor %}
+                                </select>
+                                <small class="form-text text-muted">Solo si es médico especialista</small>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="nursing_specialty" class="form-label">Especialidad de Enfermería</label>
+                                <select class="form-select" id="nursing_specialty" name="nursing_specialty">
+                                    <option value="">Seleccione especialidad...</option>
+                                    {% for specialty in nursing_specialties %}
+                                        <option value="{{ specialty.id }}">{{ specialty.name }}</option>
+                                    {% endfor %}
+                                </select>
+                                <small class="form-text text-muted">Solo para personal de enfermería</small>
+                            </div>
+                        </div>
+                        
+                        <div class="row mt-3">
+                            <div class="col-md-3">
+                                <label for="medical_license_number" class="form-label">Número de Registro Médico</label>
+                                <input type="text" class="form-control" id="medical_license_number" name="medical_license_number" 
+                                       placeholder="RM-12345">
+                                <small class="form-text text-muted">Registro médico o tarjeta profesional</small>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="medical_license_expiry" class="form-label">Vencimiento de Licencia</label>
+                                <input type="date" class="form-control" id="medical_license_expiry" name="medical_license_expiry">
+                                <small class="form-text text-muted">Fecha de vencimiento del registro</small>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="assigned_department" class="form-label">Departamento Asignado</label>
+                                <input type="text" class="form-control" id="assigned_department" name="assigned_department" 
+                                       placeholder="Ej: Ginecología y Obstetricia">
+                                <small class="form-text text-muted">Departamento específico de trabajo</small>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="years_experience" class="form-label">Años de Experiencia</label>
+                                <input type="number" class="form-control" id="years_experience" name="years_experience" 
+                                       min="0" max="50" placeholder="5">
+                                <small class="form-text text-muted">Años de experiencia en el área</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
 
         <!-- Seguridad Social -->
         <div class="row mb-4">
@@ -427,6 +537,54 @@ document.getElementById('birth_date').addEventListener('change', function() {
         this.value = '';
     }
 });
+
+// JavaScript para campos de salud
+{% if is_healthcare_company %}
+document.getElementById('healthcare_role').addEventListener('change', function() {
+    const roleId = this.value;
+    const roleName = this.options[this.selectedIndex].text.toLowerCase();
+    const medicalSpecialtyField = document.getElementById('medical_specialty');
+    const nursingSpecialtyField = document.getElementById('nursing_specialty');
+    const licenseField = document.getElementById('medical_license_number');
+    const departmentField = document.getElementById('assigned_department');
+    
+    // Mostrar/ocultar especialidades según el rol
+    if (roleName.includes('médico') || roleName.includes('medico')) {
+        medicalSpecialtyField.parentElement.style.display = 'block';
+        nursingSpecialtyField.parentElement.style.display = 'none';
+        nursingSpecialtyField.value = '';
+        licenseField.setAttribute('placeholder', 'RM-12345');
+        licenseField.parentElement.querySelector('small').textContent = 'Registro médico';
+    } else if (roleName.includes('enferm')) {
+        medicalSpecialtyField.parentElement.style.display = 'none';
+        nursingSpecialtyField.parentElement.style.display = 'block';
+        medicalSpecialtyField.value = '';
+        licenseField.setAttribute('placeholder', 'TP-12345');
+        licenseField.parentElement.querySelector('small').textContent = 'Tarjeta profesional de enfermería';
+    } else {
+        medicalSpecialtyField.parentElement.style.display = 'none';
+        nursingSpecialtyField.parentElement.style.display = 'none';
+        medicalSpecialtyField.value = '';
+        nursingSpecialtyField.value = '';
+        licenseField.setAttribute('placeholder', 'Número de registro');
+        licenseField.parentElement.querySelector('small').textContent = 'Registro profesional';
+    }
+    
+    // Sugerir departamento según la especialidad
+    if (roleName.includes('ginecol')) {
+        departmentField.value = 'Ginecología y Obstetricia';
+    } else if (roleName.includes('pediatr')) {
+        departmentField.value = 'Pediatría';
+    } else if (roleName.includes('cardiolog')) {
+        departmentField.value = 'Cardiología';
+    }
+});
+
+// Inicializar campos al cargar la página
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('healthcare_role').dispatchEvent(new Event('change'));
+});
+{% endif %}
 </script>
 {% endblock %}
 

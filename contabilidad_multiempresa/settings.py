@@ -63,6 +63,11 @@ INSTALLED_APPS = [
     'reports',
     'budget',
     'third_parties',
+    'gynecology',
+    'laboratory',
+    'medical_records',
+    'medical_appointments',
+    'medical_procedures',
 ]
 
 MIDDLEWARE = [

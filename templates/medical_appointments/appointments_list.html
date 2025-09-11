@@ -1,0 +1,205 @@
+{% extends 'base.html' %}
+
+{% block title %}Lista de Citas Médicas{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1><i class="bi bi-calendar-week me-2"></i>Citas Médicas</h1>
+                <div>
+                    <a href="{% url 'medical_appointments:new_appointment' %}" class="btn btn-primary">
+                        <i class="bi bi-plus-circle me-1"></i>Nueva Cita
+                    </a>
+                    <a href="{% url 'medical_appointments:dashboard' %}" class="btn btn-outline-secondary">
+                        <i class="bi bi-speedometer2 me-1"></i>Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filtros -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-funnel me-2"></i>Filtros de Búsqueda</h5>
+                </div>
+                <div class="card-body">
+                    <form method="get" class="row g-3">
+                        <div class="col-md-2">
+                            <label for="status" class="form-label">Estado</label>
+                            <select class="form-select" id="status" name="status">
+                                <option value="">Todos</option>
+                                <option value="scheduled" {% if filters.status == 'scheduled' %}selected{% endif %}>Programada</option>
+                                <option value="confirmed" {% if filters.status == 'confirmed' %}selected{% endif %}>Confirmada</option>
+                                <option value="in_progress" {% if filters.status == 'in_progress' %}selected{% endif %}>En Curso</option>
+                                <option value="completed" {% if filters.status == 'completed' %}selected{% endif %}>Completada</option>
+                                <option value="cancelled" {% if filters.status == 'cancelled' %}selected{% endif %}>Cancelada</option>
+                                <option value="no_show" {% if filters.status == 'no_show' %}selected{% endif %}>No Asistió</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label for="specialty" class="form-label">Especialidad</label>
+                            <select class="form-select" id="specialty" name="specialty">
+                                <option value="">Todas</option>
+                                <option value="ginecologia">Ginecología</option>
+                                <option value="obstetricia">Obstetricia</option>
+                                <option value="medicina_general">Medicina General</option>
+                                <option value="pediatria">Pediatría</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label for="date_from" class="form-label">Desde</label>
+                            <input type="date" class="form-control" id="date_from" name="date_from" value="{{ filters.date_from }}">
+                        </div>
+                        <div class="col-md-2">
+                            <label for="date_to" class="form-label">Hasta</label>
+                            <input type="date" class="form-control" id="date_to" name="date_to" value="{{ filters.date_to }}">
+                        </div>
+                        <div class="col-md-3">
+                            <label for="search" class="form-label">Buscar</label>
+                            <input type="text" class="form-control" id="search" name="search" 
+                                   placeholder="Paciente o médico..." value="{{ filters.search }}">
+                        </div>
+                        <div class="col-md-1">
+                            <label class="form-label">&nbsp;</label>
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-search"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lista de Citas -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="bi bi-calendar-check me-2"></i>Lista de Citas</h5>
+                    <span class="badge bg-primary">{{ appointments|length }} citas</span>
+                </div>
+                <div class="card-body">
+                    {% if appointments %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Paciente</th>
+                                        <th>Médico</th>
+                                        <th>Fecha</th>
+                                        <th>Hora</th>
+                                        <th>Especialidad</th>
+                                        <th>Estado</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for appointment in appointments %}
+                                    <tr>
+                                        <td>
+                                            <strong>{{ appointment.patient.get_full_name }}</strong><br>
+                                            <small class="text-muted">{{ appointment.patient.document_number }}</small>
+                                        </td>
+                                        <td>
+                                            <strong>{{ appointment.doctor.get_full_name }}</strong><br>
+                                            <small class="text-muted">{{ appointment.specialty.name }}</small>
+                                        </td>
+                                        <td>
+                                            {{ appointment.appointment_date|date:"d/m/Y" }}<br>
+                                            <small class="text-muted">{{ appointment.appointment_date|date:"l" }}</small>
+                                        </td>
+                                        <td>
+                                            <strong>{{ appointment.appointment_time|time:"H:i" }}</strong><br>
+                                            <small class="text-muted">{{ appointment.estimated_duration }} min</small>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-info">{{ appointment.appointment_type.name }}</span>
+                                        </td>
+                                        <td>
+                                            {% if appointment.status == 'completed' %}
+                                                <span class="badge bg-success">Completada</span>
+                                            {% elif appointment.status == 'in_progress' %}
+                                                <span class="badge bg-primary">En Curso</span>
+                                            {% elif appointment.status == 'confirmed' %}
+                                                <span class="badge bg-info">Confirmada</span>
+                                            {% elif appointment.status == 'scheduled' %}
+                                                <span class="badge bg-warning">Programada</span>
+                                            {% elif appointment.status == 'cancelled' %}
+                                                <span class="badge bg-danger">Cancelada</span>
+                                            {% elif appointment.status == 'no_show' %}
+                                                <span class="badge bg-secondary">No Asistió</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <div class="btn-group btn-group-sm" role="group">
+                                                <a href="{% url 'medical_appointments:detail' appointment.id %}" 
+                                                   class="btn btn-outline-primary" title="Ver Detalles">
+                                                    <i class="bi bi-eye"></i>
+                                                </a>
+                                                {% if appointment.status == 'scheduled' or appointment.status == 'confirmed' %}
+                                                    <a href="{% url 'medical_records:new_consultation' %}?appointment={{ appointment.id }}" 
+                                                       class="btn btn-outline-success" title="Iniciar Consulta">
+                                                        <i class="bi bi-clipboard-heart"></i>
+                                                    </a>
+                                                {% endif %}
+                                                <a href="{% url 'medical_appointments:edit' appointment.id %}" 
+                                                   class="btn btn-outline-secondary" title="Editar">
+                                                    <i class="bi bi-pencil"></i>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-5">
+                            <i class="bi bi-calendar-x display-1 text-muted"></i>
+                            <h3 class="mt-3">No hay citas programadas</h3>
+                            <p class="text-muted">No se encontraron citas que coincidan con los filtros seleccionados.</p>
+                            <a href="{% url 'medical_appointments:new_appointment' %}" class="btn btn-primary">
+                                <i class="bi bi-plus-circle me-1"></i>Programar Primera Cita
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.table th {
+    font-weight: 600;
+    background-color: #f8f9fa;
+}
+
+.badge {
+    font-size: 0.75em;
+}
+
+.btn-group-sm .btn {
+    padding: 0.25rem 0.5rem;
+}
+
+.card-header {
+    background-color: #f8f9fa;
+    border-bottom: 2px solid #dee2e6;
+}
+
+.table td {
+    vertical-align: middle;
+}
+</style>
+{% endblock %}

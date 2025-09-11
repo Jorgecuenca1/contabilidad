@@ -1,0 +1,224 @@
+{% extends 'base.html' %}
+
+{% block title %}Lista de Procedimientos Médicos{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1><i class="bi bi-clipboard2-pulse me-2"></i>Procedimientos Médicos</h1>
+                <div>
+                    <a href="{% url 'medical_procedures:new_procedure' %}" class="btn btn-primary">
+                        <i class="bi bi-plus-circle me-1"></i>Nuevo Procedimiento
+                    </a>
+                    <a href="{% url 'medical_procedures:dashboard' %}" class="btn btn-outline-secondary">
+                        <i class="bi bi-speedometer2 me-1"></i>Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filtros -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-funnel me-2"></i>Filtros de Búsqueda</h5>
+                </div>
+                <div class="card-body">
+                    <form method="get" class="row g-3">
+                        <div class="col-md-3">
+                            <label for="status" class="form-label">Estado</label>
+                            <select class="form-select" id="status" name="status">
+                                <option value="">Todos los estados</option>
+                                {% for choice in status_choices %}
+                                    <option value="{{ choice.0 }}" {% if filters.status == choice.0 %}selected{% endif %}>
+                                        {{ choice.1 }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="cups_code" class="form-label">Código CUPS</label>
+                            <select class="form-select" id="cups_code" name="cups_code">
+                                <option value="">Todos los códigos</option>
+                                {% for code in cups_codes %}
+                                    <option value="{{ code.id }}" {% if filters.cups_code == code.id|stringformat:"s" %}selected{% endif %}>
+                                        {{ code.code }} - {{ code.short_description }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label for="date_from" class="form-label">Desde</label>
+                            <input type="date" class="form-control" id="date_from" name="date_from" value="{{ filters.date_from }}">
+                        </div>
+                        <div class="col-md-2">
+                            <label for="date_to" class="form-label">Hasta</label>
+                            <input type="date" class="form-control" id="date_to" name="date_to" value="{{ filters.date_to }}">
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">&nbsp;</label>
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-search me-1"></i>Buscar
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lista de Procedimientos -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="bi bi-list-ul me-2"></i>Lista de Procedimientos</h5>
+                    <span class="badge bg-primary">{{ procedures|length }} resultados</span>
+                </div>
+                <div class="card-body">
+                    {% if procedures %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Código</th>
+                                        <th>Procedimiento</th>
+                                        <th>Paciente</th>
+                                        <th>Fecha Programada</th>
+                                        <th>Médico</th>
+                                        <th>Estado</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for procedure in procedures %}
+                                    <tr>
+                                        <td>
+                                            <strong>{{ procedure.procedure_number }}</strong><br>
+                                            <small class="text-muted">{{ procedure.cups_code.code }}</small>
+                                        </td>
+                                        <td>
+                                            <strong>{{ procedure.cups_code.short_description }}</strong><br>
+                                            <small class="text-muted">{{ procedure.cups_code.description|truncatechars:50 }}</small>
+                                        </td>
+                                        <td>
+                                            <strong>{{ procedure.patient.name }}</strong><br>
+                                            <small class="text-muted">{{ procedure.patient.document_number }}</small>
+                                        </td>
+                                        <td>
+                                            {{ procedure.scheduled_date|date:"d/m/Y H:i" }}<br>
+                                            <small class="text-muted">
+                                                {% if procedure.estimated_duration %}
+                                                    Duración: {{ procedure.estimated_duration }} min
+                                                {% endif %}
+                                            </small>
+                                        </td>
+                                        <td>
+                                            <strong>{{ procedure.performing_physician.get_full_name }}</strong><br>
+                                            <small class="text-muted">{{ procedure.performing_physician.specialty.name }}</small>
+                                        </td>
+                                        <td>
+                                            {% if procedure.status == 'completed' %}
+                                                <span class="badge bg-success">Completado</span>
+                                            {% elif procedure.status == 'in_progress' %}
+                                                <span class="badge bg-primary">En Progreso</span>
+                                            {% elif procedure.status == 'scheduled' %}
+                                                <span class="badge bg-warning">Programado</span>
+                                            {% elif procedure.status == 'cancelled' %}
+                                                <span class="badge bg-danger">Cancelado</span>
+                                            {% else %}
+                                                <span class="badge bg-secondary">{{ procedure.get_status_display }}</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <div class="btn-group btn-group-sm" role="group">
+                                                <a href="{% url 'medical_procedures:detail' procedure.id %}" 
+                                                   class="btn btn-outline-primary" title="Ver Detalles">
+                                                    <i class="bi bi-eye"></i>
+                                                </a>
+                                                <a href="{% url 'medical_procedures:edit' procedure.id %}" 
+                                                   class="btn btn-outline-secondary" title="Editar">
+                                                    <i class="bi bi-pencil"></i>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Paginación -->
+                        {% if procedures.has_other_pages %}
+                            <nav aria-label="Paginación de procedimientos">
+                                <ul class="pagination justify-content-center">
+                                    {% if procedures.has_previous %}
+                                        <li class="page-item">
+                                            <a class="page-link" href="?page=1{% for key, value in filters.items %}&{{ key }}={{ value }}{% endfor %}">Primera</a>
+                                        </li>
+                                        <li class="page-item">
+                                            <a class="page-link" href="?page={{ procedures.previous_page_number }}{% for key, value in filters.items %}&{{ key }}={{ value }}{% endfor %}">Anterior</a>
+                                        </li>
+                                    {% endif %}
+                                    
+                                    <li class="page-item active">
+                                        <span class="page-link">
+                                            Página {{ procedures.number }} de {{ procedures.paginator.num_pages }}
+                                        </span>
+                                    </li>
+                                    
+                                    {% if procedures.has_next %}
+                                        <li class="page-item">
+                                            <a class="page-link" href="?page={{ procedures.next_page_number }}{% for key, value in filters.items %}&{{ key }}={{ value }}{% endfor %}">Siguiente</a>
+                                        </li>
+                                        <li class="page-item">
+                                            <a class="page-link" href="?page={{ procedures.paginator.num_pages }}{% for key, value in filters.items %}&{{ key }}={{ value }}{% endfor %}">Última</a>
+                                        </li>
+                                    {% endif %}
+                                </ul>
+                            </nav>
+                        {% endif %}
+                    {% else %}
+                        <div class="text-center py-5">
+                            <i class="bi bi-clipboard2-pulse display-1 text-muted"></i>
+                            <h3 class="mt-3">No hay procedimientos registrados</h3>
+                            <p class="text-muted">No se encontraron procedimientos que coincidan con los filtros seleccionados.</p>
+                            <a href="{% url 'medical_procedures:new_procedure' %}" class="btn btn-primary">
+                                <i class="bi bi-plus-circle me-1"></i>Crear Primer Procedimiento
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.table th {
+    font-weight: 600;
+    background-color: #f8f9fa;
+}
+
+.badge {
+    font-size: 0.75em;
+}
+
+.btn-group-sm .btn {
+    padding: 0.25rem 0.5rem;
+}
+
+.card-header {
+    background-color: #f8f9fa;
+    border-bottom: 2px solid #dee2e6;
+}
+</style>
+{% endblock %}

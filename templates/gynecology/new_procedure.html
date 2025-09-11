@@ -1,0 +1,352 @@
+{% extends 'base.html' %}
+
+{% block title %}Nuevo Procedimiento Ginecológico{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1><i class="bi bi-clipboard2-plus me-2"></i>Nuevo Procedimiento Ginecológico</h1>
+                <div>
+                    <a href="{% url 'gynecology:procedures_list' %}" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-left me-1"></i>Volver a Lista
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Breadcrumb -->
+    <div class="row mb-3">
+        <div class="col-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'core:dashboard' %}">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'gynecology:dashboard' %}">Ginecología</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'gynecology:procedures_list' %}">Procedimientos</a></li>
+                    <li class="breadcrumb-item active">Nuevo</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Formulario de Nuevo Procedimiento -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="bi bi-plus-circle me-2"></i>Datos del Procedimiento</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post" id="procedureForm">
+                        {% csrf_token %}
+                        
+                        <div class="row g-4">
+                            <!-- Información básica -->
+                            <div class="col-12">
+                                <h6 class="text-primary mb-3"><i class="bi bi-info-circle me-1"></i>Información Básica</h6>
+                            </div>
+                            
+                            <div class="col-md-4">
+                                <label for="code" class="form-label">Código del Procedimiento *</label>
+                                <input type="text" class="form-control" id="code" name="code" 
+                                       placeholder="Ej: GIN001" required maxlength="20">
+                                <div class="form-text">Código único interno del procedimiento</div>
+                            </div>
+                            
+                            <div class="col-md-4">
+                                <label for="category" class="form-label">Categoría *</label>
+                                <select class="form-select" id="category" name="category" required>
+                                    <option value="">Seleccionar categoría</option>
+                                    {% for value, label in category_choices %}
+                                    <option value="{{ value }}">{{ label }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            
+                            <div class="col-md-4">
+                                <label for="estimated_duration" class="form-label">Duración Estimada (min) *</label>
+                                <input type="number" class="form-control" id="estimated_duration" name="estimated_duration" 
+                                       min="5" max="480" value="30" required>
+                                <div class="form-text">Tiempo estimado en minutos</div>
+                            </div>
+                            
+                            <div class="col-12">
+                                <label for="name" class="form-label">Nombre del Procedimiento *</label>
+                                <input type="text" class="form-control" id="name" name="name" 
+                                       placeholder="Ej: Colposcopia con biopsia dirigida" required maxlength="200">
+                            </div>
+                            
+                            <div class="col-12">
+                                <label for="description" class="form-label">Descripción del Procedimiento</label>
+                                <textarea class="form-control" id="description" name="description" rows="3" 
+                                          placeholder="Descripción detallada del procedimiento, indicaciones y técnica utilizada..."></textarea>
+                            </div>
+
+                            <!-- Características del procedimiento -->
+                            <div class="col-12 mt-4">
+                                <h6 class="text-primary mb-3"><i class="bi bi-gear me-1"></i>Características del Procedimiento</h6>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="form-check form-check-lg">
+                                    <input class="form-check-input" type="checkbox" id="requires_anesthesia" name="requires_anesthesia">
+                                    <label class="form-check-label" for="requires_anesthesia">
+                                        <strong>Requiere Anestesia</strong>
+                                        <br><small class="text-muted">El procedimiento requiere algún tipo de anestesia</small>
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="form-check form-check-lg">
+                                    <input class="form-check-input" type="checkbox" id="requires_hospitalization" name="requires_hospitalization">
+                                    <label class="form-check-label" for="requires_hospitalization">
+                                        <strong>Requiere Hospitalización</strong>
+                                        <br><small class="text-muted">El procedimiento requiere internación</small>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Instrucciones -->
+                            <div class="col-12 mt-4">
+                                <h6 class="text-primary mb-3"><i class="bi bi-journal-medical me-1"></i>Instrucciones y Cuidados</h6>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="pre_procedure_instructions" class="form-label">Instrucciones Pre-Procedimiento</label>
+                                <textarea class="form-control" id="pre_procedure_instructions" name="pre_procedure_instructions" rows="5" 
+                                          placeholder="Instrucciones para la paciente antes del procedimiento...
+Ej:
+- Ayuno de 8 horas
+- Suspender anticoagulantes 3 días antes
+- Realizar exámenes de laboratorio previos"></textarea>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="post_procedure_instructions" class="form-label">Instrucciones Post-Procedimiento</label>
+                                <textarea class="form-control" id="post_procedure_instructions" name="post_procedure_instructions" rows="5" 
+                                          placeholder="Cuidados posteriores al procedimiento...
+Ej:
+- Reposo relativo por 24 horas
+- Evitar relaciones sexuales por 1 semana
+- Control en 7 días
+- Signos de alarma a vigilar"></textarea>
+                            </div>
+
+                            <!-- Información económica -->
+                            <div class="col-12 mt-4">
+                                <h6 class="text-primary mb-3"><i class="bi bi-currency-dollar me-1"></i>Información de Costos</h6>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="base_price" class="form-label">Precio Base (COP)</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">$</span>
+                                    <input type="number" class="form-control" id="base_price" name="base_price" 
+                                           min="0" step="1000" placeholder="0">
+                                    <span class="input-group-text">.00</span>
+                                </div>
+                                <div class="form-text">Precio base del procedimiento sin incluir insumos adicionales</div>
+                            </div>
+                            
+                            <div class="col-md-6 d-flex align-items-end">
+                                <div class="alert alert-info w-100 mb-0">
+                                    <i class="bi bi-info-circle me-1"></i>
+                                    <strong>Nota:</strong> El precio final puede variar según la complejidad del caso y los insumos utilizados.
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Botones de acción -->
+                        <div class="row mt-5">
+                            <div class="col-12">
+                                <hr>
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <button type="button" class="btn btn-outline-secondary" onclick="clearForm()">
+                                            <i class="bi bi-arrow-clockwise me-1"></i>Limpiar Formulario
+                                        </button>
+                                    </div>
+                                    <div>
+                                        <a href="{% url 'gynecology:procedures_list' %}" class="btn btn-secondary me-2">
+                                            <i class="bi bi-x-lg me-1"></i>Cancelar
+                                        </a>
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="bi bi-check-lg me-1"></i>Crear Procedimiento
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Validación del formulario
+    const form = document.getElementById('procedureForm');
+    
+    form.addEventListener('submit', function(e) {
+        if (!validateForm()) {
+            e.preventDefault();
+        }
+    });
+    
+    // Auto-generar código basado en categoría
+    const categorySelect = document.getElementById('category');
+    const codeInput = document.getElementById('code');
+    
+    categorySelect.addEventListener('change', function() {
+        if (!codeInput.value) {
+            const prefixes = {
+                'diagnostico': 'GDIN',
+                'terapeutico': 'GTER', 
+                'quirurgico_menor': 'GQME',
+                'quirurgico_mayor': 'GQMA',
+                'ambulatorio': 'GAMB'
+            };
+            
+            const prefix = prefixes[this.value];
+            if (prefix) {
+                const randomNum = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
+                codeInput.value = prefix + randomNum;
+            }
+        }
+    });
+    
+    // Formatear precio en tiempo real
+    const priceInput = document.getElementById('base_price');
+    priceInput.addEventListener('input', function() {
+        // Remover caracteres no numéricos
+        this.value = this.value.replace(/[^0-9]/g, '');
+    });
+});
+
+function validateForm() {
+    let isValid = true;
+    
+    // Validar campos requeridos
+    const requiredFields = ['code', 'name', 'category', 'estimated_duration'];
+    
+    requiredFields.forEach(fieldName => {
+        const field = document.getElementById(fieldName);
+        if (!field.value.trim()) {
+            field.classList.add('is-invalid');
+            isValid = false;
+        } else {
+            field.classList.remove('is-invalid');
+        }
+    });
+    
+    // Validar duración
+    const duration = parseInt(document.getElementById('estimated_duration').value);
+    if (duration < 5 || duration > 480) {
+        document.getElementById('estimated_duration').classList.add('is-invalid');
+        isValid = false;
+    }
+    
+    if (!isValid) {
+        alert('Por favor complete todos los campos requeridos correctamente.');
+    }
+    
+    return isValid;
+}
+
+function clearForm() {
+    if (confirm('¿Está seguro de que desea limpiar el formulario? Se perderán todos los datos ingresados.')) {
+        document.getElementById('procedureForm').reset();
+        // Limpiar clases de validación
+        document.querySelectorAll('.is-invalid').forEach(element => {
+            element.classList.remove('is-invalid');
+        });
+    }
+}
+
+// Preview de instrucciones
+document.getElementById('pre_procedure_instructions').addEventListener('input', function() {
+    this.style.height = 'auto';
+    this.style.height = this.scrollHeight + 'px';
+});
+
+document.getElementById('post_procedure_instructions').addEventListener('input', function() {
+    this.style.height = 'auto';
+    this.style.height = this.scrollHeight + 'px';
+});
+</script>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.form-check-lg {
+    padding: 1rem;
+    border: 1px solid #dee2e6;
+    border-radius: 0.375rem;
+    transition: all 0.2s;
+}
+
+.form-check-lg:hover {
+    background-color: #f8f9fa;
+}
+
+.form-check-lg .form-check-input {
+    width: 1.25em;
+    height: 1.25em;
+}
+
+.form-check-lg .form-check-label {
+    padding-left: 0.5rem;
+}
+
+.text-primary {
+    font-weight: 600;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+.is-invalid {
+    border-color: #dc3545;
+    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+}
+
+.alert {
+    font-size: 0.875rem;
+}
+
+textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+.input-group-text {
+    background-color: #e9ecef;
+    font-weight: 500;
+}
+
+hr {
+    border-top: 2px solid #dee2e6;
+    margin: 2rem 0 1rem 0;
+}
+
+.btn-primary {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+    font-weight: 500;
+}
+
+.btn-primary:hover {
+    background-color: #0b5ed7;
+    border-color: #0a58ca;
+}
+</style>
+{% endblock %}

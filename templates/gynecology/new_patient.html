@@ -1,0 +1,499 @@
+{% extends 'base.html' %}
+
+{% block title %}Nueva Paciente Ginecológica{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1><i class="bi bi-person-plus-fill me-2"></i>Nueva Paciente Ginecológica</h1>
+                <a href="{% url 'gynecology:dashboard' %}" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left me-1"></i>Volver al Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-clipboard-heart me-2"></i>Registro de Nueva Paciente Ginecológica</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post" id="patient-form">
+                        {% csrf_token %}
+                        
+                        <!-- Información Personal -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h6><i class="bi bi-person-vcard me-2"></i>Información Personal</h6>
+                                <hr>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-3">
+                                <label for="document_type" class="form-label">Tipo Documento *</label>
+                                <select class="form-select" id="document_type" name="document_type" required>
+                                    <option value="CC">Cédula de Ciudadanía</option>
+                                    <option value="TI">Tarjeta de Identidad</option>
+                                    <option value="RC">Registro Civil</option>
+                                    <option value="CE">Cédula de Extranjería</option>
+                                    <option value="PP">Pasaporte</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="document_number" class="form-label">Número Documento *</label>
+                                <input type="text" class="form-control" id="document_number" name="document_number" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="first_name" class="form-label">Nombres *</label>
+                                <input type="text" class="form-control" id="first_name" name="first_name" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="last_name" class="form-label">Apellidos *</label>
+                                <input type="text" class="form-control" id="last_name" name="last_name" required>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-3">
+                                <label for="birth_date" class="form-label">Fecha Nacimiento *</label>
+                                <input type="date" class="form-control" id="birth_date" name="birth_date" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="age" class="form-label">Edad</label>
+                                <input type="number" class="form-control" id="age" name="age" readonly>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="phone" class="form-label">Teléfono *</label>
+                                <input type="tel" class="form-control" id="phone" name="phone" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="email" name="email">
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-12">
+                                <label for="address" class="form-label">Dirección *</label>
+                                <input type="text" class="form-control" id="address" name="address" required>
+                            </div>
+                        </div>
+                        
+                        <!-- Información Médica -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h6><i class="bi bi-heart-pulse me-2"></i>Información Médica Inicial</h6>
+                                <hr>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-3">
+                                <label for="blood_type" class="form-label">Grupo Sanguíneo</label>
+                                <select class="form-select" id="blood_type" name="blood_type">
+                                    <option value="">Sin especificar</option>
+                                    <option value="A+">A+</option>
+                                    <option value="A-">A-</option>
+                                    <option value="B+">B+</option>
+                                    <option value="B-">B-</option>
+                                    <option value="AB+">AB+</option>
+                                    <option value="AB-">AB-</option>
+                                    <option value="O+">O+</option>
+                                    <option value="O-">O-</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="insurance_type" class="form-label">Tipo de Seguro *</label>
+                                <select class="form-select" id="insurance_type" name="insurance_type" required>
+                                    <option value="eps">EPS</option>
+                                    <option value="prepagada">Medicina Prepagada</option>
+                                    <option value="particular">Particular</option>
+                                    <option value="soat">SOAT</option>
+                                    <option value="poliza">Póliza de Seguros</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="eps_name" class="form-label">Nombre EPS/Seguro</label>
+                                <input type="text" class="form-control" id="eps_name" name="eps_name">
+                            </div>
+                            <div class="col-md-3">
+                                <label for="insurance_number" class="form-label">Número Afiliación</label>
+                                <input type="text" class="form-control" id="insurance_number" name="insurance_number">
+                            </div>
+                        </div>
+                        
+                        <!-- Historia Ginecológica Básica -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h6><i class="bi bi-clipboard-heart me-2"></i>Historia Gineco-Obstétrica Básica</h6>
+                                <hr>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-2">
+                                <label for="pregnancies" class="form-label">Gestaciones (G)</label>
+                                <input type="number" class="form-control" id="pregnancies" name="pregnancies" min="0" value="0">
+                            </div>
+                            <div class="col-md-2">
+                                <label for="births" class="form-label">Partos (P)</label>
+                                <input type="number" class="form-control" id="births" name="births" min="0" value="0">
+                            </div>
+                            <div class="col-md-2">
+                                <label for="abortions" class="form-label">Abortos (A)</label>
+                                <input type="number" class="form-control" id="abortions" name="abortions" min="0" value="0">
+                            </div>
+                            <div class="col-md-2">
+                                <label for="cesarean_sections" class="form-label">Cesáreas (C)</label>
+                                <input type="number" class="form-control" id="cesarean_sections" name="cesarean_sections" min="0" value="0">
+                            </div>
+                            <div class="col-md-2">
+                                <label for="menarche_age" class="form-label">Edad Menarquia</label>
+                                <input type="number" class="form-control" id="menarche_age" name="menarche_age" min="8" max="18">
+                            </div>
+                            <div class="col-md-2">
+                                <label for="menstrual_cycle" class="form-label">Ciclo Menstrual</label>
+                                <input type="text" class="form-control" id="menstrual_cycle" name="menstrual_cycle" placeholder="28 días">
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <label for="last_menstrual_period" class="form-label">Fecha Última Menstruación</label>
+                                <input type="date" class="form-control" id="last_menstrual_period" name="last_menstrual_period">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="contraceptive_method" class="form-label">Método Anticonceptivo Actual</label>
+                                <select class="form-select" id="contraceptive_method" name="contraceptive_method">
+                                    <option value="">Ninguno</option>
+                                    <option value="pildora">Píldoras Anticonceptivas</option>
+                                    <option value="inyeccion">Inyección</option>
+                                    <option value="implante">Implante</option>
+                                    <option value="diu">DIU</option>
+                                    <option value="condon">Preservativo</option>
+                                    <option value="natural">Métodos Naturales</option>
+                                    <option value="esterilizacion">Esterilización</option>
+                                    <option value="otro">Otro</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-check mt-4">
+                                    <input class="form-check-input" type="checkbox" id="sexually_active" name="sexually_active">
+                                    <label class="form-check-label" for="sexually_active">
+                                        Sexualmente activa
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Contacto de Emergencia -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h6><i class="bi bi-telephone me-2"></i>Contacto de Emergencia</h6>
+                                <hr>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <label for="emergency_contact_name" class="form-label">Nombre Completo</label>
+                                <input type="text" class="form-control" id="emergency_contact_name" name="emergency_contact_name">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="emergency_contact_phone" class="form-label">Teléfono</label>
+                                <input type="tel" class="form-control" id="emergency_contact_phone" name="emergency_contact_phone">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="emergency_contact_relationship" class="form-label">Parentesco</label>
+                                <input type="text" class="form-control" id="emergency_contact_relationship" name="emergency_contact_relationship" placeholder="Ej: Madre, Esposo, Hermana">
+                            </div>
+                        </div>
+                        
+                        <!-- Antecedentes Relevantes -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h6><i class="bi bi-journal-medical me-2"></i>Antecedentes Médicos Relevantes</h6>
+                                <hr>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="medical_history" class="form-label">Antecedentes Patológicos</label>
+                                <textarea class="form-control" id="medical_history" name="medical_history" rows="3" 
+                                         placeholder="Enfermedades previas, cirugías, hospitalizaciones..."></textarea>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="family_history" class="form-label">Antecedentes Familiares</label>
+                                <textarea class="form-control" id="family_history" name="family_history" rows="3"
+                                         placeholder="Cáncer de mama, ovario, útero, diabetes, hipertensión..."></textarea>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="allergies" class="form-label">Alergias Conocidas</label>
+                                <textarea class="form-control" id="allergies" name="allergies" rows="2"
+                                         placeholder="Medicamentos, alimentos, sustancias..."></textarea>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="current_medications" class="form-label">Medicamentos Actuales</label>
+                                <textarea class="form-control" id="current_medications" name="current_medications" rows="2"
+                                         placeholder="Medicamentos que toma actualmente..."></textarea>
+                            </div>
+                        </div>
+                        
+                        <!-- Motivo de la Primera Consulta -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h6><i class="bi bi-chat-square-text me-2"></i>Motivo de Primera Consulta</h6>
+                                <hr>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-12">
+                                <label for="chief_complaint" class="form-label">¿Por qué consulta hoy? *</label>
+                                <textarea class="form-control" id="chief_complaint" name="chief_complaint" rows="3" required
+                                         placeholder="Descripción del motivo principal de la consulta..."></textarea>
+                            </div>
+                        </div>
+                        
+                        <!-- Configuración Adicional -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h6><i class="bi bi-gear me-2"></i>Configuración</h6>
+                                <hr>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="schedule_appointment" name="schedule_appointment" checked>
+                                    <label class="form-check-label" for="schedule_appointment">
+                                        Programar primera cita ginecológica
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="send_welcome" name="send_welcome" checked>
+                                    <label class="form-check-label" for="send_welcome">
+                                        Enviar información de bienvenida
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="create_medical_record" name="create_medical_record" checked>
+                                    <label class="form-check-label" for="create_medical_record">
+                                        Crear historia clínica automáticamente
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Resumen -->
+                        <div class="row mb-4" id="patient-summary" style="display: none;">
+                            <div class="col-12">
+                                <div class="card bg-light">
+                                    <div class="card-header">
+                                        <h6 class="mb-0"><i class="bi bi-info-circle me-2"></i>Resumen de Paciente</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div id="summary-content"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Botones -->
+                        <div class="row">
+                            <div class="col-12">
+                                <hr>
+                                <div class="d-flex justify-content-end gap-2">
+                                    <a href="{% url 'gynecology:dashboard' %}" class="btn btn-secondary">
+                                        <i class="bi bi-x-circle me-1"></i>Cancelar
+                                    </a>
+                                    <button type="button" id="preview-btn" class="btn btn-outline-primary">
+                                        <i class="bi bi-eye me-1"></i>Vista Previa
+                                    </button>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="bi bi-check-circle me-1"></i>Registrar Paciente
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Calcular edad automáticamente
+    const birthDateInput = document.getElementById('birth_date');
+    const ageInput = document.getElementById('age');
+    
+    birthDateInput.addEventListener('change', function() {
+        if (this.value) {
+            const birthDate = new Date(this.value);
+            const today = new Date();
+            let age = today.getFullYear() - birthDate.getFullYear();
+            const monthDiff = today.getMonth() - birthDate.getMonth();
+            
+            if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+                age--;
+            }
+            
+            ageInput.value = age;
+        }
+    });
+    
+    // Validar GPAAC (suma debe ser coherente)
+    const pregnancies = document.getElementById('pregnancies');
+    const births = document.getElementById('births');
+    const abortions = document.getElementById('abortions');
+    const cesareans = document.getElementById('cesarean_sections');
+    
+    function validateGPAAC() {
+        const g = parseInt(pregnancies.value) || 0;
+        const p = parseInt(births.value) || 0;
+        const a = parseInt(abortions.value) || 0;
+        const c = parseInt(cesareans.value) || 0;
+        
+        if (g > 0 && (p + a) > g) {
+            alert('Error: La suma de partos y abortos no puede ser mayor que las gestaciones.');
+            return false;
+        }
+        
+        if (c > p) {
+            alert('Error: Las cesáreas no pueden ser mayores que los partos.');
+            return false;
+        }
+        
+        return true;
+    }
+    
+    [pregnancies, births, abortions, cesareans].forEach(input => {
+        input.addEventListener('blur', validateGPAAC);
+    });
+    
+    // Vista previa
+    document.getElementById('preview-btn').addEventListener('click', generatePreview);
+    
+    // Validación del formulario
+    document.getElementById('patient-form').addEventListener('submit', function(e) {
+        if (!validateGPAAC() || !validateForm()) {
+            e.preventDefault();
+        }
+    });
+});
+
+function generatePreview() {
+    const firstName = document.getElementById('first_name').value || 'No especificado';
+    const lastName = document.getElementById('last_name').value || 'No especificado';
+    const documentType = document.getElementById('document_type').selectedOptions[0]?.text || 'No especificado';
+    const documentNumber = document.getElementById('document_number').value || 'No especificado';
+    const age = document.getElementById('age').value || 'No calculada';
+    const phone = document.getElementById('phone').value || 'No especificado';
+    const insuranceType = document.getElementById('insurance_type').selectedOptions[0]?.text || 'No especificado';
+    const chiefComplaint = document.getElementById('chief_complaint').value || 'No especificado';
+    
+    const g = document.getElementById('pregnancies').value || '0';
+    const p = document.getElementById('births').value || '0';
+    const a = document.getElementById('abortions').value || '0';
+    const c = document.getElementById('cesarean_sections').value || '0';
+    
+    const summaryContent = `
+        <div class="row">
+            <div class="col-md-6">
+                <h6>Información Personal</h6>
+                <p><strong>Nombre:</strong> ${firstName} ${lastName}</p>
+                <p><strong>Documento:</strong> ${documentType} ${documentNumber}</p>
+                <p><strong>Edad:</strong> ${age} años</p>
+                <p><strong>Teléfono:</strong> ${phone}</p>
+                <p><strong>Seguro:</strong> ${insuranceType}</p>
+            </div>
+            <div class="col-md-6">
+                <h6>Historia Gineco-Obstétrica</h6>
+                <p><strong>GPAAC:</strong> G${g} P${p} A${a} C${c}</p>
+                <p><strong>Motivo Consulta:</strong></p>
+                <p>${chiefComplaint}</p>
+            </div>
+        </div>
+    `;
+    
+    document.getElementById('summary-content').innerHTML = summaryContent;
+    document.getElementById('patient-summary').style.display = 'block';
+}
+
+function validateForm() {
+    const requiredFields = [
+        'document_number', 'first_name', 'last_name', 
+        'birth_date', 'phone', 'address', 'insurance_type', 'chief_complaint'
+    ];
+    
+    let isValid = true;
+    
+    requiredFields.forEach(field => {
+        const input = document.getElementById(field);
+        if (!input.value.trim()) {
+            input.classList.add('is-invalid');
+            isValid = false;
+        } else {
+            input.classList.remove('is-invalid');
+        }
+    });
+    
+    if (!isValid) {
+        alert('Por favor complete todos los campos obligatorios.');
+    }
+    
+    return isValid;
+}
+</script>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.is-invalid {
+    border-color: #dc3545;
+}
+
+.card-header {
+    background-color: #f8f9fa;
+    border-bottom: 2px solid #dee2e6;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+.alert {
+    border-left: 4px solid;
+}
+
+.bg-light {
+    background-color: #f8f9fa !important;
+}
+
+@media (max-width: 768px) {
+    .col-md-2 {
+        margin-bottom: 1rem;
+    }
+}
+</style>
+{% endblock %}

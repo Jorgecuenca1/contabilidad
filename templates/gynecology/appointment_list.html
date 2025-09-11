@@ -1,0 +1,476 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block title %}Agenda de Citas - Ginecología{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2><i class="bi bi-calendar-week"></i> Agenda de Ginecología</h2>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'core:dashboard' %}">Dashboard</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'gynecology:dashboard' %}">Ginecología</a></li>
+                        <li class="breadcrumb-item active">Citas</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+
+    <!-- Controles de Vista y Filtros -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row g-3 align-items-center">
+                        <div class="col-md-3">
+                            <label class="form-label">Vista:</label>
+                            <div class="btn-group" role="group">
+                                <input type="radio" class="btn-check" name="view_type" id="day_view" value="day" checked>
+                                <label class="btn btn-outline-primary btn-sm" for="day_view">
+                                    <i class="bi bi-calendar-day"></i> Día
+                                </label>
+                                
+                                <input type="radio" class="btn-check" name="view_type" id="week_view" value="week">
+                                <label class="btn btn-outline-primary btn-sm" for="week_view">
+                                    <i class="bi bi-calendar-week"></i> Semana
+                                </label>
+                                
+                                <input type="radio" class="btn-check" name="view_type" id="month_view" value="month">
+                                <label class="btn btn-outline-primary btn-sm" for="month_view">
+                                    <i class="bi bi-calendar-month"></i> Mes
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-3">
+                            <label class="form-label">Fecha:</label>
+                            <input type="date" class="form-control" id="selected_date" value="{{ selected_date|date:'Y-m-d' }}">
+                        </div>
+                        
+                        <div class="col-md-2">
+                            <label class="form-label">Médico:</label>
+                            <select class="form-select" id="doctor_filter">
+                                <option value="">Todos</option>
+                                {% for doctor in gynecology_doctors %}
+                                <option value="{{ doctor.id }}">Dr. {{ doctor.get_full_name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-2">
+                            <label class="form-label">Estado:</label>
+                            <select class="form-select" id="status_filter">
+                                <option value="">Todos</option>
+                                <option value="scheduled">Programada</option>
+                                <option value="confirmed">Confirmada</option>
+                                <option value="in_progress">En Curso</option>
+                                <option value="completed">Completada</option>
+                                <option value="cancelled">Cancelada</option>
+                                <option value="no_show">No Asistió</option>
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-2">
+                            <label class="form-label">Acciones:</label>
+                            <div class="d-grid">
+                                <a href="{% url 'gynecology:new_appointment' %}" class="btn btn-success btn-sm">
+                                    <i class="bi bi-calendar-plus"></i> Nueva Cita
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Resumen del Día -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6>Citas de Hoy</h6>
+                            <h3>{{ today_stats.total }}</h3>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="bi bi-calendar-check display-6"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6>Completadas</h6>
+                            <h3>{{ today_stats.completed }}</h3>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="bi bi-check-circle display-6"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6>Pendientes</h6>
+                            <h3>{{ today_stats.pending }}</h3>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="bi bi-clock display-6"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-danger text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6>Urgentes</h6>
+                            <h3>{{ today_stats.urgent }}</h3>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="bi bi-exclamation-triangle display-6"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Vista de Citas -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5><i class="bi bi-calendar-week"></i> Agenda del {{ selected_date|date:"l, d \d\e F \d\e Y" }}</h5>
+                        <div class="btn-group btn-group-sm">
+                            <button type="button" class="btn btn-light" onclick="navigateDate(-1)">
+                                <i class="bi bi-chevron-left"></i> Anterior
+                            </button>
+                            <button type="button" class="btn btn-light" onclick="navigateToday()">
+                                Hoy
+                            </button>
+                            <button type="button" class="btn btn-light" onclick="navigateDate(1)">
+                                Siguiente <i class="bi bi-chevron-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    {% if appointments %}
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th width="80">Hora</th>
+                                    <th>Paciente</th>
+                                    <th>Tipo de Cita</th>
+                                    <th>Médico</th>
+                                    <th>Estado</th>
+                                    <th>Motivo</th>
+                                    <th width="120">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for appointment in appointments %}
+                                <tr class="{% if appointment.is_urgent %}table-danger{% elif appointment.status == 'completed' %}table-success{% elif appointment.status == 'cancelled' %}table-secondary{% endif %}">
+                                    <td>
+                                        <strong class="{% if appointment.is_urgent %}text-danger{% else %}text-primary{% endif %}">
+                                            {{ appointment.appointment_time|time:"H:i" }}
+                                        </strong>
+                                        {% if appointment.is_urgent %}
+                                        <br><small class="badge bg-danger">URGENTE</small>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div>
+                                            <strong>{{ appointment.patient.third_party.get_full_name }}</strong>
+                                            <br><small class="text-muted">HC: {{ appointment.patient.medical_record_number }}</small>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-info">{{ appointment.get_appointment_type_display }}</span>
+                                        {% if appointment.duration %}
+                                        <br><small class="text-muted">{{ appointment.duration }} min</small>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if appointment.doctor %}
+                                        Dr. {{ appointment.doctor.get_full_name }}
+                                        {% else %}
+                                        <span class="text-muted">Sin asignar</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if appointment.status == 'scheduled' %}
+                                        <span class="badge bg-primary">Programada</span>
+                                        {% elif appointment.status == 'confirmed' %}
+                                        <span class="badge bg-info">Confirmada</span>
+                                        {% elif appointment.status == 'in_progress' %}
+                                        <span class="badge bg-warning">En Curso</span>
+                                        {% elif appointment.status == 'completed' %}
+                                        <span class="badge bg-success">Completada</span>
+                                        {% elif appointment.status == 'cancelled' %}
+                                        <span class="badge bg-secondary">Cancelada</span>
+                                        {% elif appointment.status == 'no_show' %}
+                                        <span class="badge bg-danger">No Asistió</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <small>{{ appointment.reason|truncatewords:8|default:"-" }}</small>
+                                    </td>
+                                    <td>
+                                        <div class="dropdown">
+                                            <button class="btn btn-sm btn-outline-primary" type="button" data-bs-toggle="dropdown">
+                                                <i class="bi bi-three-dots-vertical"></i>
+                                            </button>
+                                            <ul class="dropdown-menu">
+                                                {% if appointment.status == 'scheduled' or appointment.status == 'confirmed' %}
+                                                <li>
+                                                    <a class="dropdown-item" href="#" onclick="startConsultation({{ appointment.id }})">
+                                                        <i class="bi bi-play-circle text-success"></i> Iniciar Consulta
+                                                    </a>
+                                                </li>
+                                                {% endif %}
+                                                <li>
+                                                    <a class="dropdown-item" href="{% url 'gynecology:appointment_detail' appointment.id %}">
+                                                        <i class="bi bi-eye text-info"></i> Ver Detalles
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a class="dropdown-item" href="{% url 'gynecology:patient_detail' appointment.patient.id %}">
+                                                        <i class="bi bi-person text-primary"></i> Historia Clínica
+                                                    </a>
+                                                </li>
+                                                <li><hr class="dropdown-divider"></li>
+                                                {% if appointment.status != 'completed' %}
+                                                <li>
+                                                    <a class="dropdown-item" href="#" onclick="editAppointment({{ appointment.id }})">
+                                                        <i class="bi bi-pencil text-warning"></i> Editar
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a class="dropdown-item text-danger" href="#" onclick="cancelAppointment({{ appointment.id }})">
+                                                        <i class="bi bi-x-circle"></i> Cancelar
+                                                    </a>
+                                                </li>
+                                                {% endif %}
+                                            </ul>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-5">
+                        <i class="bi bi-calendar-x display-1 text-muted"></i>
+                        <h5 class="mt-3">No hay citas programadas</h5>
+                        <p class="text-muted">No hay citas para la fecha seleccionada.</p>
+                        <a href="{% url 'gynecology:new_appointment' %}" class="btn btn-success">
+                            <i class="bi bi-calendar-plus"></i> Programar Primera Cita
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para Confirmaciones -->
+<div class="modal fade" id="confirmationModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirmar Acción</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p id="confirmationMessage"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" id="confirmAction">Confirmar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let selectedDate = new Date('{{ selected_date|date:"Y-m-d" }}');
+
+function navigateDate(direction) {
+    const viewType = document.querySelector('input[name="view_type"]:checked').value;
+    
+    if (viewType === 'day') {
+        selectedDate.setDate(selectedDate.getDate() + direction);
+    } else if (viewType === 'week') {
+        selectedDate.setDate(selectedDate.getDate() + (direction * 7));
+    } else if (viewType === 'month') {
+        selectedDate.setMonth(selectedDate.getMonth() + direction);
+    }
+    
+    updateDateInput();
+    reloadAppointments();
+}
+
+function navigateToday() {
+    selectedDate = new Date();
+    updateDateInput();
+    reloadAppointments();
+}
+
+function updateDateInput() {
+    const dateInput = document.getElementById('selected_date');
+    dateInput.value = selectedDate.toISOString().split('T')[0];
+}
+
+function reloadAppointments() {
+    const params = new URLSearchParams({
+        date: selectedDate.toISOString().split('T')[0],
+        doctor: document.getElementById('doctor_filter').value,
+        status: document.getElementById('status_filter').value,
+        view: document.querySelector('input[name="view_type"]:checked').value
+    });
+    
+    window.location.href = '?' + params.toString();
+}
+
+function startConsultation(appointmentId) {
+    const modal = new bootstrap.Modal(document.getElementById('confirmationModal'));
+    document.getElementById('confirmationMessage').textContent = 
+        '¿Desea iniciar la consulta? Esto cambiará el estado de la cita a "En Curso".';
+    
+    document.getElementById('confirmAction').onclick = function() {
+        // Aquí iría la lógica para iniciar la consulta
+        fetch(`/gynecology/appointments/${appointmentId}/start/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken'),
+                'Content-Type': 'application/json'
+            }
+        }).then(response => {
+            if (response.ok) {
+                location.reload();
+            }
+        });
+        modal.hide();
+    };
+    
+    modal.show();
+}
+
+function cancelAppointment(appointmentId) {
+    const modal = new bootstrap.Modal(document.getElementById('confirmationModal'));
+    document.getElementById('confirmationMessage').textContent = 
+        '¿Está seguro de cancelar esta cita? Esta acción no se puede deshacer.';
+    
+    document.getElementById('confirmAction').onclick = function() {
+        // Aquí iría la lógica para cancelar la cita
+        fetch(`/gynecology/appointments/${appointmentId}/cancel/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken'),
+                'Content-Type': 'application/json'
+            }
+        }).then(response => {
+            if (response.ok) {
+                location.reload();
+            }
+        });
+        modal.hide();
+    };
+    
+    modal.show();
+}
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+// Event listeners
+document.addEventListener('DOMContentLoaded', function() {
+    // Auto-reload when filters change
+    document.getElementById('selected_date').addEventListener('change', reloadAppointments);
+    document.getElementById('doctor_filter').addEventListener('change', reloadAppointments);
+    document.getElementById('status_filter').addEventListener('change', reloadAppointments);
+    
+    // View type change
+    document.querySelectorAll('input[name="view_type"]').forEach(radio => {
+        radio.addEventListener('change', reloadAppointments);
+    });
+    
+    // Auto-refresh every 5 minutes
+    setInterval(function() {
+        location.reload();
+    }, 300000);
+});
+</script>
+
+<style>
+.table th {
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.badge {
+    font-size: 0.75rem;
+}
+
+.table-danger {
+    background-color: rgba(220, 53, 69, 0.1);
+}
+
+.table-success {
+    background-color: rgba(25, 135, 84, 0.1);
+}
+
+.table-secondary {
+    background-color: rgba(108, 117, 125, 0.1);
+}
+
+.btn-check:checked + .btn {
+    background-color: var(--bs-primary);
+    color: white;
+}
+
+@media (max-width: 768px) {
+    .table-responsive {
+        font-size: 0.875rem;
+    }
+    
+    .btn-group {
+        flex-direction: column;
+    }
+}
+</style>
+{% endblock %}

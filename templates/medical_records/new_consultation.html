@@ -1,0 +1,541 @@
+{% extends 'base.html' %}
+
+{% block title %}Nueva Consulta Médica{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1><i class="bi bi-clipboard-heart me-2"></i>Nueva Consulta Médica</h1>
+                <div>
+                    {% if record %}
+                        <a href="{% url 'medical_records:detail' record.id %}" class="btn btn-outline-info">
+                            <i class="bi bi-folder-open me-1"></i>Ver Historia Clínica
+                        </a>
+                    {% endif %}
+                    <a href="{% url 'medical_records:consultations_list' %}" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left me-1"></i>Volver a Consultas
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-plus-circle me-2"></i>Registrar Nueva Consulta Médica</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post" id="consultation-form">
+                        {% csrf_token %}
+                        
+                        <!-- Información del Paciente y Historia Clínica -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h6><i class="bi bi-person-vcard me-2"></i>Información del Paciente</h6>
+                                <hr>
+                            </div>
+                        </div>
+                        
+                        {% if record %}
+                            <!-- Si ya existe la historia clínica -->
+                            <div class="alert alert-info">
+                                <h6><i class="bi bi-info-circle me-2"></i>Historia Clínica Existente</h6>
+                                <p class="mb-1"><strong>Paciente:</strong> {{ record.patient.get_full_name }}</p>
+                                <p class="mb-1"><strong>Historia No:</strong> {{ record.record_number }}</p>
+                                <p class="mb-1"><strong>Especialidad:</strong> {{ record.get_record_type_display }}</p>
+                                <p class="mb-0"><strong>Última consulta:</strong> 
+                                    {% if record.get_latest_consultation %}
+                                        {{ record.get_latest_consultation.consultation_date|date:"d/m/Y" }}
+                                    {% else %}
+                                        Primera consulta
+                                    {% endif %}
+                                </p>
+                            </div>
+                            <input type="hidden" name="medical_record" value="{{ record.id }}">
+                        {% else %}
+                            <!-- Si no existe, crear nueva historia -->
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="patient" class="form-label">Paciente *</label>
+                                    <select class="form-select" id="patient" name="patient" required>
+                                        <option value="">Seleccionar paciente...</option>
+                                        {% for patient in patients %}
+                                            <option value="{{ patient.id }}">{{ patient.get_full_name }} - {{ patient.document_number }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="record_type" class="form-label">Especialidad *</label>
+                                    <select class="form-select" id="record_type" name="record_type" required>
+                                        <option value="">Seleccionar especialidad...</option>
+                                        {% for choice in record_type_choices %}
+                                            <option value="{{ choice.0 }}">{{ choice.1 }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                        {% endif %}
+                        
+                        <!-- Información de la Consulta -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h6><i class="bi bi-clipboard-pulse me-2"></i>Información de la Consulta</h6>
+                                <hr>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <label for="consultation_date" class="form-label">Fecha y Hora de Consulta *</label>
+                                <input type="datetime-local" class="form-control" id="consultation_date" name="consultation_date" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="consultation_type" class="form-label">Tipo de Consulta *</label>
+                                <select class="form-select" id="consultation_type" name="consultation_type" required>
+                                    {% for choice in consultation_type_choices %}
+                                        <option value="{{ choice.0 }}">{{ choice.1 }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="attending_physician" class="form-label">Médico que Atiende *</label>
+                                <select class="form-select" id="attending_physician" name="attending_physician" required>
+                                    <option value="">Seleccionar médico...</option>
+                                    {% for physician in physicians %}
+                                        <option value="{{ physician.id }}">{{ physician.get_full_name }} - {{ physician.specialty.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <!-- Signos Vitales -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h6><i class="bi bi-heart-pulse me-2"></i>Signos Vitales</h6>
+                                <hr>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-2">
+                                <label for="weight" class="form-label">Peso (kg)</label>
+                                <input type="number" step="0.1" class="form-control" id="weight" name="weight" placeholder="70.0">
+                            </div>
+                            <div class="col-md-2">
+                                <label for="height" class="form-label">Talla (cm)</label>
+                                <input type="number" step="0.1" class="form-control" id="height" name="height" placeholder="170.0">
+                            </div>
+                            <div class="col-md-2">
+                                <label for="temperature" class="form-label">Temperatura (°C)</label>
+                                <input type="number" step="0.1" class="form-control" id="temperature" name="temperature" placeholder="36.5">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Presión Arterial</label>
+                                <div class="input-group">
+                                    <input type="number" class="form-control" id="blood_pressure_systolic" name="blood_pressure_systolic" placeholder="120">
+                                    <span class="input-group-text">/</span>
+                                    <input type="number" class="form-control" id="blood_pressure_diastolic" name="blood_pressure_diastolic" placeholder="80">
+                                </div>
+                            </div>
+                            <div class="col-md-1">
+                                <label for="heart_rate" class="form-label">FC</label>
+                                <input type="number" class="form-control" id="heart_rate" name="heart_rate" placeholder="72">
+                            </div>
+                            <div class="col-md-2">
+                                <label for="respiratory_rate" class="form-label">FR</label>
+                                <input type="number" class="form-control" id="respiratory_rate" name="respiratory_rate" placeholder="18">
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-2">
+                                <label for="oxygen_saturation" class="form-label">Saturación O2 (%)</label>
+                                <input type="number" class="form-control" id="oxygen_saturation" name="oxygen_saturation" placeholder="98">
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label">IMC</label>
+                                <input type="text" class="form-control" id="bmi_display" readonly placeholder="Calculado automáticamente">
+                            </div>
+                            <div class="col-md-8">
+                                <label class="form-label">Estado Nutricional</label>
+                                <input type="text" class="form-control" id="nutritional_status" readonly placeholder="Se calcula automáticamente con el IMC">
+                            </div>
+                        </div>
+                        
+                        <!-- Anamnesis -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h6><i class="bi bi-chat-square-text me-2"></i>Anamnesis</h6>
+                                <hr>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="chief_complaint" class="form-label">Motivo de Consulta *</label>
+                                <textarea class="form-control" id="chief_complaint" name="chief_complaint" rows="3" required 
+                                         placeholder="¿Por qué consulta el paciente hoy?"></textarea>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="current_illness" class="form-label">Enfermedad Actual</label>
+                                <textarea class="form-control" id="current_illness" name="current_illness" rows="3"
+                                         placeholder="Historia de la enfermedad actual, síntomas, evolución..."></textarea>
+                            </div>
+                        </div>
+                        
+                        <!-- Examen Físico -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h6><i class="bi bi-stethoscope me-2"></i>Examen Físico</h6>
+                                <hr>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-12">
+                                <label for="physical_examination" class="form-label">Hallazgos del Examen Físico</label>
+                                <textarea class="form-control" id="physical_examination" name="physical_examination" rows="4"
+                                         placeholder="Cabeza y cuello: normales&#10;Tórax: murmullo vesicular conservado&#10;Abdomen: blando, depresible, no doloroso&#10;Extremidades: sin alteraciones"></textarea>
+                            </div>
+                        </div>
+                        
+                        <!-- Diagnósticos -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h6><i class="bi bi-clipboard-check me-2"></i>Diagnósticos</h6>
+                                <hr>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-3">
+                                <label for="primary_diagnosis_code" class="form-label">Código CIE-10 Principal</label>
+                                <input type="text" class="form-control" id="primary_diagnosis_code" name="primary_diagnosis_code" 
+                                       placeholder="Ej: Z00.0">
+                            </div>
+                            <div class="col-md-9">
+                                <label for="primary_diagnosis_description" class="form-label">Diagnóstico Principal *</label>
+                                <input type="text" class="form-control" id="primary_diagnosis_description" name="primary_diagnosis_description" required
+                                       placeholder="Descripción del diagnóstico principal">
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="assessment" class="form-label">Impresión Diagnóstica</label>
+                                <textarea class="form-control" id="assessment" name="assessment" rows="3"
+                                         placeholder="Análisis e impresión diagnóstica del caso..."></textarea>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="secondary_diagnoses" class="form-label">Diagnósticos Secundarios</label>
+                                <textarea class="form-control" id="secondary_diagnoses" name="secondary_diagnoses" rows="3"
+                                         placeholder="Diagnósticos adicionales, comorbilidades..."></textarea>
+                            </div>
+                        </div>
+                        
+                        <!-- Plan de Tratamiento -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h6><i class="bi bi-prescription2 me-2"></i>Plan de Tratamiento</h6>
+                                <hr>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="plan" class="form-label">Plan Terapéutico</label>
+                                <textarea class="form-control" id="plan" name="plan" rows="4"
+                                         placeholder="Conducta a seguir, medidas terapéuticas..."></textarea>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="prescriptions" class="form-label">Medicamentos Prescritos</label>
+                                <textarea class="form-control" id="prescriptions" name="prescriptions" rows="4"
+                                         placeholder="Nombre del medicamento, dosis, frecuencia, duración&#10;Ej: Paracetamol 500mg, 1 tableta cada 8 horas por 3 días"></textarea>
+                            </div>
+                        </div>
+                        
+                        <!-- Órdenes Médicas -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h6><i class="bi bi-clipboard-data me-2"></i>Órdenes Médicas</h6>
+                                <hr>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="lab_orders" class="form-label">Órdenes de Laboratorio</label>
+                                <textarea class="form-control" id="lab_orders" name="lab_orders" rows="3"
+                                         placeholder="Hemograma completo&#10;Glicemia en ayunas&#10;Parcial de orina"></textarea>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="imaging_orders" class="form-label">Órdenes de Imágenes</label>
+                                <textarea class="form-control" id="imaging_orders" name="imaging_orders" rows="3"
+                                         placeholder="Radiografía de tórax PA&#10;Ecografía abdominal&#10;TAC de cráneo simple"></textarea>
+                            </div>
+                        </div>
+                        
+                        <!-- Seguimiento -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h6><i class="bi bi-calendar-check me-2"></i>Seguimiento</h6>
+                                <hr>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <label for="follow_up_date" class="form-label">Próxima Cita</label>
+                                <input type="date" class="form-control" id="follow_up_date" name="follow_up_date">
+                            </div>
+                            <div class="col-md-8">
+                                <label for="follow_up_instructions" class="form-label">Instrucciones de Seguimiento</label>
+                                <textarea class="form-control" id="follow_up_instructions" name="follow_up_instructions" rows="2"
+                                         placeholder="Control en 15 días, si persisten síntomas consultar antes..."></textarea>
+                            </div>
+                        </div>
+                        
+                        <!-- Estado de la Consulta -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h6><i class="bi bi-gear me-2"></i>Estado de la Consulta</h6>
+                                <hr>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="status" class="form-label">Estado</label>
+                                <select class="form-select" id="status" name="status">
+                                    {% for choice in status_choices %}
+                                        <option value="{{ choice.0 }}" {% if choice.0 == 'completed' %}selected{% endif %}>{{ choice.1 }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-check mt-4">
+                                    <input class="form-check-input" type="checkbox" id="generate_prescription" name="generate_prescription" checked>
+                                    <label class="form-check-label" for="generate_prescription">
+                                        Generar receta médica
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Botones -->
+                        <div class="row">
+                            <div class="col-12">
+                                <hr>
+                                <div class="d-flex justify-content-end gap-2">
+                                    <a href="{% url 'medical_records:consultations_list' %}" class="btn btn-secondary">
+                                        <i class="bi bi-x-circle me-1"></i>Cancelar
+                                    </a>
+                                    <button type="button" id="preview-btn" class="btn btn-outline-primary">
+                                        <i class="bi bi-eye me-1"></i>Vista Previa
+                                    </button>
+                                    <button type="submit" name="save_draft" class="btn btn-outline-success">
+                                        <i class="bi bi-file-earmark me-1"></i>Guardar Borrador
+                                    </button>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="bi bi-check-circle me-1"></i>Completar Consulta
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Vista Previa -->
+<div class="modal fade" id="previewModal" tabindex="-1" aria-labelledby="previewModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="previewModalLabel">Vista Previa de la Consulta</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="preview-content">
+                <!-- El contenido se genera dinámicamente -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary" onclick="document.getElementById('consultation-form').submit();">
+                    Completar Consulta
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Establecer fecha y hora actual por defecto
+    const now = new Date();
+    const localDateTime = now.getFullYear() + '-' +
+        String(now.getMonth() + 1).padStart(2, '0') + '-' +
+        String(now.getDate()).padStart(2, '0') + 'T' +
+        String(now.getHours()).padStart(2, '0') + ':' +
+        String(now.getMinutes()).padStart(2, '0');
+    
+    document.getElementById('consultation_date').value = localDateTime;
+    
+    // Calcular IMC automáticamente
+    const weightInput = document.getElementById('weight');
+    const heightInput = document.getElementById('height');
+    const bmiDisplay = document.getElementById('bmi_display');
+    const nutritionalStatus = document.getElementById('nutritional_status');
+    
+    function calculateBMI() {
+        const weight = parseFloat(weightInput.value);
+        const height = parseFloat(heightInput.value);
+        
+        if (weight && height) {
+            const heightMeters = height / 100;
+            const bmi = weight / (heightMeters * heightMeters);
+            
+            bmiDisplay.value = bmi.toFixed(1);
+            
+            // Clasificar estado nutricional
+            let status = '';
+            if (bmi < 18.5) status = 'Bajo peso';
+            else if (bmi < 25) status = 'Peso normal';
+            else if (bmi < 30) status = 'Sobrepeso';
+            else status = 'Obesidad';
+            
+            nutritionalStatus.value = status + ' (IMC: ' + bmi.toFixed(1) + ')';
+        } else {
+            bmiDisplay.value = '';
+            nutritionalStatus.value = '';
+        }
+    }
+    
+    weightInput.addEventListener('input', calculateBMI);
+    heightInput.addEventListener('input', calculateBMI);
+    
+    // Vista previa
+    document.getElementById('preview-btn').addEventListener('click', generatePreview);
+    
+    // Validaciones del formulario
+    document.getElementById('consultation-form').addEventListener('submit', function(e) {
+        if (!validateForm()) {
+            e.preventDefault();
+        }
+    });
+});
+
+function generatePreview() {
+    const patient = document.getElementById('patient')?.selectedOptions[0]?.text || '{{ record.patient.get_full_name|default:"" }}';
+    const consultationType = document.getElementById('consultation_type').selectedOptions[0]?.text || '';
+    const physician = document.getElementById('attending_physician').selectedOptions[0]?.text || '';
+    const chiefComplaint = document.getElementById('chief_complaint').value || '';
+    const diagnosis = document.getElementById('primary_diagnosis_description').value || '';
+    const plan = document.getElementById('plan').value || '';
+    
+    const previewContent = `
+        <div class="row">
+            <div class="col-md-6">
+                <h6>Información General</h6>
+                <p><strong>Paciente:</strong> ${patient}</p>
+                <p><strong>Tipo de Consulta:</strong> ${consultationType}</p>
+                <p><strong>Médico:</strong> ${physician}</p>
+                <p><strong>Fecha:</strong> ${document.getElementById('consultation_date').value}</p>
+            </div>
+            <div class="col-md-6">
+                <h6>Signos Vitales</h6>
+                <p><strong>Peso:</strong> ${document.getElementById('weight').value || 'No registrado'} kg</p>
+                <p><strong>Talla:</strong> ${document.getElementById('height').value || 'No registrado'} cm</p>
+                <p><strong>P.A.:</strong> ${document.getElementById('blood_pressure_systolic').value}/${document.getElementById('blood_pressure_diastolic').value} mmHg</p>
+                <p><strong>IMC:</strong> ${document.getElementById('bmi_display').value || 'No calculado'}</p>
+            </div>
+        </div>
+        <div class="row mt-3">
+            <div class="col-12">
+                <h6>Motivo de Consulta</h6>
+                <p>${chiefComplaint || 'No especificado'}</p>
+                
+                <h6>Diagnóstico Principal</h6>
+                <p>${diagnosis || 'No especificado'}</p>
+                
+                <h6>Plan de Tratamiento</h6>
+                <p>${plan || 'No especificado'}</p>
+            </div>
+        </div>
+    `;
+    
+    document.getElementById('preview-content').innerHTML = previewContent;
+    
+    const modal = new bootstrap.Modal(document.getElementById('previewModal'));
+    modal.show();
+}
+
+function validateForm() {
+    const requiredFields = [
+        'consultation_date',
+        'consultation_type', 
+        'attending_physician',
+        'chief_complaint',
+        'primary_diagnosis_description'
+    ];
+    
+    let isValid = true;
+    
+    requiredFields.forEach(field => {
+        const input = document.getElementById(field);
+        if (!input.value.trim()) {
+            input.classList.add('is-invalid');
+            isValid = false;
+        } else {
+            input.classList.remove('is-invalid');
+        }
+    });
+    
+    if (!isValid) {
+        alert('Por favor complete todos los campos obligatorios.');
+    }
+    
+    return isValid;
+}
+</script>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.is-invalid {
+    border-color: #dc3545;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+.card-header {
+    background-color: #f8f9fa;
+    border-bottom: 2px solid #dee2e6;
+}
+
+.alert {
+    border-left: 4px solid;
+}
+
+.alert-info {
+    border-left-color: #0dcaf0;
+}
+
+@media (max-width: 768px) {
+    .input-group input {
+        font-size: 14px;
+    }
+}
+</style>
+{% endblock %}

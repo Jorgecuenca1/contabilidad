@@ -317,3 +317,68 @@ def taxes_required(view_func):
 def reports_required(view_func):
     """Decorador combinado para módulo de reportes."""
     return view_func
+
+
+def module_permission_required(module_code, permission_level='view'):
+    """
+    Decorador que verifica permisos de módulo específico.
+    
+    Args:
+        module_code: Código del módulo (ej: 'medical_records')
+        permission_level: Nivel de permiso requerido ('view', 'edit', 'admin')
+    """
+    def decorator(view_func):
+        @wraps(view_func)
+        def _wrapped_view(request, *args, **kwargs):
+            if not request.user.is_authenticated:
+                return redirect('login')
+            
+            # Si es superusuario o admin, permitir acceso
+            if request.user.is_superuser or request.user.is_staff:
+                return view_func(request, *args, **kwargs)
+            
+            company_id = request.session.get('active_company_id')
+            if not company_id:
+                messages.warning(request, 'Debe seleccionar una empresa para acceder.')
+                return redirect('core:dashboard')
+            
+            try:
+                from .models_modules import SystemModule, CompanyModule, UserModulePermission
+                
+                # Verificar que el módulo exists
+                module = SystemModule.objects.get(code=module_code, is_available=True)
+                
+                # Verificar que está activado para la empresa
+                company_module = CompanyModule.objects.get(
+                    company_id=company_id,
+                    module=module,
+                    is_enabled=True
+                )
+                
+                # Verificar permisos del usuario para este módulo
+                user_permission = UserModulePermission.objects.filter(
+                    user=request.user,
+                    company_module=company_module
+                ).first()
+                
+                if not user_permission:
+                    messages.error(request, f'No tiene permisos para acceder al módulo {module.name}.')
+                    return redirect('core:dashboard')
+                
+                # Verificar nivel de permiso
+                permission_hierarchy = {'view': 1, 'edit': 2, 'admin': 3}
+                required_level = permission_hierarchy.get(permission_level, 1)
+                user_level = permission_hierarchy.get(user_permission.permission_level, 1)
+                
+                if user_level < required_level:
+                    messages.error(request, f'No tiene suficientes permisos para esta acción en {module.name}.')
+                    return redirect('core:dashboard')
+                
+            except (SystemModule.DoesNotExist, CompanyModule.DoesNotExist):
+                messages.error(request, 'El módulo solicitado no existe o no está disponible.')
+                return redirect('core:dashboard')
+            
+            return view_func(request, *args, **kwargs)
+        
+        return login_required(_wrapped_view)
+    return decorator

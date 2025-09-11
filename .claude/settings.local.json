@@ -23,7 +23,11 @@
       "WebFetch(domain:puc.com.co)",
       "WebFetch(domain:www.politecnicomayor.edu.co)",
       "Bash(sqlite3:*)",
-      "Bash(del accountingmigrations0004_alter_account_unique_together_account_custom_company_and_more.py)"
+      "Bash(del accountingmigrations0004_alter_account_unique_together_account_custom_company_and_more.py)",
+      "Bash(cat:*)",
+      "WebFetch(domain:web.sispro.gov.co)",
+      "WebFetch(domain:revista.fecolsog.org)",
+      "WebFetch(domain:www.minsalud.gov.co)"
     ],
     "deny": [],
     "ask": []

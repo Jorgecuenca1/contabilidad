@@ -1,0 +1,147 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block title %}Nueva Cita - Ginecología{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2><i class="bi bi-calendar-plus"></i> Nueva Cita de Ginecología</h2>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'core:dashboard' %}">Dashboard</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'gynecology:dashboard' %}">Ginecología</a></li>
+                        <li class="breadcrumb-item active">Nueva Cita</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h5><i class="bi bi-calendar-plus"></i> Agendar Nueva Cita</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <!-- Información de la Paciente -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h6 class="text-primary border-bottom pb-2">Información de la Paciente</h6>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="patient" class="form-label">Paciente *</label>
+                                <select class="form-select" id="patient" name="patient" required>
+                                    <option value="">Seleccionar paciente...</option>
+                                    {% for patient in patients %}
+                                    <option value="{{ patient.id }}">{{ patient.third_party.get_full_name }} - {{ patient.third_party.document_number }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="appointment_type" class="form-label">Tipo de Cita *</label>
+                                <select class="form-select" id="appointment_type" name="appointment_type" required>
+                                    <option value="">Seleccionar tipo...</option>
+                                    <option value="consultation">Consulta General</option>
+                                    <option value="control">Control</option>
+                                    <option value="emergency">Urgencia</option>
+                                    <option value="procedure">Procedimiento</option>
+                                    <option value="surgery">Cirugía</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <!-- Información de la Cita -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h6 class="text-primary border-bottom pb-2">Información de la Cita</h6>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="appointment_date" class="form-label">Fecha *</label>
+                                <input type="date" class="form-control" id="appointment_date" name="appointment_date" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="appointment_time" class="form-label">Hora *</label>
+                                <input type="time" class="form-control" id="appointment_time" name="appointment_time" required>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="doctor" class="form-label">Médico *</label>
+                                <select class="form-select" id="doctor" name="doctor" required>
+                                    <option value="">Seleccionar médico...</option>
+                                    {% for doctor in gynecology_doctors %}
+                                    <option value="{{ doctor.id }}">Dr. {{ doctor.get_full_name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="status" class="form-label">Estado</label>
+                                <select class="form-select" id="status" name="status">
+                                    <option value="scheduled">Programada</option>
+                                    <option value="confirmed">Confirmada</option>
+                                    <option value="pending">Pendiente</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                <label for="reason" class="form-label">Motivo de la Consulta</label>
+                                <textarea class="form-control" id="reason" name="reason" rows="3" placeholder="Describir el motivo de la cita..."></textarea>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                <label for="notes" class="form-label">Observaciones</label>
+                                <textarea class="form-control" id="notes" name="notes" rows="2" placeholder="Observaciones adicionales..."></textarea>
+                            </div>
+                        </div>
+                        
+                        <!-- Botones -->
+                        <div class="row">
+                            <div class="col-12">
+                                <hr>
+                                <div class="d-flex gap-2">
+                                    <button type="submit" class="btn btn-info">
+                                        <i class="bi bi-calendar-plus"></i> Agendar Cita
+                                    </button>
+                                    <a href="{% url 'gynecology:dashboard' %}" class="btn btn-secondary">
+                                        <i class="bi bi-arrow-left"></i> Cancelar
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Auto-focus en el primer campo
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('patient').focus();
+    
+    // Establecer fecha mínima como hoy
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('appointment_date').min = today;
+});
+</script>
+{% endblock %}

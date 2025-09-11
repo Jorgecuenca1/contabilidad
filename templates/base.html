@@ -116,6 +116,11 @@
                             <li><h6 class="dropdown-header"><i class="bi bi-building-gear"></i> Sector Público</h6></li>
                             <li><a class="dropdown-item" href="{% url 'public_sector:dashboard' %}">Centro Público</a></li>
                             <li><a class="dropdown-item" href="{% url 'admin:budget_budgetperiod_changelist' %}">Presupuestos</a></li>
+                            {% if current_company.is_healthcare_company %}
+                            <li><hr class="dropdown-divider"></li>
+                            <li><h6 class="dropdown-header"><i class="bi bi-heart-pulse"></i> Sector Salud</h6></li>
+                            <li><a class="dropdown-item" href="{% url 'gynecology:dashboard' %}">Ginecología</a></li>
+                            {% endif %}
                             <li><hr class="dropdown-divider"></li>
                             <li><h6 class="dropdown-header"><i class="bi bi-person-badge"></i> Terceros</h6></li>
                             <li><a class="dropdown-item" href="{% url 'third_parties:list' %}">Gestión de Terceros</a></li>

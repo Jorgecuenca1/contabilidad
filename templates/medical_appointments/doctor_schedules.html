@@ -1,0 +1,519 @@
+{% extends 'base.html' %}
+
+{% block title %}Horarios Médicos{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1><i class="bi bi-calendar-range me-2"></i>Horarios Médicos</h1>
+                <div>
+                    <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#newScheduleModal">
+                        <i class="bi bi-plus-circle me-1"></i>Nuevo Horario
+                    </button>
+                    <a href="{% url 'medical_appointments:appointments_list' %}" class="btn btn-outline-primary">
+                        <i class="bi bi-calendar-week me-1"></i>Ver Citas
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filtros -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-funnel me-2"></i>Filtros</h5>
+                </div>
+                <div class="card-body">
+                    <form method="get" class="row g-3">
+                        <div class="col-md-3">
+                            <label for="doctor" class="form-label">Médico</label>
+                            <select class="form-select" id="doctor" name="doctor">
+                                <option value="">Todos</option>
+                                {% for doctor in doctors %}
+                                <option value="{{ doctor.id }}" {% if filters.doctor == doctor.id|stringformat:"s" %}selected{% endif %}>
+                                    {{ doctor.get_full_name }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="specialty" class="form-label">Especialidad</label>
+                            <select class="form-select" id="specialty" name="specialty">
+                                <option value="">Todas</option>
+                                <option value="ginecologia" {% if filters.specialty == 'ginecologia' %}selected{% endif %}>Ginecología</option>
+                                <option value="obstetricia" {% if filters.specialty == 'obstetricia' %}selected{% endif %}>Obstetricia</option>
+                                <option value="medicina_general" {% if filters.specialty == 'medicina_general' %}selected{% endif %}>Medicina General</option>
+                                <option value="pediatria" {% if filters.specialty == 'pediatria' %}selected{% endif %}>Pediatría</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label for="day_week" class="form-label">Día</label>
+                            <select class="form-select" id="day_week" name="day_week">
+                                <option value="">Todos</option>
+                                <option value="1" {% if filters.day_week == '1' %}selected{% endif %}>Lunes</option>
+                                <option value="2" {% if filters.day_week == '2' %}selected{% endif %}>Martes</option>
+                                <option value="3" {% if filters.day_week == '3' %}selected{% endif %}>Miércoles</option>
+                                <option value="4" {% if filters.day_week == '4' %}selected{% endif %}>Jueves</option>
+                                <option value="5" {% if filters.day_week == '5' %}selected{% endif %}>Viernes</option>
+                                <option value="6" {% if filters.day_week == '6' %}selected{% endif %}>Sábado</option>
+                                <option value="7" {% if filters.day_week == '7' %}selected{% endif %}>Domingo</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label for="status" class="form-label">Estado</label>
+                            <select class="form-select" id="status" name="status">
+                                <option value="">Todos</option>
+                                <option value="active" {% if filters.status == 'active' %}selected{% endif %}>Activo</option>
+                                <option value="inactive" {% if filters.status == 'inactive' %}selected{% endif %}>Inactivo</option>
+                                <option value="vacation" {% if filters.status == 'vacation' %}selected{% endif %}>Vacaciones</option>
+                                <option value="sick_leave" {% if filters.status == 'sick_leave' %}selected{% endif %}>Incapacidad</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">&nbsp;</label>
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-search"></i> Filtrar
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Horarios por Médico -->
+    {% for doctor_schedule in doctor_schedules %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="bi bi-person-badge me-2"></i>
+                        {{ doctor_schedule.doctor.get_full_name }}
+                    </h5>
+                    <div>
+                        <span class="badge bg-light text-dark">{{ doctor_schedule.doctor.specialties.first.name|default:"Sin especialidad" }}</span>
+                        {% if doctor_schedule.doctor.is_available %}
+                            <span class="badge bg-success">Disponible</span>
+                        {% else %}
+                            <span class="badge bg-danger">No Disponible</span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <!-- Horario Semanal -->
+                        <div class="col-md-8">
+                            <h6 class="text-muted mb-3">Horario Semanal</h6>
+                            <div class="table-responsive">
+                                <table class="table table-sm">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Día</th>
+                                            <th>Hora Inicio</th>
+                                            <th>Hora Fin</th>
+                                            <th>Descanso</th>
+                                            <th>Máx. Pacientes</th>
+                                            <th>Estado</th>
+                                            <th>Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for schedule in doctor_schedule.schedules %}
+                                        <tr>
+                                            <td>
+                                                <strong>{{ schedule.get_day_name }}</strong>
+                                            </td>
+                                            <td>{{ schedule.start_time|time:"H:i" }}</td>
+                                            <td>{{ schedule.end_time|time:"H:i" }}</td>
+                                            <td>
+                                                {% if schedule.break_start and schedule.break_end %}
+                                                    {{ schedule.break_start|time:"H:i" }} - {{ schedule.break_end|time:"H:i" }}
+                                                {% else %}
+                                                    <small class="text-muted">Sin descanso</small>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-info">{{ schedule.max_patients }}</span>
+                                            </td>
+                                            <td>
+                                                {% if schedule.is_active %}
+                                                    <span class="badge bg-success">Activo</span>
+                                                {% else %}
+                                                    <span class="badge bg-secondary">Inactivo</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                <div class="btn-group btn-group-sm" role="group">
+                                                    <button type="button" class="btn btn-outline-primary" 
+                                                            onclick="editSchedule({{ schedule.id }})" title="Editar">
+                                                        <i class="bi bi-pencil"></i>
+                                                    </button>
+                                                    <button type="button" class="btn btn-outline-secondary" 
+                                                            onclick="copySchedule({{ schedule.id }})" title="Copiar">
+                                                        <i class="bi bi-copy"></i>
+                                                    </button>
+                                                    {% if schedule.is_active %}
+                                                    <button type="button" class="btn btn-outline-warning" 
+                                                            onclick="deactivateSchedule({{ schedule.id }})" title="Desactivar">
+                                                        <i class="bi bi-pause"></i>
+                                                    </button>
+                                                    {% else %}
+                                                    <button type="button" class="btn btn-outline-success" 
+                                                            onclick="activateSchedule({{ schedule.id }})" title="Activar">
+                                                        <i class="bi bi-play"></i>
+                                                    </button>
+                                                    {% endif %}
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        {% empty %}
+                                        <tr>
+                                            <td colspan="7" class="text-center text-muted">
+                                                No hay horarios configurados para este médico
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Estadísticas y Próximas Citas -->
+                        <div class="col-md-4">
+                            <h6 class="text-muted mb-3">Estadísticas de Hoy</h6>
+                            <div class="row g-2 mb-3">
+                                <div class="col-6">
+                                    <div class="card text-center bg-light">
+                                        <div class="card-body p-2">
+                                            <h5 class="card-title mb-1">{{ doctor_schedule.today_appointments }}</h5>
+                                            <small class="text-muted">Citas Hoy</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="card text-center bg-light">
+                                        <div class="card-body p-2">
+                                            <h5 class="card-title mb-1">{{ doctor_schedule.available_slots }}</h5>
+                                            <small class="text-muted">Cupos Libres</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <h6 class="text-muted mb-2">Próximas Citas</h6>
+                            {% if doctor_schedule.next_appointments %}
+                                <div class="list-group list-group-flush">
+                                    {% for appointment in doctor_schedule.next_appointments %}
+                                    <div class="list-group-item p-2">
+                                        <div class="d-flex justify-content-between align-items-start">
+                                            <div class="ms-2 me-auto">
+                                                <div class="fw-bold small">{{ appointment.patient.get_full_name }}</div>
+                                                <small class="text-muted">{{ appointment.appointment_time|time:"H:i" }}</small>
+                                            </div>
+                                            <span class="badge bg-primary rounded-pill">{{ appointment.get_status_display }}</span>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                <p class="text-muted small">No hay citas próximas</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body text-center py-5">
+                    <i class="bi bi-calendar-x display-1 text-muted"></i>
+                    <h3 class="mt-3">No hay horarios médicos configurados</h3>
+                    <p class="text-muted">Configure los horarios de atención de los médicos para comenzar a programar citas.</p>
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newScheduleModal">
+                        <i class="bi bi-plus-circle me-1"></i>Crear Primer Horario
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Modal para Nuevo/Editar Horario -->
+<div class="modal fade" id="newScheduleModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="scheduleModalTitle">Nuevo Horario Médico</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="scheduleForm">
+                    <input type="hidden" id="schedule_id" name="schedule_id">
+                    
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="doctor_select" class="form-label">Médico *</label>
+                            <select class="form-select" id="doctor_select" name="doctor" required>
+                                <option value="">Seleccionar médico</option>
+                                {% for doctor in doctors %}
+                                <option value="{{ doctor.id }}">{{ doctor.get_full_name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="day_of_week" class="form-label">Día de la Semana *</label>
+                            <select class="form-select" id="day_of_week" name="day_of_week" required>
+                                <option value="">Seleccionar día</option>
+                                <option value="1">Lunes</option>
+                                <option value="2">Martes</option>
+                                <option value="3">Miércoles</option>
+                                <option value="4">Jueves</option>
+                                <option value="5">Viernes</option>
+                                <option value="6">Sábado</option>
+                                <option value="7">Domingo</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="start_time" class="form-label">Hora de Inicio *</label>
+                            <input type="time" class="form-control" id="start_time" name="start_time" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="end_time" class="form-label">Hora de Fin *</label>
+                            <input type="time" class="form-control" id="end_time" name="end_time" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="break_start" class="form-label">Inicio Descanso</label>
+                            <input type="time" class="form-control" id="break_start" name="break_start">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="break_end" class="form-label">Fin Descanso</label>
+                            <input type="time" class="form-control" id="break_end" name="break_end">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="max_patients" class="form-label">Máximo Pacientes por Día *</label>
+                            <input type="number" class="form-control" id="max_patients" name="max_patients" 
+                                   min="1" max="50" value="20" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="appointment_duration" class="form-label">Duración Cita (min) *</label>
+                            <select class="form-select" id="appointment_duration" name="appointment_duration" required>
+                                <option value="15">15 minutos</option>
+                                <option value="20">20 minutos</option>
+                                <option value="30" selected>30 minutos</option>
+                                <option value="45">45 minutos</option>
+                                <option value="60">60 minutos</option>
+                            </select>
+                        </div>
+                        <div class="col-12">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="is_active" name="is_active" checked>
+                                <label class="form-check-label" for="is_active">
+                                    Horario activo
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <label for="notes" class="form-label">Notas</label>
+                            <textarea class="form-control" id="notes" name="notes" rows="2" 
+                                      placeholder="Notas adicionales sobre el horario..."></textarea>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" onclick="saveSchedule()">Guardar Horario</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function editSchedule(scheduleId) {
+    // Cargar datos del horario y abrir modal
+    fetch(`/medical-appointments/doctor-schedules/${scheduleId}/`)
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            populateScheduleForm(data.schedule);
+            document.getElementById('scheduleModalTitle').textContent = 'Editar Horario Médico';
+            const modal = new bootstrap.Modal(document.getElementById('newScheduleModal'));
+            modal.show();
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error al cargar el horario');
+    });
+}
+
+function populateScheduleForm(schedule) {
+    document.getElementById('schedule_id').value = schedule.id;
+    document.getElementById('doctor_select').value = schedule.doctor_id;
+    document.getElementById('day_of_week').value = schedule.day_of_week;
+    document.getElementById('start_time').value = schedule.start_time;
+    document.getElementById('end_time').value = schedule.end_time;
+    document.getElementById('break_start').value = schedule.break_start || '';
+    document.getElementById('break_end').value = schedule.break_end || '';
+    document.getElementById('max_patients').value = schedule.max_patients;
+    document.getElementById('appointment_duration').value = schedule.appointment_duration;
+    document.getElementById('is_active').checked = schedule.is_active;
+    document.getElementById('notes').value = schedule.notes || '';
+}
+
+function copySchedule(scheduleId) {
+    if (confirm('¿Desea copiar este horario para otro día?')) {
+        editSchedule(scheduleId);
+        document.getElementById('schedule_id').value = '';
+        document.getElementById('day_of_week').value = '';
+        document.getElementById('scheduleModalTitle').textContent = 'Copiar Horario Médico';
+    }
+}
+
+function saveSchedule() {
+    const form = document.getElementById('scheduleForm');
+    const formData = new FormData(form);
+    
+    const scheduleId = document.getElementById('schedule_id').value;
+    const url = scheduleId ? 
+        `/medical-appointments/doctor-schedules/edit/${scheduleId}/` :
+        '/medical-appointments/doctor-schedules/new/';
+    
+    fetch(url, {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        } else {
+            alert('Error: ' + data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error al guardar el horario');
+    });
+}
+
+function activateSchedule(scheduleId) {
+    updateScheduleStatus(scheduleId, 'activate');
+}
+
+function deactivateSchedule(scheduleId) {
+    if (confirm('¿Está seguro de desactivar este horario?')) {
+        updateScheduleStatus(scheduleId, 'deactivate');
+    }
+}
+
+function updateScheduleStatus(scheduleId, action) {
+    fetch(`/medical-appointments/doctor-schedules/${scheduleId}/${action}/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        } else {
+            alert('Error: ' + data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error al actualizar el estado del horario');
+    });
+}
+
+// Reset modal form when closed
+document.getElementById('newScheduleModal').addEventListener('hidden.bs.modal', function () {
+    document.getElementById('scheduleForm').reset();
+    document.getElementById('schedule_id').value = '';
+    document.getElementById('scheduleModalTitle').textContent = 'Nuevo Horario Médico';
+    document.getElementById('is_active').checked = true;
+});
+
+// Validación de horarios
+document.getElementById('end_time').addEventListener('change', function() {
+    const startTime = document.getElementById('start_time').value;
+    const endTime = this.value;
+    
+    if (startTime && endTime && startTime >= endTime) {
+        alert('La hora de fin debe ser posterior a la hora de inicio');
+        this.value = '';
+    }
+});
+
+document.getElementById('break_end').addEventListener('change', function() {
+    const breakStart = document.getElementById('break_start').value;
+    const breakEnd = this.value;
+    
+    if (breakStart && breakEnd && breakStart >= breakEnd) {
+        alert('La hora de fin del descanso debe ser posterior a la hora de inicio');
+        this.value = '';
+    }
+});
+</script>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.card-header {
+    background-color: #f8f9fa;
+    border-bottom: 2px solid #dee2e6;
+}
+
+.table th {
+    font-weight: 600;
+    background-color: #f8f9fa;
+}
+
+.badge {
+    font-size: 0.75em;
+}
+
+.btn-group-sm .btn {
+    padding: 0.25rem 0.5rem;
+}
+
+.table td {
+    vertical-align: middle;
+}
+
+.list-group-item {
+    border: none;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.list-group-item:last-child {
+    border-bottom: none;
+}
+
+.modal-lg {
+    max-width: 900px;
+}
+
+.form-check-label {
+    font-weight: 500;
+}
+</style>
+{% endblock %}

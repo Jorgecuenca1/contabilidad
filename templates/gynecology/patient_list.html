@@ -1,0 +1,275 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block title %}Lista de Pacientes - Ginecología{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2><i class="bi bi-people"></i> Lista de Pacientes Ginecología</h2>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'core:dashboard' %}">Dashboard</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'gynecology:dashboard' %}">Ginecología</a></li>
+                        <li class="breadcrumb-item active">Pacientes</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filtros y Búsqueda -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <form method="get" class="row g-3">
+                        <div class="col-md-3">
+                            <input type="text" class="form-control" name="search" placeholder="Buscar por nombre, documento..." value="{{ request.GET.search }}">
+                        </div>
+                        <div class="col-md-2">
+                            <select class="form-select" name="age_range">
+                                <option value="">Rango de Edad</option>
+                                <option value="pediatric">Pediátrica (0-18)</option>
+                                <option value="reproductive">Reproductiva (19-45)</option>
+                                <option value="perimenopausal">Perimenopáusica (46-55)</option>
+                                <option value="postmenopausal">Postmenopáusica (55+)</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <select class="form-select" name="high_risk">
+                                <option value="">Riesgo</option>
+                                <option value="yes">Alto Riesgo</option>
+                                <option value="no">Riesgo Normal</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <select class="form-select" name="active_treatment">
+                                <option value="">Estado</option>
+                                <option value="yes">En Tratamiento</option>
+                                <option value="no">Sin Tratamiento</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="d-flex gap-2">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-search"></i> Buscar
+                                </button>
+                                <a href="{% url 'gynecology:new_patient' %}" class="btn btn-success">
+                                    <i class="bi bi-person-plus"></i> Nueva Paciente
+                                </a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lista de Pacientes -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5><i class="bi bi-people"></i> Pacientes Registradas ({{ patients|length }})</h5>
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-light btn-sm" onclick="exportToExcel()">
+                                <i class="bi bi-file-earmark-excel"></i> Excel
+                            </button>
+                            <button class="btn btn-light btn-sm" onclick="printList()">
+                                <i class="bi bi-printer"></i> Imprimir
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    {% if patients %}
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>HC #</th>
+                                    <th>Paciente</th>
+                                    <th>Documento</th>
+                                    <th>Edad</th>
+                                    <th>Teléfono</th>
+                                    <th>Estado Reproductivo</th>
+                                    <th>Riesgo</th>
+                                    <th>Última Cita</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for patient in patients %}
+                                <tr>
+                                    <td>
+                                        <strong class="text-primary">{{ patient.medical_record_number }}</strong>
+                                    </td>
+                                    <td>
+                                        <div>
+                                            <strong>{{ patient.third_party.get_full_name }}</strong>
+                                            {% if patient.pregnancy_status == 'pregnant' %}
+                                            <span class="badge bg-warning ms-1">Embarazada</span>
+                                            {% endif %}
+                                        </div>
+                                        <small class="text-muted">{{ patient.third_party.email }}</small>
+                                    </td>
+                                    <td>{{ patient.third_party.document_number }}</td>
+                                    <td>
+                                        <span class="fw-bold">{{ patient.age }} años</span>
+                                        <br><small class="text-muted">{{ patient.third_party.birth_date|date:"d/m/Y" }}</small>
+                                    </td>
+                                    <td>{{ patient.third_party.phone|default:"-" }}</td>
+                                    <td>
+                                        {% if patient.menopause_status == 'premenopausal' %}
+                                        <span class="badge bg-success">Premenopáusica</span>
+                                        {% elif patient.menopause_status == 'perimenopausal' %}
+                                        <span class="badge bg-warning">Perimenopáusica</span>
+                                        {% elif patient.menopause_status == 'postmenopausal' %}
+                                        <span class="badge bg-secondary">Postmenopáusica</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if patient.is_high_risk %}
+                                        <span class="badge bg-danger">Alto Riesgo</span>
+                                        {% else %}
+                                        <span class="badge bg-success">Normal</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if patient.last_appointment %}
+                                        {{ patient.last_appointment.appointment_date|date:"d/m/Y" }}
+                                        {% else %}
+                                        <span class="text-muted">Sin citas</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="dropdown">
+                                            <button class="btn btn-sm btn-outline-primary" type="button" data-bs-toggle="dropdown">
+                                                <i class="bi bi-three-dots-vertical"></i>
+                                            </button>
+                                            <ul class="dropdown-menu">
+                                                <li>
+                                                    <a class="dropdown-item" href="{% url 'gynecology:patient_detail' patient.id %}">
+                                                        <i class="bi bi-eye text-info"></i> Ver Historia
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a class="dropdown-item" href="{% url 'gynecology:new_appointment' %}?patient={{ patient.id }}">
+                                                        <i class="bi bi-calendar-plus text-success"></i> Nueva Cita
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a class="dropdown-item" href="{% url 'gynecology:patient_lab_orders' patient.id %}">
+                                                        <i class="bi bi-clipboard-data text-warning"></i> Laboratorios
+                                                    </a>
+                                                </li>
+                                                <li><hr class="dropdown-divider"></li>
+                                                <li>
+                                                    <a class="dropdown-item" href="#">
+                                                        <i class="bi bi-pencil text-primary"></i> Editar
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Paginación -->
+                    {% if is_paginated %}
+                    <div class="d-flex justify-content-center mt-3">
+                        <nav>
+                            <ul class="pagination">
+                                {% if page_obj.has_previous %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Anterior</a>
+                                </li>
+                                {% endif %}
+                                
+                                <li class="page-item active">
+                                    <span class="page-link">{{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+                                </li>
+                                
+                                {% if page_obj.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ page_obj.next_page_number }}">Siguiente</a>
+                                </li>
+                                {% endif %}
+                            </ul>
+                        </nav>
+                    </div>
+                    {% endif %}
+
+                    {% else %}
+                    <div class="text-center py-5">
+                        <i class="bi bi-people display-1 text-muted"></i>
+                        <h5 class="mt-3">No hay pacientes registradas</h5>
+                        <p class="text-muted">Agregue la primera paciente para comenzar.</p>
+                        <a href="{% url 'gynecology:new_patient' %}" class="btn btn-success">
+                            <i class="bi bi-person-plus"></i> Registrar Primera Paciente
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function exportToExcel() {
+    // Implementar exportación a Excel
+    alert('Función de exportación a Excel - En desarrollo');
+}
+
+function printList() {
+    window.print();
+}
+
+// Filtros automáticos
+document.addEventListener('DOMContentLoaded', function() {
+    // Auto-submit cuando cambian los filtros
+    const selects = document.querySelectorAll('select[name]');
+    selects.forEach(select => {
+        select.addEventListener('change', function() {
+            // Optional: auto-submit form when filters change
+            // this.form.submit();
+        });
+    });
+});
+</script>
+
+<style>
+.table th {
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.badge {
+    font-size: 0.75rem;
+}
+
+@media (max-width: 768px) {
+    .table-responsive {
+        font-size: 0.875rem;
+    }
+    
+    .dropdown-menu {
+        font-size: 0.875rem;
+    }
+}
+
+@media print {
+    .card-header button, .dropdown, .pagination {
+        display: none !important;
+    }
+}
+</style>
+{% endblock %}

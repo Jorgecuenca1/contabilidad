@@ -1,0 +1,350 @@
+{% extends 'base.html' %}
+
+{% block title %}Nuevo Procedimiento Médico{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1><i class="bi bi-plus-circle me-2"></i>Nuevo Procedimiento Médico</h1>
+                <a href="{% url 'medical_procedures:list' %}" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left me-1"></i>Volver a Procedimientos
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-clipboard2-pulse me-2"></i>Programar Nuevo Procedimiento</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <!-- Información del Paciente -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h6><i class="bi bi-person me-2"></i>Información del Paciente</h6>
+                                <hr>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="patient" class="form-label">Paciente *</label>
+                                <select class="form-select" id="patient" name="patient" required>
+                                    <option value="">Seleccionar paciente...</option>
+                                    {% for patient in patients %}
+                                        <option value="{{ patient.id }}">{{ patient.get_full_name }} - {{ patient.document_number }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="procedure_number" class="form-label">Número de Procedimiento *</label>
+                                <input type="text" class="form-control" id="procedure_number" name="procedure_number" required readonly>
+                            </div>
+                        </div>
+                        
+                        <!-- Información del Procedimiento -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h6><i class="bi bi-clipboard2-pulse me-2"></i>Información del Procedimiento</h6>
+                                <hr>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="cups_code" class="form-label">Código CUPS *</label>
+                                <select class="form-select" id="cups_code" name="cups_code" required>
+                                    <option value="">Seleccionar procedimiento...</option>
+                                    {% for code in cups_codes %}
+                                        <option value="{{ code.id }}" 
+                                                data-price="{{ code.price }}" 
+                                                data-duration="{{ code.estimated_duration }}">
+                                            {{ code.code }} - {{ code.short_description }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="procedure_template" class="form-label">Plantilla de Procedimiento</label>
+                                <select class="form-select" id="procedure_template" name="procedure_template">
+                                    <option value="">Seleccionar plantilla...</option>
+                                    {% for template in procedure_templates %}
+                                        <option value="{{ template.id }}">{{ template.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-12">
+                                <label for="procedure_description" class="form-label">Descripción del Procedimiento</label>
+                                <div class="form-control" id="procedure_description" readonly style="min-height: 60px; background-color: #f8f9fa;">
+                                    Seleccione un código CUPS para ver la descripción
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Programación -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h6><i class="bi bi-calendar-week me-2"></i>Programación</h6>
+                                <hr>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <label for="scheduled_date" class="form-label">Fecha Programada *</label>
+                                <input type="date" class="form-control" id="scheduled_date" name="scheduled_date" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="scheduled_time" class="form-label">Hora *</label>
+                                <input type="time" class="form-control" id="scheduled_time" name="scheduled_time" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="estimated_duration" class="form-label">Duración Estimada (min)</label>
+                                <input type="number" class="form-control" id="estimated_duration" name="estimated_duration" min="15" max="480">
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="performing_physician" class="form-label">Médico Ejecutor *</label>
+                                <select class="form-select" id="performing_physician" name="performing_physician" required>
+                                    <option value="">Seleccionar médico...</option>
+                                    {% for physician in physicians %}
+                                        <option value="{{ physician.id }}">
+                                            {{ physician.get_full_name }} - {{ physician.specialty.name }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="location" class="form-label">Ubicación *</label>
+                                <select class="form-select" id="location" name="location" required>
+                                    <option value="">Seleccionar ubicación...</option>
+                                    {% for location in locations %}
+                                        <option value="{{ location.id }}">{{ location.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <!-- Indicaciones Médicas -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h6><i class="bi bi-file-medical me-2"></i>Indicaciones Médicas</h6>
+                                <hr>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="clinical_indication" class="form-label">Indicación Clínica *</label>
+                                <textarea class="form-control" id="clinical_indication" name="clinical_indication" rows="3" required></textarea>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="diagnosis_code" class="form-label">Código CIE-10</label>
+                                <input type="text" class="form-control" id="diagnosis_code" name="diagnosis_code" placeholder="Ej: Z01.7">
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="pre_procedure_instructions" class="form-label">Instrucciones Pre-procedimiento</label>
+                                <textarea class="form-control" id="pre_procedure_instructions" name="pre_procedure_instructions" rows="3"></textarea>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="post_procedure_instructions" class="form-label">Instrucciones Post-procedimiento</label>
+                                <textarea class="form-control" id="post_procedure_instructions" name="post_procedure_instructions" rows="3"></textarea>
+                            </div>
+                        </div>
+                        
+                        <!-- Configuración Adicional -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h6><i class="bi bi-gear me-2"></i>Configuración</h6>
+                                <hr>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-3">
+                                <label for="priority" class="form-label">Prioridad</label>
+                                <select class="form-select" id="priority" name="priority">
+                                    <option value="routine">Rutina</option>
+                                    <option value="urgent">Urgente</option>
+                                    <option value="emergency">Emergencia</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-check mt-4">
+                                    <input class="form-check-input" type="checkbox" id="requires_anesthesia" name="requires_anesthesia">
+                                    <label class="form-check-label" for="requires_anesthesia">
+                                        Requiere anestesia
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-check mt-4">
+                                    <input class="form-check-input" type="checkbox" id="requires_fasting" name="requires_fasting">
+                                    <label class="form-check-label" for="requires_fasting">
+                                        Requiere ayuno
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-check mt-4">
+                                    <input class="form-check-input" type="checkbox" id="informed_consent_required" name="informed_consent_required" checked>
+                                    <label class="form-check-label" for="informed_consent_required">
+                                        Consentimiento informado
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Información de Costos -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h6><i class="bi bi-currency-dollar me-2"></i>Información de Costos</h6>
+                                <hr>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <label for="estimated_cost" class="form-label">Costo Estimado</label>
+                                <input type="number" class="form-control" id="estimated_cost" name="estimated_cost" step="0.01" readonly>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="insurance_authorization" class="form-label">Autorización del Seguro</label>
+                                <input type="text" class="form-control" id="insurance_authorization" name="insurance_authorization" placeholder="Número de autorización">
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-check mt-4">
+                                    <input class="form-check-input" type="checkbox" id="is_billable" name="is_billable" checked>
+                                    <label class="form-check-label" for="is_billable">
+                                        Facturar procedimiento
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Notas Adicionales -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <label for="notes" class="form-label">Notas Adicionales</label>
+                                <textarea class="form-control" id="notes" name="notes" rows="3"></textarea>
+                            </div>
+                        </div>
+                        
+                        <!-- Botones -->
+                        <div class="row">
+                            <div class="col-12">
+                                <hr>
+                                <div class="d-flex justify-content-end gap-2">
+                                    <a href="{% url 'medical_procedures:list' %}" class="btn btn-secondary">
+                                        <i class="bi bi-x-circle me-1"></i>Cancelar
+                                    </a>
+                                    <button type="submit" name="save_draft" class="btn btn-outline-primary">
+                                        <i class="bi bi-file-earmark me-1"></i>Guardar Borrador
+                                    </button>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="bi bi-check-circle me-1"></i>Programar Procedimiento
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Auto-generar número de procedimiento
+    generateProcedureNumber();
+    
+    // Manejar cambio de código CUPS
+    const cupsSelect = document.getElementById('cups_code');
+    const descriptionDiv = document.getElementById('procedure_description');
+    const estimatedCost = document.getElementById('estimated_cost');
+    const estimatedDuration = document.getElementById('estimated_duration');
+    
+    cupsSelect.addEventListener('change', function() {
+        const selectedOption = this.selectedOptions[0];
+        if (selectedOption && selectedOption.value) {
+            const description = selectedOption.textContent.split(' - ')[1] || 'Sin descripción';
+            const price = selectedOption.getAttribute('data-price') || '0';
+            const duration = selectedOption.getAttribute('data-duration') || '30';
+            
+            descriptionDiv.textContent = description;
+            estimatedCost.value = price;
+            estimatedDuration.value = duration;
+        } else {
+            descriptionDiv.textContent = 'Seleccione un código CUPS para ver la descripción';
+            estimatedCost.value = '';
+            estimatedDuration.value = '';
+        }
+    });
+    
+    // Validar fecha mínima (no puede ser anterior a hoy)
+    const scheduledDate = document.getElementById('scheduled_date');
+    const today = new Date().toISOString().split('T')[0];
+    scheduledDate.setAttribute('min', today);
+    
+    // Auto-completar instrucciones según plantilla
+    const templateSelect = document.getElementById('procedure_template');
+    templateSelect.addEventListener('change', function() {
+        if (this.value) {
+            loadTemplateInstructions(this.value);
+        }
+    });
+});
+
+function generateProcedureNumber() {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+    const random = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
+    
+    document.getElementById('procedure_number').value = `PROC${year}${month}${day}${random}`;
+}
+
+function loadTemplateInstructions(templateId) {
+    // En producción, esto sería una llamada AJAX para obtener las instrucciones de la plantilla
+    const templates = {
+        1: {
+            pre: 'Ayuno de 8 horas previo al procedimiento. No suspender medicamentos habituales.',
+            post: 'Reposo relativo por 24 horas. Control en 7 días.',
+            clinical: 'Procedimiento diagnóstico de rutina'
+        },
+        2: {
+            pre: 'Suspender anticoagulantes 5 días antes. Ayuno de 12 horas.',
+            post: 'Observación por 2 horas post-procedimiento. Alta con acompañante.',
+            clinical: 'Procedimiento terapéutico especializado'
+        }
+    };
+    
+    const template = templates[templateId];
+    if (template) {
+        document.getElementById('pre_procedure_instructions').value = template.pre;
+        document.getElementById('post_procedure_instructions').value = template.post;
+        document.getElementById('clinical_indication').value = template.clinical;
+    }
+}
+</script>
+{% endblock %}

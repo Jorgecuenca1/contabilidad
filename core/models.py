@@ -11,6 +11,8 @@ from decimal import Decimal
 import uuid
 import hashlib
 
+# Import module models at the end to avoid circular imports
+
 
 class User(AbstractUser):
     """
@@ -117,6 +119,21 @@ class Company(models.Model):
         ('mixed', 'Economía Mixta'),
     ]
     
+    CATEGORY_CHOICES = [
+        ('general', 'Empresa General'),
+        ('salud', 'Sector Salud'),
+        ('educacion', 'Sector Educación'),
+        ('manufactura', 'Manufactura'),
+        ('comercio', 'Comercio'),
+        ('servicios', 'Servicios'),
+        ('construccion', 'Construcción'),
+        ('tecnologia', 'Tecnología'),
+        ('transporte', 'Transporte'),
+        ('financiero', 'Sector Financiero'),
+        ('agropecuario', 'Agropecuario'),
+        ('mineria', 'Minería y Energía'),
+    ]
+    
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     
     # Información básica
@@ -140,6 +157,7 @@ class Company(models.Model):
     # Configuración contable
     regime = models.CharField(max_length=20, choices=REGIME_CHOICES)
     sector = models.CharField(max_length=20, choices=SECTOR_CHOICES, default='private')
+    category = models.CharField(max_length=20, choices=CATEGORY_CHOICES, default='general', help_text="Categoría de empresa para módulos especializados")
     functional_currency = models.CharField(max_length=3, default='COP')
     
     # Configuración fiscal
@@ -178,6 +196,30 @@ class Company(models.Model):
             return self.fiscal_year_start.year + 1
         else:
             return self.fiscal_year_start.year - 1
+    
+    def is_healthcare_company(self):
+        """Verifica si la empresa es del sector salud."""
+        return self.category == 'salud'
+    
+    def requires_specialized_modules(self):
+        """Verifica si la empresa requiere módulos especializados."""
+        return self.category in ['salud', 'educacion']
+    
+    def get_available_modules(self):
+        """Obtiene los módulos disponibles según la categoría de empresa."""
+        base_modules = [
+            'accounting', 'accounts_receivable', 'accounts_payable', 
+            'treasury', 'payroll', 'taxes', 'reports'
+        ]
+        
+        if self.category == 'salud':
+            base_modules.extend(['gynecology', 'patients', 'medical_records'])
+        elif self.category == 'educacion':
+            base_modules.extend(['students', 'academic'])
+        elif self.category == 'manufactura':
+            base_modules.extend(['inventory', 'production'])
+        
+        return base_modules
 
 
 # Importar modelos extendidos

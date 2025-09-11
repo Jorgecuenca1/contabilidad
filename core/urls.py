@@ -16,6 +16,7 @@ urlpatterns = [
     path('companies/<uuid:company_id>/edit/', views.edit_company, name='edit_company'),
     path('select-company/', views.select_company, name='select_company'),
     path('api/companies/', views.company_selector_api, name='company_selector_api'),
+    path('modules/', views.manage_modules, name='manage_modules'),
     path('logout/', views.custom_logout, name='logout'),
 ]
 

@@ -38,6 +38,13 @@ urlpatterns = [
     path('fixed-assets/', include('fixed_assets.urls')),
     path('budget/', include('budget.urls')),
     path('third-parties/', include('third_parties.urls')),
+    path('gynecology/', include('gynecology.urls')),
+    path('laboratory/', include('laboratory.urls')),
+    
+    # Nuevos módulos de salud
+    path('medical-records/', include('medical_records.urls')),
+    path('medical-appointments/', include('medical_appointments.urls')),
+    path('medical-procedures/', include('medical_procedures.urls')),
 ]
 
 # Servir archivos estáticos en desarrollo

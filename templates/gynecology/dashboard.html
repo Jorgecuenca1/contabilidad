@@ -1,0 +1,297 @@
+{% extends 'base.html' %}
+
+{% block title %}Ginecología - Dashboard{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'core:dashboard' %}">Dashboard</a></li>
+                    <li class="breadcrumb-item active">Ginecología</li>
+                </ol>
+            </nav>
+            
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h2 class="text-primary">
+                        <i class="bi bi-heart-pulse"></i> Módulo de Ginecología
+                    </h2>
+                    <p class="text-muted">Centro especializado de atención ginecológica - Nivel 4</p>
+                </div>
+                <div>
+                    <a href="{% url 'gynecology:new_patient' %}" class="btn btn-success me-2">
+                        <i class="bi bi-person-plus"></i> Nueva Paciente
+                    </a>
+                    <a href="{% url 'gynecology:new_appointment' %}" class="btn btn-primary">
+                        <i class="bi bi-calendar-plus"></i> Nueva Cita
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Estadísticas principales -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h3 class="mb-0">{{ total_patients }}</h3>
+                            <p class="mb-0">Pacientes Activas</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="bi bi-people fs-1 opacity-75"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card bg-warning text-dark">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h3 class="mb-0">{{ today_appointments }}</h3>
+                            <p class="mb-0">Citas de Hoy</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="bi bi-calendar-check fs-1 opacity-75"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h3 class="mb-0">{{ pending_results }}</h3>
+                            <p class="mb-0">Resultados Pendientes</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="bi bi-file-medical fs-1 opacity-75"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h3 class="mb-0">{{ gynecologists.count }}</h3>
+                            <p class="mb-0">Especialistas</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="bi bi-person-badge fs-1 opacity-75"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Accesos rápidos -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0"><i class="bi bi-grid"></i> Accesos Rápidos</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-md-2 mb-3">
+                            <a href="{% url 'gynecology:patient_list' %}" class="text-decoration-none">
+                                <div class="d-grid">
+                                    <div class="btn btn-outline-primary p-3">
+                                        <i class="bi bi-people fs-2 d-block mb-2"></i>
+                                        <span>Pacientes</span>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                        
+                        <div class="col-md-2 mb-3">
+                            <a href="{% url 'gynecology:appointment_list' %}" class="text-decoration-none">
+                                <div class="d-grid">
+                                    <div class="btn btn-outline-success p-3">
+                                        <i class="bi bi-calendar-week fs-2 d-block mb-2"></i>
+                                        <span>Agenda</span>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                        
+                        <div class="col-md-2 mb-3">
+                            <div class="d-grid">
+                                <div class="btn btn-outline-info p-3">
+                                    <i class="bi bi-file-medical fs-2 d-block mb-2"></i>
+                                    <span>Historia Clínica</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-2 mb-3">
+                            <div class="d-grid">
+                                <div class="btn btn-outline-warning p-3">
+                                    <i class="bi bi-clipboard-data fs-2 d-block mb-2"></i>
+                                    <span>Laboratorio</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-2 mb-3">
+                            <a href="{% url 'gynecology:procedures_list' %}" class="text-decoration-none">
+                                <div class="d-grid">
+                                    <div class="btn btn-outline-danger p-3">
+                                        <i class="bi bi-clipboard2-pulse fs-2 d-block mb-2"></i>
+                                        <span>Procedimientos</span>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                        
+                        <div class="col-md-2 mb-3">
+                            <div class="d-grid">
+                                <div class="btn btn-outline-secondary p-3">
+                                    <i class="bi bi-bar-chart fs-2 d-block mb-2"></i>
+                                    <span>Reportes</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Citas de hoy y pacientes recientes -->
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="bi bi-calendar-day"></i> Citas de Hoy</h5>
+                </div>
+                <div class="card-body">
+                    {% if today_appointments_list %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Hora</th>
+                                        <th>Paciente</th>
+                                        <th>Tipo</th>
+                                        <th>Médico</th>
+                                        <th>Estado</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for appointment in today_appointments_list %}
+                                    <tr>
+                                        <td>
+                                            <strong>{{ appointment.appointment_time }}</strong>
+                                        </td>
+                                        <td>
+                                            <a href="{% url 'gynecology:patient_detail' appointment.patient.id %}" class="text-decoration-none">
+                                                {{ appointment.patient.get_full_name }}
+                                            </a>
+                                            <br><small class="text-muted">HC: {{ appointment.patient.medical_record_number }}</small>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-info">{{ appointment.get_appointment_type_display }}</span>
+                                        </td>
+                                        <td>
+                                            {{ appointment.attending_physician.get_full_name }}
+                                        </td>
+                                        <td>
+                                            {% if appointment.status == 'scheduled' %}
+                                                <span class="badge bg-secondary">{{ appointment.get_status_display }}</span>
+                                            {% elif appointment.status == 'confirmed' %}
+                                                <span class="badge bg-primary">{{ appointment.get_status_display }}</span>
+                                            {% elif appointment.status == 'in_progress' %}
+                                                <span class="badge bg-warning">{{ appointment.get_status_display }}</span>
+                                            {% elif appointment.status == 'completed' %}
+                                                <span class="badge bg-success">{{ appointment.get_status_display }}</span>
+                                            {% else %}
+                                                <span class="badge bg-danger">{{ appointment.get_status_display }}</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <div class="text-center">
+                            <a href="{% url 'gynecology:appointment_list' %}" class="btn btn-outline-primary">
+                                Ver todas las citas <i class="bi bi-arrow-right"></i>
+                            </a>
+                        </div>
+                    {% else %}
+                        <div class="text-center text-muted py-4">
+                            <i class="bi bi-calendar-x fs-1 d-block mb-3"></i>
+                            <p>No hay citas programadas para hoy</p>
+                            <a href="{% url 'gynecology:new_appointment' %}" class="btn btn-primary">
+                                <i class="bi bi-calendar-plus"></i> Programar Cita
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="bi bi-person-plus"></i> Pacientes Recientes</h5>
+                </div>
+                <div class="card-body">
+                    {% if recent_patients %}
+                        <div class="list-group list-group-flush">
+                            {% for patient in recent_patients %}
+                            <div class="list-group-item d-flex justify-content-between align-items-start">
+                                <div class="ms-2 me-auto">
+                                    <div class="fw-bold">
+                                        <a href="{% url 'gynecology:patient_detail' patient.id %}" class="text-decoration-none">
+                                            {{ patient.get_full_name }}
+                                        </a>
+                                    </div>
+                                    <small class="text-muted">HC: {{ patient.medical_record_number }}</small><br>
+                                    <small class="text-muted">{{ patient.third_party.document_number }}</small>
+                                </div>
+                                <span class="badge bg-primary rounded-pill">
+                                    {% if patient.get_age %}{{ patient.get_age }} años{% endif %}
+                                </span>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        
+                        <div class="text-center mt-3">
+                            <a href="{% url 'gynecology:patient_list' %}" class="btn btn-outline-success">
+                                Ver todas las pacientes <i class="bi bi-arrow-right"></i>
+                            </a>
+                        </div>
+                    {% else %}
+                        <div class="text-center text-muted py-4">
+                            <i class="bi bi-person-x fs-1 d-block mb-3"></i>
+                            <p>No hay pacientes registradas</p>
+                            <a href="{% url 'gynecology:new_patient' %}" class="btn btn-success">
+                                <i class="bi bi-person-plus"></i> Registrar Paciente
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

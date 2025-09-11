@@ -1,0 +1,338 @@
+{% extends 'base.html' %}
+
+{% block title %}Nueva Cita Médica{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1><i class="bi bi-calendar-plus me-2"></i>Nueva Cita Médica</h1>
+                <a href="{% url 'medical_appointments:list' %}" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left me-1"></i>Volver a Citas
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-plus-circle me-2"></i>Agendar Nueva Cita</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <!-- Información del Paciente -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h6><i class="bi bi-person me-2"></i>Información del Paciente</h6>
+                                <hr>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="patient" class="form-label">Paciente *</label>
+                                <select class="form-select" id="patient" name="patient" required>
+                                    <option value="">Seleccionar paciente...</option>
+                                    {% for patient in patients %}
+                                        <option value="{{ patient.id }}">{{ patient.get_full_name }} - {{ patient.document_number }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="appointment_number" class="form-label">Número de Cita *</label>
+                                <input type="text" class="form-control" id="appointment_number" name="appointment_number" required readonly>
+                            </div>
+                        </div>
+                        
+                        <!-- Información de la Cita -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h6><i class="bi bi-calendar-week me-2"></i>Información de la Cita</h6>
+                                <hr>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <label for="specialty" class="form-label">Especialidad *</label>
+                                <select class="form-select" id="specialty" name="specialty" required>
+                                    <option value="">Seleccionar especialidad...</option>
+                                    {% for specialty in specialties %}
+                                        <option value="{{ specialty.id }}">{{ specialty.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="doctor" class="form-label">Médico *</label>
+                                <select class="form-select" id="doctor" name="doctor" required disabled>
+                                    <option value="">Seleccionar médico...</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="appointment_type" class="form-label">Tipo de Cita</label>
+                                <select class="form-select" id="appointment_type" name="appointment_type">
+                                    {% for type in appointment_types %}
+                                        <option value="{{ type.id }}">{{ type.name }} - ${{ type.price|floatformat:0 }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <label for="appointment_date" class="form-label">Fecha de la Cita *</label>
+                                <input type="date" class="form-control" id="appointment_date" name="appointment_date" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="appointment_time" class="form-label">Hora *</label>
+                                <select class="form-select" id="appointment_time" name="appointment_time" required disabled>
+                                    <option value="">Seleccionar hora...</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="estimated_duration" class="form-label">Duración (minutos)</label>
+                                <input type="number" class="form-control" id="estimated_duration" name="estimated_duration" value="30" min="15" max="180">
+                            </div>
+                        </div>
+                        
+                        <!-- Motivo de Consulta -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h6><i class="bi bi-chat-square-text me-2"></i>Motivo de Consulta</h6>
+                                <hr>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-12">
+                                <label for="chief_complaint" class="form-label">Motivo de Consulta *</label>
+                                <textarea class="form-control" id="chief_complaint" name="chief_complaint" rows="3" required></textarea>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-12">
+                                <label for="notes" class="form-label">Notas Adicionales</label>
+                                <textarea class="form-control" id="notes" name="notes" rows="2"></textarea>
+                            </div>
+                        </div>
+                        
+                        <!-- Configuración -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h6><i class="bi bi-gear me-2"></i>Configuración</h6>
+                                <hr>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <label for="priority" class="form-label">Prioridad</label>
+                                <select class="form-select" id="priority" name="priority">
+                                    <option value="normal">Normal</option>
+                                    <option value="urgent">Urgente</option>
+                                    <option value="emergency">Emergencia</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-check mt-4">
+                                    <input class="form-check-input" type="checkbox" id="send_reminder" name="send_reminder" checked>
+                                    <label class="form-check-label" for="send_reminder">
+                                        Enviar recordatorio al paciente
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-check mt-4">
+                                    <input class="form-check-input" type="checkbox" id="first_visit" name="first_visit">
+                                    <label class="form-check-label" for="first_visit">
+                                        Primera consulta
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Información de Contacto -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h6><i class="bi bi-telephone me-2"></i>Confirmación de Contacto</h6>
+                                <hr>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="contact_phone" class="form-label">Teléfono de Contacto</label>
+                                <input type="tel" class="form-control" id="contact_phone" name="contact_phone">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="contact_email" class="form-label">Email de Contacto</label>
+                                <input type="email" class="form-control" id="contact_email" name="contact_email">
+                            </div>
+                        </div>
+                        
+                        <!-- Resumen de la Cita -->
+                        <div class="row mb-4" id="appointment-summary" style="display: none;">
+                            <div class="col-12">
+                                <div class="card bg-light">
+                                    <div class="card-header">
+                                        <h6 class="mb-0"><i class="bi bi-info-circle me-2"></i>Resumen de la Cita</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div id="summary-content"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Botones -->
+                        <div class="row">
+                            <div class="col-12">
+                                <hr>
+                                <div class="d-flex justify-content-end gap-2">
+                                    <a href="{% url 'medical_appointments:list' %}" class="btn btn-secondary">
+                                        <i class="bi bi-x-circle me-1"></i>Cancelar
+                                    </a>
+                                    <button type="button" id="preview-btn" class="btn btn-outline-primary">
+                                        <i class="bi bi-eye me-1"></i>Vista Previa
+                                    </button>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="bi bi-check-circle me-1"></i>Agendar Cita
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Auto-generar número de cita
+    generateAppointmentNumber();
+    
+    // Manejar cambio de especialidad para cargar médicos
+    const specialtySelect = document.getElementById('specialty');
+    const doctorSelect = document.getElementById('doctor');
+    
+    specialtySelect.addEventListener('change', function() {
+        if (this.value) {
+            loadDoctorsBySpecialty(this.value);
+        } else {
+            doctorSelect.disabled = true;
+            doctorSelect.innerHTML = '<option value="">Seleccionar médico...</option>';
+        }
+    });
+    
+    // Manejar cambio de fecha y médico para cargar horarios disponibles
+    const appointmentDate = document.getElementById('appointment_date');
+    const appointmentTime = document.getElementById('appointment_time');
+    
+    function loadAvailableSlots() {
+        const doctorId = doctorSelect.value;
+        const date = appointmentDate.value;
+        
+        if (doctorId && date) {
+            // Aquí se cargarían los horarios disponibles via AJAX
+            // Por ahora, generamos horarios de ejemplo
+            generateTimeSlots();
+        } else {
+            appointmentTime.disabled = true;
+            appointmentTime.innerHTML = '<option value="">Seleccionar hora...</option>';
+        }
+    }
+    
+    doctorSelect.addEventListener('change', loadAvailableSlots);
+    appointmentDate.addEventListener('change', loadAvailableSlots);
+    
+    // Vista previa
+    document.getElementById('preview-btn').addEventListener('click', function() {
+        generatePreview();
+    });
+});
+
+function generateAppointmentNumber() {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+    const random = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
+    
+    document.getElementById('appointment_number').value = `CITA${year}${month}${day}${random}`;
+}
+
+function loadDoctorsBySpecialty(specialtyId) {
+    const doctorSelect = document.getElementById('doctor');
+    
+    // Simular carga de médicos (en producción sería una llamada AJAX)
+    const doctors = [
+        {id: 1, name: 'Dr. Juan Pérez'},
+        {id: 2, name: 'Dra. María González'},
+        {id: 3, name: 'Dr. Carlos Rodriguez'}
+    ];
+    
+    doctorSelect.innerHTML = '<option value="">Seleccionar médico...</option>';
+    doctors.forEach(doctor => {
+        doctorSelect.innerHTML += `<option value="${doctor.id}">${doctor.name}</option>`;
+    });
+    
+    doctorSelect.disabled = false;
+}
+
+function generateTimeSlots() {
+    const appointmentTime = document.getElementById('appointment_time');
+    
+    // Generar horarios de 8:00 AM a 5:00 PM cada 30 minutos
+    const slots = [];
+    for (let hour = 8; hour < 17; hour++) {
+        for (let minute = 0; minute < 60; minute += 30) {
+            const timeString = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
+            slots.push(timeString);
+        }
+    }
+    
+    appointmentTime.innerHTML = '<option value="">Seleccionar hora...</option>';
+    slots.forEach(slot => {
+        appointmentTime.innerHTML += `<option value="${slot}">${slot}</option>`;
+    });
+    
+    appointmentTime.disabled = false;
+}
+
+function generatePreview() {
+    const patient = document.getElementById('patient').selectedOptions[0]?.text || 'No seleccionado';
+    const doctor = document.getElementById('doctor').selectedOptions[0]?.text || 'No seleccionado';
+    const date = document.getElementById('appointment_date').value || 'No seleccionada';
+    const time = document.getElementById('appointment_time').value || 'No seleccionada';
+    const complaint = document.getElementById('chief_complaint').value || 'Sin especificar';
+    
+    const summaryContent = `
+        <div class="row">
+            <div class="col-md-6">
+                <p><strong>Paciente:</strong> ${patient}</p>
+                <p><strong>Médico:</strong> ${doctor}</p>
+                <p><strong>Fecha:</strong> ${date}</p>
+            </div>
+            <div class="col-md-6">
+                <p><strong>Hora:</strong> ${time}</p>
+                <p><strong>Motivo:</strong> ${complaint.substring(0, 50)}${complaint.length > 50 ? '...' : ''}</p>
+            </div>
+        </div>
+    `;
+    
+    document.getElementById('summary-content').innerHTML = summaryContent;
+    document.getElementById('appointment-summary').style.display = 'block';
+}
+</script>
+{% endblock %}

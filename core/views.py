@@ -12,6 +12,7 @@ from django.core.paginator import Paginator
 from datetime import datetime, date
 
 from .models import Company, User, Country
+from .models_modules import SystemModule, CompanyModule, UserModulePermission
 from accounting.models_accounts import Account
 from accounts_receivable.models_customer import Customer
 from accounts_payable.models_supplier import Supplier
@@ -24,16 +25,36 @@ def dashboard(request):
     if not request.user.is_authenticated:
         return render(request, 'core/login.html')
     
+    # Obtener empresa activa
+    active_company = request.user.companies.first() if hasattr(request.user, 'companies') and request.user.companies.exists() else None
+    
+    # Obtener módulos disponibles y activos para la empresa
+    available_modules = []
+    active_modules = []
+    
+    if active_company:
+        # Módulos del sistema disponibles para esta empresa
+        all_modules = SystemModule.objects.filter(is_available=True)
+        available_modules = [m for m in all_modules if m.can_be_activated_for_company(active_company)]
+        
+        # Módulos actualmente activados
+        active_modules = CompanyModule.objects.filter(
+            company=active_company,
+            is_enabled=True
+        ).select_related('module')
+    
     # Estadísticas básicas
     context = {
         'user': request.user,
-        'active_company': request.user.companies.first() if hasattr(request.user, 'companies') and request.user.companies.exists() else None,
+        'active_company': active_company,
         'total_companies': Company.objects.count(),
         'total_users': User.objects.count(),
         'total_accounts': Account.objects.count(),
         'total_customers': Customer.objects.count(),
         'total_suppliers': Supplier.objects.count(),
-        'message': 'Bienvenido al sistema de contabilidad multiempresa!'
+        'available_modules': available_modules,
+        'active_modules': active_modules,
+        'is_healthcare_company': active_company.is_healthcare_company() if active_company else False,
     }
     
     return render(request, 'core/dashboard.html', context)
@@ -295,3 +316,73 @@ def custom_logout(request):
     logout(request)
     messages.success(request, 'Has cerrado sesión correctamente.')
     return redirect('/accounts/login/')
+
+
+@login_required
+def manage_modules(request):
+    """Gestionar módulos de la empresa."""
+    active_company = request.user.companies.first()
+    if not active_company:
+        messages.error(request, 'Debe seleccionar una empresa primero.')
+        return redirect('core:dashboard')
+    
+    if request.method == 'POST':
+        action = request.POST.get('action')
+        module_id = request.POST.get('module_id')
+        
+        if action == 'activate':
+            try:
+                module = SystemModule.objects.get(id=module_id)
+                if module.can_be_activated_for_company(active_company):
+                    company_module, created = CompanyModule.objects.get_or_create(
+                        company=active_company,
+                        module=module,
+                        defaults={'enabled_by': request.user, 'is_enabled': True}
+                    )
+                    
+                    if not created:
+                        company_module.is_enabled = True
+                        company_module.save()
+                    
+                    messages.success(request, f'Módulo {module.name} activado exitosamente.')
+                else:
+                    messages.error(request, f'El módulo {module.name} no está disponible para esta empresa.')
+            except SystemModule.DoesNotExist:
+                messages.error(request, 'Módulo no encontrado.')
+        
+        elif action == 'deactivate':
+            try:
+                company_module = CompanyModule.objects.get(
+                    company=active_company,
+                    module_id=module_id
+                )
+                if not company_module.module.is_core_module:
+                    company_module.is_enabled = False
+                    company_module.save()
+                    messages.success(request, f'Módulo {company_module.module.name} desactivado exitosamente.')
+                else:
+                    messages.error(request, 'No se puede desactivar un módulo core.')
+            except CompanyModule.DoesNotExist:
+                messages.error(request, 'Módulo no encontrado.')
+        
+        return redirect('core:manage_modules')
+    
+    # Obtener módulos disponibles y activos
+    all_modules = SystemModule.objects.filter(is_available=True).order_by('category', 'name')
+    available_modules = [m for m in all_modules if m.can_be_activated_for_company(active_company)]
+    
+    active_modules = CompanyModule.objects.filter(
+        company=active_company,
+        is_enabled=True
+    ).select_related('module')
+    
+    active_module_ids = {cm.module.id for cm in active_modules}
+    
+    context = {
+        'active_company': active_company,
+        'available_modules': available_modules,
+        'active_modules': active_modules,
+        'active_module_ids': active_module_ids,
+    }
+    
+    return render(request, 'core/manage_modules.html', context)

@@ -1,0 +1,225 @@
+{% extends 'base.html' %}
+
+{% block title %}Catálogo de Exámenes{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1><i class="bi bi-book me-2"></i>Catálogo de Exámenes</h1>
+                <div>
+                    <a href="{% url 'laboratory:dashboard' %}" class="btn btn-outline-secondary">
+                        <i class="bi bi-speedometer2 me-1"></i>Dashboard
+                    </a>
+                    <a href="{% url 'laboratory:new_order' %}" class="btn btn-primary">
+                        <i class="bi bi-plus-circle me-1"></i>Nueva Orden
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filtros -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-funnel me-2"></i>Filtrar Exámenes</h5>
+                </div>
+                <div class="card-body">
+                    <form method="get" class="row g-3">
+                        <div class="col-md-4">
+                            <label for="section" class="form-label">Sección</label>
+                            <select class="form-select" id="section" name="section">
+                                <option value="">Todas las secciones</option>
+                                {% for section in sections %}
+                                    <option value="{{ section.id }}" {% if filters.section == section.id|stringformat:"s" %}selected{% endif %}>
+                                        {{ section.name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="search" class="form-label">Buscar</label>
+                            <input type="text" class="form-control" id="search" name="search" 
+                                   placeholder="Nombre, código o descripción" value="{{ filters.search }}">
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">&nbsp;</label>
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-search me-1"></i>Buscar
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Catálogo de Exámenes -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="bi bi-list-check me-2"></i>Exámenes Disponibles</h5>
+                    <span class="badge bg-primary">{{ tests|length }} exámenes</span>
+                </div>
+                <div class="card-body">
+                    {% if tests %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Código</th>
+                                        <th>Nombre del Examen</th>
+                                        <th>Sección</th>
+                                        <th>Muestra</th>
+                                        <th>Tipo Resultado</th>
+                                        <th>Tiempo</th>
+                                        <th>Precio</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for test in tests %}
+                                    <tr>
+                                        <td>
+                                            <strong>{{ test.code }}</strong><br>
+                                            {% if test.loinc_code %}
+                                                <small class="text-muted">LOINC: {{ test.loinc_code }}</small>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <strong>{{ test.name }}</strong><br>
+                                            <small class="text-muted">{{ test.short_name }}</small>
+                                            {% if test.description %}
+                                                <br><small class="text-muted">{{ test.description|truncatechars:50 }}</small>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-info">{{ test.category.section.name }}</span><br>
+                                            <small class="text-muted">{{ test.category.name }}</small>
+                                        </td>
+                                        <td>
+                                            <strong>{{ test.get_specimen_type_display }}</strong><br>
+                                            <small class="text-muted">{{ test.specimen_volume_ml }} ml</small>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-secondary">{{ test.get_result_type_display }}</span><br>
+                                            {% if test.unit_of_measure %}
+                                                <small class="text-muted">{{ test.unit_of_measure }}</small>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <strong>{{ test.processing_time_hours }}h</strong><br>
+                                            {% if test.is_stat_available %}
+                                                <small class="text-success">STAT: {{ test.stat_processing_time_hours }}h</small>
+                                            {% else %}
+                                                <small class="text-muted">No STAT</small>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <strong>${{ test.price|floatformat:0 }}</strong><br>
+                                            <small class="text-muted">Costo: ${{ test.cost|floatformat:0 }}</small>
+                                        </td>
+                                        <td>
+                                            <div class="btn-group btn-group-sm" role="group">
+                                                <a href="{% url 'laboratory:test_detail' test.id %}" 
+                                                   class="btn btn-outline-primary" title="Ver Detalles">
+                                                    <i class="bi bi-eye"></i>
+                                                </a>
+                                                <button type="button" class="btn btn-outline-success" 
+                                                        onclick="addToOrder('{{ test.id }}')" title="Agregar a Orden">
+                                                    <i class="bi bi-plus-circle"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Paginación -->
+                        {% if tests.has_other_pages %}
+                            <nav aria-label="Paginación de exámenes">
+                                <ul class="pagination justify-content-center">
+                                    {% if tests.has_previous %}
+                                        <li class="page-item">
+                                            <a class="page-link" href="?page=1{% for key, value in filters.items %}&{{ key }}={{ value }}{% endfor %}">Primera</a>
+                                        </li>
+                                        <li class="page-item">
+                                            <a class="page-link" href="?page={{ tests.previous_page_number }}{% for key, value in filters.items %}&{{ key }}={{ value }}{% endfor %}">Anterior</a>
+                                        </li>
+                                    {% endif %}
+                                    
+                                    <li class="page-item active">
+                                        <span class="page-link">
+                                            Página {{ tests.number }} de {{ tests.paginator.num_pages }}
+                                        </span>
+                                    </li>
+                                    
+                                    {% if tests.has_next %}
+                                        <li class="page-item">
+                                            <a class="page-link" href="?page={{ tests.next_page_number }}{% for key, value in filters.items %}&{{ key }}={{ value }}{% endfor %}">Siguiente</a>
+                                        </li>
+                                        <li class="page-item">
+                                            <a class="page-link" href="?page={{ tests.paginator.num_pages }}{% for key, value in filters.items %}&{{ key }}={{ value }}{% endfor %}">Última</a>
+                                        </li>
+                                    {% endif %}
+                                </ul>
+                            </nav>
+                        {% endif %}
+                    {% else %}
+                        <div class="text-center py-5">
+                            <i class="bi bi-book display-1 text-muted"></i>
+                            <h3 class="mt-3">No hay exámenes en el catálogo</h3>
+                            <p class="text-muted">No se encontraron exámenes que coincidan con los filtros seleccionados.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.table th {
+    font-weight: 600;
+    background-color: #f8f9fa;
+}
+
+.badge {
+    font-size: 0.75em;
+}
+
+.btn-group-sm .btn {
+    padding: 0.25rem 0.5rem;
+}
+
+.card-header {
+    background-color: #f8f9fa;
+    border-bottom: 2px solid #dee2e6;
+}
+
+.table td {
+    vertical-align: middle;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function addToOrder(testId) {
+    // Funcionalidad para agregar examen a una nueva orden
+    if (confirm('¿Desea crear una nueva orden con este examen?')) {
+        window.location.href = "{% url 'laboratory:new_order' %}?test=" + testId;
+    }
+}
+</script>
+{% endblock %}

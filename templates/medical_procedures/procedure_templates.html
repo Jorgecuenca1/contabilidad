@@ -1,0 +1,646 @@
+{% extends 'base.html' %}
+
+{% block title %}Plantillas de Procedimientos{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1><i class="bi bi-file-medical me-2"></i>Plantillas de Procedimientos</h1>
+                <div>
+                    <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#newTemplateModal">
+                        <i class="bi bi-plus-circle me-1"></i>Nueva Plantilla
+                    </button>
+                    <a href="{% url 'medical_procedures:cups_catalog' %}" class="btn btn-outline-primary">
+                        <i class="bi bi-book me-1"></i>Catálogo CUPS
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Breadcrumb -->
+    <div class="row mb-3">
+        <div class="col-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'core:dashboard' %}">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'medical_procedures:dashboard' %}">Procedimientos</a></li>
+                    <li class="breadcrumb-item active">Plantillas</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Filtros -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-funnel me-2"></i>Filtros</h5>
+                </div>
+                <div class="card-body">
+                    <form method="get" class="row g-3">
+                        <div class="col-md-3">
+                            <label for="specialty" class="form-label">Especialidad</label>
+                            <select class="form-select" id="specialty" name="specialty">
+                                <option value="">Todas</option>
+                                {% for specialty in specialties %}
+                                <option value="{{ specialty.id }}" {% if filters.specialty == specialty.id|stringformat:"s" %}selected{% endif %}>
+                                    {{ specialty.name }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="category" class="form-label">Categoría</label>
+                            <select class="form-select" id="category" name="category">
+                                <option value="">Todas</option>
+                                <option value="quirurgico" {% if filters.category == 'quirurgico' %}selected{% endif %}>Quirúrgico</option>
+                                <option value="diagnostico" {% if filters.category == 'diagnostico' %}selected{% endif %}>Diagnóstico</option>
+                                <option value="terapeutico" {% if filters.category == 'terapeutico' %}selected{% endif %}>Terapéutico</option>
+                                <option value="preventivo" {% if filters.category == 'preventivo' %}selected{% endif %}>Preventivo</option>
+                                <option value="ginecologico" {% if filters.category == 'ginecologico' %}selected{% endif %}>Ginecológico</option>
+                                <option value="obstetrico" {% if filters.category == 'obstetrico' %}selected{% endif %}>Obstétrico</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="search" class="form-label">Buscar</label>
+                            <input type="text" class="form-control" id="search" name="search" 
+                                   placeholder="Nombre de plantilla o descripción..." value="{{ filters.search }}">
+                        </div>
+                        <div class="col-md-1">
+                            <label for="active_only" class="form-label">Estado</label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="active_only" name="active_only" 
+                                       {% if filters.active_only %}checked{% endif %}>
+                                <label class="form-check-label" for="active_only">
+                                    Activas
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-1">
+                            <label class="form-label">&nbsp;</label>
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-search"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Plantillas -->
+    <div class="row">
+        {% for template in procedure_templates %}
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card h-100 {% if not template.is_active %}border-secondary{% endif %}">
+                <div class="card-header d-flex justify-content-between align-items-center 
+                            {% if template.category == 'quirurgico' %}bg-danger text-white
+                            {% elif template.category == 'diagnostico' %}bg-info text-white
+                            {% elif template.category == 'ginecologico' %}bg-warning
+                            {% elif template.category == 'obstetrico' %}bg-success text-white
+                            {% else %}bg-primary text-white{% endif %}">
+                    <h6 class="mb-0">
+                        <i class="bi bi-file-medical me-1"></i>
+                        {{ template.name }}
+                    </h6>
+                    <div class="dropdown">
+                        <button class="btn btn-sm btn-outline-light" type="button" 
+                                data-bs-toggle="dropdown">
+                            <i class="bi bi-three-dots-vertical"></i>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#" onclick="useTemplate({{ template.id }})">
+                                <i class="bi bi-play-circle me-1"></i>Usar Plantilla
+                            </a></li>
+                            <li><a class="dropdown-item" href="#" onclick="editTemplate({{ template.id }})">
+                                <i class="bi bi-pencil me-1"></i>Editar
+                            </a></li>
+                            <li><a class="dropdown-item" href="#" onclick="duplicateTemplate({{ template.id }})">
+                                <i class="bi bi-copy me-1"></i>Duplicar
+                            </a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="#" onclick="deleteTemplate({{ template.id }})">
+                                <i class="bi bi-trash me-1"></i>Eliminar
+                            </a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="mb-2">
+                        <small class="text-muted">Especialidad:</small><br>
+                        <span class="badge bg-secondary">{{ template.specialty.name|default:"General" }}</span>
+                    </div>
+                    
+                    {% if template.cups_procedure %}
+                    <div class="mb-2">
+                        <small class="text-muted">Código CUPS:</small><br>
+                        <code>{{ template.cups_procedure.cups_code }}</code>
+                    </div>
+                    {% endif %}
+                    
+                    {% if template.description %}
+                    <p class="card-text small">{{ template.description|truncatechars:100 }}</p>
+                    {% endif %}
+                    
+                    <div class="mb-2">
+                        <small class="text-muted">Duración estimada:</small><br>
+                        <span class="text-primary">{{ template.estimated_duration|default:"30" }} minutos</span>
+                    </div>
+                    
+                    {% if template.required_materials %}
+                    <div class="mb-2">
+                        <small class="text-muted">Materiales requeridos:</small><br>
+                        <small>{{ template.required_materials|truncatechars:60 }}</small>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small class="text-muted">
+                            {% if template.is_active %}
+                                <span class="badge bg-success">Activa</span>
+                            {% else %}
+                                <span class="badge bg-secondary">Inactiva</span>
+                            {% endif %}
+                        </small>
+                        <small class="text-muted">
+                            Usada {{ template.usage_count|default:0 }} veces
+                        </small>
+                    </div>
+                </div>
+                <div class="card-footer bg-light">
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <button type="button" class="btn btn-outline-primary btn-sm" 
+                                onclick="viewTemplate({{ template.id }})">
+                            <i class="bi bi-eye me-1"></i>Ver
+                        </button>
+                        <button type="button" class="btn btn-primary btn-sm" 
+                                onclick="useTemplate({{ template.id }})">
+                            <i class="bi bi-play-circle me-1"></i>Usar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body text-center py-5">
+                    <i class="bi bi-file-medical display-1 text-muted"></i>
+                    <h3 class="mt-3">No hay plantillas de procedimientos</h3>
+                    <p class="text-muted">Cree plantillas para agilizar la documentación de procedimientos médicos.</p>
+                    <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#newTemplateModal">
+                        <i class="bi bi-plus-circle me-1"></i>Crear Primera Plantilla
+                    </button>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <!-- Paginación -->
+    {% if procedure_templates.has_other_pages %}
+    <div class="row mt-4">
+        <div class="col-12">
+            <nav aria-label="Paginación">
+                <ul class="pagination justify-content-center">
+                    {% if procedure_templates.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page=1{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">&laquo; Primera</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ procedure_templates.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">Anterior</a>
+                        </li>
+                    {% endif %}
+
+                    <li class="page-item active">
+                        <span class="page-link">
+                            Página {{ procedure_templates.number }} de {{ procedure_templates.paginator.num_pages }}
+                        </span>
+                    </li>
+
+                    {% if procedure_templates.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ procedure_templates.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">Siguiente</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ procedure_templates.paginator.num_pages }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">Última &raquo;</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Modal para Nueva/Editar Plantilla -->
+<div class="modal fade" id="newTemplateModal" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="templateModalTitle">Nueva Plantilla de Procedimiento</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="templateForm">
+                    <input type="hidden" id="template_id" name="template_id">
+                    
+                    <div class="row g-3">
+                        <!-- Información básica -->
+                        <div class="col-12">
+                            <h6 class="text-primary mb-3"><i class="bi bi-info-circle me-1"></i>Información Básica</h6>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="template_name" class="form-label">Nombre de la Plantilla *</label>
+                            <input type="text" class="form-control" id="template_name" name="name" 
+                                   placeholder="Ej: Colposcopia con Biopsia" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="template_category" class="form-label">Categoría *</label>
+                            <select class="form-select" id="template_category" name="category" required>
+                                <option value="">Seleccionar categoría</option>
+                                <option value="quirurgico">Quirúrgico</option>
+                                <option value="diagnostico">Diagnóstico</option>
+                                <option value="terapeutico">Terapéutico</option>
+                                <option value="preventivo">Preventivo</option>
+                                <option value="ginecologico">Ginecológico</option>
+                                <option value="obstetrico">Obstétrico</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="template_specialty" class="form-label">Especialidad</label>
+                            <select class="form-select" id="template_specialty" name="specialty">
+                                <option value="">General</option>
+                                {% for specialty in specialties %}
+                                <option value="{{ specialty.id }}">{{ specialty.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="template_cups" class="form-label">Código CUPS</label>
+                            <select class="form-select" id="template_cups" name="cups_procedure">
+                                <option value="">Seleccionar CUPS (opcional)</option>
+                                {% for cups in cups_procedures %}
+                                <option value="{{ cups.id }}">{{ cups.cups_code }} - {{ cups.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-12">
+                            <label for="template_description" class="form-label">Descripción</label>
+                            <textarea class="form-control" id="template_description" name="description" rows="2" 
+                                      placeholder="Descripción del procedimiento..."></textarea>
+                        </div>
+
+                        <!-- Detalles del procedimiento -->
+                        <div class="col-12 mt-4">
+                            <h6 class="text-primary mb-3"><i class="bi bi-list-check me-1"></i>Detalles del Procedimiento</h6>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <label for="estimated_duration" class="form-label">Duración Estimada (min) *</label>
+                            <input type="number" class="form-control" id="estimated_duration" name="estimated_duration" 
+                                   placeholder="30" min="5" max="480" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="anesthesia_type" class="form-label">Tipo de Anestesia</label>
+                            <select class="form-select" id="anesthesia_type" name="anesthesia_type">
+                                <option value="">Sin anestesia</option>
+                                <option value="local">Local</option>
+                                <option value="regional">Regional</option>
+                                <option value="general">General</option>
+                                <option value="sedacion">Sedación</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="risk_level" class="form-label">Nivel de Riesgo</label>
+                            <select class="form-select" id="risk_level" name="risk_level">
+                                <option value="bajo">Bajo</option>
+                                <option value="medio" selected>Medio</option>
+                                <option value="alto">Alto</option>
+                            </select>
+                        </div>
+
+                        <!-- Preparación y materiales -->
+                        <div class="col-md-6">
+                            <label for="pre_procedure" class="form-label">Preparación Previa</label>
+                            <textarea class="form-control" id="pre_procedure" name="pre_procedure" rows="4" 
+                                      placeholder="Instrucciones de preparación para el procedimiento..."></textarea>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="required_materials" class="form-label">Materiales Requeridos</label>
+                            <textarea class="form-control" id="required_materials" name="required_materials" rows="4" 
+                                      placeholder="Lista de materiales e instrumentos necesarios..."></textarea>
+                        </div>
+
+                        <!-- Procedimiento paso a paso -->
+                        <div class="col-12">
+                            <label for="procedure_steps" class="form-label">Pasos del Procedimiento *</label>
+                            <textarea class="form-control" id="procedure_steps" name="procedure_steps" rows="6" 
+                                      placeholder="Descripción detallada paso a paso del procedimiento..." required></textarea>
+                        </div>
+
+                        <!-- Cuidados post-procedimiento -->
+                        <div class="col-md-6">
+                            <label for="post_procedure" class="form-label">Cuidados Posteriores</label>
+                            <textarea class="form-control" id="post_procedure" name="post_procedure" rows="4" 
+                                      placeholder="Instrucciones de cuidado después del procedimiento..."></textarea>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="possible_complications" class="form-label">Posibles Complicaciones</label>
+                            <textarea class="form-control" id="possible_complications" name="possible_complications" rows="4" 
+                                      placeholder="Complicaciones potenciales y signos de alerta..."></textarea>
+                        </div>
+
+                        <!-- Opciones -->
+                        <div class="col-12 mt-3">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="requires_consent" name="requires_consent">
+                                        <label class="form-check-label" for="requires_consent">
+                                            Requiere Consentimiento Informado
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="requires_companion" name="requires_companion">
+                                        <label class="form-check-label" for="requires_companion">
+                                            Requiere Acompañante
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="is_active_template" name="is_active" checked>
+                                        <label class="form-check-label" for="is_active_template">
+                                            Plantilla Activa
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" onclick="saveTemplate()">Guardar Plantilla</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para Ver Plantilla -->
+<div class="modal fade" id="viewTemplateModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="viewTemplateTitle">Detalles de la Plantilla</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="viewTemplateContent">
+                <!-- Contenido cargado dinámicamente -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary" onclick="useTemplateFromView()">Usar Plantilla</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+let currentTemplateId = null;
+
+function editTemplate(templateId) {
+    fetch(`/medical-procedures/templates/${templateId}/`)
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            populateTemplateForm(data.template);
+            document.getElementById('templateModalTitle').textContent = 'Editar Plantilla';
+            const modal = new bootstrap.Modal(document.getElementById('newTemplateModal'));
+            modal.show();
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error al cargar la plantilla');
+    });
+}
+
+function populateTemplateForm(template) {
+    document.getElementById('template_id').value = template.id;
+    document.getElementById('template_name').value = template.name;
+    document.getElementById('template_category').value = template.category;
+    document.getElementById('template_specialty').value = template.specialty_id || '';
+    document.getElementById('template_cups').value = template.cups_procedure_id || '';
+    document.getElementById('template_description').value = template.description || '';
+    document.getElementById('estimated_duration').value = template.estimated_duration;
+    document.getElementById('anesthesia_type').value = template.anesthesia_type || '';
+    document.getElementById('risk_level').value = template.risk_level || 'medio';
+    document.getElementById('pre_procedure').value = template.pre_procedure || '';
+    document.getElementById('required_materials').value = template.required_materials || '';
+    document.getElementById('procedure_steps').value = template.procedure_steps || '';
+    document.getElementById('post_procedure').value = template.post_procedure || '';
+    document.getElementById('possible_complications').value = template.possible_complications || '';
+    document.getElementById('requires_consent').checked = template.requires_consent || false;
+    document.getElementById('requires_companion').checked = template.requires_companion || false;
+    document.getElementById('is_active_template').checked = template.is_active;
+}
+
+function saveTemplate() {
+    const form = document.getElementById('templateForm');
+    const formData = new FormData(form);
+    
+    const templateId = document.getElementById('template_id').value;
+    const url = templateId ? 
+        `/medical-procedures/templates/edit/${templateId}/` :
+        '/medical-procedures/templates/new/';
+    
+    fetch(url, {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        } else {
+            alert('Error: ' + data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error al guardar la plantilla');
+    });
+}
+
+function viewTemplate(templateId) {
+    fetch(`/medical-procedures/templates/${templateId}/view/`)
+    .then(response => response.text())
+    .then(html => {
+        document.getElementById('viewTemplateContent').innerHTML = html;
+        currentTemplateId = templateId;
+        const modal = new bootstrap.Modal(document.getElementById('viewTemplateModal'));
+        modal.show();
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error al cargar los detalles de la plantilla');
+    });
+}
+
+function useTemplate(templateId) {
+    // Redirigir a crear procedimiento con la plantilla seleccionada
+    window.location.href = `/medical-procedures/new/?template=${templateId}`;
+}
+
+function useTemplateFromView() {
+    if (currentTemplateId) {
+        useTemplate(currentTemplateId);
+    }
+}
+
+function duplicateTemplate(templateId) {
+    if (confirm('¿Desea crear una copia de esta plantilla?')) {
+        fetch(`/medical-procedures/templates/${templateId}/duplicate/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Error: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error al duplicar la plantilla');
+        });
+    }
+}
+
+function deleteTemplate(templateId) {
+    if (confirm('¿Está seguro de que desea eliminar esta plantilla?\n\nEsta acción no se puede deshacer.')) {
+        fetch(`/medical-procedures/templates/delete/${templateId}/`, {
+            method: 'DELETE',
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Error: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error al eliminar la plantilla');
+        });
+    }
+}
+
+// Reset modal form when closed
+document.getElementById('newTemplateModal').addEventListener('hidden.bs.modal', function () {
+    document.getElementById('templateForm').reset();
+    document.getElementById('template_id').value = '';
+    document.getElementById('templateModalTitle').textContent = 'Nueva Plantilla de Procedimiento';
+    document.getElementById('is_active_template').checked = true;
+    document.getElementById('risk_level').value = 'medio';
+});
+
+// Auto-resize textareas
+document.addEventListener('DOMContentLoaded', function() {
+    const textareas = document.querySelectorAll('textarea');
+    textareas.forEach(textarea => {
+        textarea.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = this.scrollHeight + 'px';
+        });
+    });
+});
+</script>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.card-header {
+    background-color: #f8f9fa;
+    border-bottom: 2px solid #dee2e6;
+}
+
+.badge {
+    font-size: 0.75em;
+}
+
+.btn-group-sm .btn {
+    padding: 0.25rem 0.5rem;
+}
+
+.card {
+    transition: transform 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+}
+
+.card.border-secondary {
+    opacity: 0.8;
+}
+
+.modal-xl {
+    max-width: 1200px;
+}
+
+.form-check-label {
+    font-weight: 500;
+}
+
+.text-primary {
+    font-weight: 600;
+}
+
+code {
+    font-size: 0.9em;
+    color: #495057;
+    background-color: #f8f9fa;
+    padding: 0.2rem 0.4rem;
+    border-radius: 0.25rem;
+}
+
+.pagination {
+    margin-top: 1rem;
+}
+
+textarea {
+    resize: vertical;
+    min-height: 60px;
+}
+
+.dropdown-menu {
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+</style>
+{% endblock %}

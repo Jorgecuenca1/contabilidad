@@ -1,0 +1,164 @@
+{% extends 'base.html' %}
+
+{% block title %}Citas Médicas - Dashboard{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1><i class="bi bi-calendar-check me-2"></i>Citas Médicas</h1>
+                <div>
+                    <a href="{% url 'medical_appointments:new_appointment' %}" class="btn btn-primary">
+                        <i class="bi bi-plus-circle me-1"></i>Nueva Cita
+                    </a>
+                    <a href="{% url 'medical_appointments:schedules' %}" class="btn btn-outline-secondary">
+                        <i class="bi bi-clock me-1"></i>Horarios
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Estadísticas -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="mb-0">{{ appointments_today }}</h4>
+                            <p class="mb-0">Citas Hoy</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="bi bi-calendar-day-fill fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="mb-0">{{ appointments_pending }}</h4>
+                            <p class="mb-0">Pendientes</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="bi bi-clock-fill fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="mb-0">{{ appointments_confirmed }}</h4>
+                            <p class="mb-0">Confirmadas</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="bi bi-check-circle-fill fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="mb-0">{{ waiting_list_count }}</h4>
+                            <p class="mb-0">Lista de Espera</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="bi bi-hourglass-split fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Accesos rápidos -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Accesos Rápidos</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <a href="{% url 'medical_appointments:list' %}" class="btn btn-outline-primary btn-block mb-2">
+                                <i class="bi bi-list-ul me-2"></i>Ver Todas las Citas
+                            </a>
+                        </div>
+                        <div class="col-md-3">
+                            <a href="{% url 'medical_appointments:list' %}?status=confirmed" class="btn btn-outline-success btn-block mb-2">
+                                <i class="bi bi-check-circle me-2"></i>Citas Confirmadas
+                            </a>
+                        </div>
+                        <div class="col-md-3">
+                            <a href="{% url 'medical_appointments:waiting_list' %}" class="btn btn-outline-warning btn-block mb-2">
+                                <i class="bi bi-hourglass me-2"></i>Lista de Espera
+                            </a>
+                        </div>
+                        <div class="col-md-3">
+                            <a href="{% url 'medical_appointments:schedules' %}" class="btn btn-outline-info btn-block mb-2">
+                                <i class="bi bi-calendar3 me-2"></i>Gestionar Horarios
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Características especiales -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="mb-0"><i class="bi bi-star me-2"></i>Sistema Inteligente de Citas</h6>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled mb-0">
+                        <li><i class="bi bi-check-circle-fill text-success me-2"></i>Selección de médicos por especialidad</li>
+                        <li><i class="bi bi-check-circle-fill text-success me-2"></i>Horarios dinámicos configurables</li>
+                        <li><i class="bi bi-check-circle-fill text-success me-2"></i>Lista de espera automática</li>
+                        <li><i class="bi bi-check-circle-fill text-success me-2"></i>Recordatorios programados</li>
+                        <li><i class="bi bi-check-circle-fill text-success me-2"></i>Gestión de disponibilidad</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="mb-0"><i class="bi bi-calendar-week me-2"></i>Próximas Citas</h6>
+                </div>
+                <div class="card-body">
+                    {% if recent_appointments %}
+                        {% for appointment in recent_appointments %}
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <div>
+                                <strong>{{ appointment.patient.name }}</strong><br>
+                                <small class="text-muted">{{ appointment.appointment_date|date:"d/m/Y H:i" }}</small>
+                            </div>
+                            <span class="badge bg-primary">{{ appointment.doctor.get_full_name }}</span>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-muted mb-0">No hay citas próximas registradas.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
