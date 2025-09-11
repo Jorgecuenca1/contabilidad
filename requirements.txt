@@ -1,0 +1,16 @@
+Django
+djangorestframework
+django-crispy-forms
+crispy-bootstrap5
+django-widget-tweaks
+django-cors-headers
+djangorestframework_simplejwt
+python-decouple
+pillow
+reportlab
+xhtml2pdf
+openpyxl
+requests
+psycopg2-binary
+whitenoise
+pytz
