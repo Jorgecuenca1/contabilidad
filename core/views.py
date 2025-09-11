@@ -252,3 +252,12 @@ def edit_company(request, company_id):
     }
     
     return render(request, 'core/edit_company.html', context)
+
+
+@login_required
+def user_profile(request):
+    """Vista para el perfil del usuario."""
+    context = {
+        'user': request.user,
+    }
+    return render(request, 'registration/profile.html', context)

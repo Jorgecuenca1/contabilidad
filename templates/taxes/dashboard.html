@@ -414,7 +414,7 @@
                 <i class="bi bi-file-earmark-plus fs-1 text-success mb-3"></i>
                 <h6>Declaración IVA</h6>
                 <p class="small">Formulario 300 bimestral</p>
-                <button class="btn btn-success btn-sm" onclick="generateIVADeclaration()">Crear</button>
+                <a href="{% url 'taxes:iva_declaration' %}" class="btn btn-success btn-sm">Crear</a>
             </div>
         </div>
     </div>
@@ -425,7 +425,7 @@
                 <i class="bi bi-arrow-down-circle fs-1 text-primary mb-3"></i>
                 <h6>Retenciones</h6>
                 <p class="small">Formulario 350 mensual</p>
-                <button class="btn btn-primary btn-sm" onclick="generateRetentions()">Crear</button>
+                <a href="{% url 'taxes:retention_declaration' %}" class="btn btn-primary btn-sm">Crear</a>
             </div>
         </div>
     </div>
@@ -436,7 +436,7 @@
                 <i class="bi bi-building fs-1 text-warning mb-3"></i>
                 <h6>ICA Municipal</h6>
                 <p class="small">Por cada municipio</p>
-                <button class="btn btn-warning btn-sm" onclick="generateICA()">Crear</button>
+                <a href="{% url 'taxes:ica_declaration' %}" class="btn btn-warning btn-sm">Crear</a>
             </div>
         </div>
     </div>
@@ -447,7 +447,7 @@
                 <i class="bi bi-award fs-1 text-info mb-3"></i>
                 <h6>Certificados</h6>
                 <p class="small">Retenciones a terceros</p>
-                <button class="btn btn-info btn-sm" onclick="retentionCertificates()">Generar</button>
+                <a href="{% url 'taxes:retention_certificates' %}" class="btn btn-info btn-sm">Generar</a>
             </div>
         </div>
     </div>
@@ -458,7 +458,7 @@
                 <i class="bi bi-file-earmark-spreadsheet fs-1 text-secondary mb-3"></i>
                 <h6>Medios Magnéticos</h6>
                 <p class="small">Información exógena</p>
-                <button class="btn btn-secondary btn-sm" onclick="magneticMedia()">Generar</button>
+                <a href="{% url 'taxes:magnetic_media' %}" class="btn btn-secondary btn-sm">Generar</a>
             </div>
         </div>
     </div>
@@ -469,7 +469,7 @@
                 <i class="bi bi-calendar-check fs-1 text-danger mb-3"></i>
                 <h6>Calendario</h6>
                 <p class="small">Vencimientos DIAN</p>
-                <button class="btn btn-danger btn-sm" onclick="taxCalendar()">Ver</button>
+                <a href="{% url 'taxes:tax_calendar' %}" class="btn btn-danger btn-sm">Ver</a>
             </div>
         </div>
     </div>

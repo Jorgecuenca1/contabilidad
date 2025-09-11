@@ -261,7 +261,7 @@
                 <i class="bi bi-person-plus fs-1 text-success mb-3"></i>
                 <h6>Nuevo Empleado</h6>
                 <p class="small">Registrar empleado con contrato</p>
-                <button class="btn btn-success btn-sm" onclick="newEmployee()">Crear</button>
+                <a href="{% url 'payroll:new_employee' %}" class="btn btn-success btn-sm">Crear</a>
             </div>
         </div>
     </div>
@@ -272,7 +272,7 @@
                 <i class="bi bi-calculator fs-1 text-primary mb-3"></i>
                 <h6>Liquidar Nómina</h6>
                 <p class="small">Procesar nómina quincenal/mensual</p>
-                <button class="btn btn-primary btn-sm" onclick="processPayroll()">Liquidar</button>
+                <a href="{% url 'payroll:liquidate_payroll' %}" class="btn btn-primary btn-sm">Liquidar</a>
             </div>
         </div>
     </div>
@@ -283,7 +283,7 @@
                 <i class="bi bi-file-earmark-text fs-1 text-warning mb-3"></i>
                 <h6>Certificado Ingresos</h6>
                 <p class="small">Generar certificado laboral</p>
-                <button class="btn btn-warning btn-sm" onclick="generateCertificate()">Generar</button>
+                <a href="{% url 'payroll:certificate' %}" class="btn btn-warning btn-sm">Generar</a>
             </div>
         </div>
     </div>
@@ -294,7 +294,7 @@
                 <i class="bi bi-person-x fs-1 text-danger mb-3"></i>
                 <h6>Liquidación Final</h6>
                 <p class="small">Finiquito y prestaciones</p>
-                <button class="btn btn-danger btn-sm" onclick="finalLiquidation()">Liquidar</button>
+                <a href="{% url 'payroll:final_liquidation' %}" class="btn btn-danger btn-sm">Liquidar</a>
             </div>
         </div>
     </div>
@@ -305,7 +305,7 @@
                 <i class="bi bi-shield-check fs-1 text-info mb-3"></i>
                 <h6>PILA Seguridad Social</h6>
                 <p class="small">Generar planilla PILA</p>
-                <button class="btn btn-info btn-sm" onclick="generatePILA()">Generar</button>
+                <a href="{% url 'payroll:pila' %}" class="btn btn-info btn-sm">Generar</a>
             </div>
         </div>
     </div>
@@ -316,7 +316,7 @@
                 <i class="bi bi-file-earmark-bar-graph fs-1 text-secondary mb-3"></i>
                 <h6>Reportes Nómina</h6>
                 <p class="small">Informes y estadísticas</p>
-                <button class="btn btn-secondary btn-sm" onclick="payrollReports()">Ver</button>
+                <a href="{% url 'payroll:reports' %}" class="btn btn-secondary btn-sm">Ver</a>
             </div>
         </div>
     </div>

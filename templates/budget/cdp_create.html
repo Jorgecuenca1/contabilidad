@@ -1,0 +1,297 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block title %}Nuevo CDP - {{ company.name }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-file-alt"></i> Nuevo Certificado de Disponibilidad Presupuestal (CDP)
+                    </h4>
+                    <small>{{ period.name }} - {{ company.name }}</small>
+                </div>
+                <div class="card-body">
+                    <form method="post" id="cdpForm">
+                        {% csrf_token %}
+                        
+                        <!-- Información Básica -->
+                        <div class="row mb-3">
+                            <div class="col-md-3">
+                                <label for="date" class="form-label">Fecha <span class="text-danger">*</span></label>
+                                <input type="date" class="form-control" id="date" name="date" value="{{ today }}" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="request_area" class="form-label">Área Solicitante <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="request_area" name="request_area" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="request_person" class="form-label">Solicitante <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="request_person" name="request_person" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="expiry_date" class="form-label">Fecha de Vencimiento</label>
+                                <input type="date" class="form-control" id="expiry_date" name="expiry_date">
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="project" class="form-label">Proyecto</label>
+                                <input type="text" class="form-control" id="project" name="project" 
+                                       placeholder="Nombre del proyecto o actividad">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="contract_modality" class="form-label">Modalidad de Contratación</label>
+                                <select class="form-select" id="contract_modality" name="contract_modality">
+                                    <option value="">-- Seleccione --</option>
+                                    <option value="Licitación Pública">Licitación Pública</option>
+                                    <option value="Selección Abreviada">Selección Abreviada</option>
+                                    <option value="Concurso de Méritos">Concurso de Méritos</option>
+                                    <option value="Contratación Directa">Contratación Directa</option>
+                                    <option value="Mínima Cuantía">Mínima Cuantía</option>
+                                    <option value="Régimen Especial">Régimen Especial</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-12">
+                                <label for="concept" class="form-label">Concepto/Objeto <span class="text-danger">*</span></label>
+                                <textarea class="form-control" id="concept" name="concept" rows="3" required
+                                          placeholder="Describa detalladamente el objeto del CDP"></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Rubros Presupuestales -->
+                        <div class="card mb-3">
+                            <div class="card-header bg-secondary text-white">
+                                <h5 class="mb-0">Rubros Presupuestales</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-sm" id="rubrosTable">
+                                        <thead>
+                                            <tr>
+                                                <th width="20%">Código</th>
+                                                <th width="35%">Nombre del Rubro</th>
+                                                <th width="15%" class="text-end">Apropiación Disponible</th>
+                                                <th width="20%" class="text-end">Valor CDP</th>
+                                                <th width="10%" class="text-center">Acciones</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="rubrosBody">
+                                            <tr class="rubro-row">
+                                                <td>
+                                                    <select class="form-select rubro-select" name="rubro_id[]" onchange="updateRubroInfo(this)">
+                                                        <option value="">-- Seleccione --</option>
+                                                        {% for rubro in rubros %}
+                                                        <option value="{{ rubro.id }}" 
+                                                                data-available="{{ rubro.available_appropriation }}"
+                                                                data-name="{{ rubro.name }}">
+                                                            {{ rubro.code }}
+                                                        </option>
+                                                        {% endfor %}
+                                                    </select>
+                                                </td>
+                                                <td class="rubro-name">-</td>
+                                                <td class="text-end rubro-available">-</td>
+                                                <td>
+                                                    <input type="number" class="form-control text-end rubro-amount" 
+                                                           name="rubro_amount[]" step="0.01" min="0" onchange="calculateTotal()">
+                                                </td>
+                                                <td class="text-center">
+                                                    <button type="button" class="btn btn-sm btn-danger" onclick="removeRubro(this)">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                        <tfoot>
+                                            <tr>
+                                                <td colspan="3" class="text-end"><strong>TOTAL CDP:</strong></td>
+                                                <td class="text-end">
+                                                    <strong id="totalAmount">$0</strong>
+                                                    <input type="hidden" name="total_amount" id="total_amount_input" value="0">
+                                                </td>
+                                                <td class="text-center">
+                                                    <button type="button" class="btn btn-sm btn-success" onclick="addRubro()">
+                                                        <i class="fas fa-plus"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-12">
+                                <label for="observations" class="form-label">Observaciones</label>
+                                <textarea class="form-control" id="observations" name="observations" rows="2"></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Botones de Acción -->
+                        <div class="row">
+                            <div class="col-md-12 text-end">
+                                <button type="button" class="btn btn-secondary" onclick="window.history.back()">
+                                    <i class="fas fa-times"></i> Cancelar
+                                </button>
+                                <button type="submit" class="btn btn-primary" name="action" value="save">
+                                    <i class="fas fa-save"></i> Guardar Borrador
+                                </button>
+                                <button type="submit" class="btn btn-success" name="approve" value="true">
+                                    <i class="fas fa-check"></i> Guardar y Aprobar
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Información de Ayuda -->
+    <div class="row mt-3">
+        <div class="col-md-12">
+            <div class="alert alert-info">
+                <h5><i class="fas fa-info-circle"></i> Información Importante sobre CDPs</h5>
+                <ul class="mb-0">
+                    <li><strong>CDP (Certificado de Disponibilidad Presupuestal):</strong> Documento que garantiza la existencia de apropiación presupuestal disponible y libre de afectación para la asunción de compromisos.</li>
+                    <li>Es el primer paso en la cadena presupuestal: <strong>CDP → RP → Obligación → Pago</strong></li>
+                    <li>Todo proceso contractual debe contar con CDP previo.</li>
+                    <li>El CDP tiene vigencia hasta el 31 de diciembre de la vigencia fiscal.</li>
+                    <li>Los saldos de CDP no comprometidos al final del año se liberan automáticamente.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Función para actualizar información del rubro seleccionado
+function updateRubroInfo(selectElement) {
+    const row = selectElement.closest('tr');
+    const selectedOption = selectElement.options[selectElement.selectedIndex];
+    
+    if (selectedOption.value) {
+        const available = parseFloat(selectedOption.dataset.available);
+        const name = selectedOption.dataset.name;
+        
+        row.querySelector('.rubro-name').textContent = name;
+        row.querySelector('.rubro-available').textContent = '$' + available.toLocaleString('es-CO', {minimumFractionDigits: 0});
+        
+        // Establecer máximo en el input de valor
+        const amountInput = row.querySelector('.rubro-amount');
+        amountInput.max = available;
+    } else {
+        row.querySelector('.rubro-name').textContent = '-';
+        row.querySelector('.rubro-available').textContent = '-';
+    }
+    
+    calculateTotal();
+}
+
+// Función para agregar nuevo rubro
+function addRubro() {
+    const tbody = document.getElementById('rubrosBody');
+    const firstRow = tbody.querySelector('.rubro-row');
+    const newRow = firstRow.cloneNode(true);
+    
+    // Limpiar valores
+    newRow.querySelector('.rubro-select').value = '';
+    newRow.querySelector('.rubro-name').textContent = '-';
+    newRow.querySelector('.rubro-available').textContent = '-';
+    newRow.querySelector('.rubro-amount').value = '';
+    
+    tbody.appendChild(newRow);
+}
+
+// Función para eliminar rubro
+function removeRubro(button) {
+    const tbody = document.getElementById('rubrosBody');
+    const rows = tbody.querySelectorAll('.rubro-row');
+    
+    if (rows.length > 1) {
+        button.closest('tr').remove();
+        calculateTotal();
+    } else {
+        alert('Debe mantener al menos un rubro');
+    }
+}
+
+// Función para calcular total
+function calculateTotal() {
+    let total = 0;
+    const amounts = document.querySelectorAll('.rubro-amount');
+    
+    amounts.forEach(input => {
+        if (input.value) {
+            total += parseFloat(input.value);
+        }
+    });
+    
+    document.getElementById('totalAmount').textContent = '$' + total.toLocaleString('es-CO', {minimumFractionDigits: 0});
+    document.getElementById('total_amount_input').value = total;
+}
+
+// Validación del formulario
+document.getElementById('cdpForm').addEventListener('submit', function(e) {
+    const rubros = document.querySelectorAll('.rubro-select');
+    let hasRubro = false;
+    let totalAmount = 0;
+    
+    rubros.forEach((select, index) => {
+        if (select.value) {
+            hasRubro = true;
+            const amount = document.querySelectorAll('.rubro-amount')[index].value;
+            if (!amount || parseFloat(amount) <= 0) {
+                e.preventDefault();
+                alert('Debe ingresar un valor válido para cada rubro seleccionado');
+                return;
+            }
+            totalAmount += parseFloat(amount);
+        }
+    });
+    
+    if (!hasRubro) {
+        e.preventDefault();
+        alert('Debe seleccionar al menos un rubro presupuestal');
+        return;
+    }
+    
+    if (totalAmount <= 0) {
+        e.preventDefault();
+        alert('El valor total del CDP debe ser mayor a cero');
+        return;
+    }
+    
+    // Validar disponibilidad
+    let valid = true;
+    rubros.forEach((select, index) => {
+        if (select.value) {
+            const available = parseFloat(select.options[select.selectedIndex].dataset.available);
+            const amount = parseFloat(document.querySelectorAll('.rubro-amount')[index].value);
+            
+            if (amount > available) {
+                e.preventDefault();
+                alert('El valor del CDP no puede exceder la apropiación disponible del rubro');
+                valid = false;
+                return;
+            }
+        }
+    });
+    
+    if (valid && confirm('¿Está seguro de crear este CDP?')) {
+        // Continuar con el envío
+    } else {
+        e.preventDefault();
+    }
+});
+</script>
+{% endblock %}

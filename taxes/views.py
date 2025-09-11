@@ -40,6 +40,104 @@ def taxes_dashboard(request):
 
 
 @login_required
+def iva_declaration(request):
+    """Vista para declaración de IVA."""
+    companies = Company.objects.filter(is_active=True)
+    
+    context = {
+        'companies': companies,
+    }
+    
+    return render(request, 'taxes/iva_declaration.html', context)
+
+
+@login_required
+def retention_declaration(request):
+    """Vista para declaración de retenciones."""
+    companies = Company.objects.filter(is_active=True)
+    
+    context = {
+        'companies': companies,
+    }
+    
+    return render(request, 'taxes/retention_declaration.html', context)
+
+
+@login_required
+def ica_declaration(request):
+    """Vista para declaración de ICA."""
+    companies = Company.objects.filter(is_active=True)
+    
+    context = {
+        'companies': companies,
+    }
+    
+    return render(request, 'taxes/ica_declaration.html', context)
+
+
+@login_required
+def retention_certificates(request):
+    """Vista para certificados de retención."""
+    companies = Company.objects.filter(is_active=True)
+    
+    context = {
+        'companies': companies,
+    }
+    
+    return render(request, 'taxes/retention_certificates.html', context)
+
+
+@login_required
+def magnetic_media(request):
+    """Vista para medios magnéticos."""
+    companies = Company.objects.filter(is_active=True)
+    
+    context = {
+        'companies': companies,
+    }
+    
+    return render(request, 'taxes/magnetic_media.html', context)
+
+
+@login_required
+def tax_calendar(request):
+    """Vista para calendario tributario."""
+    companies = Company.objects.filter(is_active=True)
+    calendars = TaxCalendar.objects.all().order_by('due_date')
+    
+    context = {
+        'companies': companies,
+        'calendars': calendars,
+    }
+    
+    return render(request, 'taxes/tax_calendar.html', context)
+
+
+@login_required
+def iva_report(request):
+    """Vista para reportes de IVA."""
+    companies = Company.objects.filter(is_active=True)
+    
+    context = {
+        'companies': companies,
+    }
+    
+    return render(request, 'taxes/iva_report.html', context)
+
+
+@login_required
+def renta_declaration(request):
+    """Vista para declaración de renta."""
+    companies = Company.objects.filter(is_active=True)
+    
+    context = {
+        'companies': companies,
+    }
+    
+    return render(request, 'taxes/renta_declaration.html', context)
+
+
+@login_required
 def new_tax_declaration(request):
     """Vista para crear nueva declaración de impuestos."""
     if request.method == 'POST':

@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+
+{% block title %}Liquidación Final{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h2 class="text-primary">
+                <i class="fas fa-user-minus"></i> Liquidación Final de Empleados
+            </h2>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="{% url 'payroll:dashboard' %}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left"></i> Volver
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="mb-0"><i class="fas fa-user-minus"></i> Proceso de Liquidación Final</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <label>Empleado a Liquidar</label>
+                                <select name="employee" class="form-control" required>
+                                    <option value="">Seleccione un empleado...</option>
+                                    {% for emp in employees %}
+                                    <option value="{{ emp.id }}" {% if employee and emp.id == employee.id %}selected{% endif %}>
+                                        {{ emp.employee_code }} - {{ emp.get_full_name }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label>Fecha de Retiro</label>
+                                <input type="date" name="termination_date" class="form-control" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label>Motivo de Retiro</label>
+                                <select name="termination_reason" class="form-control" required>
+                                    <option value="">Seleccione...</option>
+                                    <option value="voluntary">Renuncia Voluntaria</option>
+                                    <option value="dismissal">Despido con Justa Causa</option>
+                                    <option value="dismissal_no_cause">Despido sin Justa Causa</option>
+                                    <option value="mutual">Mutuo Acuerdo</option>
+                                    <option value="contract_end">Fin de Contrato</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <label>&nbsp;</label>
+                                <button type="submit" class="btn btn-danger form-control">
+                                    <i class="fas fa-calculator"></i> Calcular
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                    
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <strong>Advertencia:</strong> La liquidación final incluye el cálculo de cesantías, intereses sobre cesantías, prima de servicios, vacaciones pendientes y otros conceptos según la legislación laboral colombiana.
+                    </div>
+
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i>
+                        <strong>Conceptos incluidos:</strong> 
+                        <ul class="mb-0">
+                            <li>Salario pendiente hasta la fecha de retiro</li>
+                            <li>Cesantías consolidadas</li>
+                            <li>Intereses sobre cesantías</li>
+                            <li>Prima de servicios proporcional</li>
+                            <li>Vacaciones pendientes</li>
+                            <li>Indemnizaciones (si aplican)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

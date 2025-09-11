@@ -102,7 +102,7 @@
             <div class="card-body text-center">
                 <i class="bi bi-plus-circle fs-1 text-primary mb-3"></i>
                 <h6 class="card-title">Nuevo Presupuesto</h6>
-                <button class="btn btn-primary btn-sm" onclick="createBudget()">Crear</button>
+                <a href="{% url 'budget:dashboard' %}" class="btn btn-primary btn-sm">Ir a Presupuesto</a>
             </div>
         </div>
     </div>
@@ -112,7 +112,7 @@
             <div class="card-body text-center">
                 <i class="bi bi-file-earmark-plus fs-1 text-success mb-3"></i>
                 <h6 class="card-title">Nuevo CDP</h6>
-                <button class="btn btn-success btn-sm" onclick="createCDP()">Crear</button>
+                <a href="{% url 'budget:cdp_create' %}" class="btn btn-success btn-sm">Crear</a>
             </div>
         </div>
     </div>
@@ -122,7 +122,7 @@
             <div class="card-body text-center">
                 <i class="bi bi-file-earmark-text fs-1 text-warning mb-3"></i>
                 <h6 class="card-title">Nuevo RP</h6>
-                <button class="btn btn-warning btn-sm" onclick="createRP()">Crear</button>
+                <a href="{% url 'budget:rp_create' %}" class="btn btn-warning btn-sm">Crear</a>
             </div>
         </div>
     </div>
@@ -132,7 +132,7 @@
             <div class="card-body text-center">
                 <i class="bi bi-graph-up fs-1 text-info mb-3"></i>
                 <h6 class="card-title">Ejecución</h6>
-                <button class="btn btn-info btn-sm" onclick="viewExecution()">Ver</button>
+                <a href="{% url 'budget:execution_report' %}" class="btn btn-info btn-sm">Ver</a>
             </div>
         </div>
     </div>

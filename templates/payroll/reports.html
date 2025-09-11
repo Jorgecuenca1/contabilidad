@@ -1,0 +1,229 @@
+{% extends 'base.html' %}
+
+{% block title %}Reportes de Nómina{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h2 class="text-primary">
+                <i class="fas fa-chart-bar"></i> Reportes de Nómina
+            </h2>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="{% url 'payroll:dashboard' %}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left"></i> Volver
+            </a>
+        </div>
+    </div>
+
+    <!-- Reportes Básicos -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h6 class="mb-0"><i class="fas fa-list"></i> Nómina Detallada</h6>
+                </div>
+                <div class="card-body">
+                    <p class="small">Reporte detallado de nómina por período</p>
+                    <form method="post" action="">
+                        {% csrf_token %}
+                        <input type="hidden" name="report_type" value="detailed_payroll">
+                        
+                        <div class="mb-2">
+                            <select name="period" class="form-control form-control-sm" required>
+                                <option value="">Seleccione período...</option>
+                                {% for period in periods %}
+                                <option value="{{ period.id }}">{{ period.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-sm">
+                            <i class="fas fa-download"></i> Generar
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h6 class="mb-0"><i class="fas fa-chart-pie"></i> Resumen por Conceptos</h6>
+                </div>
+                <div class="card-body">
+                    <p class="small">Consolidado de conceptos de nómina</p>
+                    <form method="post" action="">
+                        {% csrf_token %}
+                        <input type="hidden" name="report_type" value="concepts_summary">
+                        
+                        <div class="mb-2">
+                            <select name="period" class="form-control form-control-sm" required>
+                                <option value="">Seleccione período...</option>
+                                {% for period in periods %}
+                                <option value="{{ period.id }}">{{ period.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-success btn-sm">
+                            <i class="fas fa-download"></i> Generar
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h6 class="mb-0"><i class="fas fa-users"></i> Nómina por Empleado</h6>
+                </div>
+                <div class="card-body">
+                    <p class="small">Histórico de nómina por empleado</p>
+                    <form method="post" action="">
+                        {% csrf_token %}
+                        <input type="hidden" name="report_type" value="employee_history">
+                        
+                        <div class="mb-2">
+                            <select name="employee" class="form-control form-control-sm" required>
+                                <option value="">Seleccione empleado...</option>
+                                <!-- Aquí irían los empleados -->
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-info btn-sm">
+                            <i class="fas fa-download"></i> Generar
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reportes Especiales -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header bg-warning text-white">
+                    <h6 class="mb-0"><i class="fas fa-shield-alt"></i> Seguridad Social</h6>
+                </div>
+                <div class="card-body">
+                    <p class="small">Aportes a seguridad social</p>
+                    <form method="post" action="">
+                        {% csrf_token %}
+                        <input type="hidden" name="report_type" value="social_security">
+                        
+                        <div class="mb-2">
+                            <select name="period" class="form-control form-control-sm" required>
+                                <option value="">Seleccione período...</option>
+                                {% for period in periods %}
+                                <option value="{{ period.id }}">{{ period.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-warning btn-sm">
+                            <i class="fas fa-download"></i> Generar
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header bg-danger text-white">
+                    <h6 class="mb-0"><i class="fas fa-hand-holding-usd"></i> Prestaciones Sociales</h6>
+                </div>
+                <div class="card-body">
+                    <p class="small">Cesantías, primas y vacaciones</p>
+                    <form method="post" action="">
+                        {% csrf_token %}
+                        <input type="hidden" name="report_type" value="labor_benefits">
+                        
+                        <div class="mb-2">
+                            <input type="number" name="year" class="form-control form-control-sm" 
+                                   placeholder="Año" min="2020" max="2030" value="2025" required>
+                        </div>
+                        <button type="submit" class="btn btn-danger btn-sm">
+                            <i class="fas fa-download"></i> Generar
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header bg-secondary text-white">
+                    <h6 class="mb-0"><i class="fas fa-file-invoice"></i> Comprobantes de Pago</h6>
+                </div>
+                <div class="card-body">
+                    <p class="small">Desprendibles de nómina masivos</p>
+                    <form method="post" action="">
+                        {% csrf_token %}
+                        <input type="hidden" name="report_type" value="payslips">
+                        
+                        <div class="mb-2">
+                            <select name="period" class="form-control form-control-sm" required>
+                                <option value="">Seleccione período...</option>
+                                {% for period in periods %}
+                                <option value="{{ period.id }}">{{ period.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-secondary btn-sm">
+                            <i class="fas fa-download"></i> Generar
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Estadísticas Rápidas -->
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0"><i class="fas fa-chart-line"></i> Estadísticas de Nómina</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-md-3">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h6 class="text-muted">Empleados Activos</h6>
+                                    <h4 class="text-primary">247</h4>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h6 class="text-muted">Nómina Mensual</h6>
+                                    <h4 class="text-success">$85,245,000</h4>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h6 class="text-muted">Aportes Seguridad Social</h6>
+                                    <h4 class="text-warning">$12,786,750</h4>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h6 class="text-muted">Prestaciones Acumuladas</h6>
+                                    <h4 class="text-info">$45,123,600</h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

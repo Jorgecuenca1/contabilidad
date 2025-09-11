@@ -21,21 +21,115 @@ def reports_dashboard(request):
     """
     Dashboard principal de reportes.
     """
-    # Obtener empresas del usuario
-    companies = request.user.companies.filter(is_active=True)
+    # Manejar selección de empresa
+    company_id = request.GET.get('company_id') or request.session.get('selected_company_id')
+    
+    # Obtener todas las empresas del usuario
+    if request.user.is_superuser:
+        companies = Company.objects.filter(is_active=True)
+    else:
+        companies = request.user.companies.filter(is_active=True)
+    
+    # Si no hay empresas disponibles, buscar cualquier empresa
+    if not companies.exists():
+        companies = Company.objects.filter(is_active=True)[:5]  # Limitar a 5 empresas para pruebas
+    
+    selected_company = None
+    if company_id:
+        try:
+            selected_company = companies.get(id=company_id)
+            request.session['selected_company_id'] = str(selected_company.id)
+        except Company.DoesNotExist:
+            pass
+    
+    # Si no hay empresa seleccionada, tomar la primera
+    if not selected_company:
+        selected_company = request.user.default_company or companies.first()
+        if selected_company:
+            request.session['selected_company_id'] = str(selected_company.id)
     
     # Reportes recientes
-    recent_reports = GeneratedReport.objects.filter(
-        company__in=companies,
-        created_by=request.user
-    ).order_by('-created_at')[:10]
+    recent_reports = []
+    if selected_company:
+        try:
+            recent_reports = GeneratedReport.objects.filter(
+                company=selected_company,
+                created_by=request.user
+            ).order_by('-created_at')[:10]
+        except:
+            # El modelo GeneratedReport podría no existir aún
+            pass
     
     context = {
         'companies': companies,
+        'selected_company': selected_company,
         'recent_reports': recent_reports,
     }
     
     return render(request, 'reports/dashboard.html', context)
+
+
+@login_required
+def balance_sheet(request):
+    """Vista para el Balance General."""
+    companies = Company.objects.filter(is_active=True)
+    
+    context = {
+        'companies': companies,
+    }
+    
+    return render(request, 'reports/balance_sheet.html', context)
+
+
+@login_required
+def income_statement(request):
+    """Vista para el Estado de Resultados."""
+    companies = Company.objects.filter(is_active=True)
+    
+    context = {
+        'companies': companies,
+    }
+    
+    return render(request, 'reports/income_statement.html', context)
+
+
+@login_required
+def trial_balance(request):
+    """Vista para el Balance de Prueba."""
+    companies = Company.objects.filter(is_active=True)
+    
+    context = {
+        'companies': companies,
+    }
+    
+    return render(request, 'reports/trial_balance.html', context)
+
+
+@login_required
+def general_ledger(request):
+    """Vista para el Libro Mayor."""
+    companies = Company.objects.filter(is_active=True)
+    accounts = Account.objects.filter(is_active=True)
+    
+    context = {
+        'companies': companies,
+        'accounts': accounts,
+    }
+    
+    return render(request, 'reports/general_ledger.html', context)
+
+
+@login_required
+def aging_report(request, report_type=None):
+    """Vista para reportes de antigüedad de saldos."""
+    companies = Company.objects.filter(is_active=True)
+    
+    context = {
+        'companies': companies,
+        'report_type': report_type,
+    }
+    
+    return render(request, 'reports/aging_report.html', context)
 
 
 @login_required

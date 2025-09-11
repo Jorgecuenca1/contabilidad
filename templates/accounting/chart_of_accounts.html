@@ -171,7 +171,7 @@
                                         <code class="text-primary">{{ account.code }}</code>
                                     </td>
                                     <td>
-                                        <div class="account-name" style="margin-left: {{ account.level|add:'-1'|mul:'20' }}px;">
+                                        <div class="account-name" style="margin-left: {% if account.level == 2 %}20{% elif account.level == 3 %}40{% elif account.level == 4 %}60{% elif account.level == 5 %}80{% elif account.level == 6 %}100{% else %}0{% endif %}px;">
                                             {% if account.level == 1 %}
                                                 <i class="bi bi-folder-fill text-primary"></i>
                                             {% elif account.level == 2 %}

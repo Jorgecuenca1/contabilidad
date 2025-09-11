@@ -422,3 +422,238 @@ class ReportService:
         excel_buffer.seek(0)
         
         return excel_buffer
+    
+    def _generate_excel_income_statement(self, context):
+        """
+        Genera Estado de Resultados en Excel.
+        """
+        wb = openpyxl.Workbook()
+        ws = wb.active
+        ws.title = "Estado de Resultados"
+        
+        # Estilos
+        header_font = Font(bold=True, size=14)
+        title_font = Font(bold=True, size=12)
+        bold_font = Font(bold=True)
+        
+        # Encabezado
+        ws['A1'] = context['company'].name
+        ws['A1'].font = header_font
+        ws['A2'] = context['title']
+        ws['A2'].font = title_font
+        ws['A3'] = f"Del {context['period_start']} al {context['period_end']}"
+        
+        # Cabeceras de columnas
+        row = 5
+        headers = ['Código', 'Cuenta', 'Saldo']
+        for col, header in enumerate(headers, 1):
+            cell = ws.cell(row=row, column=col, value=header)
+            cell.font = bold_font
+        
+        # Datos
+        row += 1
+        for account_data in context['accounts_data']:
+            ws.cell(row=row, column=1, value=account_data[0])  # código
+            ws.cell(row=row, column=2, value=account_data[1])  # nombre
+            ws.cell(row=row, column=3, value=float(account_data[4]))  # saldo
+            row += 1
+        
+        # Ajustar ancho de columnas
+        ws.column_dimensions['A'].width = 15
+        ws.column_dimensions['B'].width = 40
+        ws.column_dimensions['C'].width = 15
+        
+        excel_buffer = BytesIO()
+        wb.save(excel_buffer)
+        excel_buffer.seek(0)
+        
+        return excel_buffer
+    
+    def _generate_excel_trial_balance(self, context):
+        """
+        Genera Balance de Prueba en Excel.
+        """
+        wb = openpyxl.Workbook()
+        ws = wb.active
+        ws.title = "Balance de Prueba"
+        
+        # Estilos
+        header_font = Font(bold=True, size=14)
+        title_font = Font(bold=True, size=12)
+        bold_font = Font(bold=True)
+        
+        # Encabezado
+        ws['A1'] = context['company'].name
+        ws['A1'].font = header_font
+        ws['A2'] = context['title']
+        ws['A2'].font = title_font
+        ws['A3'] = f"Al {context['period_end']}"
+        
+        # Cabeceras de columnas
+        row = 5
+        headers = ['Código', 'Cuenta', 'Débito', 'Crédito', 'Saldo']
+        for col, header in enumerate(headers, 1):
+            cell = ws.cell(row=row, column=col, value=header)
+            cell.font = bold_font
+        
+        # Datos
+        row += 1
+        total_debit = 0
+        total_credit = 0
+        total_balance = 0
+        
+        for account_data in context['accounts_data']:
+            ws.cell(row=row, column=1, value=account_data[0])  # código
+            ws.cell(row=row, column=2, value=account_data[1])  # nombre
+            ws.cell(row=row, column=3, value=float(account_data[2]))  # débito
+            ws.cell(row=row, column=4, value=float(account_data[3]))  # crédito
+            ws.cell(row=row, column=5, value=float(account_data[4]))  # saldo
+            
+            total_debit += float(account_data[2])
+            total_credit += float(account_data[3])
+            total_balance += float(account_data[4])
+            row += 1
+        
+        # Totales
+        row += 1
+        ws.cell(row=row, column=1, value="TOTALES").font = bold_font
+        ws.cell(row=row, column=3, value=total_debit).font = bold_font
+        ws.cell(row=row, column=4, value=total_credit).font = bold_font
+        ws.cell(row=row, column=5, value=total_balance).font = bold_font
+        
+        # Ajustar ancho de columnas
+        ws.column_dimensions['A'].width = 15
+        ws.column_dimensions['B'].width = 40
+        ws.column_dimensions['C'].width = 15
+        ws.column_dimensions['D'].width = 15
+        ws.column_dimensions['E'].width = 15
+        
+        excel_buffer = BytesIO()
+        wb.save(excel_buffer)
+        excel_buffer.seek(0)
+        
+        return excel_buffer
+    
+    def _generate_excel_general_ledger(self, context):
+        """
+        Genera Libro Mayor en Excel.
+        """
+        wb = openpyxl.Workbook()
+        ws = wb.active
+        ws.title = "Libro Mayor"
+        
+        # Estilos
+        header_font = Font(bold=True, size=14)
+        title_font = Font(bold=True, size=12)
+        bold_font = Font(bold=True)
+        
+        # Encabezado
+        ws['A1'] = context['company'].name
+        ws['A1'].font = header_font
+        ws['A2'] = context['title']
+        ws['A2'].font = title_font
+        ws['A3'] = f"Del {context['period_start']} al {context['period_end']}"
+        
+        # Cabeceras de columnas
+        row = 5
+        headers = ['Fecha', 'Comprobante', 'Concepto', 'Débito', 'Crédito', 'Saldo']
+        for col, header in enumerate(headers, 1):
+            cell = ws.cell(row=row, column=col, value=header)
+            cell.font = bold_font
+        
+        # Datos
+        row += 1
+        running_balance = 0
+        
+        for movement in context['movements']:
+            ws.cell(row=row, column=1, value=movement.journal_entry.date.strftime('%d/%m/%Y'))
+            ws.cell(row=row, column=2, value=movement.journal_entry.number)
+            ws.cell(row=row, column=3, value=movement.description or movement.journal_entry.description)
+            ws.cell(row=row, column=4, value=float(movement.debit) if movement.debit > 0 else 0)
+            ws.cell(row=row, column=5, value=float(movement.credit) if movement.credit > 0 else 0)
+            
+            running_balance += float(movement.debit - movement.credit)
+            ws.cell(row=row, column=6, value=running_balance)
+            row += 1
+        
+        # Ajustar ancho de columnas
+        ws.column_dimensions['A'].width = 12
+        ws.column_dimensions['B'].width = 15
+        ws.column_dimensions['C'].width = 40
+        ws.column_dimensions['D'].width = 15
+        ws.column_dimensions['E'].width = 15
+        ws.column_dimensions['F'].width = 15
+        
+        excel_buffer = BytesIO()
+        wb.save(excel_buffer)
+        excel_buffer.seek(0)
+        
+        return excel_buffer
+    
+    def _generate_excel_aging_report(self, context):
+        """
+        Genera Reporte de Cartera en Excel.
+        """
+        wb = openpyxl.Workbook()
+        ws = wb.active
+        ws.title = "Cartera Vencida"
+        
+        # Estilos
+        header_font = Font(bold=True, size=14)
+        title_font = Font(bold=True, size=12)
+        bold_font = Font(bold=True)
+        
+        # Encabezado
+        ws['A1'] = context['company'].name
+        ws['A1'].font = header_font
+        ws['A2'] = context['title']
+        ws['A2'].font = title_font
+        ws['A3'] = f"Al {context['report_date']}"
+        
+        # Cabeceras de columnas
+        row = 5
+        headers = ['Cliente/Proveedor', 'Factura', 'Fecha', 'Vencimiento', 'Total', 'Saldo', 'Días Vencidos']
+        for col, header in enumerate(headers, 1):
+            cell = ws.cell(row=row, column=col, value=header)
+            cell.font = bold_font
+        
+        # Datos
+        row += 1
+        total_balance = 0
+        
+        for item in context['aging_data']:
+            ws.cell(row=row, column=1, value=item[1])  # nombre cliente/proveedor
+            ws.cell(row=row, column=2, value=item[2])  # número factura
+            ws.cell(row=row, column=3, value=item[3].strftime('%d/%m/%Y') if item[3] else '')  # fecha
+            ws.cell(row=row, column=4, value=item[4].strftime('%d/%m/%Y') if item[4] else '')  # vencimiento
+            ws.cell(row=row, column=5, value=float(item[5]))  # total
+            ws.cell(row=row, column=6, value=float(item[6]))  # saldo
+            
+            # Calcular días vencidos
+            days_overdue = 0
+            if item[4] and context['report_date']:
+                days_overdue = max(0, (context['report_date'] - item[4]).days)
+            ws.cell(row=row, column=7, value=days_overdue)
+            
+            total_balance += float(item[6])
+            row += 1
+        
+        # Total
+        row += 1
+        ws.cell(row=row, column=5, value="TOTAL").font = bold_font
+        ws.cell(row=row, column=6, value=total_balance).font = bold_font
+        
+        # Ajustar ancho de columnas
+        ws.column_dimensions['A'].width = 30
+        ws.column_dimensions['B'].width = 15
+        ws.column_dimensions['C'].width = 12
+        ws.column_dimensions['D'].width = 12
+        ws.column_dimensions['E'].width = 15
+        ws.column_dimensions['F'].width = 15
+        ws.column_dimensions['G'].width = 15
+        
+        excel_buffer = BytesIO()
+        wb.save(excel_buffer)
+        excel_buffer.seek(0)
+        
+        return excel_buffer

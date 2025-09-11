@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+
+{% block title %}Iniciar Sesión - Sistema Contable{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card mt-5">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-sign-in-alt"></i> Iniciar Sesión
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="text-center mb-4">
+                        <h3 class="text-primary">Sistema Contable Multi-Empresa</h3>
+                        <p class="text-muted">Ingrese sus credenciales para acceder</p>
+                    </div>
+                    
+                    {% if form.errors %}
+                        <div class="alert alert-danger">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            Por favor, corrija los errores a continuación.
+                        </div>
+                    {% endif %}
+                    
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="form-group mb-3">
+                            <label for="{{ form.username.id_for_label }}" class="form-label">
+                                <i class="fas fa-user"></i> Usuario
+                            </label>
+                            <input type="text" name="username" class="form-control" required>
+                        </div>
+                        
+                        <div class="form-group mb-3">
+                            <label for="{{ form.password.id_for_label }}" class="form-label">
+                                <i class="fas fa-lock"></i> Contraseña
+                            </label>
+                            <input type="password" name="password" class="form-control" required>
+                        </div>
+                        
+                        {% if next %}
+                            <input type="hidden" name="next" value="{{ next }}">
+                        {% endif %}
+                        
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-sign-in-alt"></i> Iniciar Sesión
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                
+                <div class="card-footer text-center">
+                    <small class="text-muted">
+                        Sistema de Contabilidad Multi-Empresa para Colombia<br>
+                        <strong>Versión 1.0</strong>
+                    </small>
+                </div>
+            </div>
+            
+            <div class="card mt-3">
+                <div class="card-body text-center">
+                    <h6 class="card-title">Características del Sistema</h6>
+                    <div class="row text-center">
+                        <div class="col-4">
+                            <i class="fas fa-calculator fa-2x text-primary mb-2"></i>
+                            <p><small>Nómina Electrónica</small></p>
+                        </div>
+                        <div class="col-4">
+                            <i class="fas fa-file-invoice fa-2x text-success mb-2"></i>
+                            <p><small>Gestión Tributaria</small></p>
+                        </div>
+                        <div class="col-4">
+                            <i class="fas fa-chart-bar fa-2x text-warning mb-2"></i>
+                            <p><small>Reportes NIIF</small></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+body {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+}
+.card {
+    border: none;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+</style>
+{% endblock %}

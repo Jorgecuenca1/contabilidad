@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+
+{% block title %}Planilla PILA{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h2 class="text-primary">
+                <i class="fas fa-file-medical"></i> Planilla Integrada de Liquidación de Aportes - PILA
+            </h2>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="{% url 'payroll:dashboard' %}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left"></i> Volver
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="fas fa-file-medical"></i> Generar Planilla PILA</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-3">
+                                <label>Empresa</label>
+                                <select name="company" class="form-control" required>
+                                    <option value="">Seleccione empresa...</option>
+                                    {% for company in companies %}
+                                    <option value="{{ company.id }}">{{ company.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label>Período de Pago</label>
+                                <select name="period" class="form-control" required>
+                                    <option value="">Seleccione período...</option>
+                                    {% for period in periods %}
+                                    <option value="{{ period.id }}">{{ period.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label>Tipo de Planilla</label>
+                                <select name="pila_type" class="form-control" required>
+                                    <option value="N">Normal</option>
+                                    <option value="C">Corrección</option>
+                                    <option value="S">Sustitución</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label>&nbsp;</label>
+                                <button type="submit" class="btn btn-info form-control">
+                                    <i class="fas fa-file-download"></i> Generar PILA
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                    
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i>
+                        <strong>Información PILA:</strong> 
+                        <ul class="mb-0">
+                            <li><strong>EPS:</strong> Entidades Promotoras de Salud</li>
+                            <li><strong>AFP:</strong> Administradoras de Fondos de Pensiones</li>
+                            <li><strong>ARL:</strong> Administradoras de Riesgos Laborales</li>
+                            <li><strong>CCF:</strong> Cajas de Compensación Familiar</li>
+                            <li><strong>ICBF:</strong> Instituto Colombiano de Bienestar Familiar</li>
+                            <li><strong>SENA:</strong> Servicio Nacional de Aprendizaje</li>
+                        </ul>
+                    </div>
+
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <strong>Recordatorio:</strong> La planilla debe presentarse antes del día 10 del mes siguiente al período de pago de los salarios.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

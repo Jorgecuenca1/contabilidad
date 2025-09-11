@@ -18,9 +18,13 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from django.shortcuts import redirect
+from django.contrib.auth.decorators import login_required
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('accounts/profile/', login_required(lambda request: redirect('/'))),  # Redirigir profile al dashboard
+    path('accounts/', include('django.contrib.auth.urls')),  # Añadido para login/logout
     path('', include('core.urls')),
     path('accounting/', include('accounting.urls')),
     path('accounts_receivable/', include('accounts_receivable.urls')),
@@ -32,6 +36,8 @@ urlpatterns = [
     path('public-sector/', include('public_sector.urls')),
     path('inventory/', include('inventory.urls')),
     path('fixed-assets/', include('fixed_assets.urls')),
+    path('budget/', include('budget.urls')),
+    path('third-parties/', include('third_parties.urls')),
 ]
 
 # Servir archivos estáticos en desarrollo

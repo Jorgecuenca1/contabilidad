@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+
+{% block title %}Declaración de IVA{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h2 class="text-primary">
+                <i class="fas fa-file-invoice"></i> Declaración de IVA - Formulario 300
+            </h2>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="{% url 'taxes:dashboard' %}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left"></i> Volver
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="fas fa-file-invoice"></i> Nueva Declaración de IVA</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-3">
+                                <label>Empresa</label>
+                                <select name="company" class="form-control" required>
+                                    <option value="">Seleccione empresa...</option>
+                                    {% for company in companies %}
+                                    <option value="{{ company.id }}">{{ company.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label>Período Gravable</label>
+                                <select name="period" class="form-control" required>
+                                    <option value="">Seleccione bimestre...</option>
+                                    <option value="202501">Enero - Febrero 2025</option>
+                                    <option value="202503">Marzo - Abril 2025</option>
+                                    <option value="202505">Mayo - Junio 2025</option>
+                                    <option value="202507">Julio - Agosto 2025</option>
+                                    <option value="202509">Septiembre - Octubre 2025</option>
+                                    <option value="202511">Noviembre - Diciembre 2025</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label>Año Gravable</label>
+                                <input type="number" name="year" class="form-control" value="2025" min="2020" max="2030" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label>&nbsp;</label>
+                                <button type="submit" class="btn btn-success form-control">
+                                    <i class="fas fa-calculator"></i> Generar Declaración
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                    
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i>
+                        <strong>Información IVA:</strong>
+                        <ul class="mb-0">
+                            <li>La declaración de IVA se presenta de forma bimestral</li>
+                            <li>Incluye IVA generado e IVA descontable</li>
+                            <li>Vencimiento: 2 meses después del período gravable</li>
+                            <li>Formulario 300 (Grandes Contribuyentes) o 330 (Otros)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

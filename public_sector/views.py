@@ -7,7 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 
 from core.models import Company
-from .models import Budget, CDP, RP
+from budget.models import BudgetPeriod, CDP, RP
 
 
 @login_required

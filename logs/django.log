@@ -565,3 +565,548 @@ INFO 2025-08-28 02:45:17,175 autoreload 8832 10188 Watching for file changes wit
 WARNING 2025-08-28 02:47:48,807 log 10068 10584 Not Found: /admin/public_sector/budget/add/
 INFO 2025-08-30 00:43:38,834 autoreload 7328 6532 Watching for file changes with StatReloader
 WARNING 2025-08-30 00:43:54,155 log 7328 10036 Not Found: /favicon.ico
+INFO 2025-09-06 03:57:42,649 autoreload 7388 2416 Watching for file changes with StatReloader
+INFO 2025-09-06 03:58:49,834 autoreload 7388 2416 C:\Users\HOME\PycharmProjects\contabilidad\contabilidad_multiempresa\urls.py changed, reloading.
+INFO 2025-09-06 03:58:50,627 autoreload 8088 18332 Watching for file changes with StatReloader
+INFO 2025-09-06 04:01:39,076 autoreload 6576 13372 Watching for file changes with StatReloader
+WARNING 2025-09-06 04:02:00,235 log 6576 19944 Not Found: /favicon.ico
+WARNING 2025-09-06 04:02:07,011 log 6576 19944 Not Found: /accounts/profile/
+ERROR 2025-09-06 04:02:25,490 log 6576 6844 Internal Server Error: /accounting/chart-of-accounts/
+Traceback (most recent call last):
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\contrib\auth\decorators.py", line 23, in _wrapper_view
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\HOME\PycharmProjects\contabilidad\accounting\views.py", line 149, in chart_of_accounts
+    return render(request, 'accounting/chart_of_accounts.html', context)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\shortcuts.py", line 24, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\loader.py", line 15, in get_template
+    return engine.get_template(template_name)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\backends\django.py", line 33, in get_template
+    return Template(self.engine.get_template(template_name), self)
+                    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\engine.py", line 175, in get_template
+    template, origin = self.find_template(template_name)
+                       ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\engine.py", line 157, in find_template
+    template = loader.get_template(name, skip=skip)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\loaders\cached.py", line 57, in get_template
+    template = super().get_template(template_name, skip)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\loaders\base.py", line 28, in get_template
+    return Template(
+        contents,
+    ...<2 lines>...
+        self.engine,
+    )
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 154, in __init__
+    self.nodelist = self.compile_nodelist()
+                    ~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 200, in compile_nodelist
+    return parser.parse()
+           ~~~~~~~~~~~~^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 513, in parse
+    raise self.error(token, e)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 511, in parse
+    compiled_result = compile_func(self, token)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\loader_tags.py", line 293, in do_extends
+    nodelist = parser.parse()
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 513, in parse
+    raise self.error(token, e)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 511, in parse
+    compiled_result = compile_func(self, token)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\loader_tags.py", line 232, in do_block
+    nodelist = parser.parse(("endblock",))
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 513, in parse
+    raise self.error(token, e)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 511, in parse
+    compiled_result = compile_func(self, token)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\defaulttags.py", line 853, in do_for
+    nodelist_loop = parser.parse(
+        (
+    ...<2 lines>...
+        )
+    )
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 484, in parse
+    raise self.error(token, e)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 482, in parse
+    filter_expression = self.compile_filter(token.contents)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 600, in compile_filter
+    return FilterExpression(token, self)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 698, in __init__
+    filter_func = parser.find_filter(filter_name)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 606, in find_filter
+    raise TemplateSyntaxError("Invalid filter: '%s'" % filter_name)
+django.template.exceptions.TemplateSyntaxError: Invalid filter: 'mul'
+WARNING 2025-09-06 04:03:21,269 log 6576 6844 Not Found: /admin/payroll/employee/
+WARNING 2025-09-06 04:03:34,101 log 6576 6844 Not Found: /admin/payroll/payrollconcept/
+WARNING 2025-09-06 04:03:57,710 log 6576 6844 Not Found: /admin/payroll/payroll/
+INFO 2025-09-06 04:04:11,822 autoreload 2544 2424 Watching for file changes with StatReloader
+WARNING 2025-09-06 04:04:13,327 log 2544 3852 Not Found: /admin/payroll/laborbenefit/
+WARNING 2025-09-06 04:04:16,038 log 2544 3852 Not Found: /admin/payroll/laborbenefit/
+INFO 2025-09-06 04:05:16,457 autoreload 2544 2424 C:\Users\HOME\PycharmProjects\contabilidad\payroll\admin.py changed, reloading.
+INFO 2025-09-06 04:05:17,540 autoreload 2412 11720 Watching for file changes with StatReloader
+INFO 2025-09-06 04:06:18,509 autoreload 2412 11720 C:\Users\HOME\PycharmProjects\contabilidad\payroll\admin.py changed, reloading.
+INFO 2025-09-06 04:06:19,598 autoreload 18184 12664 Watching for file changes with StatReloader
+INFO 2025-09-06 04:06:43,285 autoreload 18184 12664 C:\Users\HOME\PycharmProjects\contabilidad\payroll\admin.py changed, reloading.
+INFO 2025-09-06 04:06:44,263 autoreload 1764 1504 Watching for file changes with StatReloader
+WARNING 2025-09-06 04:08:02,368 log 1764 12896 Not Found: /admin/public_sector/budget/add/
+INFO 2025-09-06 04:13:20,596 autoreload 1764 1504 C:\Users\HOME\PycharmProjects\contabilidad\payroll\admin.py changed, reloading.
+INFO 2025-09-06 04:13:21,403 autoreload 6636 1564 Watching for file changes with StatReloader
+INFO 2025-09-06 04:14:07,090 autoreload 6636 1564 C:\Users\HOME\PycharmProjects\contabilidad\payroll\views.py changed, reloading.
+INFO 2025-09-06 04:14:07,895 autoreload 17856 6364 Watching for file changes with StatReloader
+INFO 2025-09-06 04:14:12,579 autoreload 17856 6364 C:\Users\HOME\PycharmProjects\contabilidad\payroll\views.py changed, reloading.
+INFO 2025-09-06 04:14:13,396 autoreload 5976 20452 Watching for file changes with StatReloader
+INFO 2025-09-06 04:14:44,110 autoreload 5976 20452 C:\Users\HOME\PycharmProjects\contabilidad\payroll\views.py changed, reloading.
+INFO 2025-09-06 04:14:44,928 autoreload 16056 18608 Watching for file changes with StatReloader
+INFO 2025-09-06 04:14:50,649 autoreload 16056 18608 C:\Users\HOME\PycharmProjects\contabilidad\payroll\urls.py changed, reloading.
+INFO 2025-09-06 04:14:51,465 autoreload 15280 13068 Watching for file changes with StatReloader
+INFO 2025-09-06 04:16:38,385 autoreload 15280 13068 C:\Users\HOME\PycharmProjects\contabilidad\payroll\views.py changed, reloading.
+INFO 2025-09-06 04:16:39,210 autoreload 12004 17292 Watching for file changes with StatReloader
+INFO 2025-09-06 04:16:47,057 autoreload 12004 17292 C:\Users\HOME\PycharmProjects\contabilidad\payroll\urls.py changed, reloading.
+INFO 2025-09-06 04:16:47,866 autoreload 11356 15768 Watching for file changes with StatReloader
+INFO 2025-09-06 04:18:46,371 autoreload 11356 15768 C:\Users\HOME\PycharmProjects\contabilidad\taxes\views.py changed, reloading.
+INFO 2025-09-06 04:18:47,244 autoreload 19608 12084 Watching for file changes with StatReloader
+INFO 2025-09-06 04:18:58,389 autoreload 19608 12084 C:\Users\HOME\PycharmProjects\contabilidad\taxes\urls.py changed, reloading.
+INFO 2025-09-06 04:18:59,233 autoreload 15528 6712 Watching for file changes with StatReloader
+INFO 2025-09-06 04:20:42,753 autoreload 15528 6712 C:\Users\HOME\PycharmProjects\contabilidad\public_sector\views.py changed, reloading.
+INFO 2025-09-06 04:20:43,603 autoreload 13456 2328 Watching for file changes with StatReloader
+INFO 2025-09-06 04:21:58,929 autoreload 13456 2328 C:\Users\HOME\PycharmProjects\contabilidad\reports\views.py changed, reloading.
+INFO 2025-09-06 04:21:59,774 autoreload 8596 15692 Watching for file changes with StatReloader
+INFO 2025-09-06 04:22:15,691 autoreload 8596 15692 C:\Users\HOME\PycharmProjects\contabilidad\reports\urls.py changed, reloading.
+INFO 2025-09-06 04:22:16,489 autoreload 12112 15720 Watching for file changes with StatReloader
+INFO 2025-09-06 04:28:19,055 autoreload 12112 15720 C:\Users\HOME\PycharmProjects\contabilidad\public_sector\views.py changed, reloading.
+INFO 2025-09-06 04:28:19,931 autoreload 3028 3692 Watching for file changes with StatReloader
+WARNING 2025-09-06 04:35:06,554 log 3028 12312 Not Found: /favicon.ico
+WARNING 2025-09-06 04:35:16,388 log 3028 12312 Not Found: /accounts/profile/
+INFO 2025-09-06 04:35:53,691 autoreload 3028 3692 C:\Users\HOME\PycharmProjects\contabilidad\contabilidad_multiempresa\settings.py changed, reloading.
+INFO 2025-09-06 04:35:54,482 autoreload 11420 19108 Watching for file changes with StatReloader
+INFO 2025-09-06 04:36:08,504 autoreload 11420 19108 C:\Users\HOME\PycharmProjects\contabilidad\contabilidad_multiempresa\urls.py changed, reloading.
+INFO 2025-09-06 04:36:09,250 autoreload 20136 11776 Watching for file changes with StatReloader
+WARNING 2025-09-06 04:40:24,385 log 20136 7540 Not Found: /accounts/profile/
+WARNING 2025-09-06 04:40:25,341 log 20136 7540 Not Found: /accounts/profile/
+ERROR 2025-09-06 04:40:38,885 log 20136 6200 Internal Server Error: /accounts/login/
+Traceback (most recent call last):
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\defaulttags.py", line 1026, in find_library
+    return parser.libraries[name]
+           ~~~~~~~~~~~~~~~~^^^^^^
+KeyError: 'crispy_forms_tags'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\base.py", line 220, in _get_response
+    response = response.render()
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\response.py", line 114, in render
+    self.content = self.rendered_content
+                   ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\response.py", line 90, in rendered_content
+    template = self.resolve_template(self.template_name)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\response.py", line 72, in resolve_template
+    return select_template(template, using=self.using)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\loader.py", line 42, in select_template
+    return engine.get_template(template_name)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\backends\django.py", line 33, in get_template
+    return Template(self.engine.get_template(template_name), self)
+                    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\engine.py", line 175, in get_template
+    template, origin = self.find_template(template_name)
+                       ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\engine.py", line 157, in find_template
+    template = loader.get_template(name, skip=skip)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\loaders\cached.py", line 57, in get_template
+    template = super().get_template(template_name, skip)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\loaders\base.py", line 28, in get_template
+    return Template(
+        contents,
+    ...<2 lines>...
+        self.engine,
+    )
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 154, in __init__
+    self.nodelist = self.compile_nodelist()
+                    ~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 200, in compile_nodelist
+    return parser.parse()
+           ~~~~~~~~~~~~^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 513, in parse
+    raise self.error(token, e)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 511, in parse
+    compiled_result = compile_func(self, token)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\loader_tags.py", line 293, in do_extends
+    nodelist = parser.parse()
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 513, in parse
+    raise self.error(token, e)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 511, in parse
+    compiled_result = compile_func(self, token)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\defaulttags.py", line 1088, in load
+    lib = find_library(parser, name)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\defaulttags.py", line 1028, in find_library
+    raise TemplateSyntaxError(
+    ...<5 lines>...
+    )
+django.template.exceptions.TemplateSyntaxError: 'crispy_forms_tags' is not a registered tag library. Must be one of:
+admin_list
+admin_modify
+admin_urls
+cache
+i18n
+l10n
+log
+math_filters
+rest_framework
+static
+tz
+INFO 2025-09-06 04:41:39,577 autoreload 20136 11776 C:\Users\HOME\PycharmProjects\contabilidad\core\urls.py changed, reloading.
+INFO 2025-09-06 04:41:40,344 autoreload 13424 5904 Watching for file changes with StatReloader
+INFO 2025-09-06 04:42:06,994 autoreload 13424 5904 C:\Users\HOME\PycharmProjects\contabilidad\core\views.py changed, reloading.
+INFO 2025-09-06 04:42:07,693 autoreload 4336 15860 Watching for file changes with StatReloader
+INFO 2025-09-06 04:42:16,538 autoreload 4336 15860 C:\Users\HOME\PycharmProjects\contabilidad\contabilidad_multiempresa\urls.py changed, reloading.
+INFO 2025-09-06 04:42:17,296 autoreload 16312 11784 Watching for file changes with StatReloader
+INFO 2025-09-06 04:42:22,972 autoreload 16312 11784 C:\Users\HOME\PycharmProjects\contabilidad\contabilidad_multiempresa\urls.py changed, reloading.
+INFO 2025-09-06 04:42:23,714 autoreload 14324 17084 Watching for file changes with StatReloader
+INFO 2025-09-06 04:42:29,403 autoreload 14324 17084 C:\Users\HOME\PycharmProjects\contabilidad\contabilidad_multiempresa\urls.py changed, reloading.
+INFO 2025-09-06 04:42:30,303 autoreload 9128 14644 Watching for file changes with StatReloader
+ERROR 2025-09-06 05:16:23,343 log 9128 9464 Internal Server Error: /budget/
+Traceback (most recent call last):
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\contrib\auth\decorators.py", line 23, in _wrapper_view
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\HOME\PycharmProjects\contabilidad\budget\views.py", line 28, in budget_dashboard
+    company = request.user.default_company
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\utils\functional.py", line 268, in inner
+    return func(_wrapped, *args)
+AttributeError: 'User' object has no attribute 'default_company'
+WARNING 2025-09-06 05:16:42,479 log 9128 9464 Not Found: /admin/public_sector/cdp/
+WARNING 2025-09-06 05:16:55,109 log 9128 9464 Not Found: /admin/public_sector/rp/
+WARNING 2025-09-06 05:17:07,984 log 9128 9464 Not Found: /admin/public_sector/publicreport/
+INFO 2025-09-06 05:17:12,947 autoreload 9128 14644 C:\Users\HOME\PycharmProjects\contabilidad\contabilidad_multiempresa\urls.py changed, reloading.
+INFO 2025-09-06 05:17:14,128 autoreload 10444 19240 Watching for file changes with StatReloader
+ERROR 2025-09-06 05:17:41,624 log 10444 1648 Internal Server Error: /payroll/liquidate/
+Traceback (most recent call last):
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\defaulttags.py", line 1026, in find_library
+    return parser.libraries[name]
+           ~~~~~~~~~~~~~~~~^^^^^^
+KeyError: 'humanize'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\contrib\auth\decorators.py", line 23, in _wrapper_view
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\HOME\PycharmProjects\contabilidad\payroll\views.py", line 244, in liquidate_payroll
+    return render(request, 'payroll/liquidate.html', context)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\shortcuts.py", line 24, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\loader.py", line 15, in get_template
+    return engine.get_template(template_name)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\backends\django.py", line 33, in get_template
+    return Template(self.engine.get_template(template_name), self)
+                    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\engine.py", line 175, in get_template
+    template, origin = self.find_template(template_name)
+                       ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\engine.py", line 157, in find_template
+    template = loader.get_template(name, skip=skip)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\loaders\cached.py", line 57, in get_template
+    template = super().get_template(template_name, skip)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\loaders\base.py", line 28, in get_template
+    return Template(
+        contents,
+    ...<2 lines>...
+        self.engine,
+    )
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 154, in __init__
+    self.nodelist = self.compile_nodelist()
+                    ~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 200, in compile_nodelist
+    return parser.parse()
+           ~~~~~~~~~~~~^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 513, in parse
+    raise self.error(token, e)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 511, in parse
+    compiled_result = compile_func(self, token)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\loader_tags.py", line 293, in do_extends
+    nodelist = parser.parse()
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 513, in parse
+    raise self.error(token, e)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 511, in parse
+    compiled_result = compile_func(self, token)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\defaulttags.py", line 1088, in load
+    lib = find_library(parser, name)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\defaulttags.py", line 1028, in find_library
+    raise TemplateSyntaxError(
+    ...<5 lines>...
+    )
+django.template.exceptions.TemplateSyntaxError: 'humanize' is not a registered tag library. Must be one of:
+admin_list
+admin_modify
+admin_urls
+cache
+i18n
+l10n
+log
+math_filters
+rest_framework
+static
+tz
+INFO 2025-09-06 05:20:46,055 autoreload 10444 19240 C:\Users\HOME\PycharmProjects\contabilidad\contabilidad_multiempresa\settings.py changed, reloading.
+INFO 2025-09-06 05:20:46,894 autoreload 18264 7756 Watching for file changes with StatReloader
+INFO 2025-09-06 05:21:22,874 autoreload 18264 7756 C:\Users\HOME\PycharmProjects\contabilidad\public_sector\admin.py changed, reloading.
+INFO 2025-09-06 05:21:23,678 autoreload 1744 1216 Watching for file changes with StatReloader
+INFO 2025-09-06 08:43:55,592 autoreload 19280 20396 Watching for file changes with StatReloader
+INFO 2025-09-06 08:44:42,199 autoreload 17976 18808 Watching for file changes with StatReloader
+WARNING 2025-09-06 08:46:45,476 log 17976 6852 Forbidden (CSRF token from POST incorrect.): /admin/login/
+ERROR 2025-09-06 08:47:09,207 log 17976 12988 Internal Server Error: /budget/cdp/create/
+Traceback (most recent call last):
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\contrib\auth\decorators.py", line 23, in _wrapper_view
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\HOME\PycharmProjects\contabilidad\budget\views.py", line 85, in cdp_create
+    company = request.user.default_company
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\utils\functional.py", line 268, in inner
+    return func(_wrapped, *args)
+AttributeError: 'User' object has no attribute 'default_company'
+INFO 2025-09-06 08:48:22,418 autoreload 17976 18808 C:\Users\HOME\PycharmProjects\contabilidad\core\models.py changed, reloading.
+INFO 2025-09-06 08:48:23,165 autoreload 11236 10320 Watching for file changes with StatReloader
+INFO 2025-09-06 08:51:55,192 autoreload 11236 10320 C:\Users\HOME\PycharmProjects\contabilidad\budget\views.py changed, reloading.
+INFO 2025-09-06 08:51:55,896 autoreload 6172 14372 Watching for file changes with StatReloader
+INFO 2025-09-06 08:52:03,643 autoreload 6172 14372 C:\Users\HOME\PycharmProjects\contabilidad\budget\views.py changed, reloading.
+INFO 2025-09-06 08:52:04,381 autoreload 11304 3388 Watching for file changes with StatReloader
+INFO 2025-09-06 08:52:15,275 autoreload 11304 3388 C:\Users\HOME\PycharmProjects\contabilidad\budget\views.py changed, reloading.
+INFO 2025-09-06 08:52:16,053 autoreload 12436 20076 Watching for file changes with StatReloader
+INFO 2025-09-06 08:52:25,873 autoreload 12436 20076 C:\Users\HOME\PycharmProjects\contabilidad\budget\views.py changed, reloading.
+INFO 2025-09-06 08:52:26,651 autoreload 15780 13108 Watching for file changes with StatReloader
+INFO 2025-09-06 08:52:42,684 autoreload 15780 13108 C:\Users\HOME\PycharmProjects\contabilidad\budget\views.py changed, reloading.
+INFO 2025-09-06 08:52:43,435 autoreload 19388 11992 Watching for file changes with StatReloader
+INFO 2025-09-06 08:52:50,148 autoreload 19388 11992 C:\Users\HOME\PycharmProjects\contabilidad\budget\views.py changed, reloading.
+INFO 2025-09-06 08:52:50,859 autoreload 19236 15484 Watching for file changes with StatReloader
+INFO 2025-09-06 08:52:56,530 autoreload 19236 15484 C:\Users\HOME\PycharmProjects\contabilidad\budget\views.py changed, reloading.
+INFO 2025-09-06 08:52:57,264 autoreload 6772 18264 Watching for file changes with StatReloader
+INFO 2025-09-06 08:53:10,212 autoreload 6772 18264 C:\Users\HOME\PycharmProjects\contabilidad\reports\views.py changed, reloading.
+INFO 2025-09-06 08:53:10,943 autoreload 9256 9136 Watching for file changes with StatReloader
+INFO 2025-09-06 08:54:42,055 autoreload 9256 9136 C:\Users\HOME\PycharmProjects\contabilidad\budget\views.py changed, reloading.
+INFO 2025-09-06 08:54:42,784 autoreload 14568 15480 Watching for file changes with StatReloader
+ERROR 2025-09-06 09:00:19,615 log 14568 19012 Internal Server Error: /budget/cdp/create/
+Traceback (most recent call last):
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\contrib\auth\decorators.py", line 23, in _wrapper_view
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\HOME\PycharmProjects\contabilidad\budget\views.py", line 116, in cdp_create
+    company = get_user_company(request)
+  File "C:\Users\HOME\PycharmProjects\contabilidad\budget\views.py", line 38, in get_user_company
+    company = get_user_company(request) or request.user.companies.first()
+              ~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\PycharmProjects\contabilidad\budget\views.py", line 38, in get_user_company
+    company = get_user_company(request) or request.user.companies.first()
+              ~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\PycharmProjects\contabilidad\budget\views.py", line 38, in get_user_company
+    company = get_user_company(request) or request.user.companies.first()
+              ~~~~~~~~~~~~~~~~^^^^^^^^^
+  [Previous line repeated 963 more times]
+  File "C:\Users\HOME\PycharmProjects\contabilidad\budget\views.py", line 27, in get_user_company
+    company_id = request.GET.get('company_id') or request.session.get('selected_company_id')
+                 ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\utils\datastructures.py", line 122, in get
+    val = self[key]
+          ~~~~^^^^^
+RecursionError: maximum recursion depth exceeded
+INFO 2025-09-06 13:16:45,175 autoreload 13928 19592 Watching for file changes with StatReloader
+WARNING 2025-09-06 13:17:00,320 log 13928 15716 Not Found: /favicon.ico
+WARNING 2025-09-06 17:36:06,804 log 13928 3620 Not Found: /mapa/
+INFO 2025-09-06 17:36:08,621 autoreload 13928 19592 C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\__init__.py changed, reloading.
+INFO 2025-09-07 17:11:01,023 autoreload 3436 19544 Watching for file changes with StatReloader
+INFO 2025-09-07 17:13:05,316 autoreload 9068 20696 Watching for file changes with StatReloader
+INFO 2025-09-07 17:14:35,196 autoreload 18828 4824 Watching for file changes with StatReloader
+WARNING 2025-09-07 17:15:32,775 log 18828 18424 Not Found: /favicon.ico
+ERROR 2025-09-07 17:17:45,726 log 18828 20412 Internal Server Error: /budget/
+Traceback (most recent call last):
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\contrib\auth\decorators.py", line 60, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\HOME\PycharmProjects\contabilidad\budget\views.py", line 47, in budget_dashboard
+    company = get_user_company(request)
+  File "C:\Users\HOME\PycharmProjects\contabilidad\budget\views.py", line 38, in get_user_company
+    company = get_user_company(request) or request.user.companies.first()
+              ~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\PycharmProjects\contabilidad\budget\views.py", line 38, in get_user_company
+    company = get_user_company(request) or request.user.companies.first()
+              ~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\PycharmProjects\contabilidad\budget\views.py", line 38, in get_user_company
+    company = get_user_company(request) or request.user.companies.first()
+              ~~~~~~~~~~~~~~~~^^^^^^^^^
+  [Previous line repeated 962 more times]
+  File "C:\Users\HOME\PycharmProjects\contabilidad\budget\views.py", line 27, in get_user_company
+    company_id = request.GET.get('company_id') or request.session.get('selected_company_id')
+                 ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\utils\datastructures.py", line 122, in get
+    val = self[key]
+          ~~~~^^^^^
+RecursionError: maximum recursion depth exceeded
+ERROR 2025-09-07 17:17:48,905 log 18828 12344 Internal Server Error: /budget/
+Traceback (most recent call last):
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\contrib\auth\decorators.py", line 60, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\HOME\PycharmProjects\contabilidad\budget\views.py", line 47, in budget_dashboard
+    company = get_user_company(request)
+  File "C:\Users\HOME\PycharmProjects\contabilidad\budget\views.py", line 38, in get_user_company
+    company = get_user_company(request) or request.user.companies.first()
+              ~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\PycharmProjects\contabilidad\budget\views.py", line 38, in get_user_company
+    company = get_user_company(request) or request.user.companies.first()
+              ~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\PycharmProjects\contabilidad\budget\views.py", line 38, in get_user_company
+    company = get_user_company(request) or request.user.companies.first()
+              ~~~~~~~~~~~~~~~~^^^^^^^^^
+  [Previous line repeated 962 more times]
+  File "C:\Users\HOME\PycharmProjects\contabilidad\budget\views.py", line 27, in get_user_company
+    company_id = request.GET.get('company_id') or request.session.get('selected_company_id')
+                 ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\utils\datastructures.py", line 122, in get
+    val = self[key]
+          ~~~~^^^^^
+RecursionError: maximum recursion depth exceeded
+ERROR 2025-09-07 17:17:49,760 log 18828 9640 Internal Server Error: /budget/
+Traceback (most recent call last):
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\contrib\auth\decorators.py", line 60, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\HOME\PycharmProjects\contabilidad\budget\views.py", line 47, in budget_dashboard
+    company = get_user_company(request)
+  File "C:\Users\HOME\PycharmProjects\contabilidad\budget\views.py", line 38, in get_user_company
+    company = get_user_company(request) or request.user.companies.first()
+              ~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\PycharmProjects\contabilidad\budget\views.py", line 38, in get_user_company
+    company = get_user_company(request) or request.user.companies.first()
+              ~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\PycharmProjects\contabilidad\budget\views.py", line 38, in get_user_company
+    company = get_user_company(request) or request.user.companies.first()
+              ~~~~~~~~~~~~~~~~^^^^^^^^^
+  [Previous line repeated 962 more times]
+  File "C:\Users\HOME\PycharmProjects\contabilidad\budget\views.py", line 27, in get_user_company
+    company_id = request.GET.get('company_id') or request.session.get('selected_company_id')
+                 ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\utils\datastructures.py", line 122, in get
+    val = self[key]
+          ~~~~^^^^^
+RecursionError: maximum recursion depth exceeded
+ERROR 2025-09-07 17:17:54,186 log 18828 12344 Internal Server Error: /budget/rp/create/
+Traceback (most recent call last):
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\contrib\auth\decorators.py", line 60, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\HOME\PycharmProjects\contabilidad\budget\views.py", line 214, in rp_create
+    company = get_user_company(request)
+  File "C:\Users\HOME\PycharmProjects\contabilidad\budget\views.py", line 38, in get_user_company
+    company = get_user_company(request) or request.user.companies.first()
+              ~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\PycharmProjects\contabilidad\budget\views.py", line 38, in get_user_company
+    company = get_user_company(request) or request.user.companies.first()
+              ~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\PycharmProjects\contabilidad\budget\views.py", line 38, in get_user_company
+    company = get_user_company(request) or request.user.companies.first()
+              ~~~~~~~~~~~~~~~~^^^^^^^^^
+  [Previous line repeated 962 more times]
+  File "C:\Users\HOME\PycharmProjects\contabilidad\budget\views.py", line 27, in get_user_company
+    company_id = request.GET.get('company_id') or request.session.get('selected_company_id')
+                 ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\utils\datastructures.py", line 122, in get
+    val = self[key]
+          ~~~~^^^^^
+RecursionError: maximum recursion depth exceeded
+ERROR 2025-09-07 17:17:57,142 log 18828 13892 Internal Server Error: /budget/rp/create/
+Traceback (most recent call last):
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\contrib\auth\decorators.py", line 60, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\HOME\PycharmProjects\contabilidad\budget\views.py", line 214, in rp_create
+    company = get_user_company(request)
+  File "C:\Users\HOME\PycharmProjects\contabilidad\budget\views.py", line 38, in get_user_company
+    company = get_user_company(request) or request.user.companies.first()
+              ~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\PycharmProjects\contabilidad\budget\views.py", line 38, in get_user_company
+    company = get_user_company(request) or request.user.companies.first()
+              ~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\PycharmProjects\contabilidad\budget\views.py", line 38, in get_user_company
+    company = get_user_company(request) or request.user.companies.first()
+              ~~~~~~~~~~~~~~~~^^^^^^^^^
+  [Previous line repeated 962 more times]
+  File "C:\Users\HOME\PycharmProjects\contabilidad\budget\views.py", line 27, in get_user_company
+    company_id = request.GET.get('company_id') or request.session.get('selected_company_id')
+                 ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\utils\datastructures.py", line 122, in get
+    val = self[key]
+          ~~~~^^^^^
+RecursionError: maximum recursion depth exceeded
+ERROR 2025-09-07 17:17:58,086 log 18828 4676 Internal Server Error: /budget/rp/create/
+Traceback (most recent call last):
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\contrib\auth\decorators.py", line 60, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\HOME\PycharmProjects\contabilidad\budget\views.py", line 214, in rp_create
+    company = get_user_company(request)
+  File "C:\Users\HOME\PycharmProjects\contabilidad\budget\views.py", line 38, in get_user_company
+    company = get_user_company(request) or request.user.companies.first()
+              ~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\PycharmProjects\contabilidad\budget\views.py", line 38, in get_user_company
+    company = get_user_company(request) or request.user.companies.first()
+              ~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\PycharmProjects\contabilidad\budget\views.py", line 38, in get_user_company
+    company = get_user_company(request) or request.user.companies.first()
+              ~~~~~~~~~~~~~~~~^^^^^^^^^
+  [Previous line repeated 962 more times]
+  File "C:\Users\HOME\PycharmProjects\contabilidad\budget\views.py", line 27, in get_user_company
+    company_id = request.GET.get('company_id') or request.session.get('selected_company_id')
+                 ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\utils\datastructures.py", line 122, in get
+    val = self[key]
+          ~~~~^^^^^
+RecursionError: maximum recursion depth exceeded
+WARNING 2025-09-07 17:18:09,931 log 18828 17908 Forbidden: /reports/api/company/22e28275-9830-4322-8fe2-9a5fce973efe/accounts/
+INFO 2025-09-09 10:55:25,934 autoreload 21892 20876 Watching for file changes with StatReloader
+INFO 2025-09-09 11:03:00,445 autoreload 16056 23664 Watching for file changes with StatReloader
+WARNING 2025-09-09 11:03:25,300 log 16056 25168 Not Found: /favicon.ico

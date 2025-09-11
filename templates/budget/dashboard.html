@@ -1,0 +1,351 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% load math_filters %}
+
+{% block title %}Gestión Presupuestal - {{ company.name }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <!-- Header con Selector de Empresa -->
+    <div class="row mb-4">
+        <div class="col-md-5">
+            <h2 class="text-primary">
+                <i class="fas fa-chart-pie"></i> Gestión Presupuestal
+            </h2>
+            <p class="text-muted">{{ period.name }}</p>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body p-2">
+                    <form method="get" action="">
+                        <div class="input-group input-group-sm">
+                            <label class="input-group-text"><i class="fas fa-building"></i></label>
+                            <select class="form-select" name="company_id" onchange="this.form.submit()">
+                                {% if not company %}
+                                    <option value="">Seleccione una empresa...</option>
+                                {% endif %}
+                                {% for comp in companies %}
+                                    <option value="{{ comp.id }}" {% if company and company.id == comp.id %}selected{% endif %}>
+                                        {{ comp.name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 text-end">
+            <div class="btn-group" role="group">
+                <a href="{% url 'budget:cdp_create' %}" class="btn btn-success">
+                    <i class="fas fa-plus"></i> Nuevo CDP
+                </a>
+                <a href="{% url 'budget:rp_create' %}" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Nuevo RP
+                </a>
+                <a href="{% url 'budget:obligation_create' %}" class="btn btn-warning">
+                    <i class="fas fa-plus"></i> Nueva Obligación
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Estadísticas Generales -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card border-primary">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-chart-bar"></i> Resumen de Ejecución Presupuestal</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-md-2">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h6 class="text-muted">Presupuesto Total</h6>
+                                    <h4 class="text-primary">${{ stats.total_budget|floatformat:0|intcomma }}</h4>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h6 class="text-muted">CDP Expedidos</h6>
+                                    <h4 class="text-info">${{ stats.cdp_total|floatformat:0|intcomma }}</h4>
+                                    {% if stats.total_budget > 0 %}
+                                    <small class="text-muted">{{ stats.cdp_total|mul:100|div:stats.total_budget|floatformat:1 }}%</small>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h6 class="text-muted">RP Expedidos</h6>
+                                    <h4 class="text-success">${{ stats.rp_total|floatformat:0|intcomma }}</h4>
+                                    {% if stats.cdp_total > 0 %}
+                                    <small class="text-muted">{{ stats.rp_total|mul:100|div:stats.cdp_total|floatformat:1 }}%</small>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h6 class="text-muted">Obligaciones</h6>
+                                    <h4 class="text-warning">${{ stats.obligations_total|floatformat:0|intcomma }}</h4>
+                                    {% if stats.rp_total > 0 %}
+                                    <small class="text-muted">{{ stats.obligations_total|mul:100|div:stats.rp_total|floatformat:1 }}%</small>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h6 class="text-muted">Pagos</h6>
+                                    <h4 class="text-danger">${{ stats.payments_total|floatformat:0|intcomma }}</h4>
+                                    {% if stats.obligations_total > 0 %}
+                                    <small class="text-muted">{{ stats.payments_total|mul:100|div:stats.obligations_total|floatformat:1 }}%</small>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h6 class="text-muted">Saldo Disponible</h6>
+                                    <h4 class="text-secondary">
+                                        ${{ stats.total_budget|sub:stats.cdp_total|floatformat:0|intcomma }}
+                                    </h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Accesos Rápidos -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="mb-0"><i class="fas fa-rocket"></i> Accesos Rápidos</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <a href="{% url 'budget:pac_management' %}" class="btn btn-outline-primary btn-block mb-2">
+                                <i class="fas fa-calendar-alt"></i> Gestionar PAC
+                            </a>
+                        </div>
+                        <div class="col-md-3">
+                            <a href="{% url 'budget:execution_report' %}" class="btn btn-outline-info btn-block mb-2">
+                                <i class="fas fa-chart-line"></i> Reporte de Ejecución
+                            </a>
+                        </div>
+                        <div class="col-md-3">
+                            <a href="{% url 'budget:modifications' %}" class="btn btn-outline-warning btn-block mb-2">
+                                <i class="fas fa-exchange-alt"></i> Modificaciones Presupuestales
+                            </a>
+                        </div>
+                        <div class="col-md-3">
+                            <button class="btn btn-outline-success btn-block mb-2" onclick="window.print()">
+                                <i class="fas fa-print"></i> Imprimir Dashboard
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- CDPs Recientes -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="fas fa-file-alt"></i> CDPs Recientes</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-sm table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Número</th>
+                                    <th>Fecha</th>
+                                    <th>Concepto</th>
+                                    <th class="text-end">Valor</th>
+                                    <th>Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for cdp in recent_cdps %}
+                                <tr>
+                                    <td>
+                                        <a href="{% url 'budget:cdp_detail' cdp.pk %}">
+                                            {{ cdp.number }}
+                                        </a>
+                                    </td>
+                                    <td>{{ cdp.date|date:"d/m/Y" }}</td>
+                                    <td>{{ cdp.concept|truncatewords:5 }}</td>
+                                    <td class="text-end">${{ cdp.total_amount|floatformat:0|intcomma }}</td>
+                                    <td>
+                                        {% if cdp.state == 'approved' %}
+                                            <span class="badge bg-success">Aprobado</span>
+                                        {% elif cdp.state == 'draft' %}
+                                            <span class="badge bg-secondary">Borrador</span>
+                                        {% elif cdp.state == 'partial' %}
+                                            <span class="badge bg-warning">Parcial</span>
+                                        {% elif cdp.state == 'committed' %}
+                                            <span class="badge bg-primary">Comprometido</span>
+                                        {% else %}
+                                            <span class="badge bg-danger">{{ cdp.get_state_display }}</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="5" class="text-center text-muted">No hay CDPs registrados</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RPs Recientes -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="fas fa-file-contract"></i> RPs Recientes</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-sm table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Número</th>
+                                    <th>Fecha</th>
+                                    <th>Beneficiario</th>
+                                    <th class="text-end">Valor</th>
+                                    <th>Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for rp in recent_rps %}
+                                <tr>
+                                    <td>
+                                        <a href="{% url 'budget:rp_detail' rp.pk %}">
+                                            {{ rp.number }}
+                                        </a>
+                                    </td>
+                                    <td>{{ rp.date|date:"d/m/Y" }}</td>
+                                    <td>{{ rp.beneficiary_name|truncatewords:3 }}</td>
+                                    <td class="text-end">${{ rp.total_amount|floatformat:0|intcomma }}</td>
+                                    <td>
+                                        {% if rp.state == 'approved' %}
+                                            <span class="badge bg-success">Aprobado</span>
+                                        {% elif rp.state == 'draft' %}
+                                            <span class="badge bg-secondary">Borrador</span>
+                                        {% elif rp.state == 'partial' %}
+                                            <span class="badge bg-warning">Parcial</span>
+                                        {% elif rp.state == 'executed' %}
+                                            <span class="badge bg-primary">Ejecutado</span>
+                                        {% else %}
+                                            <span class="badge bg-danger">{{ rp.get_state_display }}</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="5" class="text-center text-muted">No hay RPs registrados</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Rubros con Mayor Ejecución -->
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-warning">
+                    <h5 class="mb-0"><i class="fas fa-chart-bar"></i> Rubros con Mayor Ejecución</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Código</th>
+                                    <th>Nombre</th>
+                                    <th class="text-end">Apropiación</th>
+                                    <th class="text-end">CDP</th>
+                                    <th class="text-end">RP</th>
+                                    <th class="text-end">Obligaciones</th>
+                                    <th class="text-end">Disponible</th>
+                                    <th class="text-center">% Ejecución</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for rubro in top_rubros %}
+                                <tr>
+                                    <td>{{ rubro.code }}</td>
+                                    <td>{{ rubro.name }}</td>
+                                    <td class="text-end">${{ rubro.current_appropriation|floatformat:0|intcomma }}</td>
+                                    <td class="text-end">${{ rubro.cdp_amount|floatformat:0|intcomma }}</td>
+                                    <td class="text-end">${{ rubro.rp_amount|floatformat:0|intcomma }}</td>
+                                    <td class="text-end">${{ rubro.obligations|floatformat:0|intcomma }}</td>
+                                    <td class="text-end">${{ rubro.available_appropriation|floatformat:0|intcomma }}</td>
+                                    <td class="text-center">
+                                        {% if rubro.current_appropriation > 0 %}
+                                        <div class="progress" style="height: 20px;">
+                                            <div class="progress-bar bg-success" role="progressbar" 
+                                                 style="width: {{ rubro.cdp_amount|mul:100|div:rubro.current_appropriation|floatformat:0 }}%">
+                                                {{ rubro.cdp_amount|mul:100|div:rubro.current_appropriation|floatformat:1 }}%
+                                            </div>
+                                        </div>
+                                        {% else %}
+                                        -
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="8" class="text-center text-muted">No hay rubros con ejecución</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Script para gráficos si es necesario -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Aquí se pueden agregar gráficos con Chart.js si es necesario
+});
+</script>
+
+<style>
+.btn-block {
+    width: 100%;
+}
+.progress {
+    background-color: #e9ecef;
+}
+</style>
+{% endblock %}

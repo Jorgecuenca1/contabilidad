@@ -34,6 +34,7 @@ class User(AbstractUser):
     is_active_2fa = models.BooleanField(default=False)
     last_login_ip = models.GenericIPAddressField(null=True, blank=True)
     companies = models.ManyToManyField('Company', through='UserCompanyPermission', blank=True)
+    default_company = models.ForeignKey('Company', on_delete=models.SET_NULL, null=True, blank=True, related_name='default_users')
     
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+
+{% block title %}Certificado de Ingresos{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h2 class="text-primary">
+                <i class="fas fa-certificate"></i> Certificado de Ingresos y Retenciones
+            </h2>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="{% url 'payroll:dashboard' %}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left"></i> Volver
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-warning text-white">
+                    <h5 class="mb-0"><i class="fas fa-certificate"></i> Generar Certificado</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label>Empleado</label>
+                                <select name="employee" class="form-control" required>
+                                    <option value="">Seleccione un empleado...</option>
+                                    {% for emp in employees %}
+                                    <option value="{{ emp.id }}" {% if employee and emp.id == employee.id %}selected{% endif %}>
+                                        {{ emp.employee_code }} - {{ emp.get_full_name }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label>Año</label>
+                                <select name="year" class="form-control" required>
+                                    <option value="2025">2025</option>
+                                    <option value="2024">2024</option>
+                                    <option value="2023">2023</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label>&nbsp;</label>
+                                <button type="submit" class="btn btn-warning form-control">
+                                    <i class="fas fa-file-pdf"></i> Generar Certificado
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                    
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i>
+                        <strong>Información:</strong> El certificado incluirá todos los ingresos, deducciones y retenciones del empleado durante el año seleccionado.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
