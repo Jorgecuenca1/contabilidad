@@ -14,37 +14,188 @@
     </div>
 </div>
 
-<div class="row">
-    <div class="col-12">
-        <div class="alert alert-info">
-            <i class="bi bi-info-circle"></i>
-            <strong>Próximamente:</strong> Esta funcionalidad estará disponible en la próxima versión del sistema.
-            Aquí podrás registrar entradas, salidas y ajustes de inventario.
-        </div>
-    </div>
-</div>
-
-<div class="row">
+<!-- Formulario de Nuevo Movimiento -->
+<div class="row mb-4">
     <div class="col-12">
         <div class="card">
             <div class="card-header">
                 <h6><i class="bi bi-plus-circle"></i> Nuevo Movimiento de Inventario</h6>
             </div>
             <div class="card-body">
-                <p class="text-muted">
-                    Los movimientos de inventario permiten registrar:
-                </p>
-                <ul>
-                    <li>Entradas de mercancía (compras, devoluciones de clientes)</li>
-                    <li>Salidas de mercancía (ventas, devoluciones a proveedores)</li>
-                    <li>Ajustes de inventario (diferencias, mermas, sobrantes)</li>
-                    <li>Transferencias entre bodegas</li>
-                </ul>
-                
-                <div class="text-center mt-4">
-                    <i class="bi bi-tools fs-1 text-muted"></i>
-                    <p class="text-muted mt-2">Funcionalidad en desarrollo</p>
-                </div>
+                {% if not products or not warehouses %}
+                    <div class="alert alert-warning">
+                        <i class="bi bi-exclamation-triangle"></i>
+                        <strong>Atención:</strong> Para registrar movimientos de inventario necesitas tener al menos un producto con control de inventario y una bodega activa.
+                        <div class="mt-2">
+                            {% if not products %}
+                                <a href="{% url 'inventory:new_product' %}" class="btn btn-sm btn-primary me-2">
+                                    <i class="bi bi-plus"></i> Crear Producto
+                                </a>
+                            {% endif %}
+                            {% if not warehouses %}
+                                <a href="/admin/inventory/warehouse/add/" class="btn btn-sm btn-success">
+                                    <i class="bi bi-plus"></i> Crear Bodega
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% else %}
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="product" class="form-label">Producto *</label>
+                                    <select class="form-select" id="product" name="product" required>
+                                        <option value="">Seleccione un producto</option>
+                                        {% for product in products %}
+                                            <option value="{{ product.id }}">{{ product.code }} - {{ product.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="warehouse" class="form-label">Bodega *</label>
+                                    <select class="form-select" id="warehouse" name="warehouse" required>
+                                        <option value="">Seleccione una bodega</option>
+                                        {% for warehouse in warehouses %}
+                                            <option value="{{ warehouse.id }}">{{ warehouse.code }} - {{ warehouse.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="movement_type" class="form-label">Tipo de Movimiento *</label>
+                                    <select class="form-select" id="movement_type" name="movement_type" required>
+                                        <option value="">Seleccione el tipo</option>
+                                        {% for value, label in movement_types %}
+                                            <option value="{{ value }}">{{ label }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="movement_reason" class="form-label">Motivo *</label>
+                                    <select class="form-select" id="movement_reason" name="movement_reason" required>
+                                        <option value="">Seleccione el motivo</option>
+                                        {% for value, label in movement_reasons %}
+                                            <option value="{{ value }}">{{ label }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="quantity" class="form-label">Cantidad *</label>
+                                    <input type="number" class="form-control" id="quantity" name="quantity" 
+                                           step="0.01" min="0.01" required>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="unit_cost" class="form-label">Costo Unitario</label>
+                                    <input type="number" class="form-control" id="unit_cost" name="unit_cost" 
+                                           step="0.01" min="0" value="0">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="reference" class="form-label">Referencia</label>
+                                    <input type="text" class="form-control" id="reference" name="reference" 
+                                           placeholder="Ej: Factura #123">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="mb-3">
+                                    <label for="notes" class="form-label">Notas</label>
+                                    <textarea class="form-control" id="notes" name="notes" rows="2" 
+                                              placeholder="Observaciones adicionales"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="text-end">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check-circle"></i> Registrar Movimiento
+                            </button>
+                        </div>
+                    </form>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Movimientos Recientes -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h6><i class="bi bi-clock-history"></i> Movimientos Recientes</h6>
+            </div>
+            <div class="card-body">
+                {% if recent_movements %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Producto</th>
+                                    <th>Bodega</th>
+                                    <th>Tipo</th>
+                                    <th>Motivo</th>
+                                    <th>Cantidad</th>
+                                    <th>Costo Unit.</th>
+                                    <th>Referencia</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for movement in recent_movements %}
+                                <tr>
+                                    <td>{{ movement.movement_date|date:"d/m/Y H:i" }}</td>
+                                    <td>
+                                        <strong>{{ movement.product.code }}</strong><br>
+                                        <small class="text-muted">{{ movement.product.name }}</small>
+                                    </td>
+                                    <td>{{ movement.warehouse.name }}</td>
+                                    <td>
+                                        {% if movement.movement_type == 'entry' %}
+                                            <span class="badge bg-success">{{ movement.get_movement_type_display }}</span>
+                                        {% elif movement.movement_type == 'exit' %}
+                                            <span class="badge bg-danger">{{ movement.get_movement_type_display }}</span>
+                                        {% elif movement.movement_type == 'adjustment' %}
+                                            <span class="badge bg-warning">{{ movement.get_movement_type_display }}</span>
+                                        {% else %}
+                                            <span class="badge bg-info">{{ movement.get_movement_type_display }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ movement.get_movement_reason_display }}</td>
+                                    <td class="text-end">{{ movement.quantity|floatformat:2 }}</td>
+                                    <td class="text-end">${{ movement.unit_cost|floatformat:2 }}</td>
+                                    <td>{{ movement.reference|default:"-" }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="text-center py-4">
+                        <i class="bi bi-inbox fs-1 text-muted"></i>
+                        <p class="text-muted mt-2">No hay movimientos registrados</p>
+                    </div>
+                {% endif %}
             </div>
         </div>
     </div>

@@ -13,7 +13,8 @@ from datetime import datetime, date
 
 from core.models import Company, Currency
 from accounting.models_accounts import CostCenter
-from .models_asset import FixedAsset, AssetCategory
+from .models_asset import FixedAsset, AssetCategory, DepreciationEntry
+from .services import DepreciationService
 
 
 @login_required
@@ -21,16 +22,34 @@ def fixed_assets_dashboard(request):
     """
     Dashboard del módulo de activos fijos.
     """
-    # Estadísticas básicas
-    total_assets = FixedAsset.objects.filter(status='active').count()
-    total_categories = AssetCategory.objects.filter(is_active=True).count()
+    # Get user's company context or default company
+    company = getattr(request.user, 'company', None)
+    if not company:
+        company = Company.objects.filter(is_active=True).first()
+    
+    if not company:
+        # Handle case when no company exists
+        context = {
+            'total_assets': 0,
+            'total_categories': 0,
+            'total_acquisition_cost': 0,
+            'total_accumulated_depreciation': 0,
+            'total_net_value': 0,
+            'warranty_expiring': 0,
+            'no_company': True,
+        }
+        return render(request, 'fixed_assets/dashboard.html', context)
+    
+    # Estadísticas básicas filtradas por compañía
+    total_assets = FixedAsset.objects.filter(company=company, status='active').count()
+    total_categories = AssetCategory.objects.filter(company=company, is_active=True).count()
     
     # Valores totales
-    total_acquisition_cost = FixedAsset.objects.filter(status='active').aggregate(
+    total_acquisition_cost = FixedAsset.objects.filter(company=company, status='active').aggregate(
         total=Sum('acquisition_cost')
     )['total'] or 0
     
-    total_accumulated_depreciation = FixedAsset.objects.filter(status='active').aggregate(
+    total_accumulated_depreciation = FixedAsset.objects.filter(company=company, status='active').aggregate(
         total=Sum('accumulated_depreciation')
     )['total'] or 0
     
@@ -38,6 +57,7 @@ def fixed_assets_dashboard(request):
     
     # Activos próximos a vencer garantía
     warranty_expiring = FixedAsset.objects.filter(
+        company=company,
         status='active',
         warranty_expiration__lte=timezone.now().date() + timezone.timedelta(days=30),
         warranty_expiration__gte=timezone.now().date()
@@ -60,11 +80,16 @@ def asset_list(request):
     """
     Lista de activos fijos.
     """
+    # Get user's company context
+    company = getattr(request.user, 'company', None)
+    if not company:
+        company = Company.objects.filter(is_active=True).first()
+    
     search = request.GET.get('search', '')
     category_id = request.GET.get('category', '')
     status = request.GET.get('status', '')
     
-    assets = FixedAsset.objects.all()
+    assets = FixedAsset.objects.filter(company=company)
     
     if search:
         assets = assets.filter(
@@ -240,33 +265,50 @@ def depreciation_report(request):
 @login_required
 def calculate_depreciation(request):
     """
-    Calcular depreciación mensual.
+    Calcular depreciación mensual usando el servicio mejorado.
     """
     if request.method == 'POST':
         try:
+            # Get user's company context
+            company = getattr(request.user, 'company', None)
+            if not company:
+                company = Company.objects.filter(is_active=True).first()
+            
+            if not company:
+                messages.error(request, 'No se pudo determinar la empresa.')
+                return redirect('fixed_assets:depreciation_report')
+            
             # Obtener fecha de cálculo
             calculation_date = request.POST.get('calculation_date')
+            create_entries = request.POST.get('create_journal_entries', 'true').lower() == 'true'
+            
             if not calculation_date:
                 calculation_date = timezone.now().date()
             else:
                 calculation_date = datetime.strptime(calculation_date, '%Y-%m-%d').date()
             
-            # Obtener activos activos
-            assets = FixedAsset.objects.filter(status='active')
+            # Usar el servicio de depreciación
+            depreciation_service = DepreciationService(company)
             
-            calculated_count = 0
-            for asset in assets:
-                # Calcular depreciación mensual
-                monthly_depreciation = asset.calculate_monthly_depreciation()
-                
-                if monthly_depreciation > 0:
-                    # Actualizar depreciación acumulada
-                    asset.accumulated_depreciation += monthly_depreciation
-                    asset.net_book_value = asset.acquisition_cost - asset.accumulated_depreciation
-                    asset.save()
-                    calculated_count += 1
+            processed_entries = depreciation_service.process_period_depreciation(
+                year=calculation_date.year,
+                month=calculation_date.month,
+                user=request.user,
+                create_journal_entries=create_entries
+            )
             
-            messages.success(request, f'Depreciación calculada para {calculated_count} activos.')
+            if processed_entries:
+                total_depreciation = sum(entry.depreciation_amount for entry in processed_entries)
+                messages.success(
+                    request, 
+                    f'Depreciación procesada: {len(processed_entries)} activos, '
+                    f'Total: ${total_depreciation:,.2f}'
+                )
+                if create_entries:
+                    journal_entries_created = sum(1 for entry in processed_entries if entry.journal_entry)
+                    messages.info(request, f'Se crearon {journal_entries_created} asientos contables.')
+            else:
+                messages.warning(request, 'No hay activos para depreciar en este período.')
             
         except Exception as e:
             messages.error(request, f'Error al calcular depreciación: {str(e)}')
@@ -299,3 +341,144 @@ def get_assets_json(request):
         })
     
     return JsonResponse({'assets': assets_data})
+
+
+@login_required
+def depreciation_schedule(request, asset_id):
+    """
+    Cronograma de depreciación para un activo.
+    """
+    asset = get_object_or_404(FixedAsset, id=asset_id)
+    
+    # Get user's company context
+    company = getattr(request.user, 'company', None)
+    if not company:
+        company = Company.objects.filter(is_active=True).first()
+    
+    depreciation_service = DepreciationService(company)
+    schedule = depreciation_service.get_depreciation_schedule(asset)
+    compliance_issues = depreciation_service.validate_depreciation_compliance(asset)
+    
+    context = {
+        'asset': asset,
+        'schedule': schedule,
+        'compliance_issues': compliance_issues,
+    }
+    
+    return render(request, 'fixed_assets/depreciation_schedule.html', context)
+
+
+@login_required
+def depreciation_entries(request):
+    """
+    Lista de registros de depreciación.
+    """
+    # Get user's company context
+    company = getattr(request.user, 'company', None)
+    if not company:
+        company = Company.objects.filter(is_active=True).first()
+    
+    year = request.GET.get('year', timezone.now().year)
+    month = request.GET.get('month', '')
+    
+    entries = DepreciationEntry.objects.filter(company=company)
+    
+    if year:
+        entries = entries.filter(period_year=int(year))
+    if month:
+        entries = entries.filter(period_month=int(month))
+    
+    # Paginación
+    paginator = Paginator(entries, 20)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
+    context = {
+        'page_obj': page_obj,
+        'selected_year': year,
+        'selected_month': month,
+        'years': range(2020, timezone.now().year + 2),
+        'months': [(i, datetime(2023, i, 1).strftime('%B')) for i in range(1, 13)],
+    }
+    
+    return render(request, 'fixed_assets/depreciation_entries.html', context)
+
+
+@login_required
+def asset_categories(request):
+    """
+    Lista de categorías de activos.
+    """
+    # Get user's company context
+    company = getattr(request.user, 'company', None)
+    if not company:
+        company = Company.objects.filter(is_active=True).first()
+    
+    categories = AssetCategory.objects.filter(company=company, is_active=True)
+    
+    context = {
+        'categories': categories,
+    }
+    
+    return render(request, 'fixed_assets/categories.html', context)
+
+
+@login_required
+def new_category(request):
+    """
+    Crear nueva categoría de activo.
+    """
+    if request.method == 'POST':
+        try:
+            # Get user's company context
+            company = getattr(request.user, 'company', None)
+            if not company:
+                company = Company.objects.filter(is_active=True).first()
+            
+            code = request.POST.get('code')
+            name = request.POST.get('name')
+            description = request.POST.get('description', '')
+            useful_life_years = request.POST.get('useful_life_years')
+            depreciation_method = request.POST.get('depreciation_method')
+            asset_account_id = request.POST.get('asset_account')
+            depreciation_account_id = request.POST.get('depreciation_account')
+            expense_account_id = request.POST.get('expense_account')
+            
+            # Validar datos requeridos
+            if not all([code, name, useful_life_years, asset_account_id, depreciation_account_id, expense_account_id]):
+                messages.error(request, 'Todos los campos obligatorios deben ser completados.')
+                return redirect('fixed_assets:new_category')
+            
+            # Crear categoría
+            category = AssetCategory.objects.create(
+                company=company,
+                code=code,
+                name=name,
+                description=description,
+                useful_life_years=int(useful_life_years),
+                depreciation_method=depreciation_method,
+                asset_account_id=asset_account_id,
+                depreciation_account_id=depreciation_account_id,
+                expense_account_id=expense_account_id,
+                created_by=request.user
+            )
+            
+            messages.success(request, f'Categoría {category.name} creada exitosamente.')
+            return redirect('fixed_assets:asset_categories')
+            
+        except Exception as e:
+            messages.error(request, f'Error al crear la categoría: {str(e)}')
+    
+    # Get accounts for form
+    from accounting.models_accounts import Account
+    asset_accounts = Account.objects.filter(
+        account_type='asset',
+        control_type='fixed_assets',
+        is_active=True
+    )
+    
+    context = {
+        'asset_accounts': asset_accounts,
+    }
+    
+    return render(request, 'fixed_assets/new_category.html', context)

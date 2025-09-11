@@ -1,0 +1,259 @@
+{% extends 'base.html' %}
+
+{% block title %}Certificados de Retención{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h2 class="text-primary">
+                <i class="fas fa-certificate"></i> Certificados de Retención en la Fuente
+            </h2>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="{% url 'taxes:dashboard' %}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left"></i> Volver
+            </a>
+        </div>
+    </div>
+
+    <!-- Filtros y Búsqueda -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h6 class="mb-0"><i class="fas fa-search"></i> Buscar y Generar Certificados</h6>
+                </div>
+                <div class="card-body">
+                    <form method="get" class="row g-3">
+                        <div class="col-md-3">
+                            <label>Empresa</label>
+                            <select name="company" class="form-control" required>
+                                <option value="">Seleccione empresa...</option>
+                                {% for company in companies %}
+                                <option value="{{ company.id }}">{{ company.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label>Tercero</label>
+                            <input type="text" name="third_party" class="form-control" placeholder="NIT o nombre del tercero">
+                        </div>
+                        <div class="col-md-2">
+                            <label>Año</label>
+                            <select name="year" class="form-control">
+                                <option value="2025">2025</option>
+                                <option value="2024" selected>2024</option>
+                                <option value="2023">2023</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label>Período</label>
+                            <select name="period" class="form-control">
+                                <option value="">Todo el año</option>
+                                <option value="Q1">Trimestre 1</option>
+                                <option value="Q2">Trimestre 2</option>
+                                <option value="Q3">Trimestre 3</option>
+                                <option value="Q4">Trimestre 4</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label>&nbsp;</label>
+                            <button type="submit" class="btn btn-info form-control">
+                                <i class="fas fa-search"></i> Buscar
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Información sobre Certificados -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="alert alert-warning">
+                <i class="fas fa-info-circle"></i>
+                <strong>Certificados de Retención en la Fuente:</strong>
+                Los certificados de retención deben expedirse a más tardar el 15 de marzo del año siguiente.
+                Incluyen todas las retenciones practicadas durante el año gravable por concepto de renta, IVA e ICA.
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabla de Retenciones -->
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="fas fa-list"></i> Retenciones Practicadas 2024</h5>
+                    <button class="btn btn-light btn-sm">
+                        <i class="fas fa-download"></i> Exportar Excel
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>NIT/CC</th>
+                                    <th>Tercero</th>
+                                    <th>Concepto</th>
+                                    <th>Base</th>
+                                    <th>Tarifa</th>
+                                    <th>Retención</th>
+                                    <th>Certificado</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>900123456-7</td>
+                                    <td>SERVICIOS PROFESIONALES SAS</td>
+                                    <td>Servicios generales (04)</td>
+                                    <td class="text-end">$5,200,000</td>
+                                    <td class="text-center">4%</td>
+                                    <td class="text-end">$208,000</td>
+                                    <td>
+                                        <button class="btn btn-success btn-sm">
+                                            <i class="fas fa-certificate"></i> Generar
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>79456123-5</td>
+                                    <td>JUAN CARLOS PEREZ</td>
+                                    <td>Honorarios (10)</td>
+                                    <td class="text-end">$8,500,000</td>
+                                    <td class="text-center">11%</td>
+                                    <td class="text-end">$935,000</td>
+                                    <td>
+                                        <button class="btn btn-success btn-sm">
+                                            <i class="fas fa-certificate"></i> Generar
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>800789456-1</td>
+                                    <td>CONSTRUCTORA DEL SUR LTDA</td>
+                                    <td>Servicios construcción (02)</td>
+                                    <td class="text-end">$15,800,000</td>
+                                    <td class="text-center">2%</td>
+                                    <td class="text-end">$316,000</td>
+                                    <td>
+                                        <button class="btn btn-success btn-sm">
+                                            <i class="fas fa-certificate"></i> Generar
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>52789123-8</td>
+                                    <td>MARIA FERNANDA LOPEZ</td>
+                                    <td>Arrendamientos (07)</td>
+                                    <td class="text-end">$12,000,000</td>
+                                    <td class="text-center">3.5%</td>
+                                    <td class="text-end">$420,000</td>
+                                    <td>
+                                        <button class="btn btn-success btn-sm">
+                                            <i class="fas fa-certificate"></i> Generar
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>900567890-2</td>
+                                    <td>TECNOLOGIA Y SISTEMAS SAS</td>
+                                    <td>Servicios técnicos (04)</td>
+                                    <td class="text-end">$28,400,000</td>
+                                    <td class="text-center">4%</td>
+                                    <td class="text-end">$1,136,000</td>
+                                    <td>
+                                        <button class="btn btn-success btn-sm">
+                                            <i class="fas fa-certificate"></i> Generar
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                            <tfoot class="table-light">
+                                <tr>
+                                    <th colspan="3">TOTALES</th>
+                                    <th class="text-end">$69,900,000</th>
+                                    <th></th>
+                                    <th class="text-end">$3,015,000</th>
+                                    <th>
+                                        <button class="btn btn-primary btn-sm">
+                                            <i class="fas fa-file-pdf"></i> Todos
+                                        </button>
+                                    </th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Información Legal -->
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <div class="card border-info">
+                <div class="card-header bg-info text-white">
+                    <h6 class="mb-0"><i class="fas fa-gavel"></i> Marco Legal</h6>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled mb-0">
+                        <li><i class="fas fa-check text-success"></i> <strong>Artículo 381 ET:</strong> Obligación de expedir certificados</li>
+                        <li><i class="fas fa-check text-success"></i> <strong>Fecha límite:</strong> 15 de marzo del año siguiente</li>
+                        <li><i class="fas fa-check text-success"></i> <strong>Resolución 3419/2013:</strong> Formato y contenido mínimo</li>
+                        <li><i class="fas fa-check text-success"></i> <strong>Firma electrónica:</strong> Válida según Decreto 2364/2012</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card border-warning">
+                <div class="card-header bg-warning text-white">
+                    <h6 class="mb-0"><i class="fas fa-exclamation-triangle"></i> Información Importante</h6>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled mb-0">
+                        <li><i class="fas fa-info-circle text-warning"></i> Los certificados son obligatorios para todas las retenciones</li>
+                        <li><i class="fas fa-info-circle text-warning"></i> Deben incluir datos completos del retenedor y beneficiario</li>
+                        <li><i class="fas fa-info-circle text-warning"></i> Especificar concepto, base gravable, tarifa y valor retenido</li>
+                        <li><i class="fas fa-info-circle text-warning"></i> Conservar copia por 5 años para efectos de fiscalización</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Acciones Masivas -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-secondary text-white">
+                    <h6 class="mb-0"><i class="fas fa-tools"></i> Acciones Masivas</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <button class="btn btn-outline-primary btn-block w-100">
+                                <i class="fas fa-file-pdf"></i> Generar Todos los Certificados PDF
+                            </button>
+                        </div>
+                        <div class="col-md-4">
+                            <button class="btn btn-outline-success btn-block w-100">
+                                <i class="fas fa-envelope"></i> Enviar por Email Masivo
+                            </button>
+                        </div>
+                        <div class="col-md-4">
+                            <button class="btn btn-outline-info btn-block w-100">
+                                <i class="fas fa-download"></i> Exportar Reporte Completo
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

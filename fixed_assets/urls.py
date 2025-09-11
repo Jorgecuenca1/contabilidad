@@ -13,8 +13,12 @@ urlpatterns = [
     path('new-asset/', views.new_asset, name='new_asset'),
     path('asset/<uuid:asset_id>/', views.asset_detail, name='asset_detail'),
     path('asset/<uuid:asset_id>/edit/', views.edit_asset, name='edit_asset'),
+    path('asset/<uuid:asset_id>/schedule/', views.depreciation_schedule, name='depreciation_schedule'),
     path('depreciation/', views.depreciation_report, name='depreciation_report'),
+    path('depreciation/entries/', views.depreciation_entries, name='depreciation_entries'),
     path('calculate-depreciation/', views.calculate_depreciation, name='calculate_depreciation'),
+    path('categories/', views.asset_categories, name='asset_categories'),
+    path('categories/new/', views.new_category, name='new_category'),
     path('api/assets/', views.get_assets_json, name='get_assets_json'),
 ]
 

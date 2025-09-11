@@ -1,0 +1,376 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block title %}RP {{ rp.number }} - {{ rp.company.name }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h2 class="text-success">
+                <i class="fas fa-file-contract"></i> RP {{ rp.number }}
+            </h2>
+            <p class="text-muted">{{ rp.date|date:"d/m/Y" }} - {{ rp.company.name }}</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <div class="btn-group" role="group">
+                <a href="/budget/" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Volver
+                </a>
+                {% if rp.state == 'draft' %}
+                <button class="btn btn-success" onclick="approveRP()">
+                    <i class="fas fa-check"></i> Aprobar
+                </button>
+                {% endif %}
+                {% if rp.state == 'approved' and rp.available_amount > 0 %}
+                <a href="/budget/obligation/create/?rp_id={{ rp.id }}" class="btn btn-warning">
+                    <i class="fas fa-plus"></i> Nueva Obligación
+                </a>
+                {% endif %}
+                <button class="btn btn-info" onclick="window.print()">
+                    <i class="fas fa-print"></i> Imprimir
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Información del RP -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="fas fa-info-circle"></i> Información del RP</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <table class="table table-borderless">
+                                <tr>
+                                    <th width="40%">Número:</th>
+                                    <td>{{ rp.number }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Fecha:</th>
+                                    <td>{{ rp.date|date:"d/m/Y" }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Estado:</th>
+                                    <td>
+                                        {% if rp.state == 'approved' %}
+                                            <span class="badge bg-success">Aprobado</span>
+                                        {% elif rp.state == 'draft' %}
+                                            <span class="badge bg-secondary">Borrador</span>
+                                        {% elif rp.state == 'partial' %}
+                                            <span class="badge bg-warning">Parcialmente Ejecutado</span>
+                                        {% elif rp.state == 'executed' %}
+                                            <span class="badge bg-primary">Ejecutado</span>
+                                        {% else %}
+                                            <span class="badge bg-danger">{{ rp.get_state_display }}</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Tipo de Beneficiario:</th>
+                                    <td>{{ rp.get_beneficiary_type_display }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Identificación:</th>
+                                    <td>{{ rp.beneficiary_id }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Beneficiario:</th>
+                                    <td>{{ rp.beneficiary_name }}</td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <table class="table table-borderless">
+                                <tr>
+                                    <th width="40%">Tipo de Contrato:</th>
+                                    <td>{{ rp.get_contract_type_display }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Número de Contrato:</th>
+                                    <td>{{ rp.contract_number|default:"-" }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Valor Total:</th>
+                                    <td><strong>${{ rp.total_amount|floatformat:0|intcomma }}</strong></td>
+                                </tr>
+                                <tr>
+                                    <th>Valor Obligado:</th>
+                                    <td><strong>${{ rp.obligated_amount|floatformat:0|intcomma }}</strong></td>
+                                </tr>
+                                <tr>
+                                    <th>Valor Pagado:</th>
+                                    <td><strong>${{ rp.paid_amount|floatformat:0|intcomma }}</strong></td>
+                                </tr>
+                                <tr>
+                                    <th>Disponible:</th>
+                                    <td><strong>${{ rp.available_amount|floatformat:0|intcomma }}</strong></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div class="row mt-3">
+                        <div class="col-md-12">
+                            <h6>Concepto:</h6>
+                            <p>{{ rp.concept }}</p>
+                        </div>
+                    </div>
+                    
+                    {% if rp.observations %}
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h6>Observaciones:</h6>
+                            <p>{{ rp.observations }}</p>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Detalles por CDP -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="fas fa-list"></i> CDPs Comprometidos</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Número CDP</th>
+                                    <th>Código Rubro</th>
+                                    <th>Nombre del Rubro</th>
+                                    <th class="text-end">Valor Comprometido</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for detail in rp.details.all %}
+                                <tr>
+                                    <td>
+                                        <a href="/budget/cdp/{{ detail.cdp.pk }}/">
+                                            {{ detail.cdp.number }}
+                                        </a>
+                                    </td>
+                                    <td>{{ detail.cdp_detail.rubro.code }}</td>
+                                    <td>{{ detail.cdp_detail.rubro.name }}</td>
+                                    <td class="text-end">${{ detail.amount|floatformat:0|intcomma }}</td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="4" class="text-center text-muted">No hay detalles de CDP registrados</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Obligaciones Asociadas -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-warning">
+                    <h5 class="mb-0"><i class="fas fa-file-invoice"></i> Obligaciones Generadas</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Número</th>
+                                    <th>Fecha</th>
+                                    <th>Concepto</th>
+                                    <th class="text-end">Valor Bruto</th>
+                                    <th class="text-end">Deducciones</th>
+                                    <th class="text-end">Valor Neto</th>
+                                    <th class="text-end">Pagado</th>
+                                    <th>Estado</th>
+                                    <th class="text-center">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for obligation in obligations %}
+                                <tr>
+                                    <td>{{ obligation.number }}</td>
+                                    <td>{{ obligation.date|date:"d/m/Y" }}</td>
+                                    <td>{{ obligation.concept|truncatewords:5 }}</td>
+                                    <td class="text-end">${{ obligation.gross_amount|floatformat:0|intcomma }}</td>
+                                    <td class="text-end">${{ obligation.deductions|floatformat:0|intcomma }}</td>
+                                    <td class="text-end">${{ obligation.net_amount|floatformat:0|intcomma }}</td>
+                                    <td class="text-end">${{ obligation.paid_amount|floatformat:0|intcomma }}</td>
+                                    <td>
+                                        {% if obligation.state == 'approved' %}
+                                            <span class="badge bg-success">Aprobada</span>
+                                        {% elif obligation.state == 'draft' %}
+                                            <span class="badge bg-secondary">Borrador</span>
+                                        {% elif obligation.state == 'partial' %}
+                                            <span class="badge bg-warning">Pago Parcial</span>
+                                        {% elif obligation.state == 'paid' %}
+                                            <span class="badge bg-primary">Pagada</span>
+                                        {% else %}
+                                            <span class="badge bg-danger">{{ obligation.get_state_display }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-center">
+                                        <a href="/budget/obligation/{{ obligation.pk }}/" class="btn btn-sm btn-primary">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="9" class="text-center text-muted">No hay obligaciones registradas</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    {% if rp.state == 'approved' and rp.available_amount > 0 %}
+                    <div class="text-center mt-3">
+                        <a href="/budget/obligation/create/?rp_id={{ rp.id }}" class="btn btn-warning">
+                            <i class="fas fa-plus"></i> Crear Nueva Obligación
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Gráfico de Ejecución -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-chart-pie"></i> Estado de Ejecución</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-md-3">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h6 class="text-muted">Valor RP</h6>
+                                    <h4 class="text-primary">${{ rp.total_amount|floatformat:0|intcomma }}</h4>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h6 class="text-muted">Obligado</h6>
+                                    <h4 class="text-warning">${{ rp.obligated_amount|floatformat:0|intcomma }}</h4>
+                                    {% if rp.total_amount > 0 %}
+                                    <small class="text-muted">{{ rp.obligated_amount|mul:100|div:rp.total_amount|floatformat:1 }}%</small>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h6 class="text-muted">Pagado</h6>
+                                    <h4 class="text-success">${{ rp.paid_amount|floatformat:0|intcomma }}</h4>
+                                    {% if rp.obligated_amount > 0 %}
+                                    <small class="text-muted">{{ rp.paid_amount|mul:100|div:rp.obligated_amount|floatformat:1 }}%</small>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h6 class="text-muted">Disponible</h6>
+                                    <h4 class="text-info">${{ rp.available_amount|floatformat:0|intcomma }}</h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Barra de progreso -->
+                    <div class="row mt-3">
+                        <div class="col-md-12">
+                            <div class="progress" style="height: 30px;">
+                                {% if rp.total_amount > 0 %}
+                                <div class="progress-bar bg-warning" role="progressbar" 
+                                     style="width: {{ rp.obligated_amount|mul:100|div:rp.total_amount|floatformat:0 }}%">
+                                    Obligado {{ rp.obligated_amount|mul:100|div:rp.total_amount|floatformat:1 }}%
+                                </div>
+                                {% if rp.obligated_amount > 0 %}
+                                <div class="progress-bar bg-success" role="progressbar" 
+                                     style="width: {{ rp.paid_amount|mul:100|div:rp.total_amount|floatformat:0 }}%">
+                                    Pagado {{ rp.paid_amount|mul:100|div:rp.total_amount|floatformat:1 }}%
+                                </div>
+                                {% endif %}
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Auditoría -->
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="mb-0"><i class="fas fa-history"></i> Información de Auditoría</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <table class="table table-borderless">
+                                <tr>
+                                    <th>Creado por:</th>
+                                    <td>{{ rp.created_by.get_full_name|default:rp.created_by.username }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Fecha de creación:</th>
+                                    <td>{{ rp.created_at|date:"d/m/Y H:i" }}</td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <table class="table table-borderless">
+                                {% if rp.approved_by %}
+                                <tr>
+                                    <th>Aprobado por:</th>
+                                    <td>{{ rp.approved_by.get_full_name|default:rp.approved_by.username }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Fecha de aprobación:</th>
+                                    <td>{{ rp.approved_at|date:"d/m/Y H:i" }}</td>
+                                </tr>
+                                {% endif %}
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function approveRP() {
+    if (confirm('¿Está seguro de aprobar este RP? Esta acción no se puede deshacer.')) {
+        // Implementar lógica de aprobación via AJAX
+        alert('Funcionalidad en desarrollo');
+    }
+}
+</script>
+{% endblock %}

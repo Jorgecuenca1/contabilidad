@@ -1,0 +1,397 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% load budget_extras %}
+
+{% block title %}Reporte de Ejecución Presupuestal - {{ company.name }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h2 class="text-info">
+                <i class="fas fa-chart-line"></i> Reporte de Ejecución Presupuestal
+            </h2>
+            <p class="text-muted">{{ period.name }} - {{ company.name }}</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <div class="btn-group" role="group">
+                <a href="/budget/" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Volver
+                </a>
+                <button class="btn btn-success" onclick="exportExcel()">
+                    <i class="fas fa-file-excel"></i> Exportar Excel
+                </button>
+                <button class="btn btn-info" onclick="window.print()">
+                    <i class="fas fa-print"></i> Imprimir
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Resumen Ejecutivo -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-chart-bar"></i> Resumen Ejecutivo</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-md-2">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h6 class="text-muted">Apropiación Total</h6>
+                                    <h4 class="text-primary">${{ totals.appropriation|floatformat:0|intcomma }}</h4>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h6 class="text-muted">CDP Expedidos</h6>
+                                    <h4 class="text-info">${{ totals.cdp|floatformat:0|intcomma }}</h4>
+                                    {% if totals.appropriation > 0 %}
+                                    <small class="text-muted">{{ totals.cdp|mul:100|div:totals.appropriation|floatformat:1 }}%</small>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h6 class="text-muted">RP Expedidos</h6>
+                                    <h4 class="text-success">${{ totals.rp|floatformat:0|intcomma }}</h4>
+                                    {% if totals.cdp > 0 %}
+                                    <small class="text-muted">{{ totals.rp|mul:100|div:totals.cdp|floatformat:1 }}%</small>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h6 class="text-muted">Obligaciones</h6>
+                                    <h4 class="text-warning">${{ totals.obligations|floatformat:0|intcomma }}</h4>
+                                    {% if totals.rp > 0 %}
+                                    <small class="text-muted">{{ totals.obligations|mul:100|div:totals.rp|floatformat:1 }}%</small>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h6 class="text-muted">Pagos</h6>
+                                    <h4 class="text-danger">${{ totals.payments|floatformat:0|intcomma }}</h4>
+                                    {% if totals.obligations > 0 %}
+                                    <small class="text-muted">{{ totals.payments|mul:100|div:totals.obligations|floatformat:1 }}%</small>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h6 class="text-muted">Saldo por Ejecutar</h6>
+                                    <h4 class="text-secondary">
+                                        ${{ totals.appropriation|sub:totals.obligations|floatformat:0|intcomma }}
+                                    </h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Gráfico de Ejecución -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="fas fa-chart-pie"></i> Ejecución por Etapa</h5>
+                </div>
+                <div class="card-body">
+                    <div class="progress mb-3" style="height: 40px;">
+                        {% if totals.appropriation > 0 %}
+                        <div class="progress-bar bg-info" role="progressbar" 
+                             style="width: {{ totals.cdp|mul:100|div:totals.appropriation|floatformat:0 }}%">
+                            CDP {{ totals.cdp|mul:100|div:totals.appropriation|floatformat:1 }}%
+                        </div>
+                        <div class="progress-bar bg-success" role="progressbar" 
+                             style="width: {{ totals.rp|mul:100|div:totals.appropriation|floatformat:0 }}%">
+                            RP {{ totals.rp|mul:100|div:totals.appropriation|floatformat:1 }}%
+                        </div>
+                        <div class="progress-bar bg-warning" role="progressbar" 
+                             style="width: {{ totals.obligations|mul:100|div:totals.appropriation|floatformat:0 }}%">
+                            Obligaciones {{ totals.obligations|mul:100|div:totals.appropriation|floatformat:1 }}%
+                        </div>
+                        <div class="progress-bar bg-danger" role="progressbar" 
+                             style="width: {{ totals.payments|mul:100|div:totals.appropriation|floatformat:0 }}%">
+                            Pagos {{ totals.payments|mul:100|div:totals.appropriation|floatformat:1 }}%
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="row text-center">
+                        <div class="col-md-3">
+                            <i class="fas fa-square text-info"></i> Disponibilidad (CDP)
+                        </div>
+                        <div class="col-md-3">
+                            <i class="fas fa-square text-success"></i> Compromisos (RP)
+                        </div>
+                        <div class="col-md-3">
+                            <i class="fas fa-square text-warning"></i> Obligaciones
+                        </div>
+                        <div class="col-md-3">
+                            <i class="fas fa-square text-danger"></i> Pagos
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Detalle por Rubro -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="mb-0"><i class="fas fa-list"></i> Detalle por Rubro Presupuestal</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-sm">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th rowspan="2">Código</th>
+                                    <th rowspan="2">Nombre del Rubro</th>
+                                    <th rowspan="2">Tipo</th>
+                                    <th colspan="5" class="text-center">Presupuesto de Gastos</th>
+                                    <th rowspan="2">% Ejec.</th>
+                                </tr>
+                                <tr>
+                                    <th class="text-end">Apropiación</th>
+                                    <th class="text-end">CDP</th>
+                                    <th class="text-end">RP</th>
+                                    <th class="text-end">Obligaciones</th>
+                                    <th class="text-end">Pagos</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for rubro in rubros %}
+                                <tr>
+                                    <td><code>{{ rubro.code }}</code></td>
+                                    <td>{{ rubro.name }}</td>
+                                    <td>
+                                        {% if rubro.rubro_type == 'income' %}
+                                            <span class="badge bg-success">Ingreso</span>
+                                        {% elif rubro.rubro_type == 'expense' %}
+                                            <span class="badge bg-danger">Gasto</span>
+                                        {% else %}
+                                            <span class="badge bg-info">Inversión</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-end">${{ rubro.current_appropriation|floatformat:0|intcomma }}</td>
+                                    <td class="text-end">${{ rubro.cdp_amount|floatformat:0|intcomma }}</td>
+                                    <td class="text-end">${{ rubro.rp_amount|floatformat:0|intcomma }}</td>
+                                    <td class="text-end">${{ rubro.obligations|floatformat:0|intcomma }}</td>
+                                    <td class="text-end">${{ rubro.payments|floatformat:0|intcomma }}</td>
+                                    <td class="text-center">
+                                        {% if rubro.current_appropriation > 0 %}
+                                        <div class="progress" style="height: 20px;">
+                                            <div class="progress-bar 
+                                                {% if rubro.obligations|mul:100|div:rubro.current_appropriation >= 80 %}
+                                                    bg-success
+                                                {% elif rubro.obligations|mul:100|div:rubro.current_appropriation >= 50 %}
+                                                    bg-warning
+                                                {% else %}
+                                                    bg-danger
+                                                {% endif %}" 
+                                                role="progressbar" 
+                                                style="width: {{ rubro.obligations|mul:100|div:rubro.current_appropriation|floatformat:0 }}%">
+                                                {{ rubro.obligations|mul:100|div:rubro.current_appropriation|floatformat:1 }}%
+                                            </div>
+                                        </div>
+                                        {% else %}
+                                        -
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="8" class="text-center text-muted">No hay rubros registrados</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                            <tfoot class="table-warning">
+                                <tr>
+                                    <th colspan="3">TOTALES</th>
+                                    <th class="text-end">${{ totals.appropriation|floatformat:0|intcomma }}</th>
+                                    <th class="text-end">${{ totals.cdp|floatformat:0|intcomma }}</th>
+                                    <th class="text-end">${{ totals.rp|floatformat:0|intcomma }}</th>
+                                    <th class="text-end">${{ totals.obligations|floatformat:0|intcomma }}</th>
+                                    <th class="text-end">${{ totals.payments|floatformat:0|intcomma }}</th>
+                                    <th class="text-center">
+                                        {% if totals.appropriation > 0 %}
+                                        <strong>{{ totals.obligations|mul:100|div:totals.appropriation|floatformat:1 }}%</strong>
+                                        {% endif %}
+                                    </th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Indicadores de Gestión -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-warning">
+                    <h5 class="mb-0"><i class="fas fa-tachometer-alt"></i> Indicadores de Gestión Presupuestal</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="card border-info">
+                                <div class="card-body text-center">
+                                    <h6 class="card-title">Eficiencia en CDP</h6>
+                                    {% if totals.appropriation > 0 %}
+                                    <h3 class="text-info">{{ totals.cdp|mul:100|div:totals.appropriation|floatformat:1 }}%</h3>
+                                    <p class="text-muted">CDP / Apropiación</p>
+                                    {% else %}
+                                    <h3 class="text-muted">0%</h3>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card border-success">
+                                <div class="card-body text-center">
+                                    <h6 class="card-title">Eficiencia en RP</h6>
+                                    {% if totals.cdp > 0 %}
+                                    <h3 class="text-success">{{ totals.rp|mul:100|div:totals.cdp|floatformat:1 }}%</h3>
+                                    <p class="text-muted">RP / CDP</p>
+                                    {% else %}
+                                    <h3 class="text-muted">0%</h3>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card border-warning">
+                                <div class="card-body text-center">
+                                    <h6 class="card-title">Ejecución Presupuestal</h6>
+                                    {% if totals.appropriation > 0 %}
+                                    <h3 class="text-warning">{{ totals.obligations|mul:100|div:totals.appropriation|floatformat:1 }}%</h3>
+                                    <p class="text-muted">Obligaciones / Apropiación</p>
+                                    {% else %}
+                                    <h3 class="text-muted">0%</h3>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card border-danger">
+                                <div class="card-body text-center">
+                                    <h6 class="card-title">Ejecución de Pagos</h6>
+                                    {% if totals.obligations > 0 %}
+                                    <h3 class="text-danger">{{ totals.payments|mul:100|div:totals.obligations|floatformat:1 }}%</h3>
+                                    <p class="text-muted">Pagos / Obligaciones</p>
+                                    {% else %}
+                                    <h3 class="text-muted">0%</h3>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Interpretación y Recomendaciones -->
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0"><i class="fas fa-lightbulb"></i> Interpretación y Recomendaciones</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>Estado de la Ejecución:</h6>
+                            <ul>
+                                {% if totals.appropriation > 0 %}
+                                    {% with execution_pct=totals.obligations|mul:100|div:totals.appropriation %}
+                                        {% if execution_pct >= 80 %}
+                                            <li class="text-success">Ejecución presupuestal excelente ({{ execution_pct|floatformat:1 }}%)</li>
+                                            <li>Se recomienda continuar con el ritmo actual de ejecución</li>
+                                        {% elif execution_pct >= 60 %}
+                                            <li class="text-warning">Ejecución presupuestal buena ({{ execution_pct|floatformat:1 }}%)</li>
+                                            <li>Se sugiere acelerar algunos procesos de contratación</li>
+                                        {% elif execution_pct >= 40 %}
+                                            <li class="text-info">Ejecución presupuestal regular ({{ execution_pct|floatformat:1 }}%)</li>
+                                            <li>Se recomienda revisar los planes de acción y acelerar procesos</li>
+                                        {% else %}
+                                            <li class="text-danger">Ejecución presupuestal baja ({{ execution_pct|floatformat:1 }}%)</li>
+                                            <li>Se requiere intervención urgente para mejorar la ejecución</li>
+                                        {% endif %}
+                                    {% endwith %}
+                                {% endif %}
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Cumplimiento Normativo:</h6>
+                            <ul>
+                                <li><i class="fas fa-check text-success"></i> Cadena presupuestal completa (CDP → RP → Obligación → Pago)</li>
+                                <li><i class="fas fa-check text-success"></i> Registros contables automáticos</li>
+                                <li><i class="fas fa-check text-success"></i> Trazabilidad completa de operaciones</li>
+                                <li><i class="fas fa-info-circle text-info"></i> Reportes disponibles para control fiscal</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function exportExcel() {
+    alert('Funcionalidad de exportación a Excel en desarrollo');
+    // Implementar exportación a Excel
+}
+
+// Imprimir solo las secciones importantes
+window.addEventListener('beforeprint', function() {
+    document.body.classList.add('print-mode');
+});
+
+window.addEventListener('afterprint', function() {
+    document.body.classList.remove('print-mode');
+});
+</script>
+
+<style>
+@media print {
+    .btn, .card-header { 
+        -webkit-print-color-adjust: exact !important;
+        color-adjust: exact !important;
+    }
+    
+    .print-mode .btn-group {
+        display: none !important;
+    }
+}
+
+.progress {
+    background-color: #e9ecef;
+}
+</style>
+
+{% endblock %}

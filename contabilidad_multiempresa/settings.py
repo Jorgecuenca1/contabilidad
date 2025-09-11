@@ -21,12 +21,17 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-8p_o_)$xuh-gud)(u4vlp38@9j%w!d@hd5ckt&+2j(r&3@q*@3'
+import secrets
+import os
+from pathlib import Path
+
+# Generate a secure random secret key
+SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', secrets.token_urlsafe(50))
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['contabilidad.corpofuturo.org']
+ALLOWED_HOSTS = ['contabilidad.corpofuturo.org', '127.0.0.1', 'localhost', 'testserver', '192.168.20.7']
 
 
 # Application definition
@@ -67,6 +72,9 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'core.middleware.SessionSecurityMiddleware',
+    'core.middleware.MultiCompanyAccessMiddleware',
+    'core.middleware.CompanyPermissionMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
@@ -144,7 +152,7 @@ STATICFILES_DIRS = [
 ]
 
 # Media files
-MEDIA_URL = 'media/'
+MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 # Default primary key field type
@@ -185,14 +193,7 @@ CSRF_TRUSTED_ORIGINS = [
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
 
-# Media files
-MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
-
-# Static files
-STATICFILES_DIRS = [
-    BASE_DIR / 'static',
-]
+# Note: Media and static files configurations are already defined above
 
 # Celery Configuration (for background tasks)
 CELERY_BROKER_URL = 'redis://localhost:6379/0'
@@ -209,6 +210,26 @@ AUTH_USER_MODEL = 'core.User'
 SECURE_BROWSER_XSS_FILTER = True
 SECURE_CONTENT_TYPE_NOSNIFF = True
 X_FRAME_OPTIONS = 'DENY'
+
+# Additional security settings
+SECURE_SSL_REDIRECT = not DEBUG
+SECURE_HSTS_SECONDS = 31536000 if not DEBUG else 0  # 1 year
+SECURE_HSTS_INCLUDE_SUBDOMAINS = not DEBUG
+SECURE_HSTS_PRELOAD = not DEBUG
+
+# Session security
+SESSION_COOKIE_SECURE = not DEBUG
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SAMESITE = 'Strict'
+SESSION_COOKIE_AGE = 3600  # 1 hour
+
+# CSRF security
+CSRF_COOKIE_SECURE = not DEBUG
+CSRF_COOKIE_HTTPONLY = True
+CSRF_COOKIE_SAMESITE = 'Strict'
+
+# Additional headers
+SECURE_REFERRER_POLICY = 'strict-origin-when-cross-origin'
 
 # Logging configuration
 LOGGING = {

@@ -9,5 +9,6 @@ app_name = 'public_sector'
 
 urlpatterns = [
     path('', views.public_sector_dashboard, name='dashboard'),
+    path('chip-report/', views.generate_chip_report, name='chip_report'),
 ]
 

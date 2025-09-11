@@ -1,0 +1,153 @@
+{% extends 'base.html' %}
+
+{% block title %}Reportes Financieros - Sistema de Contabilidad{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h1 class="mb-4">
+            <i class="bi bi-bar-chart"></i> Reportes Financieros
+        </h1>
+    </div>
+</div>
+
+<!-- Selector de Empresa -->
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5><i class="bi bi-building"></i> Empresa</h5>
+            </div>
+            <div class="card-body">
+                <select class="form-select" id="companySelector" onchange="updateCompany()">
+                    <option value="">Seleccione una empresa...</option>
+                    {% for company in companies %}
+                        <option value="{{ company.id }}">{{ company.name }} (NIT: {{ company.tax_id }})</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card bg-info text-white">
+            <div class="card-body">
+                <h5><i class="bi bi-info-circle"></i> Información</h5>
+                <p class="mb-0">Seleccione una empresa para generar reportes financieros específicos según las normas contables colombianas.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Reportes Principales -->
+<div class="row">
+    <div class="col-md-4 mb-3">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="bi bi-clipboard-data fs-1 text-primary mb-3"></i>
+                <h5 class="card-title">Balance General</h5>
+                <p class="card-text">Estado de situación financiera con clasificación PUC</p>
+                <button class="btn btn-primary" onclick="window.location.href='{% url 'reports:balance_sheet' %}'">
+                    Ver Reporte
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4 mb-3">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="bi bi-graph-up fs-1 text-success mb-3"></i>
+                <h5 class="card-title">Estado de Resultados</h5>
+                <p class="card-text">Ingresos, costos y gastos del período contable</p>
+                <button class="btn btn-success" onclick="window.location.href='{% url 'reports:income_statement' %}'">
+                    Ver Reporte
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4 mb-3">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="bi bi-table fs-1 text-warning mb-3"></i>
+                <h5 class="card-title">Balance de Prueba</h5>
+                <p class="card-text">Resumen de saldos deudores y acreedores</p>
+                <button class="btn btn-warning" onclick="window.location.href='{% url 'reports:trial_balance' %}'">
+                    Ver Reporte
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6 mb-3">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="bi bi-journal-text fs-1 text-info mb-3"></i>
+                <h5 class="card-title">Libro Mayor</h5>
+                <p class="card-text">Movimientos detallados por cuenta contable</p>
+                <button class="btn btn-info" onclick="window.location.href='{% url 'reports:general_ledger' %}'">
+                    Ver Reporte
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6 mb-3">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="bi bi-clock-history fs-1 text-danger mb-3"></i>
+                <h5 class="card-title">Cartera Vencida</h5>
+                <p class="card-text">Análisis de vencimiento CxC y CxP</p>
+                <button class="btn btn-danger" onclick="window.location.href='{% url 'reports:aging_report' %}'">
+                    Ver Reporte
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Información Colombiana -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h5><i class="bi bi-check-circle"></i> Cumplimiento Normativo Colombiano</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Plan Único de Cuentas (PUC)</h6>
+                        <ul class="list-unstyled">
+                            <li><i class="bi bi-check text-success"></i> Clasificación según Decreto 2650</li>
+                            <li><i class="bi bi-check text-success"></i> Cuentas de 1 a 9 dígitos</li>
+                            <li><i class="bi bi-check text-success"></i> Estructura jerárquica completa</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Normas Contables</h6>
+                        <ul class="list-unstyled">
+                            <li><i class="bi bi-check text-success"></i> NIIF para PYMES</li>
+                            <li><i class="bi bi-check text-success"></i> Normas de Información Financiera</li>
+                            <li><i class="bi bi-check text-success"></i> Reportes DIAN compatibles</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function updateCompany() {
+    const companyId = document.getElementById('companySelector').value;
+    if (companyId) {
+        // Store selected company in session/localStorage for other reports
+        sessionStorage.setItem('selectedCompanyId', companyId);
+    }
+}
+</script>
+{% endblock %}

@@ -29,17 +29,25 @@
                         {% csrf_token %}
                         
                         <div class="form-group mb-3">
-                            <label for="{{ form.username.id_for_label }}" class="form-label">
+                            <label for="id_username" class="form-label">
                                 <i class="fas fa-user"></i> Usuario
                             </label>
-                            <input type="text" name="username" class="form-control" required>
+                            <input type="text" name="username" id="id_username" class="form-control" required 
+                                   value="{{ form.username.value|default:'' }}" placeholder="Ingrese su usuario">
+                            {% if form.username.errors %}
+                                <div class="text-danger small">{{ form.username.errors.0 }}</div>
+                            {% endif %}
                         </div>
                         
                         <div class="form-group mb-3">
-                            <label for="{{ form.password.id_for_label }}" class="form-label">
+                            <label for="id_password" class="form-label">
                                 <i class="fas fa-lock"></i> Contraseña
                             </label>
-                            <input type="password" name="password" class="form-control" required>
+                            <input type="password" name="password" id="id_password" class="form-control" required
+                                   placeholder="Ingrese su contraseña">
+                            {% if form.password.errors %}
+                                <div class="text-danger small">{{ form.password.errors.0 }}</div>
+                            {% endif %}
                         </div>
                         
                         {% if next %}

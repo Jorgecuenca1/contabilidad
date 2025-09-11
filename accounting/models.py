@@ -20,3 +20,4 @@ from .models_accounts import (
 from .models_journal import (
     JournalType, JournalEntry, JournalEntryLine
 )
+from .models_voucher import VoucherType

@@ -1,0 +1,419 @@
+{% extends 'base.html' %}
+
+{% block title %}Reportes de IVA{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h2 class="text-primary">
+                <i class="fas fa-chart-line"></i> Reportes y Análisis de IVA
+            </h2>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="{% url 'taxes:dashboard' %}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left"></i> Volver
+            </a>
+        </div>
+    </div>
+
+    <!-- Filtros -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h6 class="mb-0"><i class="fas fa-filter"></i> Filtros de Reporte</h6>
+                </div>
+                <div class="card-body">
+                    <form method="get" class="row g-3">
+                        <div class="col-md-3">
+                            <label>Empresa</label>
+                            <select name="company" class="form-control" required>
+                                <option value="">Seleccione empresa...</option>
+                                {% for company in companies %}
+                                <option value="{{ company.id }}">{{ company.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label>Período</label>
+                            <select name="period_type" class="form-control">
+                                <option value="monthly">Mensual</option>
+                                <option value="bimonthly" selected>Bimestral</option>
+                                <option value="quarterly">Trimestral</option>
+                                <option value="annual">Anual</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label>Desde</label>
+                            <input type="month" name="date_from" class="form-control" value="2025-01">
+                        </div>
+                        <div class="col-md-2">
+                            <label>Hasta</label>
+                            <input type="month" name="date_to" class="form-control" value="2025-08">
+                        </div>
+                        <div class="col-md-2">
+                            <label>Tipo de Reporte</label>
+                            <select name="report_type" class="form-control">
+                                <option value="summary">Resumen</option>
+                                <option value="detailed">Detallado</option>
+                                <option value="comparative">Comparativo</option>
+                            </select>
+                        </div>
+                        <div class="col-md-1">
+                            <label>&nbsp;</label>
+                            <button type="submit" class="btn btn-info form-control">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tarjetas de Resumen -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6>IVA Generado</h6>
+                            <h3>$12,450,000</h3>
+                            <small>Bimestre Jul-Ago 2025</small>
+                        </div>
+                        <div>
+                            <i class="fas fa-plus-circle fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6>IVA Descontable</h6>
+                            <h3>$3,280,000</h3>
+                            <small>Compras y gastos</small>
+                        </div>
+                        <div>
+                            <i class="fas fa-minus-circle fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6>Saldo a Favor</h6>
+                            <h3>$0</h3>
+                            <small>Períodos anteriores</small>
+                        </div>
+                        <div>
+                            <i class="fas fa-balance-scale fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-danger text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6>IVA a Pagar</h6>
+                            <h3>$9,170,000</h3>
+                            <small>Generado - Descontable</small>
+                        </div>
+                        <div>
+                            <i class="fas fa-hand-holding-usd fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reporte Detallado IVA por Tarifas -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="fas fa-percentage"></i> IVA por Tarifas - Julio-Agosto 2025</h5>
+                    <button class="btn btn-light btn-sm">
+                        <i class="fas fa-download"></i> Exportar Excel
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Tarifa IVA</th>
+                                    <th>Base Gravable Ventas</th>
+                                    <th>IVA Generado</th>
+                                    <th>Base Gravable Compras</th>
+                                    <th>IVA Descontable</th>
+                                    <th>Diferencia</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><span class="badge bg-danger">19%</span></td>
+                                    <td class="text-end">$58,200,000</td>
+                                    <td class="text-end text-success">$11,058,000</td>
+                                    <td class="text-end">$15,800,000</td>
+                                    <td class="text-end text-info">$3,002,000</td>
+                                    <td class="text-end text-warning">$8,056,000</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="badge bg-warning">5%</span></td>
+                                    <td class="text-end">$23,840,000</td>
+                                    <td class="text-end text-success">$1,192,000</td>
+                                    <td class="text-end">$4,200,000</td>
+                                    <td class="text-end text-info">$210,000</td>
+                                    <td class="text-end text-warning">$982,000</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="badge bg-secondary">0%</span></td>
+                                    <td class="text-end">$8,600,000</td>
+                                    <td class="text-end">$0</td>
+                                    <td class="text-end">$1,350,000</td>
+                                    <td class="text-end">$0</td>
+                                    <td class="text-end">$0</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="badge bg-dark">Excluidos</span></td>
+                                    <td class="text-end">$12,400,000</td>
+                                    <td class="text-end">$0</td>
+                                    <td class="text-end">$3,800,000</td>
+                                    <td class="text-end">$0</td>
+                                    <td class="text-end">$0</td>
+                                </tr>
+                            </tbody>
+                            <tfoot class="table-light">
+                                <tr>
+                                    <th>TOTALES</th>
+                                    <th class="text-end">$103,040,000</th>
+                                    <th class="text-end text-success">$12,250,000</th>
+                                    <th class="text-end">$25,150,000</th>
+                                    <th class="text-end text-info">$3,212,000</th>
+                                    <th class="text-end text-danger">$9,038,000</th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Gráficos y Análisis -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h6 class="mb-0"><i class="fas fa-chart-bar"></i> Evolución IVA Mensual 2025</h6>
+                </div>
+                <div class="card-body">
+                    <canvas id="ivaEvolutionChart" height="100"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h6 class="mb-0"><i class="fas fa-pie-chart"></i> Distribución IVA por Tarifa</h6>
+                </div>
+                <div class="card-body">
+                    <canvas id="ivaDistributionChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Libro de Ventas y Compras -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h6 class="mb-0"><i class="fas fa-book"></i> Libro de Ventas - Resumen</h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Mes</th>
+                                    <th>N° Facturas</th>
+                                    <th>Base</th>
+                                    <th>IVA</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Julio</td>
+                                    <td class="text-center">145</td>
+                                    <td class="text-end">$48,200,000</td>
+                                    <td class="text-end">$8,450,000</td>
+                                </tr>
+                                <tr>
+                                    <td>Agosto</td>
+                                    <td class="text-center">162</td>
+                                    <td class="text-end">$54,840,000</td>
+                                    <td class="text-end">$9,800,000</td>
+                                </tr>
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th>Total</th>
+                                    <th class="text-center">307</th>
+                                    <th class="text-end">$103,040,000</th>
+                                    <th class="text-end">$18,250,000</th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h6 class="mb-0"><i class="fas fa-book-open"></i> Libro de Compras - Resumen</h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Mes</th>
+                                    <th>N° Facturas</th>
+                                    <th>Base</th>
+                                    <th>IVA</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Julio</td>
+                                    <td class="text-center">89</td>
+                                    <td class="text-end">$11,200,000</td>
+                                    <td class="text-end">$1,580,000</td>
+                                </tr>
+                                <tr>
+                                    <td>Agosto</td>
+                                    <td class="text-center">96</td>
+                                    <td class="text-end">$13,950,000</td>
+                                    <td class="text-end">$1,632,000</td>
+                                </tr>
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th>Total</th>
+                                    <th class="text-center">185</th>
+                                    <th class="text-end">$25,150,000</th>
+                                    <th class="text-end">$3,212,000</th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Acciones de Reporte -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-secondary text-white">
+                    <h6 class="mb-0"><i class="fas fa-tools"></i> Exportación de Reportes</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <button class="btn btn-success btn-block w-100">
+                                <i class="fas fa-file-excel"></i> Libro de Ventas Excel
+                            </button>
+                        </div>
+                        <div class="col-md-3">
+                            <button class="btn btn-info btn-block w-100">
+                                <i class="fas fa-file-excel"></i> Libro de Compras Excel
+                            </button>
+                        </div>
+                        <div class="col-md-3">
+                            <button class="btn btn-primary btn-block w-100">
+                                <i class="fas fa-file-pdf"></i> Reporte IVA PDF
+                            </button>
+                        </div>
+                        <div class="col-md-3">
+                            <button class="btn btn-warning btn-block w-100">
+                                <i class="fas fa-chart-line"></i> Análisis Comparativo
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Configuración de gráficos (requiere Chart.js)
+document.addEventListener('DOMContentLoaded', function() {
+    // Gráfico de evolución mensual
+    const ctx1 = document.getElementById('ivaEvolutionChart').getContext('2d');
+    new Chart(ctx1, {
+        type: 'line',
+        data: {
+            labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago'],
+            datasets: [{
+                label: 'IVA Generado',
+                data: [8500, 9200, 10100, 8900, 9800, 11200, 8450, 9800],
+                borderColor: 'rgb(75, 192, 192)',
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+            }, {
+                label: 'IVA Descontable',
+                data: [2100, 2800, 3200, 2600, 3100, 3800, 1580, 1632],
+                borderColor: 'rgb(255, 99, 132)',
+                backgroundColor: 'rgba(255, 99, 132, 0.2)',
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+
+    // Gráfico de distribución por tarifa
+    const ctx2 = document.getElementById('ivaDistributionChart').getContext('2d');
+    new Chart(ctx2, {
+        type: 'doughnut',
+        data: {
+            labels: ['IVA 19%', 'IVA 5%', 'IVA 0%'],
+            datasets: [{
+                data: [11058, 1192, 0],
+                backgroundColor: [
+                    'rgb(255, 99, 132)',
+                    'rgb(255, 205, 86)',
+                    'rgb(54, 162, 235)'
+                ]
+            }]
+        },
+        options: {
+            responsive: true
+        }
+    });
+});
+</script>
+{% endblock %}

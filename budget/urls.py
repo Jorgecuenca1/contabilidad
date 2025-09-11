@@ -6,6 +6,7 @@ app_name = 'budget'
 urlpatterns = [
     # Dashboard
     path('', views.budget_dashboard, name='dashboard'),
+    path('dashboard/', views.budget_dashboard, name='budget_dashboard'),
     
     # CDP - Certificado de Disponibilidad Presupuestal
     path('cdp/create/', views.cdp_create, name='cdp_create'),

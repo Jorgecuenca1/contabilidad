@@ -1,0 +1,430 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block title %}Reporte CHIP {{ year }} - {{ company.name }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h2 class="text-primary">
+                <i class="bi bi-file-earmark-bar-graph"></i> Reporte CHIP {{ year }}
+            </h2>
+            <p class="text-muted">{{ company.name }} - {{ company.tax_id }}</p>
+            {% if quarter %}
+                <p class="text-info">Trimestre {{ quarter }}</p>
+            {% else %}
+                <p class="text-info">Año completo</p>
+            {% endif %}
+        </div>
+        <div class="col-md-4 text-end">
+            <div class="btn-group" role="group">
+                <a href="/public-sector/chip-report/" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left"></i> Volver
+                </a>
+                <button class="btn btn-success" onclick="exportExcel()">
+                    <i class="bi bi-file-excel"></i> Exportar Excel
+                </button>
+                <button class="btn btn-info" onclick="window.print()">
+                    <i class="bi bi-printer"></i> Imprimir
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Resumen Ejecutivo -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="bi bi-graph-up"></i> Resumen Ejecutivo</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-md-3">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h6 class="text-muted">Total Ingresos</h6>
+                                    <h3 class="text-success">${{ chip_data.ingresos.total|floatformat:0|intcomma }}</h3>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h6 class="text-muted">Total Gastos</h6>
+                                    <h3 class="text-danger">${{ chip_data.gastos.total|floatformat:0|intcomma }}</h3>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h6 class="text-muted">Resultado Fiscal</h6>
+                                    <h3 class="{% if chip_data.resultado_fiscal > 0 %}text-success{% else %}text-danger{% endif %}">
+                                        ${{ chip_data.resultado_fiscal|floatformat:0|intcomma }}
+                                    </h3>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h6 class="text-muted">% Ejecución</h6>
+                                    <h3 class="text-info">
+                                        {% if chip_data.ingresos.total > 0 %}
+                                            {{ chip_data.gastos.total|mul:100|div:chip_data.ingresos.total|floatformat:1 }}%
+                                        {% else %}
+                                            0%
+                                        {% endif %}
+                                    </h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ingresos -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="bi bi-cash-stack"></i> INGRESOS</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Código CHIP</th>
+                                    <th>Concepto</th>
+                                    <th class="text-end">Presupuesto</th>
+                                    <th class="text-end">Recaudado</th>
+                                    <th class="text-end">% Ejecución</th>
+                                    <th class="text-end">Saldo</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for ingreso in chip_data.detalle_ingresos %}
+                                <tr>
+                                    <td><code>{{ ingreso.codigo }}</code></td>
+                                    <td>{{ ingreso.concepto }}</td>
+                                    <td class="text-end">${{ ingreso.presupuestado|floatformat:0|intcomma }}</td>
+                                    <td class="text-end">${{ ingreso.recaudado|floatformat:0|intcomma }}</td>
+                                    <td class="text-end">
+                                        {% if ingreso.presupuestado > 0 %}
+                                            <div class="progress" style="height: 20px;">
+                                                <div class="progress-bar bg-success" role="progressbar" 
+                                                     style="width: {{ ingreso.recaudado|mul:100|div:ingreso.presupuestado|floatformat:0 }}%">
+                                                    {{ ingreso.recaudado|mul:100|div:ingreso.presupuestado|floatformat:1 }}%
+                                                </div>
+                                            </div>
+                                        {% else %}
+                                            -
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-end">${{ ingreso.presupuestado|sub:ingreso.recaudado|floatformat:0|intcomma }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                            <tfoot class="table-success">
+                                <tr>
+                                    <th colspan="2">TOTAL INGRESOS</th>
+                                    <th class="text-end">${{ chip_data.ingresos.total|floatformat:0|intcomma }}</th>
+                                    <th class="text-end">${{ chip_data.ingresos.total|floatformat:0|intcomma }}</th>
+                                    <th class="text-center"><strong>100.0%</strong></th>
+                                    <th class="text-end">$0</th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                    
+                    <!-- Composición de Ingresos -->
+                    <div class="row mt-3">
+                        <div class="col-md-6">
+                            <h6>Composición de Ingresos</h6>
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <strong>Ingresos Corrientes:</strong>
+                                        </div>
+                                        <div class="col-6 text-end">
+                                            ${{ chip_data.ingresos.corrientes|floatformat:0|intcomma }}
+                                            <small class="text-muted">
+                                                ({{ chip_data.ingresos.corrientes|mul:100|div:chip_data.ingresos.total|floatformat:1 }}%)
+                                            </small>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <strong>Recursos de Capital:</strong>
+                                        </div>
+                                        <div class="col-6 text-end">
+                                            ${{ chip_data.ingresos.capital|floatformat:0|intcomma }}
+                                            <small class="text-muted">
+                                                ({{ chip_data.ingresos.capital|mul:100|div:chip_data.ingresos.total|floatformat:1 }}%)
+                                            </small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="progress" style="height: 100px;">
+                                <div class="progress-bar bg-success" role="progressbar" 
+                                     style="width: {{ chip_data.ingresos.corrientes|mul:100|div:chip_data.ingresos.total|floatformat:0 }}%">
+                                    Corrientes
+                                </div>
+                                <div class="progress-bar bg-info" role="progressbar" 
+                                     style="width: {{ chip_data.ingresos.capital|mul:100|div:chip_data.ingresos.total|floatformat:0 }}%">
+                                    Capital
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Gastos -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="mb-0"><i class="bi bi-credit-card"></i> GASTOS</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Código CHIP</th>
+                                    <th>Concepto</th>
+                                    <th class="text-end">Presupuesto</th>
+                                    <th class="text-end">Ejecutado</th>
+                                    <th class="text-end">% Ejecución</th>
+                                    <th class="text-end">Saldo</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for gasto in chip_data.detalle_gastos %}
+                                <tr>
+                                    <td><code>{{ gasto.codigo }}</code></td>
+                                    <td>{{ gasto.concepto }}</td>
+                                    <td class="text-end">${{ gasto.presupuestado|floatformat:0|intcomma }}</td>
+                                    <td class="text-end">${{ gasto.ejecutado|floatformat:0|intcomma }}</td>
+                                    <td class="text-end">
+                                        {% if gasto.presupuestado > 0 %}
+                                            <div class="progress" style="height: 20px;">
+                                                <div class="progress-bar bg-warning" role="progressbar" 
+                                                     style="width: {{ gasto.ejecutado|mul:100|div:gasto.presupuestado|floatformat:0 }}%">
+                                                    {{ gasto.ejecutado|mul:100|div:gasto.presupuestado|floatformat:1 }}%
+                                                </div>
+                                            </div>
+                                        {% else %}
+                                            -
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-end">${{ gasto.presupuestado|sub:gasto.ejecutado|floatformat:0|intcomma }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                            <tfoot class="table-danger">
+                                <tr>
+                                    <th colspan="2">TOTAL GASTOS</th>
+                                    <th class="text-end">${{ chip_data.gastos.total|floatformat:0|intcomma }}</th>
+                                    <th class="text-end">${{ chip_data.gastos.total|floatformat:0|intcomma }}</th>
+                                    <th class="text-center"><strong>100.0%</strong></th>
+                                    <th class="text-end">$0</th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                    
+                    <!-- Composición de Gastos -->
+                    <div class="row mt-3">
+                        <div class="col-md-6">
+                            <h6>Composición de Gastos</h6>
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <strong>Gastos de Funcionamiento:</strong>
+                                        </div>
+                                        <div class="col-6 text-end">
+                                            ${{ chip_data.gastos.funcionamiento|floatformat:0|intcomma }}
+                                            <small class="text-muted">
+                                                ({{ chip_data.gastos.funcionamiento|mul:100|div:chip_data.gastos.total|floatformat:1 }}%)
+                                            </small>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <strong>Gastos de Inversión:</strong>
+                                        </div>
+                                        <div class="col-6 text-end">
+                                            ${{ chip_data.gastos.inversion|floatformat:0|intcomma }}
+                                            <small class="text-muted">
+                                                ({{ chip_data.gastos.inversion|mul:100|div:chip_data.gastos.total|floatformat:1 }}%)
+                                            </small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="progress" style="height: 100px;">
+                                <div class="progress-bar bg-warning" role="progressbar" 
+                                     style="width: {{ chip_data.gastos.funcionamiento|mul:100|div:chip_data.gastos.total|floatformat:0 }}%">
+                                    Funcionamiento
+                                </div>
+                                <div class="progress-bar bg-danger" role="progressbar" 
+                                     style="width: {{ chip_data.gastos.inversion|mul:100|div:chip_data.gastos.total|floatformat:0 }}%">
+                                    Inversión
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Resultado Fiscal -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="bi bi-calculator"></i> RESULTADO FISCAL</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-borderless">
+                            <tr>
+                                <th>Total Ingresos:</th>
+                                <td class="text-end text-success"><strong>${{ chip_data.ingresos.total|floatformat:0|intcomma }}</strong></td>
+                            </tr>
+                            <tr>
+                                <th>Total Gastos:</th>
+                                <td class="text-end text-danger"><strong>${{ chip_data.gastos.total|floatformat:0|intcomma }}</strong></td>
+                            </tr>
+                            <tr class="table-primary">
+                                <th><strong>Resultado Fiscal:</strong></th>
+                                <td class="text-end {% if chip_data.resultado_fiscal > 0 %}text-success{% else %}text-danger{% endif %}">
+                                    <strong>${{ chip_data.resultado_fiscal|floatformat:0|intcomma }}</strong>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    
+                    <div class="alert {% if chip_data.resultado_fiscal > 0 %}alert-success{% else %}alert-warning{% endif %}">
+                        <i class="bi bi-info-circle"></i>
+                        {% if chip_data.resultado_fiscal > 0 %}
+                            <strong>Resultado Fiscal Positivo:</strong> La entidad tiene un superávit presupuestal, 
+                            indicando una gestión fiscal sólida con ingresos superiores a los gastos.
+                        {% else %}
+                            <strong>Resultado Fiscal Negativo:</strong> La entidad presenta un déficit presupuestal. 
+                            Se recomienda revisar la programación de gastos y buscar fuentes adicionales de financiamiento.
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Información del Reporte -->
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0"><i class="bi bi-info-circle"></i> Información del Reporte</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <table class="table table-borderless">
+                                <tr>
+                                    <th>Entidad:</th>
+                                    <td>{{ company.name }}</td>
+                                </tr>
+                                <tr>
+                                    <th>NIT:</th>
+                                    <td>{{ company.tax_id }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Período:</th>
+                                    <td>Año {{ year }}{% if quarter %} - Trimestre {{ quarter }}{% endif %}</td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <table class="table table-borderless">
+                                <tr>
+                                    <th>Fecha de generación:</th>
+                                    <td>{{ report.created_at|date:"d/m/Y H:i" }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Generado por:</th>
+                                    <td>{{ report.created_by.get_full_name|default:report.created_by.username }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Estado:</th>
+                                    <td>
+                                        <span class="badge bg-success">{{ report.get_status_display }}</span>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function exportExcel() {
+    alert('Funcionalidad de exportación a Excel en desarrollo');
+    // Implementar exportación a Excel
+}
+
+// Configuración de impresión
+window.addEventListener('beforeprint', function() {
+    document.body.classList.add('print-mode');
+});
+
+window.addEventListener('afterprint', function() {
+    document.body.classList.remove('print-mode');
+});
+</script>
+
+<style>
+@media print {
+    .btn-group, .alert {
+        display: none !important;
+    }
+    
+    .card {
+        border: 1px solid #333 !important;
+        page-break-inside: avoid;
+    }
+    
+    .card-header {
+        background-color: #333 !important;
+        color: white !important;
+        -webkit-print-color-adjust: exact;
+    }
+}
+
+.progress {
+    background-color: #e9ecef;
+}
+</style>
+
+{% endblock %}

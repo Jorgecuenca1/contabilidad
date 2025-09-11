@@ -38,11 +38,35 @@ class Command(BaseCommand):
                 'currency_symbol': '$',
                 'tax_id_regex': r'^\d{9,10}$',
                 'tax_configuration': {
-                    'iva_rate': 19,
+                    'iva_rate': 19,  # IVA estándar 2025
+                    'iva_reduced': 5,  # IVA reducido
                     'retefuente_rates': {
-                        'honorarios': 10,
-                        'servicios': 4,
-                        'compras': 2.5
+                        'honorarios': 10,  # Profesionales independientes
+                        'servicios': 4,  # Servicios gravados
+                        'compras': 2.5,  # Compras gravadas
+                        'arrendamientos': 3.5,  # Arrendamientos
+                        'rendimientos_financieros': 7,  # Rendimientos financieros
+                        'otros_ingresos_tributarios': 2.5
+                    },
+                    'retencion_ica_rates': {
+                        'general': 0.414,  # Promedio nacional
+                        'bogota': 0.414,
+                        'medellin': 0.7,
+                        'cali': 1.0
+                    },
+                    'social_security_2025': {
+                        'salud_empleado': 4.0,
+                        'pension_empleado': 4.0,
+                        'salud_empleador': 8.5,
+                        'pension_empleador': 12.0,
+                        'arl_clase_1': 0.348,
+                        'arl_clase_2': 0.435,
+                        'arl_clase_3': 0.783,
+                        'arl_clase_4': 1.740,
+                        'arl_clase_5': 3.219,
+                        'sena': 2.0,
+                        'icbf': 3.0,
+                        'ccf': 4.0
                     }
                 }
             },

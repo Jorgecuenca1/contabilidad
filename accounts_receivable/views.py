@@ -6,7 +6,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import JsonResponse
-from django.db.models import Q, Sum
+from django.db.models import Q, Sum, Count
 from django.core.paginator import Paginator
 from decimal import Decimal
 
@@ -15,6 +15,7 @@ from accounting.models_accounts import Account
 from .models_customer import Customer, CustomerType
 from .models_invoice import Invoice, InvoiceLine
 from .models_payment import Payment, PaymentAllocation
+from third_parties.models import ThirdParty
 
 
 @login_required
@@ -260,3 +261,278 @@ def get_customers_json(request):
     ]
     
     return JsonResponse({'customers': customers_data})
+
+
+@login_required
+def index(request):
+    """Dashboard principal de Cuentas por Cobrar."""
+    return dashboard(request)
+
+
+@login_required
+def dashboard(request):
+    """Dashboard con estadísticas de CxC."""
+    companies = Company.objects.filter(is_active=True)
+    
+    # Statistics
+    total_customers = Customer.objects.filter(is_active=True).count()
+    total_invoices = Invoice.objects.count()
+    pending_invoices = Invoice.objects.filter(status__in=['draft', 'sent', 'partial']).count()
+    overdue_invoices = Invoice.objects.filter(status='overdue').count()
+    
+    # Recent activity
+    recent_invoices = Invoice.objects.select_related('customer', 'company').order_by('-created_at')[:5]
+    recent_payments = Payment.objects.select_related('customer', 'company').order_by('-created_at')[:5]
+    
+    context = {
+        'companies': companies,
+        'total_customers': total_customers,
+        'total_invoices': total_invoices,
+        'pending_invoices': pending_invoices,
+        'overdue_invoices': overdue_invoices,
+        'recent_invoices': recent_invoices,
+        'recent_payments': recent_payments,
+    }
+    
+    return render(request, 'accounts_receivable/dashboard.html', context)
+
+
+@login_required
+def customer_list(request):
+    """Lista de clientes."""
+    search = request.GET.get('search', '')
+    company_filter = request.GET.get('company', '')
+    
+    customers = Customer.objects.filter(is_active=True).select_related('company', 'customer_type')
+    
+    if search:
+        customers = customers.filter(
+            Q(business_name__icontains=search) |
+            Q(name__icontains=search) |
+            Q(document_number__icontains=search) |
+            Q(email__icontains=search)
+        )
+    
+    if company_filter:
+        customers = customers.filter(company_id=company_filter)
+    
+    # Paginate
+    paginator = Paginator(customers, 25)
+    page_number = request.GET.get('page')
+    customers_page = paginator.get_page(page_number)
+    
+    companies = Company.objects.filter(is_active=True)
+    
+    context = {
+        'customers': customers_page,
+        'companies': companies,
+        'search': search,
+        'company_filter': company_filter,
+    }
+    
+    return render(request, 'accounts_receivable/customer_list.html', context)
+
+@login_required
+def customer_detail(request, customer_id):
+    """Detalle del cliente."""
+    customer = get_object_or_404(Customer, id=customer_id)
+    
+    # Get customer invoices
+    invoices = customer.invoices.order_by('-invoice_date')[:10]
+    
+    # Get customer payments
+    payments = customer.payments.order_by('-date')[:10]
+    
+    context = {
+        'customer': customer,
+        'invoices': invoices,
+        'payments': payments,
+    }
+    
+    return render(request, 'accounts_receivable/customer_detail.html', context)
+
+
+@login_required
+def edit_customer(request, customer_id):
+    """Editar cliente."""
+    customer = get_object_or_404(Customer, id=customer_id)
+    companies = Company.objects.filter(is_active=True)
+    customer_types = CustomerType.objects.filter(is_active=True)
+    
+    if request.method == 'POST':
+        try:
+            # Update customer fields
+            customer.document_type = request.POST.get('document_type')
+            customer.document_number = request.POST.get('document_number')
+            customer.verification_digit = request.POST.get('verification_digit', '')
+            customer.business_name = request.POST.get('business_name', '')
+            customer.trade_name = request.POST.get('trade_name', '')
+            customer.first_name = request.POST.get('first_name', '')
+            customer.last_name = request.POST.get('last_name', '')
+            customer.customer_type_id = request.POST.get('customer_type')
+            customer.regime = request.POST.get('regime', 'common')
+            customer.address = request.POST.get('address')
+            customer.city = request.POST.get('city')
+            customer.state = request.POST.get('state')
+            customer.country = request.POST.get('country', 'Colombia')
+            customer.postal_code = request.POST.get('postal_code', '')
+            customer.phone = request.POST.get('phone', '')
+            customer.mobile = request.POST.get('mobile', '')
+            customer.email = request.POST.get('email', '')
+            customer.website = request.POST.get('website', '')
+            customer.credit_limit = Decimal(request.POST.get('credit_limit', '0'))
+            customer.credit_days = int(request.POST.get('credit_days', '30'))
+            customer.discount_percentage = Decimal(request.POST.get('discount_percentage', '0'))
+            customer.is_tax_responsible = bool(request.POST.get('is_tax_responsible'))
+            customer.is_active = bool(request.POST.get('is_active', True))
+            
+            customer.save()
+            
+            messages.success(request, f'Cliente {customer.code} actualizado exitosamente')
+            return redirect('accounts_receivable:customer_detail', customer_id=customer.id)
+            
+        except Exception as e:
+            messages.error(request, f'Error al actualizar cliente: {str(e)}')
+    
+    context = {
+        'customer': customer,
+        'companies': companies,
+        'customer_types': customer_types,
+    }
+    
+    return render(request, 'accounts_receivable/edit_customer.html', context)
+
+
+@login_required
+def invoice_list(request):
+    """Lista de facturas."""
+    search = request.GET.get('search', '')
+    status_filter = request.GET.get('status', '')
+    company_filter = request.GET.get('company', '')
+    
+    invoices = Invoice.objects.select_related('customer', 'company')
+    
+    if search:
+        invoices = invoices.filter(
+            Q(invoice_number__icontains=search) |
+            Q(customer__business_name__icontains=search) |
+            Q(customer__name__icontains=search) |
+            Q(reference__icontains=search)
+        )
+    
+    if status_filter:
+        invoices = invoices.filter(status=status_filter)
+    
+    if company_filter:
+        invoices = invoices.filter(company_id=company_filter)
+    
+    invoices = invoices.order_by('-invoice_date')
+    
+    # Paginate
+    paginator = Paginator(invoices, 25)
+    page_number = request.GET.get('page')
+    invoices_page = paginator.get_page(page_number)
+    
+    companies = Company.objects.filter(is_active=True)
+    
+    context = {
+        'invoices': invoices_page,
+        'companies': companies,
+        'search': search,
+        'status_filter': status_filter,
+        'company_filter': company_filter,
+        'status_choices': Invoice.STATUS_CHOICES,
+    }
+    
+    return render(request, 'accounts_receivable/invoice_list.html', context)
+
+
+@login_required
+def invoice_detail(request, invoice_id):
+    """Detalle de factura."""
+    invoice = get_object_or_404(Invoice, id=invoice_id)
+    
+    context = {
+        'invoice': invoice,
+    }
+    
+    return render(request, 'accounts_receivable/invoice_detail.html', context)
+
+
+@login_required
+def edit_invoice(request, invoice_id):
+    """Editar factura."""
+    invoice = get_object_or_404(Invoice, id=invoice_id)
+    
+    # Only allow editing of draft invoices
+    if invoice.status != 'draft':
+        messages.warning(request, 'Solo se pueden editar facturas en borrador')
+        return redirect('accounts_receivable:invoice_detail', invoice_id=invoice.id)
+    
+    companies = Company.objects.filter(is_active=True)
+    customers = Customer.objects.filter(is_active=True)
+    
+    context = {
+        'invoice': invoice,
+        'companies': companies,
+        'customers': customers,
+        'editing': True,
+    }
+    
+    return render(request, 'accounts_receivable/edit_invoice.html', context)
+
+
+@login_required
+def payment_list(request):
+    """Lista de pagos."""
+    search = request.GET.get('search', '')
+    status_filter = request.GET.get('status', '')
+    company_filter = request.GET.get('company', '')
+    
+    payments = Payment.objects.select_related('customer', 'company')
+    
+    if search:
+        payments = payments.filter(
+            Q(number__icontains=search) |
+            Q(customer__business_name__icontains=search) |
+            Q(customer__name__icontains=search) |
+            Q(reference__icontains=search)
+        )
+    
+    if status_filter:
+        payments = payments.filter(status=status_filter)
+    
+    if company_filter:
+        payments = payments.filter(company_id=company_filter)
+    
+    payments = payments.order_by('-date')
+    
+    # Paginate
+    paginator = Paginator(payments, 25)
+    page_number = request.GET.get('page')
+    payments_page = paginator.get_page(page_number)
+    
+    companies = Company.objects.filter(is_active=True)
+    
+    context = {
+        'payments': payments_page,
+        'companies': companies,
+        'search': search,
+        'status_filter': status_filter,
+        'company_filter': company_filter,
+        'status_choices': Payment.STATUS_CHOICES,
+    }
+    
+    return render(request, 'accounts_receivable/payment_list.html', context)
+
+
+@login_required
+def payment_detail(request, payment_id):
+    """Detalle del pago."""
+    payment = get_object_or_404(Payment, id=payment_id)
+    
+    context = {
+        'payment': payment,
+    }
+    
+    return render(request, 'accounts_receivable/payment_detail.html', context)

@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+
+{% block title %}Generar Reporte CHIP - Sistema de Contabilidad{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <i class="bi bi-file-earmark-bar-graph"></i> Generar Reporte CHIP
+                    </h4>
+                    <small>Clasificador de Ingresos y Gastos Públicos</small>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="company_id" class="form-label">Entidad <span class="text-danger">*</span></label>
+                                <select class="form-select" id="company_id" name="company_id" required>
+                                    <option value="">Seleccione una entidad...</option>
+                                    {% for company in companies %}
+                                        <option value="{{ company.id }}">{{ company.name }} ({{ company.tax_id }})</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="year" class="form-label">Año <span class="text-danger">*</span></label>
+                                <select class="form-select" id="year" name="year" required>
+                                    <option value="{{ current_year }}">{{ current_year }}</option>
+                                    <option value="{{ current_year|add:'-1' }}">{{ current_year|add:'-1' }}</option>
+                                    <option value="{{ current_year|add:'-2' }}">{{ current_year|add:'-2' }}</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="quarter" class="form-label">Trimestre</label>
+                                <select class="form-select" id="quarter" name="quarter">
+                                    <option value="">Año completo</option>
+                                    <option value="1">Primer Trimestre</option>
+                                    <option value="2">Segundo Trimestre</option>
+                                    <option value="3">Tercer Trimestre</option>
+                                    <option value="4">Cuarto Trimestre</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="alert alert-info">
+                            <h6><i class="bi bi-info-circle"></i> ¿Qué es el CHIP?</h6>
+                            <p class="mb-0">
+                                El <strong>CHIP (Clasificador de Ingresos y Gastos Públicos)</strong> es un reporte oficial 
+                                que presenta la ejecución presupuestal de ingresos y gastos de las entidades públicas, 
+                                siguiendo la clasificación establecida por la Contaduría General de la Nación.
+                            </p>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12 text-end">
+                                <button type="button" class="btn btn-secondary" onclick="window.history.back()">
+                                    <i class="bi bi-arrow-left"></i> Volver
+                                </button>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-file-earmark-bar-graph"></i> Generar Reporte CHIP
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Información sobre CHIP -->
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h5><i class="bi bi-book"></i> Información del CHIP</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>Características del Reporte:</h6>
+                            <ul>
+                                <li>Clasificación oficial de ingresos y gastos públicos</li>
+                                <li>Cumplimiento con normativa de la CGN</li>
+                                <li>Formato estándar para entidades territoriales</li>
+                                <li>Base para reportes a organismos de control</li>
+                                <li>Comparación presupuesto vs. ejecución</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Categorías Principales:</h6>
+                            <ul>
+                                <li><strong>Ingresos Corrientes:</strong> Tributarios, no tributarios, transferencias</li>
+                                <li><strong>Recursos de Capital:</strong> Regalías, cofinanciación, rendimientos</li>
+                                <li><strong>Gastos de Funcionamiento:</strong> Personal, generales, transferencias</li>
+                                <li><strong>Gastos de Inversión:</strong> Formación bruta de capital, otros</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

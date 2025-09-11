@@ -151,17 +151,35 @@ def generate_balance_sheet(request):
     """
     Generar Balance General.
     """
-    if request.method == 'POST':
+    if request.method == 'GET':
+        # Mostrar formulario
+        companies = Company.objects.filter(is_active=True)
+        
+        context = {
+            'companies': companies,
+            'report_title': 'Balance General',
+            'report_description': 'Genere el balance general a una fecha específica',
+            'form_action': request.path,
+            'date_fields': ['period_end'],
+        }
+        return render(request, 'reports/report_form.html', context)
+        
+    elif request.method == 'POST':
         company_id = request.POST.get('company_id')
         period_end = request.POST.get('period_end')
         format_type = request.POST.get('format', 'pdf')
         
         try:
             company = get_object_or_404(Company, id=company_id)
-            period_end_date = datetime.strptime(period_end, '%Y-%m-%d').date()
             
-            # Verificar permisos
-            if not request.user.companies.filter(id=company_id).exists():
+            # Usar fecha actual si no se proporciona
+            if not period_end:
+                period_end_date = timezone.now().date()
+            else:
+                period_end_date = datetime.strptime(period_end, '%Y-%m-%d').date()
+            
+            # Verificar permisos (superusuarios tienen acceso completo)
+            if not request.user.is_superuser and not request.user.companies.filter(id=company_id).exists():
                 return JsonResponse({'error': 'No tiene permisos para esta empresa'}, status=403)
             
             # Generar reporte
@@ -182,7 +200,7 @@ def generate_balance_sheet(request):
             messages.error(request, f'Error al generar el reporte: {str(e)}')
             return JsonResponse({'error': str(e)}, status=500)
     
-    return JsonResponse({'error': 'Método no permitido'}, status=405)
+    return JsonResponse({'error': 'Método no soportado'}, status=405)
 
 
 @login_required
@@ -190,7 +208,20 @@ def generate_income_statement(request):
     """
     Generar Estado de Resultados.
     """
-    if request.method == 'POST':
+    if request.method == 'GET':
+        # Mostrar formulario
+        companies = Company.objects.filter(is_active=True)
+        
+        context = {
+            'companies': companies,
+            'report_title': 'Estado de Resultados',
+            'report_description': 'Genere el estado de resultados para un período específico',
+            'form_action': request.path,
+            'date_fields': ['period_start', 'period_end'],
+        }
+        return render(request, 'reports/report_form.html', context)
+        
+    elif request.method == 'POST':
         company_id = request.POST.get('company_id')
         period_start = request.POST.get('period_start')
         period_end = request.POST.get('period_end')
@@ -198,11 +229,21 @@ def generate_income_statement(request):
         
         try:
             company = get_object_or_404(Company, id=company_id)
-            period_start_date = datetime.strptime(period_start, '%Y-%m-%d').date()
-            period_end_date = datetime.strptime(period_end, '%Y-%m-%d').date()
             
-            # Verificar permisos
-            if not request.user.companies.filter(id=company_id).exists():
+            # Usar fechas por defecto si no se proporcionan
+            current_date = timezone.now().date()
+            if not period_start:
+                period_start_date = current_date.replace(month=1, day=1)  # Inicio del año
+            else:
+                period_start_date = datetime.strptime(period_start, '%Y-%m-%d').date()
+                
+            if not period_end:
+                period_end_date = current_date
+            else:
+                period_end_date = datetime.strptime(period_end, '%Y-%m-%d').date()
+            
+            # Verificar permisos (superusuarios tienen acceso completo)
+            if not request.user.is_superuser and not request.user.companies.filter(id=company_id).exists():
                 return JsonResponse({'error': 'No tiene permisos para esta empresa'}, status=403)
             
             # Generar reporte
@@ -223,7 +264,7 @@ def generate_income_statement(request):
             messages.error(request, f'Error al generar el reporte: {str(e)}')
             return JsonResponse({'error': str(e)}, status=500)
     
-    return JsonResponse({'error': 'Método no permitido'}, status=405)
+    return JsonResponse({'error': 'Método no soportado'}, status=405)
 
 
 @login_required
@@ -231,17 +272,35 @@ def generate_trial_balance(request):
     """
     Generar Balance de Prueba.
     """
-    if request.method == 'POST':
+    if request.method == 'GET':
+        # Mostrar formulario
+        companies = Company.objects.filter(is_active=True)
+        
+        context = {
+            'companies': companies,
+            'report_title': 'Balance de Prueba',
+            'report_description': 'Genere el balance de prueba a una fecha específica',
+            'form_action': request.path,
+            'date_fields': ['period_end'],
+        }
+        return render(request, 'reports/report_form.html', context)
+        
+    elif request.method == 'POST':
         company_id = request.POST.get('company_id')
         period_end = request.POST.get('period_end')
         format_type = request.POST.get('format', 'pdf')
         
         try:
             company = get_object_or_404(Company, id=company_id)
-            period_end_date = datetime.strptime(period_end, '%Y-%m-%d').date()
             
-            # Verificar permisos
-            if not request.user.companies.filter(id=company_id).exists():
+            # Usar fecha actual si no se proporciona
+            if not period_end:
+                period_end_date = timezone.now().date()
+            else:
+                period_end_date = datetime.strptime(period_end, '%Y-%m-%d').date()
+            
+            # Verificar permisos (superusuarios tienen acceso completo)
+            if not request.user.is_superuser and not request.user.companies.filter(id=company_id).exists():
                 return JsonResponse({'error': 'No tiene permisos para esta empresa'}, status=403)
             
             # Generar reporte
@@ -262,7 +321,7 @@ def generate_trial_balance(request):
             messages.error(request, f'Error al generar el reporte: {str(e)}')
             return JsonResponse({'error': str(e)}, status=500)
     
-    return JsonResponse({'error': 'Método no permitido'}, status=405)
+    return JsonResponse({'error': 'Método no soportado'}, status=405)
 
 
 @login_required
@@ -270,7 +329,21 @@ def generate_aging_report(request):
     """
     Generar Reporte de Cartera Vencida.
     """
-    if request.method == 'POST':
+    if request.method == 'GET':
+        # Mostrar formulario
+        companies = Company.objects.filter(is_active=True)
+        
+        context = {
+            'companies': companies,
+            'report_title': 'Reporte de Cartera Vencida',
+            'report_description': 'Genere el análisis de vencimiento de CxC y CxP',
+            'form_action': request.path,
+            'date_fields': ['report_date'],
+            'additional_fields': ['report_type'],
+        }
+        return render(request, 'reports/report_form.html', context)
+        
+    elif request.method == 'POST':
         company_id = request.POST.get('company_id')
         report_date = request.POST.get('report_date')
         report_type = request.POST.get('report_type', 'receivables')
@@ -278,10 +351,15 @@ def generate_aging_report(request):
         
         try:
             company = get_object_or_404(Company, id=company_id)
-            report_date_obj = datetime.strptime(report_date, '%Y-%m-%d').date()
             
-            # Verificar permisos
-            if not request.user.companies.filter(id=company_id).exists():
+            # Usar fecha actual si no se proporciona
+            if not report_date:
+                report_date_obj = timezone.now().date()
+            else:
+                report_date_obj = datetime.strptime(report_date, '%Y-%m-%d').date()
+            
+            # Verificar permisos (superusuarios tienen acceso completo)
+            if not request.user.is_superuser and not request.user.companies.filter(id=company_id).exists():
                 return JsonResponse({'error': 'No tiene permisos para esta empresa'}, status=403)
             
             # Generar reporte
@@ -304,7 +382,7 @@ def generate_aging_report(request):
             messages.error(request, f'Error al generar el reporte: {str(e)}')
             return JsonResponse({'error': str(e)}, status=500)
     
-    return JsonResponse({'error': 'Método no permitido'}, status=405)
+    return JsonResponse({'error': 'Método no soportado'}, status=405)
 
 
 @login_required
@@ -312,7 +390,21 @@ def generate_general_ledger(request):
     """
     Generar Libro Mayor.
     """
-    if request.method == 'POST':
+    if request.method == 'GET':
+        # Mostrar formulario
+        companies = Company.objects.filter(is_active=True)
+        
+        context = {
+            'companies': companies,
+            'report_title': 'Libro Mayor',
+            'report_description': 'Genere el libro mayor de una cuenta específica',
+            'form_action': request.path,
+            'date_fields': ['period_start', 'period_end'],
+            'additional_fields': ['account_id'],
+        }
+        return render(request, 'reports/report_form.html', context)
+        
+    elif request.method == 'POST':
         company_id = request.POST.get('company_id')
         account_id = request.POST.get('account_id')
         period_start = request.POST.get('period_start')
@@ -322,11 +414,21 @@ def generate_general_ledger(request):
         try:
             company = get_object_or_404(Company, id=company_id)
             account = get_object_or_404(Account, id=account_id, chart_of_accounts__company=company)
-            period_start_date = datetime.strptime(period_start, '%Y-%m-%d').date()
-            period_end_date = datetime.strptime(period_end, '%Y-%m-%d').date()
             
-            # Verificar permisos
-            if not request.user.companies.filter(id=company_id).exists():
+            # Usar fechas por defecto si no se proporcionan
+            current_date = timezone.now().date()
+            if not period_start:
+                period_start_date = current_date.replace(month=1, day=1)  # Inicio del año
+            else:
+                period_start_date = datetime.strptime(period_start, '%Y-%m-%d').date()
+                
+            if not period_end:
+                period_end_date = current_date
+            else:
+                period_end_date = datetime.strptime(period_end, '%Y-%m-%d').date()
+            
+            # Verificar permisos (superusuarios tienen acceso completo)
+            if not request.user.is_superuser and not request.user.companies.filter(id=company_id).exists():
                 return JsonResponse({'error': 'No tiene permisos para esta empresa'}, status=403)
             
             # Generar reporte
@@ -347,7 +449,7 @@ def generate_general_ledger(request):
             messages.error(request, f'Error al generar el reporte: {str(e)}')
             return JsonResponse({'error': str(e)}, status=500)
     
-    return JsonResponse({'error': 'Método no permitido'}, status=405)
+    return JsonResponse({'error': 'Método no soportado'}, status=405)
 
 
 @login_required

@@ -1,0 +1,417 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% load budget_extras %}
+
+{% block title %}Gestión PAC - {{ company.name }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row mb-3">
+        <div class="col-md-8">
+            <h2 class="text-primary">
+                <i class="fas fa-calendar-alt"></i> Plan Anual Mensualizado de Caja (PAC)
+            </h2>
+            <p class="text-muted">{{ period.name }} - {{ company.name }}</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="{% url 'budget:dashboard' %}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Volver
+            </a>
+            <button type="submit" form="pacForm" class="btn btn-success">
+                <i class="fas fa-save"></i> Guardar PAC
+            </button>
+        </div>
+    </div>
+
+    <!-- Instrucciones -->
+    <div class="alert alert-info mb-4">
+        <h5><i class="fas fa-info-circle"></i> Plan Anual Mensualizado de Caja (PAC)</h5>
+        <p class="mb-0">
+            El PAC es una herramienta de programación financiera que permite distribuir mensualmente 
+            los recursos presupuestales disponibles para optimizar el flujo de caja de la entidad.
+            Complete la programación mensual para cada rubro presupuestal.
+        </p>
+    </div>
+
+    <form method="post" id="pacForm">
+        {% csrf_token %}
+        
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="fas fa-table"></i> Programación Mensual por Rubro</h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-sm table-bordered mb-0">
+                        <thead class="table-dark">
+                            <tr>
+                                <th rowspan="2" class="align-middle">Código</th>
+                                <th rowspan="2" class="align-middle">Nombre del Rubro</th>
+                                <th rowspan="2" class="text-end align-middle">Apropiación</th>
+                                <th colspan="12" class="text-center">Programación Mensual</th>
+                                <th rowspan="2" class="text-end align-middle">Total Programado</th>
+                            </tr>
+                            <tr>
+                                {% for month_code, month_name in months %}
+                                <th class="text-center" style="writing-mode: vertical-lr; text-orientation: mixed;">
+                                    {{ month_name }}
+                                </th>
+                                {% endfor %}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for rubro in rubros %}
+                            <tr>
+                                <td><strong>{{ rubro.code }}</strong></td>
+                                <td>{{ rubro.name }}</td>
+                                <td class="text-end">
+                                    ${{ rubro.current_appropriation|floatformat:0|intcomma }}
+                                </td>
+                                {% for month_code, month_name in months %}
+                                <td style="width: 100px;">
+                                    <input type="number" 
+                                           class="form-control form-control-sm text-end pac-input" 
+                                           name="pac_{{ rubro.id }}_{{ month_code }}"
+                                           value="{{ pacs|get_item:rubro.id|get_month:month_code|default:0 }}"
+                                           step="0.01" 
+                                           min="0"
+                                           data-rubro-id="{{ rubro.id }}"
+                                           onchange="calculateRowTotal({{ rubro.id }})">
+                                </td>
+                                {% endfor %}
+                                <td class="text-end">
+                                    <strong id="total_{{ rubro.id }}" class="text-primary">
+                                        ${{ pacs|get_item:rubro.id.total_programmed|default:0|floatformat:0|intcomma }}
+                                    </strong>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                        <tfoot class="table-secondary">
+                            <tr>
+                                <th colspan="3" class="text-end">TOTALES:</th>
+                                {% for month_code, month_name in months %}
+                                <th class="text-center">
+                                    <strong id="month_total_{{ month_code }}" class="text-primary">$0</strong>
+                                </th>
+                                {% endfor %}
+                                <th class="text-end">
+                                    <strong id="grand_total" class="text-success">$0</strong>
+                                </th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Resumen y Validaciones -->
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header bg-success text-white">
+                        <h6><i class="fas fa-chart-pie"></i> Resumen de Programación</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <strong>Total Apropiación:</strong><br>
+                                <span id="total_appropriation" class="h5 text-primary">
+                                    ${{ rubros.aggregate.current_appropriation__sum|default:0|floatformat:0|intcomma }}
+                                </span>
+                            </div>
+                            <div class="col-md-6">
+                                <strong>Total Programado:</strong><br>
+                                <span id="total_programmed" class="h5 text-success">$0</span>
+                            </div>
+                        </div>
+                        <div class="mt-3">
+                            <strong>Diferencia:</strong><br>
+                            <span id="difference" class="h5">$0</span>
+                            <div id="difference_percentage" class="small text-muted"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header bg-warning text-dark">
+                        <h6><i class="fas fa-exclamation-triangle"></i> Validaciones</h6>
+                    </div>
+                    <div class="card-body" id="validations">
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle"></i> Complete la programación mensual para ver las validaciones.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <!-- Herramientas -->
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-secondary text-white">
+                    <h6><i class="fas fa-tools"></i> Herramientas de Programación</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <button type="button" class="btn btn-outline-primary btn-sm w-100 mb-2" onclick="distributeEvenly()">
+                                <i class="fas fa-equals"></i> Distribución Uniforme
+                            </button>
+                        </div>
+                        <div class="col-md-3">
+                            <button type="button" class="btn btn-outline-info btn-sm w-100 mb-2" onclick="applySeasonality()">
+                                <i class="fas fa-chart-line"></i> Patrón Estacional
+                            </button>
+                        </div>
+                        <div class="col-md-3">
+                            <button type="button" class="btn btn-outline-warning btn-sm w-100 mb-2" onclick="clearAll()">
+                                <i class="fas fa-eraser"></i> Limpiar Todo
+                            </button>
+                        </div>
+                        <div class="col-md-3">
+                            <button type="button" class="btn btn-outline-success btn-sm w-100 mb-2" onclick="exportPAC()">
+                                <i class="fas fa-download"></i> Exportar PAC
+                            </button>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <small class="text-muted">
+                                <strong>Distribución Uniforme:</strong> Divide la apropiación en 12 partes iguales. 
+                                <strong>Patrón Estacional:</strong> Aplica mayor programación en los meses de mayor ejecución histórica.
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Calcular total por rubro
+function calculateRowTotal(rubroId) {
+    let total = 0;
+    const inputs = document.querySelectorAll(`input[data-rubro-id="${rubroId}"]`);
+    
+    inputs.forEach(input => {
+        const value = parseFloat(input.value) || 0;
+        total += value;
+    });
+    
+    document.getElementById(`total_${rubroId}`).textContent = 
+        '$' + total.toLocaleString('es-CO', {minimumFractionDigits: 0});
+    
+    calculateMonthTotals();
+    calculateGrandTotal();
+    validateProgramming();
+}
+
+// Calcular totales por mes
+function calculateMonthTotals() {
+    const months = ['january', 'february', 'march', 'april', 'may', 'june', 
+                   'july', 'august', 'september', 'october', 'november', 'december'];
+    
+    months.forEach(month => {
+        let monthTotal = 0;
+        const monthInputs = document.querySelectorAll(`input[name*="_${month}"]`);
+        
+        monthInputs.forEach(input => {
+            monthTotal += parseFloat(input.value) || 0;
+        });
+        
+        const monthElement = document.getElementById(`month_total_${month}`);
+        if (monthElement) {
+            monthElement.textContent = '$' + monthTotal.toLocaleString('es-CO', {minimumFractionDigits: 0});
+        }
+    });
+}
+
+// Calcular total general
+function calculateGrandTotal() {
+    let grandTotal = 0;
+    const allInputs = document.querySelectorAll('.pac-input');
+    
+    allInputs.forEach(input => {
+        grandTotal += parseFloat(input.value) || 0;
+    });
+    
+    document.getElementById('grand_total').textContent = 
+        '$' + grandTotal.toLocaleString('es-CO', {minimumFractionDigits: 0});
+    
+    document.getElementById('total_programmed').textContent = 
+        '$' + grandTotal.toLocaleString('es-CO', {minimumFractionDigits: 0});
+    
+    return grandTotal;
+}
+
+// Validar programación
+function validateProgramming() {
+    const totalProgrammed = calculateGrandTotal();
+    const totalAppropriationText = document.getElementById('total_appropriation').textContent;
+    const totalAppropriation = parseFloat(totalAppropriationText.replace(/[^0-9.-]+/g, ''));
+    
+    const difference = totalAppropriation - totalProgrammed;
+    const differenceElement = document.getElementById('difference');
+    const percentageElement = document.getElementById('difference_percentage');
+    
+    differenceElement.textContent = '$' + Math.abs(difference).toLocaleString('es-CO', {minimumFractionDigits: 0});
+    
+    if (difference > 0) {
+        differenceElement.className = 'h5 text-warning';
+        percentageElement.textContent = `Falta por programar (${((difference / totalAppropriation) * 100).toFixed(1)}%)`;
+    } else if (difference < 0) {
+        differenceElement.className = 'h5 text-danger';
+        percentageElement.textContent = `Sobreprogramado (${((Math.abs(difference) / totalAppropriation) * 100).toFixed(1)}%)`;
+    } else {
+        differenceElement.className = 'h5 text-success';
+        percentageElement.textContent = 'Programación balanceada (100%)';
+    }
+    
+    // Mostrar validaciones
+    const validationsDiv = document.getElementById('validations');
+    let validationsHTML = '';
+    
+    if (totalProgrammed === 0) {
+        validationsHTML = '<div class="alert alert-info"><i class="fas fa-info-circle"></i> Complete la programación mensual.</div>';
+    } else if (difference === 0) {
+        validationsHTML = '<div class="alert alert-success"><i class="fas fa-check"></i> La programación está balanceada correctamente.</div>';
+    } else if (difference > 0) {
+        validationsHTML = `<div class="alert alert-warning"><i class="fas fa-exclamation-triangle"></i> Falta programar $${Math.abs(difference).toLocaleString('es-CO')}.</div>`;
+    } else {
+        validationsHTML = `<div class="alert alert-danger"><i class="fas fa-times"></i> Sobreprogramación de $${Math.abs(difference).toLocaleString('es-CO')}.</div>`;
+    }
+    
+    validationsDiv.innerHTML = validationsHTML;
+}
+
+// Distribución uniforme
+function distributeEvenly() {
+    if (!confirm('¿Desea aplicar distribución uniforme? Esto sobrescribirá los valores actuales.')) return;
+    
+    const rubros = document.querySelectorAll('tbody tr');
+    
+    rubros.forEach(row => {
+        const appropriationText = row.cells[2].textContent;
+        const appropriation = parseFloat(appropriationText.replace(/[^0-9.-]+/g, ''));
+        const monthlyAmount = appropriation / 12;
+        
+        const inputs = row.querySelectorAll('.pac-input');
+        inputs.forEach(input => {
+            input.value = monthlyAmount.toFixed(2);
+        });
+        
+        const rubroId = inputs[0].getAttribute('data-rubro-id');
+        calculateRowTotal(rubroId);
+    });
+}
+
+// Aplicar estacionalidad
+function applySeasonality() {
+    if (!confirm('¿Desea aplicar patrón estacional? Esto distribuirá más recursos en los meses de mayor actividad.')) return;
+    
+    // Patrón estacional típico (mayor actividad en ciertos meses)
+    const seasonalPattern = {
+        january: 0.05,   // 5%
+        february: 0.08,  // 8%
+        march: 0.12,     // 12%
+        april: 0.10,     // 10%
+        may: 0.09,       // 9%
+        june: 0.08,      // 8%
+        july: 0.07,      // 7%
+        august: 0.08,    // 8%
+        september: 0.09, // 9%
+        october: 0.10,   // 10%
+        november: 0.12,  // 12%
+        december: 0.02   // 2%
+    };
+    
+    const months = Object.keys(seasonalPattern);
+    const rubros = document.querySelectorAll('tbody tr');
+    
+    rubros.forEach(row => {
+        const appropriationText = row.cells[2].textContent;
+        const appropriation = parseFloat(appropriationText.replace(/[^0-9.-]+/g, ''));
+        
+        const inputs = row.querySelectorAll('.pac-input');
+        inputs.forEach((input, index) => {
+            const month = months[index];
+            const percentage = seasonalPattern[month];
+            input.value = (appropriation * percentage).toFixed(2);
+        });
+        
+        const rubroId = inputs[0].getAttribute('data-rubro-id');
+        calculateRowTotal(rubroId);
+    });
+}
+
+// Limpiar todo
+function clearAll() {
+    if (!confirm('¿Desea limpiar toda la programación? Esta acción no se puede deshacer.')) return;
+    
+    const allInputs = document.querySelectorAll('.pac-input');
+    allInputs.forEach(input => {
+        input.value = '';
+    });
+    
+    // Recalcular todos los totales
+    const rubros = document.querySelectorAll('tbody tr');
+    rubros.forEach(row => {
+        const inputs = row.querySelectorAll('.pac-input');
+        if (inputs.length > 0) {
+            const rubroId = inputs[0].getAttribute('data-rubro-id');
+            calculateRowTotal(rubroId);
+        }
+    });
+}
+
+// Exportar PAC
+function exportPAC() {
+    window.print();
+}
+
+// Inicializar cálculos al cargar
+document.addEventListener('DOMContentLoaded', function() {
+    calculateMonthTotals();
+    calculateGrandTotal();
+    validateProgramming();
+    
+    // Agregar listeners a todos los inputs
+    const allInputs = document.querySelectorAll('.pac-input');
+    allInputs.forEach(input => {
+        input.addEventListener('change', function() {
+            const rubroId = this.getAttribute('data-rubro-id');
+            calculateRowTotal(rubroId);
+        });
+    });
+});
+</script>
+
+<style>
+@media print {
+    .btn, .alert { display: none; }
+    .table { font-size: 10px; }
+}
+
+.table th {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.pac-input {
+    border: 1px solid #dee2e6;
+    padding: 2px 4px;
+}
+
+.pac-input:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+</style>
+{% endblock %}

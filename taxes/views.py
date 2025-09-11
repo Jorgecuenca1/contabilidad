@@ -11,7 +11,8 @@ from django.utils import timezone
 
 from core.models import Company
 from .models_tax_types import TaxType, TaxCalendar
-from accounting.models import Account, JournalEntry, JournalEntryLine, JournalType
+from accounting.models_accounts import Account
+from accounting.models_journal import JournalEntry, JournalEntryLine, JournalType
 
 
 @login_required

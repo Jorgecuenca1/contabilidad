@@ -49,16 +49,18 @@
                                     <td>{{ product.name }}</td>
                                     <td>{{ product.category.name }}</td>
                                     <td>{{ product.unit_of_measure.symbol }}</td>
-                                    <td class="text-end">{{ product.get_current_stock }}</td>
-                                    <td class="text-end">{{ product.minimum_stock }}</td>
+                                    <td class="text-end">
+                                        <strong>{{ product.get_current_stock|floatformat:2 }}</strong>
+                                    </td>
+                                    <td class="text-end">{{ product.minimum_stock|floatformat:2 }}</td>
                                     <td class="text-end">${{ product.average_cost|floatformat:2 }}</td>
                                     <td class="text-end">
-                                        ${% widthratio product.get_current_stock 1 product.average_cost %}
+                                        <strong>${{ product.get_stock_value|floatformat:2 }}</strong>
                                     </td>
                                     <td>
-                                        {% if product.get_current_stock <= product.minimum_stock %}
+                                        {% if product.is_low_stock %}
                                             <span class="badge bg-danger">Stock Bajo</span>
-                                        {% elif product.get_current_stock <= product.reorder_point %}
+                                        {% elif product.needs_reorder %}
                                             <span class="badge bg-warning">Reordenar</span>
                                         {% else %}
                                             <span class="badge bg-success">Normal</span>

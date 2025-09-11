@@ -321,6 +321,15 @@
 <script>
 let lineCounter = 0;
 let accounts = [];
+let costCenters = [
+    {% for cost_center in cost_centers %}
+    {
+        id: '{{ cost_center.id }}',
+        code: '{{ cost_center.code }}',
+        name: '{{ cost_center.name }}'
+    }{% if not forloop.last %},{% endif %}
+    {% endfor %}
+];
 
 // Cargar cuentas al cambiar empresa
 document.getElementById('company').addEventListener('change', function() {
@@ -340,13 +349,27 @@ function loadAccounts(companyId) {
     if (!companyId) return;
     
     fetch(`/accounting/api/accounts/?company=${companyId}`)
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+            return response.json();
+        })
         .then(data => {
-            accounts = data.accounts;
-            updateAccountSelects();
+            if (data.accounts && Array.isArray(data.accounts)) {
+                accounts = data.accounts;
+                updateAccountSelects();
+            } else {
+                throw new Error('Formato de respuesta inválido');
+            }
         })
         .catch(error => {
             console.error('Error loading accounts:', error);
+            // Show user-friendly error
+            const errorMsg = error.message || 'Error al cargar las cuentas contables';
+            alert(`Error: ${errorMsg}`);
+            accounts = [];
+            updateAccountSelects();
         });
 }
 
@@ -361,6 +384,24 @@ function updateAccountSelects() {
             option.value = account.id;
             option.textContent = account.full_name;
             if (account.id == currentValue) {
+                option.selected = true;
+            }
+            select.appendChild(option);
+        });
+    });
+}
+
+function updateCostCenterSelects() {
+    const selects = document.querySelectorAll('.cost-center-select');
+    selects.forEach(select => {
+        const currentValue = select.value;
+        select.innerHTML = '<option value="">Sin centro de costo</option>';
+        
+        costCenters.forEach(costCenter => {
+            const option = document.createElement('option');
+            option.value = costCenter.id;
+            option.textContent = `${costCenter.code} - ${costCenter.name}`;
+            if (costCenter.id == currentValue) {
                 option.selected = true;
             }
             select.appendChild(option);
@@ -383,9 +424,6 @@ function addJournalLine() {
         <td>
             <select class="form-select cost-center-select" name="cost_center_${lineCounter}">
                 <option value="">Sin centro de costo</option>
-                {% for cost_center in cost_centers %}
-                    <option value="{{ cost_center.id }}">{{ cost_center.code }} - {{ cost_center.name }}</option>
-                {% endfor %}
             </select>
         </td>
         <td>
@@ -406,6 +444,7 @@ function addJournalLine() {
     
     tbody.appendChild(row);
     updateAccountSelects();
+    updateCostCenterSelects();
 }
 
 function removeJournalLine(button) {

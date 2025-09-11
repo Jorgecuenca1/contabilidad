@@ -9,6 +9,7 @@ from django.db.models import Q
 from django.http import JsonResponse
 from django.core.paginator import Paginator
 from .models import ThirdParty, ThirdPartyType, ThirdPartyContact, ThirdPartyAddress, ThirdPartyDocument
+from .forms import ThirdPartyForm, ThirdPartySearchForm, ThirdPartyContactForm, ThirdPartyAddressForm
 from core.models import Company
 
 
@@ -28,6 +29,10 @@ def third_party_list(request):
             Q(document_number__icontains=search) |
             Q(first_name__icontains=search) |
             Q(last_name__icontains=search) |
+            Q(nombre__icontains=search) |
+            Q(primer_apellido__icontains=search) |
+            Q(segundo_apellido__icontains=search) |
+            Q(razon_social__icontains=search) |
             Q(trade_name__icontains=search) |
             Q(email__icontains=search)
         )
@@ -61,70 +66,21 @@ def third_party_create(request):
     company = request.user.default_company if hasattr(request.user, 'default_company') else Company.objects.first()
     
     if request.method == 'POST':
-        try:
-            # Crear tercero
-            third_party = ThirdParty.objects.create(
-                company=company,
-                person_type=request.POST.get('person_type'),
-                document_type=request.POST.get('document_type'),
-                document_number=request.POST.get('document_number'),
-                first_name=request.POST.get('first_name'),
-                middle_name=request.POST.get('middle_name', ''),
-                last_name=request.POST.get('last_name', ''),
-                second_last_name=request.POST.get('second_last_name', ''),
-                trade_name=request.POST.get('trade_name', ''),
-                
-                # Clasificación
-                is_customer=request.POST.get('is_customer') == 'on',
-                is_supplier=request.POST.get('is_supplier') == 'on',
-                is_employee=request.POST.get('is_employee') == 'on',
-                is_shareholder=request.POST.get('is_shareholder') == 'on',
-                
-                # Información tributaria
-                tax_regime=request.POST.get('tax_regime', 'COMUN'),
-                taxpayer_type=request.POST.get('taxpayer_type', 'NO_APLICA'),
-                is_vat_responsible=request.POST.get('is_vat_responsible') == 'on',
-                is_withholding_agent=request.POST.get('is_withholding_agent') == 'on',
-                is_self_withholding=request.POST.get('is_self_withholding') == 'on',
-                is_great_contributor=request.POST.get('is_great_contributor') == 'on',
-                
-                # Contacto
-                address=request.POST.get('address'),
-                city=request.POST.get('city'),
-                state=request.POST.get('state'),
-                phone=request.POST.get('phone', ''),
-                mobile=request.POST.get('mobile', ''),
-                email=request.POST.get('email', ''),
-                
-                # Información adicional
-                economic_activity=request.POST.get('economic_activity', ''),
-                ciiu_code=request.POST.get('ciiu_code', ''),
-                
-                # Información bancaria
-                bank_name=request.POST.get('bank_name', ''),
-                bank_account_type=request.POST.get('bank_account_type', ''),
-                bank_account_number=request.POST.get('bank_account_number', ''),
-                
-                # Información comercial
-                credit_limit=request.POST.get('credit_limit', 0),
-                payment_term_days=request.POST.get('payment_term_days', 30),
-                
-                created_by=request.user
-            )
-            
-            # Calcular dígito de verificación si es NIT
-            if third_party.document_type == 'NIT':
-                third_party.verification_digit = third_party.calculate_verification_digit()
-                third_party.save()
+        form = ThirdPartyForm(request.POST)
+        if form.is_valid():
+            third_party = form.save(commit=False)
+            third_party.company = company
+            third_party.created_by = request.user
+            third_party.save()
             
             messages.success(request, f'Tercero {third_party.get_full_name()} creado exitosamente')
             return redirect('third_parties:detail', pk=third_party.pk)
-            
-        except Exception as e:
-            messages.error(request, f'Error al crear tercero: {str(e)}')
+    else:
+        form = ThirdPartyForm()
     
     context = {
         'company': company,
+        'form': form,
     }
     
     return render(request, 'third_parties/create.html', context)
@@ -160,63 +116,20 @@ def third_party_edit(request, pk):
     third_party = get_object_or_404(ThirdParty, pk=pk, company__in=request.user.companies.all())
     
     if request.method == 'POST':
-        try:
-            # Actualizar tercero
-            third_party.person_type = request.POST.get('person_type')
-            third_party.document_type = request.POST.get('document_type')
-            third_party.document_number = request.POST.get('document_number')
-            third_party.first_name = request.POST.get('first_name')
-            third_party.middle_name = request.POST.get('middle_name', '')
-            third_party.last_name = request.POST.get('last_name', '')
-            third_party.second_last_name = request.POST.get('second_last_name', '')
-            third_party.trade_name = request.POST.get('trade_name', '')
-            
-            # Clasificación
-            third_party.is_customer = request.POST.get('is_customer') == 'on'
-            third_party.is_supplier = request.POST.get('is_supplier') == 'on'
-            third_party.is_employee = request.POST.get('is_employee') == 'on'
-            third_party.is_shareholder = request.POST.get('is_shareholder') == 'on'
-            
-            # Información tributaria
-            third_party.tax_regime = request.POST.get('tax_regime', 'COMUN')
-            third_party.taxpayer_type = request.POST.get('taxpayer_type', 'NO_APLICA')
-            third_party.is_vat_responsible = request.POST.get('is_vat_responsible') == 'on'
-            third_party.is_withholding_agent = request.POST.get('is_withholding_agent') == 'on'
-            third_party.is_self_withholding = request.POST.get('is_self_withholding') == 'on'
-            third_party.is_great_contributor = request.POST.get('is_great_contributor') == 'on'
-            
-            # Contacto
-            third_party.address = request.POST.get('address')
-            third_party.city = request.POST.get('city')
-            third_party.state = request.POST.get('state')
-            third_party.phone = request.POST.get('phone', '')
-            third_party.mobile = request.POST.get('mobile', '')
-            third_party.email = request.POST.get('email', '')
-            
-            # Información adicional
-            third_party.economic_activity = request.POST.get('economic_activity', '')
-            third_party.ciiu_code = request.POST.get('ciiu_code', '')
-            
-            # Información bancaria
-            third_party.bank_name = request.POST.get('bank_name', '')
-            third_party.bank_account_type = request.POST.get('bank_account_type', '')
-            third_party.bank_account_number = request.POST.get('bank_account_number', '')
-            
-            # Información comercial
-            third_party.credit_limit = request.POST.get('credit_limit', 0)
-            third_party.payment_term_days = request.POST.get('payment_term_days', 30)
-            
+        form = ThirdPartyForm(request.POST, instance=third_party)
+        if form.is_valid():
+            third_party = form.save(commit=False)
             third_party.updated_by = request.user
             third_party.save()
             
             messages.success(request, f'Tercero {third_party.get_full_name()} actualizado exitosamente')
             return redirect('third_parties:detail', pk=third_party.pk)
-            
-        except Exception as e:
-            messages.error(request, f'Error al actualizar tercero: {str(e)}')
+    else:
+        form = ThirdPartyForm(instance=third_party)
     
     context = {
         'third_party': third_party,
+        'form': form,
     }
     
     return render(request, 'third_parties/edit.html', context)
@@ -260,6 +173,9 @@ def api_search_third_parties(request):
             Q(document_number__icontains=query) |
             Q(first_name__icontains=query) |
             Q(last_name__icontains=query) |
+            Q(nombre__icontains=query) |
+            Q(primer_apellido__icontains=query) |
+            Q(razon_social__icontains=query) |
             Q(trade_name__icontains=query)
         )[:10]
     

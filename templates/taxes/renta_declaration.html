@@ -1,0 +1,171 @@
+{% extends 'base.html' %}
+
+{% block title %}Declaración de Renta{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h2 class="text-primary">
+                <i class="fas fa-file-contract"></i> Declaración de Renta y Complementarios
+            </h2>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="{% url 'taxes:dashboard' %}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left"></i> Volver
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="fas fa-coins"></i> Declaración de Renta Empresarial</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <label>Empresa</label>
+                                <select name="company" class="form-control" required>
+                                    <option value="">Seleccione empresa...</option>
+                                    {% for company in companies %}
+                                    <option value="{{ company.id }}">{{ company.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label>Año Gravable</label>
+                                <select name="tax_year" class="form-control" required>
+                                    <option value="">Seleccione año...</option>
+                                    <option value="2024">2024</option>
+                                    <option value="2023">2023</option>
+                                    <option value="2022">2022</option>
+                                    <option value="2021">2021</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label>Tipo de Contribuyente</label>
+                                <select name="taxpayer_type" class="form-control" required>
+                                    <option value="">Seleccione tipo...</option>
+                                    <option value="grandes_contribuyentes">Grandes Contribuyentes</option>
+                                    <option value="regimen_especial">Régimen Especial</option>
+                                    <option value="regimen_ordinario">Régimen Ordinario</option>
+                                    <option value="persona_natural">Persona Natural</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label>Formulario DIAN</label>
+                                <select name="form_type" class="form-control" required>
+                                    <option value="">Seleccione formulario...</option>
+                                    <option value="110">Formulario 110 - Personas Jurídicas</option>
+                                    <option value="210">Formulario 210 - Personas Naturales</option>
+                                    <option value="140">Formulario 140 - Personas Jurídicas Régimen Especial</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label>&nbsp;</label>
+                                <button type="submit" class="btn btn-success form-control">
+                                    <i class="fas fa-file-invoice"></i> Generar Declaración
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                    
+                    <div class="alert alert-success">
+                        <i class="fas fa-info-circle"></i>
+                        <strong>Información Declaración de Renta:</strong>
+                        <ul class="mb-0">
+                            <li><strong>Periodicidad:</strong> Anual (año gravable anterior)</li>
+                            <li><strong>Obligados:</strong> Personas naturales y jurídicas según patrimonio e ingresos</li>
+                            <li><strong>Vencimiento:</strong> Octubre (personas naturales) / Abril (personas jurídicas)</li>
+                            <li><strong>Tarifa general:</strong> 35% personas jurídicas / Progresiva personas naturales</li>
+                        </ul>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6 class="text-muted">Obligados a Declarar Renta 2024 - Personas Jurídicas:</h6>
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item">
+                                    <strong>Patrimonio bruto:</strong> ≥ $171,018,000
+                                </li>
+                                <li class="list-group-item">
+                                    <strong>Ingresos brutos:</strong> ≥ $52,607,000
+                                </li>
+                                <li class="list-group-item">
+                                    <strong>Ingresos netos:</strong> ≥ $52,607,000
+                                </li>
+                                <li class="list-group-item">
+                                    <strong>Todas las sociedades</strong> sin excepción de monto
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-muted">Calendario de Vencimientos - Personas Jurídicas:</h6>
+                            <div class="table-responsive">
+                                <table class="table table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Último Dígito NIT</th>
+                                            <th>Fecha Límite</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr><td>1</td><td>9 de abril</td></tr>
+                                        <tr><td>2</td><td>10 de abril</td></tr>
+                                        <tr><td>3</td><td>11 de abril</td></tr>
+                                        <tr><td>4</td><td>12 de abril</td></tr>
+                                        <tr><td>5</td><td>15 de abril</td></tr>
+                                        <tr><td>6</td><td>16 de abril</td></tr>
+                                        <tr><td>7</td><td>17 de abril</td></tr>
+                                        <tr><td>8</td><td>18 de abril</td></tr>
+                                        <tr><td>9</td><td>19 de abril</td></tr>
+                                        <tr><td>0</td><td>22 de abril</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-4">
+                        <div class="col-md-12">
+                            <h6 class="text-muted">Tarifas del Impuesto de Renta 2025:</h6>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="alert alert-light">
+                                        <strong>Personas Jurídicas:</strong>
+                                        <ul class="mb-0 mt-2">
+                                            <li>Tarifa general: <strong>35%</strong></li>
+                                            <li>Instituciones financieras: <strong>42%</strong></li>
+                                            <li>Cooperativas: <strong>20%</strong></li>
+                                            <li>Entidades sin ánimo de lucro: <strong>20%</strong></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="alert alert-light">
+                                        <strong>Otras Consideraciones:</strong>
+                                        <ul class="mb-0 mt-2">
+                                            <li>Descuento por inversión en activos fijos</li>
+                                            <li>Beneficios por donaciones</li>
+                                            <li>Deducciones especiales</li>
+                                            <li>Sobretasa para patrimonios altos</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

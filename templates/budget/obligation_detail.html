@@ -1,0 +1,295 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block title %}Obligación {{ obligation.number }} - {{ obligation.company.name }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row mb-3">
+        <div class="col-md-8">
+            <h2 class="text-warning">
+                <i class="fas fa-file-invoice"></i> Obligación {{ obligation.number }}
+            </h2>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="{% url 'budget:dashboard' %}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Volver
+            </a>
+            {% if obligation.state == 'draft' %}
+            <a href="#" class="btn btn-warning">
+                <i class="fas fa-check"></i> Aprobar
+            </a>
+            {% endif %}
+            {% if obligation.state == 'approved' and obligation.net_amount > obligation.paid_amount %}
+            <a href="#" class="btn btn-success">
+                <i class="fas fa-credit-card"></i> Registrar Pago
+            </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Información de la Obligación -->
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-warning text-dark">
+                    <h5><i class="fas fa-info-circle"></i> Información de la Obligación</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <strong>Número:</strong> {{ obligation.number }}
+                        </div>
+                        <div class="col-md-4">
+                            <strong>Fecha:</strong> {{ obligation.date|date:"d/m/Y" }}
+                        </div>
+                        <div class="col-md-4">
+                            <strong>Estado:</strong>
+                            {% if obligation.state == 'approved' %}
+                                <span class="badge bg-success">Aprobada</span>
+                            {% elif obligation.state == 'draft' %}
+                                <span class="badge bg-secondary">Borrador</span>
+                            {% elif obligation.state == 'partial' %}
+                                <span class="badge bg-warning">Pago Parcial</span>
+                            {% elif obligation.state == 'paid' %}
+                                <span class="badge bg-primary">Pagada</span>
+                            {% else %}
+                                <span class="badge bg-danger">{{ obligation.get_state_display }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <strong>RP Asociado:</strong> 
+                            <a href="{% url 'budget:rp_detail' obligation.rp.pk %}">
+                                {{ obligation.rp.number }}
+                            </a>
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Beneficiario:</strong> {{ obligation.rp.beneficiary_name }}
+                        </div>
+                    </div>
+                    {% if obligation.invoice_number %}
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <strong>Factura:</strong> {{ obligation.invoice_number }}
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Fecha Factura:</strong> {{ obligation.invoice_date|date:"d/m/Y"|default:"-" }}
+                        </div>
+                    </div>
+                    {% endif %}
+                    <div class="row mb-3">
+                        <div class="col-md-12">
+                            <strong>Concepto:</strong>
+                            <p class="mt-1">{{ obligation.concept }}</p>
+                        </div>
+                    </div>
+                    {% if obligation.observations %}
+                    <div class="row mb-3">
+                        <div class="col-md-12">
+                            <strong>Observaciones:</strong>
+                            <p class="mt-1">{{ obligation.observations }}</p>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Resumen Financiero -->
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h5><i class="fas fa-calculator"></i> Resumen Financiero</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <strong>Valor Bruto:</strong><br>
+                        <h4 class="text-success">${{ obligation.gross_amount|floatformat:0|intcomma }}</h4>
+                    </div>
+                    <div class="mb-3">
+                        <strong>Deducciones:</strong><br>
+                        <h5 class="text-warning">${{ obligation.deductions|floatformat:0|intcomma }}</h5>
+                    </div>
+                    <div class="mb-3">
+                        <strong>Valor Neto:</strong><br>
+                        <h4 class="text-primary">${{ obligation.net_amount|floatformat:0|intcomma }}</h4>
+                    </div>
+                    <div class="mb-3">
+                        <strong>Pagado:</strong><br>
+                        <h5 class="text-danger">${{ obligation.paid_amount|floatformat:0|intcomma }}</h5>
+                    </div>
+                    <div class="mb-3">
+                        <strong>Saldo por Pagar:</strong><br>
+                        <h5 class="text-secondary">
+                            ${{ obligation.net_amount|sub:obligation.paid_amount|floatformat:0|intcomma }}
+                        </h5>
+                    </div>
+                    
+                    <!-- Progreso de Pago -->
+                    <div class="mb-3">
+                        <strong>Progreso de Pago:</strong><br>
+                        {% if obligation.net_amount > 0 %}
+                        <div class="progress mt-2" style="height: 25px;">
+                            <div class="progress-bar bg-success" role="progressbar" 
+                                 style="width: {{ obligation.paid_amount|mul:100|div:obligation.net_amount|floatformat:0 }}%">
+                                {{ obligation.paid_amount|mul:100|div:obligation.net_amount|floatformat:1 }}%
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Información del Beneficiario -->
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-secondary text-white">
+                    <h5><i class="fas fa-user"></i> Información del Beneficiario</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-2">
+                        <div class="col-md-6">
+                            <strong>Tipo:</strong> {{ obligation.rp.get_beneficiary_type_display }}
+                        </div>
+                        <div class="col-md-6">
+                            <strong>NIT/Cédula:</strong> {{ obligation.rp.beneficiary_id }}
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-md-12">
+                            <strong>Nombre:</strong> {{ obligation.rp.beneficiary_name }}
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-md-6">
+                            <strong>Tipo de Contrato:</strong> {{ obligation.rp.get_contract_type_display }}
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Número Contrato:</strong> {{ obligation.rp.contract_number|default:"-" }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Información Contable -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-dark text-white">
+                    <h5><i class="fas fa-book"></i> Información Contable</h5>
+                </div>
+                <div class="card-body">
+                    {% if obligation.journal_entry %}
+                    <div class="row mb-2">
+                        <div class="col-md-6">
+                            <strong>Asiento Contable:</strong> 
+                        </div>
+                        <div class="col-md-6">
+                            <a href="#" class="btn btn-sm btn-outline-primary">
+                                {{ obligation.journal_entry.number }}
+                            </a>
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-md-12">
+                            <strong>Fecha Contable:</strong> {{ obligation.journal_entry.date|date:"d/m/Y" }}
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle"></i> No se ha generado asiento contable para esta obligación.
+                        <br>
+                        <button class="btn btn-sm btn-warning mt-2">
+                            <i class="fas fa-plus"></i> Crear Asiento
+                        </button>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Trazabilidad -->
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h5><i class="fas fa-history"></i> Trazabilidad del Proceso</h5>
+                </div>
+                <div class="card-body">
+                    <div class="timeline">
+                        <div class="timeline-item">
+                            <div class="timeline-marker bg-primary"></div>
+                            <div class="timeline-content">
+                                <h6>Obligación Creada</h6>
+                                <p class="text-muted">{{ obligation.created_at|date:"d/m/Y H:i" }} por {{ obligation.created_by.get_full_name }}</p>
+                            </div>
+                        </div>
+                        
+                        {% if obligation.approved_at %}
+                        <div class="timeline-item">
+                            <div class="timeline-marker bg-success"></div>
+                            <div class="timeline-content">
+                                <h6>Obligación Aprobada</h6>
+                                <p class="text-muted">{{ obligation.approved_at|date:"d/m/Y H:i" }} por {{ obligation.approved_by.get_full_name }}</p>
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        {% if obligation.state == 'paid' %}
+                        <div class="timeline-item">
+                            <div class="timeline-marker bg-info"></div>
+                            <div class="timeline-content">
+                                <h6>Obligación Pagada</h6>
+                                <p class="text-muted">Proceso completado</p>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.timeline {
+    position: relative;
+    padding: 20px 0;
+}
+
+.timeline-item {
+    position: relative;
+    padding: 10px 0 10px 40px;
+    border-left: 2px solid #dee2e6;
+}
+
+.timeline-item:last-child {
+    border-left: none;
+}
+
+.timeline-marker {
+    position: absolute;
+    left: -8px;
+    top: 15px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+}
+
+.timeline-content h6 {
+    margin-bottom: 5px;
+    font-weight: 600;
+}
+
+.timeline-content p {
+    margin: 0;
+    font-size: 0.9em;
+}
+</style>
+{% endblock %}

@@ -19,7 +19,7 @@
                 <i class="bi bi-calculator"></i> Contabilidad Pro
             </a>
             
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-expanded="false" aria-controls="navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
             
@@ -31,77 +31,79 @@
                         </a>
                     </li>
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="bi bi-journal-text"></i> Contabilidad
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="/admin/accounting/account/">Plan de Cuentas</a></li>
-                            <li><a class="dropdown-item" href="/admin/accounting/journalentry/">Asientos Contables</a></li>
-                            <li><a class="dropdown-item" href="/admin/accounting/costcenter/">Centros de Costo</a></li>
+                            <li><a class="dropdown-item" href="{% url 'accounting:chart_of_accounts' %}">Plan de Cuentas</a></li>
+                            <li><a class="dropdown-item" href="{% url 'accounting:new_journal_entry' %}">Nuevo Asiento</a></li>
+                            <li><a class="dropdown-item" href="{% url 'admin:accounting_journalentry_changelist' %}">Ver Asientos</a></li>
+                            <li><a class="dropdown-item" href="{% url 'admin:accounting_costcenter_changelist' %}">Centros de Costo</a></li>
                         </ul>
                     </li>
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="bi bi-people"></i> CxC
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="/admin/accounts_receivable/customer/">Clientes</a></li>
-                            <li><a class="dropdown-item" href="/admin/accounts_receivable/invoice/">Facturas</a></li>
-                            <li><a class="dropdown-item" href="/admin/accounts_receivable/payment/">Pagos</a></li>
+                            <li><a class="dropdown-item" href="{% url 'accounts_receivable:customer_list' %}">Clientes</a></li>
+                            <li><a class="dropdown-item" href="{% url 'accounts_receivable:new_invoice' %}">Nueva Factura</a></li>
+                            <li><a class="dropdown-item" href="{% url 'accounts_receivable:payment_list' %}">Pagos</a></li>
                         </ul>
                     </li>
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="bi bi-truck"></i> CxP
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="/admin/accounts_payable/supplier/">Proveedores</a></li>
-                            <li><a class="dropdown-item" href="/admin/accounts_payable/purchaseinvoice/">Facturas de Compra</a></li>
-                            <li><a class="dropdown-item" href="/admin/accounts_payable/supplierpayment/">Pagos</a></li>
+                            <li><a class="dropdown-item" href="{% url 'admin:accounts_payable_supplier_changelist' %}">Proveedores</a></li>
+                            <li><a class="dropdown-item" href="{% url 'admin:accounts_payable_purchaseinvoice_changelist' %}">Facturas de Compra</a></li>
+                            <li><a class="dropdown-item" href="{% url 'admin:accounts_payable_supplierpayment_changelist' %}">Pagos</a></li>
                         </ul>
                     </li>
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="bi bi-bank"></i> Tesorería
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="/admin/treasury/bankaccount/">Cuentas Bancarias</a></li>
-                            <li><a class="dropdown-item" href="/admin/treasury/cashaccount/">Cajas</a></li>
-                            <li><a class="dropdown-item" href="/admin/treasury/bankreconciliation/">Conciliaciones</a></li>
+                            <li><a class="dropdown-item" href="{% url 'treasury:bank_account_list' %}">Cuentas Bancarias</a></li>
+                            <li><a class="dropdown-item" href="{% url 'treasury:cash_account_list' %}">Cajas</a></li>
+                            <li><a class="dropdown-item" href="{% url 'treasury:bank_reconciliation_list' %}">Conciliaciones</a></li>
+                            <li><a class="dropdown-item" href="{% url 'treasury:cash_movement' %}">Movimientos</a></li>
                         </ul>
                     </li>
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="bi bi-people-fill"></i> Nómina
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="/payroll/">Centro de Nómina</a></li>
+                            <li><a class="dropdown-item" href="{% url 'payroll:dashboard' %}">Centro de Nómina</a></li>
                             <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="/admin/payroll/employee/">Empleados</a></li>
-                            <li><a class="dropdown-item" href="/admin/payroll/payrollperiod/">Períodos</a></li>
-                            <li><a class="dropdown-item" href="/admin/payroll/payroll/">Nóminas</a></li>
-                            <li><a class="dropdown-item" href="/admin/payroll/laborbenefit/">Prestaciones</a></li>
+                            <li><a class="dropdown-item" href="{% url 'admin:payroll_employee_changelist' %}">Empleados</a></li>
+                            <li><a class="dropdown-item" href="{% url 'admin:payroll_payrollperiod_changelist' %}">Períodos</a></li>
+                            <li><a class="dropdown-item" href="{% url 'admin:payroll_payroll_changelist' %}">Nóminas</a></li>
+                            <li><a class="dropdown-item" href="{% url 'admin:payroll_laborbenefit_changelist' %}">Prestaciones</a></li>
                         </ul>
                     </li>
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="bi bi-receipt"></i> Impuestos
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="/taxes/">Centro de Impuestos</a></li>
+                            <li><a class="dropdown-item" href="{% url 'taxes:dashboard' %}">Centro de Impuestos</a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li><h6 class="dropdown-header">Declaraciones</h6></li>
-                            <li><a class="dropdown-item" href="/admin/taxes/taxdeclaration/">IVA</a></li>
-                            <li><a class="dropdown-item" href="/admin/taxes/taxdeclaration/">Retenciones</a></li>
-                            <li><a class="dropdown-item" href="/admin/taxes/taxdeclaration/">ICA</a></li>
-                            <li><a class="dropdown-item" href="/admin/taxes/taxdeclaration/">Renta</a></li>
+                            <li><a class="dropdown-item" href="{% url 'taxes:iva_declaration' %}">IVA</a></li>
+                            <li><a class="dropdown-item" href="{% url 'taxes:retention_declaration' %}">Retenciones</a></li>
+                            <li><a class="dropdown-item" href="{% url 'taxes:ica_declaration' %}">ICA</a></li>
+                            <li><a class="dropdown-item" href="{% url 'taxes:renta_declaration' %}">Renta</a></li>
                             <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="/admin/taxes/taxtype/">Configuración</a></li>
-                            <li><a class="dropdown-item" href="/admin/taxes/taxcalendar/">Calendario</a></li>
+                            <li><a class="dropdown-item" href="{% url 'taxes:retention_certificates' %}">Certificados</a></li>
+                            <li><a class="dropdown-item" href="{% url 'taxes:tax_calendar' %}">Calendario</a></li>
                         </ul>
                     </li>
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="bi bi-boxes"></i> Inventario
                         </a>
                         <ul class="dropdown-menu">
@@ -112,12 +114,12 @@
                             <li><a class="dropdown-item" href="{% url 'inventory:stock_movement' %}">Movimientos</a></li>
                             <li><a class="dropdown-item" href="{% url 'inventory:stock_report' %}">Reporte de Stock</a></li>
                             <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="/admin/inventory/productcategory/">Categorías</a></li>
-                            <li><a class="dropdown-item" href="/admin/inventory/unitofmeasure/">Unidades de Medida</a></li>
+                            <li><a class="dropdown-item" href="{% url 'admin:inventory_productcategory_changelist' %}">Categorías</a></li>
+                            <li><a class="dropdown-item" href="{% url 'admin:inventory_unitofmeasure_changelist' %}">Unidades de Medida</a></li>
                         </ul>
                     </li>
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="bi bi-building"></i> Activos Fijos
                         </a>
                         <ul class="dropdown-menu">
@@ -128,69 +130,91 @@
                             <li><a class="dropdown-item" href="{% url 'fixed_assets:depreciation_report' %}">Depreciación</a></li>
                             <li><a class="dropdown-item" href="{% url 'fixed_assets:calculate_depreciation' %}">Calcular Depreciación</a></li>
                             <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="/admin/fixed_assets/assetcategory/">Categorías</a></li>
+                            <li><a class="dropdown-item" href="{% url 'admin:fixed_assets_assetcategory_changelist' %}">Categorías</a></li>
                         </ul>
                     </li>
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="bi bi-building-gear"></i> Sector Público
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="/public-sector/">Centro Público</a></li>
+                            <li><a class="dropdown-item" href="{% url 'public_sector:dashboard' %}">Centro Público</a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li><h6 class="dropdown-header">Presupuesto</h6></li>
-                            <li><a class="dropdown-item" href="/admin/public_sector/budget/">Presupuestos</a></li>
-                            <li><a class="dropdown-item" href="/admin/public_sector/cdp/">CDPs</a></li>
-                            <li><a class="dropdown-item" href="/admin/public_sector/rp/">RPs</a></li>
+                            <li><a class="dropdown-item" href="{% url 'admin:budget_budgetperiod_changelist' %}">Presupuestos</a></li>
+                            <li><a class="dropdown-item" href="{% url 'admin:budget_cdp_changelist' %}">CDPs</a></li>
+                            <li><a class="dropdown-item" href="{% url 'admin:budget_rp_changelist' %}">RPs</a></li>
                             <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="/admin/public_sector/publicreport/">Reportes CHIP</a></li>
+                            <li><a class="dropdown-item" href="{% url 'admin:budget_pac_changelist' %}">Reportes CHIP</a></li>
                         </ul>
                     </li>
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-person-badge"></i> Terceros
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{% url 'third_parties:list' %}">Gestión de Terceros</a></li>
+                            <li><a class="dropdown-item" href="{% url 'third_parties:create' %}">Nuevo Tercero</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><h6 class="dropdown-header">Búsqueda por Tipo</h6></li>
+                            <li><a class="dropdown-item" href="{% url 'third_parties:list' %}?type=customer">Clientes</a></li>
+                            <li><a class="dropdown-item" href="{% url 'third_parties:list' %}?type=supplier">Proveedores</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{% url 'third_parties:api_search' %}">API Búsqueda</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="bi bi-file-earmark-bar-graph"></i> Reportes
                         </a>
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="{% url 'reports:dashboard' %}">Centro de Reportes</a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li><h6 class="dropdown-header">Reportes Financieros</h6></li>
-                            <li><a class="dropdown-item" href="{% url 'reports:dashboard' %}">Balance General</a></li>
-                            <li><a class="dropdown-item" href="{% url 'reports:dashboard' %}">Estado de Resultados</a></li>
-                            <li><a class="dropdown-item" href="{% url 'reports:dashboard' %}">Balance de Prueba</a></li>
+                            <li><a class="dropdown-item" href="{% url 'reports:balance_sheet' %}">Balance General</a></li>
+                            <li><a class="dropdown-item" href="{% url 'reports:income_statement' %}">Estado de Resultados</a></li>
+                            <li><a class="dropdown-item" href="{% url 'reports:trial_balance' %}">Balance de Prueba</a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li><h6 class="dropdown-header">Reportes de Cartera</h6></li>
-                            <li><a class="dropdown-item" href="{% url 'reports:dashboard' %}">Cartera CxC</a></li>
-                            <li><a class="dropdown-item" href="{% url 'reports:dashboard' %}">Cartera CxP</a></li>
+                            <li><a class="dropdown-item" href="{% url 'reports:aging_report' %}?type=receivable">Cartera CxC</a></li>
+                            <li><a class="dropdown-item" href="{% url 'reports:aging_report' %}?type=payable">Cartera CxP</a></li>
                         </ul>
                     </li>
                 </ul>
                 
                 <ul class="navbar-nav">
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="bi bi-buildings"></i> Empresas
                         </a>
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="{% url 'core:company_list' %}">Ver Empresas</a></li>
                             <li><a class="dropdown-item" href="{% url 'core:new_company' %}">Nueva Empresa</a></li>
                             <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="/admin/core/company/">Administrar Empresas</a></li>
+                            <li><a class="dropdown-item" href="{% url 'admin:core_company_changelist' %}">Administrar Empresas</a></li>
                         </ul>
                     </li>
                     {% if user.is_authenticated %}
                         <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 <i class="bi bi-person-circle"></i> {{ user.get_full_name|default:user.username }}
                             </a>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="/admin/">Administración</a></li>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item" href="{% url 'core:profile' %}">
+                                    <i class="bi bi-person"></i> Mi Perfil
+                                </a></li>
+                                <li><a class="dropdown-item" href="{% url 'admin:index' %}">
+                                    <i class="bi bi-gear"></i> Administración
+                                </a></li>
                                 <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="/admin/logout/">Cerrar Sesión</a></li>
+                                <li><a class="dropdown-item" href="{% url 'admin:logout' %}">
+                                    <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
+                                </a></li>
                             </ul>
                         </li>
                     {% else %}
                         <li class="nav-item">
-                            <a class="nav-link" href="/admin/login/">Iniciar Sesión</a>
+                            <a class="nav-link" href="{% url 'admin:login' %}">Iniciar Sesión</a>
                         </li>
                     {% endif %}
                 </ul>
@@ -204,7 +228,7 @@
             {% for message in messages %}
                 <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
                     {{ message }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
             {% endfor %}
         {% endif %}

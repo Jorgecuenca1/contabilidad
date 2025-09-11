@@ -124,7 +124,7 @@ def chart_of_accounts(request):
     accounts = Account.objects.filter(is_active=True).order_by('code')
     
     if company_id:
-        accounts = accounts.filter(chart__company_id=company_id)
+        accounts = accounts.filter(chart_of_accounts__company_id=company_id)
     
     if search:
         accounts = accounts.filter(
@@ -154,28 +154,42 @@ def get_accounts_json(request):
     """
     API para obtener cuentas en formato JSON (para AJAX).
     """
-    company_id = request.GET.get('company')
-    search = request.GET.get('search', '')
-    
-    accounts = Account.objects.filter(is_detail=True, is_active=True)
-    
-    if company_id:
-        accounts = accounts.filter(chart__company_id=company_id)
-    
-    if search:
-        accounts = accounts.filter(
-            Q(code__icontains=search) | 
-            Q(name__icontains=search)
-        )[:20]  # Limitar resultados
-    
-    accounts_data = [
-        {
-            'id': account.id,
-            'code': account.code,
-            'name': account.name,
-            'full_name': f"{account.code} - {account.name}"
-        }
-        for account in accounts
-    ]
-    
-    return JsonResponse({'accounts': accounts_data})
+    try:
+        company_id = request.GET.get('company')
+        search = request.GET.get('search', '').strip()
+        
+        # Validate company_id if provided
+        if company_id:
+            try:
+                company = Company.objects.get(id=company_id, is_active=True)
+                # Check if user has access to this company
+                if not request.user.companies.filter(id=company_id).exists() and not request.user.is_superuser:
+                    return JsonResponse({'error': 'No tiene permisos para acceder a esta empresa'}, status=403)
+            except Company.DoesNotExist:
+                return JsonResponse({'error': 'Empresa no encontrada'}, status=404)
+        
+        accounts = Account.objects.filter(is_detail=True, is_active=True)
+        
+        if company_id:
+            accounts = accounts.filter(chart_of_accounts__company_id=company_id)
+        
+        if search:
+            accounts = accounts.filter(
+                Q(code__icontains=search) | 
+                Q(name__icontains=search)
+            )[:20]  # Limitar resultados
+        
+        accounts_data = [
+            {
+                'id': account.id,
+                'code': account.code,
+                'name': account.name,
+                'full_name': f"{account.code} - {account.name}"
+            }
+            for account in accounts
+        ]
+        
+        return JsonResponse({'accounts': accounts_data})
+        
+    except Exception as e:
+        return JsonResponse({'error': f'Error interno del servidor: {str(e)}'}, status=500)

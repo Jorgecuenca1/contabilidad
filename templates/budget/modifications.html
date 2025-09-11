@@ -1,0 +1,474 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block title %}Modificaciones Presupuestales - {{ company.name }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row mb-3">
+        <div class="col-md-8">
+            <h2 class="text-warning">
+                <i class="fas fa-exchange-alt"></i> Modificaciones Presupuestales
+            </h2>
+            <p class="text-muted">{{ period.name }} - {{ company.name }}</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="{% url 'budget:dashboard' %}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Volver
+            </a>
+            <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#newModificationModal">
+                <i class="fas fa-plus"></i> Nueva Modificación
+            </button>
+        </div>
+    </div>
+
+    <!-- Información Normativa -->
+    <div class="alert alert-info mb-4">
+        <h5><i class="fas fa-info-circle"></i> Modificaciones Presupuestales</h5>
+        <p class="mb-0">
+            Las modificaciones presupuestales permiten ajustar las apropiaciones durante la vigencia fiscal.
+            Incluyen: <strong>Adiciones</strong> (incrementos), <strong>Reducciones</strong> (decrementos), 
+            <strong>Traslados</strong> (transferencias entre rubros), <strong>Créditos</strong> y <strong>Contracréditos</strong>.
+        </p>
+    </div>
+
+    <!-- Lista de Modificaciones -->
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0"><i class="fas fa-list"></i> Modificaciones Registradas</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Número</th>
+                                    <th>Fecha</th>
+                                    <th>Tipo</th>
+                                    <th>Acto Administrativo</th>
+                                    <th class="text-end">Valor</th>
+                                    <th>Estado</th>
+                                    <th class="text-center">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for modification in modifications %}
+                                <tr>
+                                    <td><strong>{{ modification.number }}</strong></td>
+                                    <td>{{ modification.date|date:"d/m/Y" }}</td>
+                                    <td>
+                                        {% if modification.modification_type == 'addition' %}
+                                            <span class="badge bg-success">Adición</span>
+                                        {% elif modification.modification_type == 'reduction' %}
+                                            <span class="badge bg-danger">Reducción</span>
+                                        {% elif modification.modification_type == 'transfer' %}
+                                            <span class="badge bg-info">Traslado</span>
+                                        {% elif modification.modification_type == 'credit' %}
+                                            <span class="badge bg-primary">Crédito</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">Contracrédito</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ modification.act_number }}</td>
+                                    <td class="text-end">${{ modification.total_amount|floatformat:0|intcomma }}</td>
+                                    <td>
+                                        {% if modification.state == 'draft' %}
+                                            <span class="badge bg-secondary">Borrador</span>
+                                        {% elif modification.state == 'approved' %}
+                                            <span class="badge bg-success">Aprobada</span>
+                                        {% elif modification.state == 'applied' %}
+                                            <span class="badge bg-primary">Aplicada</span>
+                                        {% else %}
+                                            <span class="badge bg-danger">Anulada</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="btn-group btn-group-sm" role="group">
+                                            <button type="button" class="btn btn-outline-primary" 
+                                                    onclick="viewModification({{ modification.id }})">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            {% if modification.state == 'draft' %}
+                                            <button type="button" class="btn btn-outline-success"
+                                                    onclick="approveModification({{ modification.id }})">
+                                                <i class="fas fa-check"></i>
+                                            </button>
+                                            {% endif %}
+                                            {% if modification.state == 'approved' %}
+                                            <button type="button" class="btn btn-outline-warning"
+                                                    onclick="applyModification({{ modification.id }})">
+                                                <i class="fas fa-play"></i>
+                                            </button>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="7" class="text-center text-muted">
+                                        No hay modificaciones presupuestales registradas
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Nueva Modificación -->
+<div class="modal fade" id="newModificationModal" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header bg-warning text-dark">
+                <h5 class="modal-title">
+                    <i class="fas fa-plus"></i> Nueva Modificación Presupuestal
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="post" id="modificationForm">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <!-- Información Básica -->
+                    <div class="row mb-3">
+                        <div class="col-md-3">
+                            <label for="date" class="form-label">Fecha <span class="text-danger">*</span></label>
+                            <input type="date" class="form-control" id="date" name="date" value="{{ today }}" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="modification_type" class="form-label">Tipo de Modificación <span class="text-danger">*</span></label>
+                            <select class="form-select" id="modification_type" name="modification_type" required onchange="updateModificationType()">
+                                <option value="">-- Seleccione --</option>
+                                <option value="addition">Adición</option>
+                                <option value="reduction">Reducción</option>
+                                <option value="transfer">Traslado</option>
+                                <option value="credit">Crédito</option>
+                                <option value="counterCredit">Contracrédito</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="act_number" class="form-label">N° Acto Administrativo <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="act_number" name="act_number" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="act_date" class="form-label">Fecha del Acto <span class="text-danger">*</span></label>
+                            <input type="date" class="form-control" id="act_date" name="act_date" required>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-12">
+                            <label for="concept" class="form-label">Concepto de la Modificación <span class="text-danger">*</span></label>
+                            <textarea class="form-control" id="concept" name="concept" rows="2" required
+                                      placeholder="Descripción detallada de la modificación presupuestal"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Detalle de la Modificación -->
+                    <div class="card">
+                        <div class="card-header bg-light">
+                            <h6 class="mb-0">Detalle de la Modificación</h6>
+                        </div>
+                        <div class="card-body">
+                            <div id="modification-instructions" class="alert alert-info">
+                                Seleccione el tipo de modificación para ver las instrucciones específicas.
+                            </div>
+
+                            <div class="table-responsive">
+                                <table class="table table-sm" id="modificationDetailsTable">
+                                    <thead>
+                                        <tr>
+                                            <th width="25%">Rubro</th>
+                                            <th width="35%">Nombre</th>
+                                            <th width="15%" class="text-end">Apropiación Actual</th>
+                                            <th width="15%" class="text-end">Movimiento</th>
+                                            <th width="10%" class="text-center">Tipo</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="modificationDetailsBody">
+                                        <tr class="detail-row">
+                                            <td>
+                                                <select class="form-select rubro-select" name="rubro_id[]" onchange="updateRubroInfo(this)">
+                                                    <option value="">-- Seleccione --</option>
+                                                    {% for rubro in rubros %}
+                                                    <option value="{{ rubro.id }}" 
+                                                            data-appropriation="{{ rubro.current_appropriation }}"
+                                                            data-name="{{ rubro.name }}">
+                                                        {{ rubro.code }}
+                                                    </option>
+                                                    {% endfor %}
+                                                </select>
+                                            </td>
+                                            <td class="rubro-name">-</td>
+                                            <td class="text-end rubro-appropriation">-</td>
+                                            <td>
+                                                <input type="number" class="form-control text-end movement-amount" 
+                                                       name="amount[]" step="0.01" min="0" onchange="calculateTotal()">
+                                            </td>
+                                            <td class="text-center">
+                                                <select class="form-select movement-type" name="movement_type[]">
+                                                    <option value="debit">Débito</option>
+                                                    <option value="credit">Crédito</option>
+                                                </select>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <td colspan="3" class="text-end"><strong>Total:</strong></td>
+                                            <td class="text-end">
+                                                <strong id="totalModification">$0</strong>
+                                                <input type="hidden" name="total_amount" id="total_amount_input" value="0">
+                                            </td>
+                                            <td class="text-center">
+                                                <button type="button" class="btn btn-sm btn-success" onclick="addModificationRow()">
+                                                    <i class="fas fa-plus"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+
+                            <!-- Validaciones -->
+                            <div id="validationResults" class="mt-3"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-warning">
+                        <i class="fas fa-save"></i> Crear Modificación
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+// Actualizar tipo de modificación
+function updateModificationType() {
+    const type = document.getElementById('modification_type').value;
+    const instructionsDiv = document.getElementById('modification-instructions');
+    
+    let instructions = '';
+    
+    switch(type) {
+        case 'addition':
+            instructions = '<i class="fas fa-plus-circle text-success"></i> <strong>Adición:</strong> Incrementa la apropiación de uno o más rubros. Solo use movimientos tipo "Crédito".';
+            break;
+        case 'reduction':
+            instructions = '<i class="fas fa-minus-circle text-danger"></i> <strong>Reducción:</strong> Disminuye la apropiación de uno o más rubros. Solo use movimientos tipo "Débito".';
+            break;
+        case 'transfer':
+            instructions = '<i class="fas fa-exchange-alt text-info"></i> <strong>Traslado:</strong> Transfiere recursos entre rubros. Use "Débito" para el origen y "Crédito" para el destino. Los totales deben balancear.';
+            break;
+        case 'credit':
+            instructions = '<i class="fas fa-arrow-up text-primary"></i> <strong>Crédito:</strong> Incrementa recursos disponibles. Use movimientos tipo "Crédito".';
+            break;
+        case 'counterCredit':
+            instructions = '<i class="fas fa-arrow-down text-secondary"></i> <strong>Contracrédito:</strong> Disminuye recursos disponibles. Use movimientos tipo "Débito".';
+            break;
+        default:
+            instructions = 'Seleccione el tipo de modificación para ver las instrucciones específicas.';
+    }
+    
+    instructionsDiv.innerHTML = `<div class="alert alert-info">${instructions}</div>`;
+}
+
+// Actualizar información del rubro
+function updateRubroInfo(selectElement) {
+    const row = selectElement.closest('tr');
+    const selectedOption = selectElement.options[selectElement.selectedIndex];
+    
+    if (selectedOption.value) {
+        const appropriation = parseFloat(selectedOption.dataset.appropriation);
+        const name = selectedOption.dataset.name;
+        
+        row.querySelector('.rubro-name').textContent = name;
+        row.querySelector('.rubro-appropriation').textContent = '$' + appropriation.toLocaleString('es-CO');
+    } else {
+        row.querySelector('.rubro-name').textContent = '-';
+        row.querySelector('.rubro-appropriation').textContent = '-';
+    }
+    
+    validateModification();
+}
+
+// Agregar fila de modificación
+function addModificationRow() {
+    const tbody = document.getElementById('modificationDetailsBody');
+    const firstRow = tbody.querySelector('.detail-row');
+    const newRow = firstRow.cloneNode(true);
+    
+    // Limpiar valores
+    newRow.querySelector('.rubro-select').value = '';
+    newRow.querySelector('.rubro-name').textContent = '-';
+    newRow.querySelector('.rubro-appropriation').textContent = '-';
+    newRow.querySelector('.movement-amount').value = '';
+    
+    tbody.appendChild(newRow);
+}
+
+// Calcular total
+function calculateTotal() {
+    let total = 0;
+    const amounts = document.querySelectorAll('.movement-amount');
+    
+    amounts.forEach(input => {
+        if (input.value) {
+            total += parseFloat(input.value);
+        }
+    });
+    
+    document.getElementById('totalModification').textContent = '$' + total.toLocaleString('es-CO');
+    document.getElementById('total_amount_input').value = total;
+    
+    validateModification();
+}
+
+// Validar modificación
+function validateModification() {
+    const type = document.getElementById('modification_type').value;
+    const validationDiv = document.getElementById('validationResults');
+    let validations = [];
+    
+    if (!type) {
+        validationDiv.innerHTML = '';
+        return;
+    }
+    
+    const rows = document.querySelectorAll('.detail-row');
+    let debitTotal = 0;
+    let creditTotal = 0;
+    
+    rows.forEach(row => {
+        const amount = parseFloat(row.querySelector('.movement-amount').value) || 0;
+        const movementType = row.querySelector('.movement-type').value;
+        
+        if (amount > 0) {
+            if (movementType === 'debit') {
+                debitTotal += amount;
+            } else {
+                creditTotal += amount;
+            }
+        }
+    });
+    
+    // Validaciones según tipo
+    if (type === 'transfer') {
+        if (Math.abs(debitTotal - creditTotal) > 0.01) {
+            validations.push({
+                type: 'danger',
+                message: `Los traslados deben estar balanceados. Débitos: $${debitTotal.toLocaleString('es-CO')}, Créditos: $${creditTotal.toLocaleString('es-CO')}`
+            });
+        } else if (debitTotal > 0 && creditTotal > 0) {
+            validations.push({
+                type: 'success',
+                message: 'Traslado balanceado correctamente'
+            });
+        }
+    }
+    
+    if (type === 'addition' && debitTotal > 0) {
+        validations.push({
+            type: 'warning',
+            message: 'Las adiciones generalmente solo tienen movimientos crédito'
+        });
+    }
+    
+    if (type === 'reduction' && creditTotal > 0) {
+        validations.push({
+            type: 'warning',
+            message: 'Las reducciones generalmente solo tienen movimientos débito'
+        });
+    }
+    
+    // Mostrar validaciones
+    let validationHTML = '';
+    validations.forEach(validation => {
+        validationHTML += `<div class="alert alert-${validation.type}">${validation.message}</div>`;
+    });
+    
+    validationDiv.innerHTML = validationHTML;
+}
+
+// Funciones para gestión de modificaciones
+function viewModification(id) {
+    alert(`Ver modificación ${id} - Funcionalidad en desarrollo`);
+}
+
+function approveModification(id) {
+    if (confirm('¿Está seguro de aprobar esta modificación presupuestal?')) {
+        // Implementar aprobación
+        alert(`Aprobando modificación ${id}`);
+    }
+}
+
+function applyModification(id) {
+    if (confirm('¿Está seguro de aplicar esta modificación? Esta acción actualizará las apropiaciones y no se puede deshacer.')) {
+        // Implementar aplicación
+        alert(`Aplicando modificación ${id}`);
+    }
+}
+
+// Validación del formulario
+document.getElementById('modificationForm').addEventListener('submit', function(e) {
+    const type = document.getElementById('modification_type').value;
+    const rows = document.querySelectorAll('.detail-row');
+    
+    let hasDetails = false;
+    let debitTotal = 0;
+    let creditTotal = 0;
+    
+    rows.forEach(row => {
+        const rubroSelect = row.querySelector('.rubro-select');
+        const amount = parseFloat(row.querySelector('.movement-amount').value) || 0;
+        const movementType = row.querySelector('.movement-type').value;
+        
+        if (rubroSelect.value && amount > 0) {
+            hasDetails = true;
+            if (movementType === 'debit') {
+                debitTotal += amount;
+            } else {
+                creditTotal += amount;
+            }
+        }
+    });
+    
+    if (!hasDetails) {
+        e.preventDefault();
+        alert('Debe agregar al menos un detalle a la modificación');
+        return;
+    }
+    
+    if (type === 'transfer' && Math.abs(debitTotal - creditTotal) > 0.01) {
+        e.preventDefault();
+        alert('Los traslados deben estar balanceados (débitos = créditos)');
+        return;
+    }
+    
+    if (confirm('¿Está seguro de crear esta modificación presupuestal?')) {
+        // Continuar con el envío
+    } else {
+        e.preventDefault();
+    }
+});
+
+// Inicializar
+document.addEventListener('DOMContentLoaded', function() {
+    // Configurar eventos de cálculo
+    document.addEventListener('change', function(e) {
+        if (e.target.classList.contains('movement-amount')) {
+            calculateTotal();
+        }
+    });
+});
+</script>
+{% endblock %}

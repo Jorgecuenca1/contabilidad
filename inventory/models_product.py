@@ -195,13 +195,119 @@ class Product(models.Model):
     
     def get_current_stock(self, warehouse=None):
         """Obtiene el stock actual del producto."""
-        # Implementar lógica de cálculo de stock
-        return 0
+        from .models import ProductStock
+        
+        if not self.track_inventory:
+            return 0
+            
+        if warehouse:
+            try:
+                stock = ProductStock.objects.get(
+                    product=self, 
+                    warehouse=warehouse,
+                    company=self.company
+                )
+                return stock.quantity_on_hand
+            except ProductStock.DoesNotExist:
+                return 0
+        else:
+            # Sumar stock de todas las bodegas
+            total_stock = ProductStock.objects.filter(
+                product=self,
+                company=self.company
+            ).aggregate(
+                total=models.Sum('quantity_on_hand')
+            )['total'] or 0
+            return total_stock
     
     def get_available_stock(self, warehouse=None):
         """Obtiene el stock disponible (descontando reservas)."""
-        # Implementar lógica de stock disponible
-        return self.get_current_stock(warehouse)
+        from .models import ProductStock
+        
+        if not self.track_inventory:
+            return 0
+            
+        if warehouse:
+            try:
+                stock = ProductStock.objects.get(
+                    product=self, 
+                    warehouse=warehouse,
+                    company=self.company
+                )
+                return stock.quantity_available
+            except ProductStock.DoesNotExist:
+                return 0
+        else:
+            # Sumar stock disponible de todas las bodegas
+            total_available = ProductStock.objects.filter(
+                product=self,
+                company=self.company
+            ).aggregate(
+                total=models.Sum('quantity_available')
+            )['total'] or 0
+            return total_available
+    
+    def get_stock_value(self, warehouse=None):
+        """Obtiene el valor del stock del producto."""
+        from .models import ProductStock
+        
+        if not self.track_inventory:
+            return 0
+            
+        if warehouse:
+            try:
+                stock = ProductStock.objects.get(
+                    product=self, 
+                    warehouse=warehouse,
+                    company=self.company
+                )
+                return stock.total_value
+            except ProductStock.DoesNotExist:
+                return 0
+        else:
+            # Sumar valor de stock de todas las bodegas
+            total_value = ProductStock.objects.filter(
+                product=self,
+                company=self.company
+            ).aggregate(
+                total=models.Sum('total_value')
+            )['total'] or 0
+            return total_value
+    
+    def update_average_cost(self):
+        """Actualiza el costo promedio basado en movimientos."""
+        from .models import StockMovement
+        
+        if not self.track_inventory:
+            return
+        
+        # Calcular costo promedio basado en entradas
+        movements = StockMovement.objects.filter(
+            product=self,
+            company=self.company,
+            movement_type__in=['entry', 'adjustment'],
+            quantity__gt=0
+        ).aggregate(
+            total_quantity=models.Sum('quantity'),
+            total_cost=models.Sum('total_cost')
+        )
+        
+        if movements['total_quantity'] and movements['total_cost']:
+            self.average_cost = movements['total_cost'] / movements['total_quantity']
+        else:
+            self.average_cost = self.standard_cost
+            
+        self.save(update_fields=['average_cost'])
+    
+    def is_low_stock(self, warehouse=None):
+        """Verifica si el producto está en stock bajo."""
+        current_stock = self.get_current_stock(warehouse)
+        return current_stock <= self.minimum_stock
+    
+    def needs_reorder(self, warehouse=None):
+        """Verifica si el producto necesita ser reordenado."""
+        current_stock = self.get_current_stock(warehouse)
+        return current_stock <= self.reorder_point
 
 
 

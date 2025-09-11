@@ -1,0 +1,242 @@
+{% extends 'base.html' %}
+
+{% block title %}Cuentas por Cobrar - Sistema Contable{% endblock %}
+
+{% block content %}
+<!-- Encabezado -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card bg-gradient-primary text-white shadow-lg">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h1><i class="bi bi-currency-dollar"></i> Cuentas por Cobrar (CxC)</h1>
+                        <p class="lead mb-0">Gestión integral de clientes, facturación y cobranza</p>
+                    </div>
+                    <div class="col-md-4 text-end">
+                        <div class="display-4">
+                            <i class="bi bi-people-fill"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Estadísticas -->
+<div class="row mb-4">
+    <div class="col-lg-3 col-md-6">
+        <div class="card bg-info text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="card-title">Total Clientes</h6>
+                        <h3 class="mb-0">{{ total_customers }}</h3>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-people fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-3 col-md-6">
+        <div class="card bg-primary text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="card-title">Total Facturas</h6>
+                        <h3 class="mb-0">{{ total_invoices }}</h3>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-receipt fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-3 col-md-6">
+        <div class="card bg-warning text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="card-title">Facturas Pendientes</h6>
+                        <h3 class="mb-0">{{ pending_invoices }}</h3>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-clock fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-3 col-md-6">
+        <div class="card bg-danger text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="card-title">Facturas Vencidas</h6>
+                        <h3 class="mb-0">{{ overdue_invoices }}</h3>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-exclamation-triangle fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Acciones Rápidas -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="bi bi-lightning-fill"></i> Acciones Rápidas</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-lg-3 col-md-6 mb-3">
+                        <a href="{% url 'accounts_receivable:new_invoice' %}" class="btn btn-success btn-lg w-100">
+                            <i class="bi bi-receipt-cutoff"></i><br>
+                            Nueva Factura
+                        </a>
+                    </div>
+                    <div class="col-lg-3 col-md-6 mb-3">
+                        <a href="{% url 'accounts_receivable:new_payment' %}" class="btn btn-warning btn-lg w-100">
+                            <i class="bi bi-credit-card"></i><br>
+                            Registrar Pago
+                        </a>
+                    </div>
+                    <div class="col-lg-3 col-md-6 mb-3">
+                        <a href="{% url 'accounts_receivable:new_customer' %}" class="btn btn-info btn-lg w-100">
+                            <i class="bi bi-person-plus"></i><br>
+                            Nuevo Cliente
+                        </a>
+                    </div>
+                    <div class="col-lg-3 col-md-6 mb-3">
+                        <a href="{% url 'accounts_receivable:customer_list' %}" class="btn btn-secondary btn-lg w-100">
+                            <i class="bi bi-people"></i><br>
+                            Lista Clientes
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Actividad Reciente -->
+<div class="row">
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="bi bi-clock-history"></i> Facturas Recientes</h5>
+            </div>
+            <div class="card-body">
+                {% if recent_invoices %}
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Factura</th>
+                                    <th>Cliente</th>
+                                    <th>Fecha</th>
+                                    <th>Estado</th>
+                                    <th>Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for invoice in recent_invoices %}
+                                <tr>
+                                    <td>
+                                        <a href="{% url 'accounts_receivable:invoice_detail' invoice.id %}">
+                                            {{ invoice.invoice_number }}
+                                        </a>
+                                    </td>
+                                    <td>{{ invoice.customer.get_full_name|truncatechars:20 }}</td>
+                                    <td>{{ invoice.invoice_date }}</td>
+                                    <td>
+                                        <span class="badge bg-{{ invoice.status|default:'secondary' }}">
+                                            {{ invoice.get_status_display }}
+                                        </span>
+                                    </td>
+                                    <td>${{ invoice.total_amount|floatformat:2 }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="text-center">
+                        <a href="{% url 'accounts_receivable:invoice_list' %}" class="btn btn-outline-primary btn-sm">
+                            Ver todas las facturas
+                        </a>
+                    </div>
+                {% else %}
+                    <p class="text-muted">No hay facturas recientes</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="bi bi-cash"></i> Pagos Recientes</h5>
+            </div>
+            <div class="card-body">
+                {% if recent_payments %}
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Pago</th>
+                                    <th>Cliente</th>
+                                    <th>Fecha</th>
+                                    <th>Método</th>
+                                    <th>Monto</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for payment in recent_payments %}
+                                <tr>
+                                    <td>
+                                        <a href="{% url 'accounts_receivable:payment_detail' payment.id %}">
+                                            {{ payment.number }}
+                                        </a>
+                                    </td>
+                                    <td>{{ payment.customer.get_full_name|truncatechars:20 }}</td>
+                                    <td>{{ payment.date }}</td>
+                                    <td>{{ payment.get_payment_method_display }}</td>
+                                    <td>${{ payment.amount|floatformat:2 }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="text-center">
+                        <a href="{% url 'accounts_receivable:payment_list' %}" class="btn btn-outline-warning btn-sm">
+                            Ver todos los pagos
+                        </a>
+                    </div>
+                {% else %}
+                    <p class="text-muted">No hay pagos recientes</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.bg-gradient-primary {
+    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+}
+</style>
+{% endblock %}

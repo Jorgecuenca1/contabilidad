@@ -1110,3 +1110,1803 @@ WARNING 2025-09-07 17:18:09,931 log 18828 17908 Forbidden: /reports/api/company/
 INFO 2025-09-09 10:55:25,934 autoreload 21892 20876 Watching for file changes with StatReloader
 INFO 2025-09-09 11:03:00,445 autoreload 16056 23664 Watching for file changes with StatReloader
 WARNING 2025-09-09 11:03:25,300 log 16056 25168 Not Found: /favicon.ico
+INFO 2025-09-11 03:36:32,555 autoreload 1844 4804 Watching for file changes with StatReloader
+ERROR 2025-09-11 03:36:37,958 exception 1844 22056 Invalid HTTP_HOST header: '127.0.0.1:8000'. You may need to add '127.0.0.1' to ALLOWED_HOSTS.
+Traceback (most recent call last):
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\utils\deprecation.py", line 128, in __call__
+    response = self.process_request(request)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\middleware\common.py", line 48, in process_request
+    host = request.get_host()
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\http\request.py", line 151, in get_host
+    raise DisallowedHost(msg)
+django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header: '127.0.0.1:8000'. You may need to add '127.0.0.1' to ALLOWED_HOSTS.
+WARNING 2025-09-11 03:36:38,243 log 1844 22056 Bad Request: /
+ERROR 2025-09-11 03:36:38,534 exception 1844 18172 Invalid HTTP_HOST header: '127.0.0.1:8000'. You may need to add '127.0.0.1' to ALLOWED_HOSTS.
+Traceback (most recent call last):
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\utils\deprecation.py", line 128, in __call__
+    response = self.process_request(request)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\middleware\common.py", line 48, in process_request
+    host = request.get_host()
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\http\request.py", line 151, in get_host
+    raise DisallowedHost(msg)
+django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header: '127.0.0.1:8000'. You may need to add '127.0.0.1' to ALLOWED_HOSTS.
+WARNING 2025-09-11 03:36:38,607 log 1844 18172 Bad Request: /favicon.ico
+INFO 2025-09-11 03:36:45,595 autoreload 1844 4804 C:\Users\HOME\PycharmProjects\contabilidad\contabilidad_multiempresa\settings.py changed, reloading.
+INFO 2025-09-11 03:36:46,945 autoreload 9240 26092 Watching for file changes with StatReloader
+INFO 2025-09-11 03:37:10,711 autoreload 21844 23200 Watching for file changes with StatReloader
+WARNING 2025-09-11 03:37:13,741 log 21844 16564 Not Found: /favicon.ico
+ERROR 2025-09-11 03:37:28,724 log 21844 16564 Internal Server Error: /companies/new/
+Traceback (most recent call last):
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\contrib\auth\decorators.py", line 60, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\HOME\PycharmProjects\contabilidad\core\views.py", line 166, in new_company
+    countries = Country.objects.filter(is_active=True)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\query.py", line 1476, in filter
+    return self._filter_or_exclude(False, args, kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\query.py", line 1494, in _filter_or_exclude
+    clone._filter_or_exclude_inplace(negate, args, kwargs)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\query.py", line 1501, in _filter_or_exclude_inplace
+    self._query.add_q(Q(*args, **kwargs))
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\sql\query.py", line 1609, in add_q
+    clause, _ = self._add_q(q_object, self.used_aliases)
+                ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\sql\query.py", line 1641, in _add_q
+    child_clause, needed_inner = self.build_filter(
+                                 ~~~~~~~~~~~~~~~~~^
+        child,
+        ^^^^^^
+    ...<7 lines>...
+        update_join_types=update_join_types,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\sql\query.py", line 1491, in build_filter
+    lookups, parts, reffed_expression = self.solve_lookup_type(arg, summarize)
+                                        ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\sql\query.py", line 1303, in solve_lookup_type
+    _, field, _, lookup_parts = self.names_to_path(lookup_splitted, self.get_meta())
+                                ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\sql\query.py", line 1768, in names_to_path
+    raise FieldError(
+    ...<2 lines>...
+    )
+django.core.exceptions.FieldError: Cannot resolve keyword 'is_active' into field. Choices are: chart_of_accounts_template, code, company, currency_code, currency_symbol, name, tax_configuration, tax_id_regex
+ERROR 2025-09-11 03:37:48,127 log 21844 16564 Internal Server Error: /companies/new/
+Traceback (most recent call last):
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\contrib\auth\decorators.py", line 60, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\HOME\PycharmProjects\contabilidad\core\views.py", line 166, in new_company
+    countries = Country.objects.filter(is_active=True)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\query.py", line 1476, in filter
+    return self._filter_or_exclude(False, args, kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\query.py", line 1494, in _filter_or_exclude
+    clone._filter_or_exclude_inplace(negate, args, kwargs)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\query.py", line 1501, in _filter_or_exclude_inplace
+    self._query.add_q(Q(*args, **kwargs))
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\sql\query.py", line 1609, in add_q
+    clause, _ = self._add_q(q_object, self.used_aliases)
+                ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\sql\query.py", line 1641, in _add_q
+    child_clause, needed_inner = self.build_filter(
+                                 ~~~~~~~~~~~~~~~~~^
+        child,
+        ^^^^^^
+    ...<7 lines>...
+        update_join_types=update_join_types,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\sql\query.py", line 1491, in build_filter
+    lookups, parts, reffed_expression = self.solve_lookup_type(arg, summarize)
+                                        ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\sql\query.py", line 1303, in solve_lookup_type
+    _, field, _, lookup_parts = self.names_to_path(lookup_splitted, self.get_meta())
+                                ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\sql\query.py", line 1768, in names_to_path
+    raise FieldError(
+    ...<2 lines>...
+    )
+django.core.exceptions.FieldError: Cannot resolve keyword 'is_active' into field. Choices are: chart_of_accounts_template, code, company, currency_code, currency_symbol, name, tax_configuration, tax_id_regex
+INFO 2025-09-11 03:38:22,136 autoreload 21844 23200 C:\Users\HOME\PycharmProjects\contabilidad\core\views.py changed, reloading.
+INFO 2025-09-11 03:38:23,574 autoreload 6880 2660 Watching for file changes with StatReloader
+INFO 2025-09-11 03:38:28,733 autoreload 6880 2660 C:\Users\HOME\PycharmProjects\contabilidad\core\views.py changed, reloading.
+INFO 2025-09-11 03:38:30,118 autoreload 12412 25772 Watching for file changes with StatReloader
+INFO 2025-09-11 03:38:35,650 autoreload 12412 25772 C:\Users\HOME\PycharmProjects\contabilidad\core\views.py changed, reloading.
+INFO 2025-09-11 03:38:37,745 autoreload 13664 14188 Watching for file changes with StatReloader
+INFO 2025-09-11 03:39:08,117 autoreload 14160 19880 Watching for file changes with StatReloader
+INFO 2025-09-11 03:51:04,967 autoreload 21468 5208 Watching for file changes with StatReloader
+INFO 2025-09-11 03:51:22,530 autoreload 14160 19880 C:\Users\HOME\PycharmProjects\contabilidad\treasury\views.py changed, reloading.
+INFO 2025-09-11 03:51:22,816 autoreload 21468 5208 C:\Users\HOME\PycharmProjects\contabilidad\treasury\views.py changed, reloading.
+INFO 2025-09-11 03:51:25,886 autoreload 21064 11040 Watching for file changes with StatReloader
+INFO 2025-09-11 03:51:26,319 autoreload 13128 14072 Watching for file changes with StatReloader
+INFO 2025-09-11 03:52:13,088 autoreload 13128 14072 C:\Users\HOME\PycharmProjects\contabilidad\accounts_receivable\models_invoice.py changed, reloading.
+INFO 2025-09-11 03:52:13,829 autoreload 21064 11040 C:\Users\HOME\PycharmProjects\contabilidad\accounts_receivable\models_invoice.py changed, reloading.
+INFO 2025-09-11 03:52:15,786 autoreload 8688 1728 Watching for file changes with StatReloader
+INFO 2025-09-11 03:52:16,498 autoreload 24988 7544 Watching for file changes with StatReloader
+INFO 2025-09-11 03:52:23,536 autoreload 8688 1728 C:\Users\HOME\PycharmProjects\contabilidad\accounts_receivable\models_invoice.py changed, reloading.
+INFO 2025-09-11 03:52:24,239 autoreload 24988 7544 C:\Users\HOME\PycharmProjects\contabilidad\accounts_receivable\models_invoice.py changed, reloading.
+INFO 2025-09-11 03:52:27,263 autoreload 6176 21612 Watching for file changes with StatReloader
+INFO 2025-09-11 03:52:27,749 autoreload 12612 20324 Watching for file changes with StatReloader
+INFO 2025-09-11 03:52:53,279 autoreload 12612 20324 C:\Users\HOME\PycharmProjects\contabilidad\accounts_receivable\models_customer.py changed, reloading.
+INFO 2025-09-11 03:52:53,609 autoreload 6176 21612 C:\Users\HOME\PycharmProjects\contabilidad\accounts_receivable\models_customer.py changed, reloading.
+INFO 2025-09-11 03:52:56,405 autoreload 12888 2360 Watching for file changes with StatReloader
+INFO 2025-09-11 03:52:56,447 autoreload 26116 18124 Watching for file changes with StatReloader
+INFO 2025-09-11 03:53:12,534 autoreload 26116 18124 C:\Users\HOME\PycharmProjects\contabilidad\accounts_receivable\models_customer.py changed, reloading.
+INFO 2025-09-11 03:53:12,547 autoreload 12888 2360 C:\Users\HOME\PycharmProjects\contabilidad\accounts_receivable\models_customer.py changed, reloading.
+INFO 2025-09-11 03:53:15,397 autoreload 13484 18132 Watching for file changes with StatReloader
+INFO 2025-09-11 03:53:15,401 autoreload 11912 9596 Watching for file changes with StatReloader
+INFO 2025-09-11 03:53:29,479 autoreload 13484 18132 C:\Users\HOME\PycharmProjects\contabilidad\accounts_receivable\urls.py changed, reloading.
+INFO 2025-09-11 03:53:29,502 autoreload 11912 9596 C:\Users\HOME\PycharmProjects\contabilidad\accounts_receivable\urls.py changed, reloading.
+INFO 2025-09-11 03:53:32,002 autoreload 9652 4336 Watching for file changes with StatReloader
+INFO 2025-09-11 03:53:32,010 autoreload 24176 12352 Watching for file changes with StatReloader
+INFO 2025-09-11 03:53:38,823 autoreload 9652 4336 C:\Users\HOME\PycharmProjects\contabilidad\accounts_receivable\views.py changed, reloading.
+INFO 2025-09-11 03:53:41,469 autoreload 26440 19952 Watching for file changes with StatReloader
+INFO 2025-09-11 03:54:32,556 autoreload 20904 13148 Watching for file changes with StatReloader
+INFO 2025-09-11 03:54:41,199 autoreload 26440 19952 C:\Users\HOME\PycharmProjects\contabilidad\accounting\views.py changed, reloading.
+ERROR 2025-09-11 03:54:42,907 log 20904 4944 Internal Server Error: /
+Traceback (most recent call last):
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\urls\base.py", line 71, in reverse
+    extra, resolver = resolver.namespace_dict[ns]
+                      ~~~~~~~~~~~~~~~~~~~~~~~^^^^
+KeyError: 'inventory'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\HOME\PycharmProjects\contabilidad\core\views.py", line 24, in dashboard
+    return render(request, 'core/login.html')
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\backends\django.py", line 107, in render
+    return self.template.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 171, in render
+    return self._render(context)
+           ~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 1008, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 969, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\loader_tags.py", line 159, in render
+    return compiled_parent._render(context)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 1008, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 969, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\defaulttags.py", line 480, in render
+    url = reverse(view_name, args=args, kwargs=kwargs, current_app=current_app)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\urls\base.py", line 82, in reverse
+    raise NoReverseMatch("%s is not a registered namespace" % key)
+django.urls.exceptions.NoReverseMatch: 'inventory' is not a registered namespace
+INFO 2025-09-11 03:54:42,925 autoreload 11524 25552 Watching for file changes with StatReloader
+INFO 2025-09-11 03:55:33,989 autoreload 11524 25552 C:\Users\HOME\PycharmProjects\contabilidad\contabilidad_multiempresa\urls.py changed, reloading.
+INFO 2025-09-11 03:55:34,416 autoreload 20904 13148 C:\Users\HOME\PycharmProjects\contabilidad\contabilidad_multiempresa\urls.py changed, reloading.
+INFO 2025-09-11 03:55:35,958 autoreload 1372 19284 Watching for file changes with StatReloader
+INFO 2025-09-11 03:55:36,401 autoreload 6004 16132 Watching for file changes with StatReloader
+INFO 2025-09-11 03:57:12,786 autoreload 1372 19284 C:\Users\HOME\PycharmProjects\contabilidad\accounts_receivable\urls.py changed, reloading.
+INFO 2025-09-11 03:57:12,936 autoreload 6004 16132 C:\Users\HOME\PycharmProjects\contabilidad\accounts_receivable\urls.py changed, reloading.
+INFO 2025-09-11 03:57:14,035 autoreload 3140 17400 Watching for file changes with StatReloader
+INFO 2025-09-11 03:57:14,159 autoreload 25324 21844 Watching for file changes with StatReloader
+INFO 2025-09-11 03:57:37,516 autoreload 3140 17400 C:\Users\HOME\PycharmProjects\contabilidad\accounts_receivable\urls.py changed, reloading.
+INFO 2025-09-11 03:57:37,633 autoreload 25324 21844 C:\Users\HOME\PycharmProjects\contabilidad\accounts_receivable\urls.py changed, reloading.
+INFO 2025-09-11 03:57:38,627 autoreload 4356 17488 Watching for file changes with StatReloader
+INFO 2025-09-11 03:57:38,731 autoreload 24944 21924 Watching for file changes with StatReloader
+INFO 2025-09-11 04:01:00,828 autoreload 24944 21924 C:\Users\HOME\PycharmProjects\contabilidad\accounts_receivable\urls.py changed, reloading.
+INFO 2025-09-11 04:01:00,860 autoreload 4356 17488 C:\Users\HOME\PycharmProjects\contabilidad\accounts_receivable\urls.py changed, reloading.
+INFO 2025-09-11 04:01:02,780 autoreload 26076 7224 Watching for file changes with StatReloader
+INFO 2025-09-11 04:01:02,783 autoreload 20960 21424 Watching for file changes with StatReloader
+INFO 2025-09-11 04:01:21,239 autoreload 26076 7224 C:\Users\HOME\PycharmProjects\contabilidad\accounts_receivable\views.py changed, reloading.
+INFO 2025-09-11 04:01:21,252 autoreload 20960 21424 C:\Users\HOME\PycharmProjects\contabilidad\accounts_receivable\views.py changed, reloading.
+INFO 2025-09-11 04:01:22,296 autoreload 16660 9500 Watching for file changes with StatReloader
+INFO 2025-09-11 04:01:22,300 autoreload 15784 11232 Watching for file changes with StatReloader
+INFO 2025-09-11 04:01:56,925 autoreload 15784 11232 C:\Users\HOME\PycharmProjects\contabilidad\inventory\models.py changed, reloading.
+INFO 2025-09-11 04:01:56,938 autoreload 16660 9500 C:\Users\HOME\PycharmProjects\contabilidad\inventory\models.py changed, reloading.
+INFO 2025-09-11 04:01:58,246 autoreload 12736 24416 Watching for file changes with StatReloader
+INFO 2025-09-11 04:01:58,251 autoreload 5496 10364 Watching for file changes with StatReloader
+INFO 2025-09-11 04:02:15,573 autoreload 12736 24416 C:\Users\HOME\PycharmProjects\contabilidad\accounts_receivable\urls.py changed, reloading.
+INFO 2025-09-11 04:02:15,591 autoreload 5496 10364 C:\Users\HOME\PycharmProjects\contabilidad\accounts_receivable\urls.py changed, reloading.
+INFO 2025-09-11 04:02:17,438 autoreload 13208 8824 Watching for file changes with StatReloader
+INFO 2025-09-11 04:02:17,442 autoreload 22288 9708 Watching for file changes with StatReloader
+INFO 2025-09-11 04:02:24,599 autoreload 22288 9708 C:\Users\HOME\PycharmProjects\contabilidad\inventory\models_product.py changed, reloading.
+INFO 2025-09-11 04:02:24,599 autoreload 13208 8824 C:\Users\HOME\PycharmProjects\contabilidad\inventory\models_product.py changed, reloading.
+INFO 2025-09-11 04:02:26,125 autoreload 12108 17816 Watching for file changes with StatReloader
+INFO 2025-09-11 04:02:26,126 autoreload 2728 18420 Watching for file changes with StatReloader
+INFO 2025-09-11 04:02:31,352 autoreload 9516 24808 Watching for file changes with StatReloader
+INFO 2025-09-11 04:02:33,702 autoreload 12108 17816 C:\Users\HOME\PycharmProjects\contabilidad\accounts_receivable\urls.py changed, reloading.
+INFO 2025-09-11 04:02:33,745 autoreload 2728 18420 C:\Users\HOME\PycharmProjects\contabilidad\accounts_receivable\urls.py changed, reloading.
+INFO 2025-09-11 04:02:35,674 autoreload 24280 10000 Watching for file changes with StatReloader
+INFO 2025-09-11 04:02:35,783 autoreload 12732 19768 Watching for file changes with StatReloader
+INFO 2025-09-11 04:03:00,480 autoreload 24280 10000 C:\Users\HOME\PycharmProjects\contabilidad\fixed_assets\models_asset.py changed, reloading.
+INFO 2025-09-11 04:03:00,495 autoreload 12732 19768 C:\Users\HOME\PycharmProjects\contabilidad\fixed_assets\models_asset.py changed, reloading.
+INFO 2025-09-11 04:03:00,956 autoreload 9516 24808 C:\Users\HOME\PycharmProjects\contabilidad\fixed_assets\models_asset.py changed, reloading.
+INFO 2025-09-11 04:03:02,778 autoreload 15160 2852 Watching for file changes with StatReloader
+INFO 2025-09-11 04:03:02,784 autoreload 17468 11564 Watching for file changes with StatReloader
+INFO 2025-09-11 04:03:03,303 autoreload 10364 132 Watching for file changes with StatReloader
+INFO 2025-09-11 04:03:21,549 autoreload 15160 2852 C:\Users\HOME\PycharmProjects\contabilidad\fixed_assets\models_asset.py changed, reloading.
+INFO 2025-09-11 04:03:21,802 autoreload 17468 11564 C:\Users\HOME\PycharmProjects\contabilidad\fixed_assets\models_asset.py changed, reloading.
+INFO 2025-09-11 04:03:22,047 autoreload 10364 132 C:\Users\HOME\PycharmProjects\contabilidad\fixed_assets\models_asset.py changed, reloading.
+INFO 2025-09-11 04:03:23,787 autoreload 16372 1676 Watching for file changes with StatReloader
+INFO 2025-09-11 04:03:24,010 autoreload 17024 3772 Watching for file changes with StatReloader
+INFO 2025-09-11 04:03:24,274 autoreload 11200 5648 Watching for file changes with StatReloader
+INFO 2025-09-11 04:03:29,866 autoreload 17024 3772 C:\Users\HOME\PycharmProjects\contabilidad\fixed_assets\models.py changed, reloading.
+INFO 2025-09-11 04:03:30,078 autoreload 11200 5648 C:\Users\HOME\PycharmProjects\contabilidad\fixed_assets\models.py changed, reloading.
+INFO 2025-09-11 04:03:30,591 autoreload 16372 1676 C:\Users\HOME\PycharmProjects\contabilidad\fixed_assets\models.py changed, reloading.
+INFO 2025-09-11 04:03:31,928 autoreload 19984 14744 Watching for file changes with StatReloader
+INFO 2025-09-11 04:03:32,207 autoreload 15748 7752 Watching for file changes with StatReloader
+INFO 2025-09-11 04:03:32,734 autoreload 13760 21476 Watching for file changes with StatReloader
+INFO 2025-09-11 04:03:35,423 autoreload 19984 14744 C:\Users\HOME\PycharmProjects\contabilidad\inventory\views.py changed, reloading.
+INFO 2025-09-11 04:03:35,789 autoreload 15748 7752 C:\Users\HOME\PycharmProjects\contabilidad\inventory\views.py changed, reloading.
+INFO 2025-09-11 04:03:36,487 autoreload 13760 21476 C:\Users\HOME\PycharmProjects\contabilidad\inventory\views.py changed, reloading.
+ERROR 2025-09-11 04:03:36,752 exception 16408 4860 Invalid HTTP_HOST header: 'testserver'. You may need to add 'testserver' to ALLOWED_HOSTS.
+Traceback (most recent call last):
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\utils\deprecation.py", line 128, in __call__
+    response = self.process_request(request)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\middleware\common.py", line 48, in process_request
+    host = request.get_host()
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\http\request.py", line 151, in get_host
+    raise DisallowedHost(msg)
+django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header: 'testserver'. You may need to add 'testserver' to ALLOWED_HOSTS.
+INFO 2025-09-11 04:03:38,469 autoreload 2996 22968 Watching for file changes with StatReloader
+WARNING 2025-09-11 04:03:38,557 log 16408 4860 Bad Request: /treasury/
+ERROR 2025-09-11 04:03:38,559 exception 16408 4860 Invalid HTTP_HOST header: 'testserver'. You may need to add 'testserver' to ALLOWED_HOSTS.
+Traceback (most recent call last):
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\utils\deprecation.py", line 128, in __call__
+    response = self.process_request(request)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\middleware\common.py", line 48, in process_request
+    host = request.get_host()
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\http\request.py", line 151, in get_host
+    raise DisallowedHost(msg)
+django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header: 'testserver'. You may need to add 'testserver' to ALLOWED_HOSTS.
+WARNING 2025-09-11 04:03:38,601 log 16408 4860 Bad Request: /treasury/bank-movement/
+ERROR 2025-09-11 04:03:38,602 exception 16408 4860 Invalid HTTP_HOST header: 'testserver'. You may need to add 'testserver' to ALLOWED_HOSTS.
+Traceback (most recent call last):
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\utils\deprecation.py", line 128, in __call__
+    response = self.process_request(request)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\middleware\common.py", line 48, in process_request
+    host = request.get_host()
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\http\request.py", line 151, in get_host
+    raise DisallowedHost(msg)
+django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header: 'testserver'. You may need to add 'testserver' to ALLOWED_HOSTS.
+WARNING 2025-09-11 04:03:38,655 log 16408 4860 Bad Request: /treasury/bank-reconciliation/
+INFO 2025-09-11 04:03:38,768 autoreload 16320 8380 Watching for file changes with StatReloader
+INFO 2025-09-11 04:03:39,299 autoreload 15584 7980 Watching for file changes with StatReloader
+INFO 2025-09-11 04:03:50,559 autoreload 2996 22968 C:\Users\HOME\PycharmProjects\contabilidad\inventory\views.py changed, reloading.
+INFO 2025-09-11 04:03:50,742 autoreload 16320 8380 C:\Users\HOME\PycharmProjects\contabilidad\inventory\views.py changed, reloading.
+INFO 2025-09-11 04:03:51,047 autoreload 15584 7980 C:\Users\HOME\PycharmProjects\contabilidad\inventory\views.py changed, reloading.
+INFO 2025-09-11 04:03:52,457 autoreload 19684 16264 Watching for file changes with StatReloader
+INFO 2025-09-11 04:03:52,713 autoreload 17148 9032 Watching for file changes with StatReloader
+INFO 2025-09-11 04:03:52,988 autoreload 20952 388 Watching for file changes with StatReloader
+INFO 2025-09-11 04:04:06,297 autoreload 19684 16264 C:\Users\HOME\PycharmProjects\contabilidad\inventory\views.py changed, reloading.
+INFO 2025-09-11 04:04:06,608 autoreload 17148 9032 C:\Users\HOME\PycharmProjects\contabilidad\inventory\views.py changed, reloading.
+INFO 2025-09-11 04:04:06,796 autoreload 20952 388 C:\Users\HOME\PycharmProjects\contabilidad\inventory\views.py changed, reloading.
+INFO 2025-09-11 04:04:08,430 autoreload 14544 3860 Watching for file changes with StatReloader
+INFO 2025-09-11 04:04:08,779 autoreload 4688 7560 Watching for file changes with StatReloader
+INFO 2025-09-11 04:04:08,961 autoreload 16108 6428 Watching for file changes with StatReloader
+INFO 2025-09-11 04:04:19,516 autoreload 16108 6428 C:\Users\HOME\PycharmProjects\contabilidad\accounts_receivable\models_invoice.py changed, reloading.
+INFO 2025-09-11 04:04:20,106 autoreload 14544 3860 C:\Users\HOME\PycharmProjects\contabilidad\accounts_receivable\models_invoice.py changed, reloading.
+INFO 2025-09-11 04:04:20,371 autoreload 4688 7560 C:\Users\HOME\PycharmProjects\contabilidad\accounts_receivable\models_invoice.py changed, reloading.
+INFO 2025-09-11 04:04:21,325 autoreload 8600 12668 Watching for file changes with StatReloader
+INFO 2025-09-11 04:04:21,950 autoreload 7760 14772 Watching for file changes with StatReloader
+INFO 2025-09-11 04:04:22,191 autoreload 22488 17572 Watching for file changes with StatReloader
+INFO 2025-09-11 04:04:24,602 autoreload 8600 12668 C:\Users\HOME\PycharmProjects\contabilidad\third_parties\forms.py changed, reloading.
+INFO 2025-09-11 04:04:26,137 autoreload 2408 16848 Watching for file changes with StatReloader
+INFO 2025-09-11 04:04:37,389 autoreload 2408 16848 C:\Users\HOME\PycharmProjects\contabilidad\accounts_receivable\models_customer.py changed, reloading.
+INFO 2025-09-11 04:04:37,875 autoreload 7760 14772 C:\Users\HOME\PycharmProjects\contabilidad\accounts_receivable\models_customer.py changed, reloading.
+INFO 2025-09-11 04:04:38,082 autoreload 22488 17572 C:\Users\HOME\PycharmProjects\contabilidad\accounts_receivable\models_customer.py changed, reloading.
+INFO 2025-09-11 04:04:39,154 autoreload 18032 15280 Watching for file changes with StatReloader
+INFO 2025-09-11 04:04:39,770 autoreload 11984 21772 Watching for file changes with StatReloader
+INFO 2025-09-11 04:04:39,972 autoreload 16580 20772 Watching for file changes with StatReloader
+INFO 2025-09-11 04:05:06,789 autoreload 18032 15280 C:\Users\HOME\PycharmProjects\contabilidad\contabilidad_multiempresa\settings.py changed, reloading.
+INFO 2025-09-11 04:05:07,118 autoreload 11984 21772 C:\Users\HOME\PycharmProjects\contabilidad\contabilidad_multiempresa\settings.py changed, reloading.
+INFO 2025-09-11 04:05:07,192 autoreload 16580 20772 C:\Users\HOME\PycharmProjects\contabilidad\contabilidad_multiempresa\settings.py changed, reloading.
+INFO 2025-09-11 04:05:08,484 autoreload 2776 18312 Watching for file changes with StatReloader
+INFO 2025-09-11 04:05:08,946 autoreload 8588 18768 Watching for file changes with StatReloader
+INFO 2025-09-11 04:05:09,025 autoreload 22496 16628 Watching for file changes with StatReloader
+INFO 2025-09-11 04:05:30,770 autoreload 8588 18768 C:\Users\HOME\PycharmProjects\contabilidad\budget\models.py changed, reloading.
+INFO 2025-09-11 04:05:30,809 autoreload 22496 16628 C:\Users\HOME\PycharmProjects\contabilidad\budget\models.py changed, reloading.
+INFO 2025-09-11 04:05:31,334 autoreload 2776 18312 C:\Users\HOME\PycharmProjects\contabilidad\budget\models.py changed, reloading.
+INFO 2025-09-11 04:05:32,758 autoreload 6888 14236 Watching for file changes with StatReloader
+INFO 2025-09-11 04:05:32,798 autoreload 26012 22216 Watching for file changes with StatReloader
+INFO 2025-09-11 04:05:33,438 autoreload 23016 10868 Watching for file changes with StatReloader
+INFO 2025-09-11 04:05:46,744 autoreload 23016 10868 C:\Users\HOME\PycharmProjects\contabilidad\inventory\views.py changed, reloading.
+INFO 2025-09-11 04:05:47,279 autoreload 26012 22216 C:\Users\HOME\PycharmProjects\contabilidad\inventory\views.py changed, reloading.
+INFO 2025-09-11 04:05:47,283 autoreload 6888 14236 C:\Users\HOME\PycharmProjects\contabilidad\inventory\views.py changed, reloading.
+INFO 2025-09-11 04:05:48,575 autoreload 2244 18600 Watching for file changes with StatReloader
+INFO 2025-09-11 04:05:49,194 autoreload 24568 6644 Watching for file changes with StatReloader
+INFO 2025-09-11 04:05:49,196 autoreload 24276 15352 Watching for file changes with StatReloader
+INFO 2025-09-11 04:05:56,078 autoreload 24276 15352 C:\Users\HOME\PycharmProjects\contabilidad\budget\models.py changed, reloading.
+INFO 2025-09-11 04:05:56,094 autoreload 24568 6644 C:\Users\HOME\PycharmProjects\contabilidad\budget\models.py changed, reloading.
+INFO 2025-09-11 04:05:56,610 autoreload 2244 18600 C:\Users\HOME\PycharmProjects\contabilidad\budget\models.py changed, reloading.
+INFO 2025-09-11 04:05:58,035 autoreload 14348 18992 Watching for file changes with StatReloader
+INFO 2025-09-11 04:05:58,044 autoreload 26588 10852 Watching for file changes with StatReloader
+INFO 2025-09-11 04:05:58,628 autoreload 14940 18748 Watching for file changes with StatReloader
+INFO 2025-09-11 04:07:00,874 autoreload 26588 10852 C:\Users\HOME\PycharmProjects\contabilidad\fixed_assets\services.py changed, reloading.
+INFO 2025-09-11 04:07:00,890 autoreload 14348 18992 C:\Users\HOME\PycharmProjects\contabilidad\fixed_assets\services.py changed, reloading.
+INFO 2025-09-11 04:07:01,599 autoreload 14940 18748 C:\Users\HOME\PycharmProjects\contabilidad\fixed_assets\services.py changed, reloading.
+INFO 2025-09-11 04:07:02,861 autoreload 1940 12720 Watching for file changes with StatReloader
+INFO 2025-09-11 04:07:02,863 autoreload 15728 23148 Watching for file changes with StatReloader
+INFO 2025-09-11 04:07:03,489 autoreload 12400 14912 Watching for file changes with StatReloader
+INFO 2025-09-11 04:07:25,497 autoreload 15728 23148 C:\Users\HOME\PycharmProjects\contabilidad\fixed_assets\services.py changed, reloading.
+INFO 2025-09-11 04:07:25,522 autoreload 1940 12720 C:\Users\HOME\PycharmProjects\contabilidad\fixed_assets\services.py changed, reloading.
+INFO 2025-09-11 04:07:26,010 autoreload 12400 14912 C:\Users\HOME\PycharmProjects\contabilidad\fixed_assets\services.py changed, reloading.
+INFO 2025-09-11 04:07:28,152 autoreload 22908 9348 Watching for file changes with StatReloader
+INFO 2025-09-11 04:07:28,160 autoreload 13540 7180 Watching for file changes with StatReloader
+INFO 2025-09-11 04:07:28,522 autoreload 16420 19716 Watching for file changes with StatReloader
+INFO 2025-09-11 04:07:48,972 autoreload 16420 19716 C:\Users\HOME\PycharmProjects\contabilidad\inventory\views.py changed, reloading.
+INFO 2025-09-11 04:07:49,772 autoreload 22908 9348 C:\Users\HOME\PycharmProjects\contabilidad\inventory\views.py changed, reloading.
+INFO 2025-09-11 04:07:49,789 autoreload 13540 7180 C:\Users\HOME\PycharmProjects\contabilidad\inventory\views.py changed, reloading.
+INFO 2025-09-11 04:07:51,072 autoreload 14648 18024 Watching for file changes with StatReloader
+INFO 2025-09-11 04:07:51,911 autoreload 23188 14428 Watching for file changes with StatReloader
+INFO 2025-09-11 04:07:51,916 autoreload 20772 9508 Watching for file changes with StatReloader
+INFO 2025-09-11 04:08:09,362 autoreload 23188 14428 C:\Users\HOME\PycharmProjects\contabilidad\inventory\views.py changed, reloading.
+INFO 2025-09-11 04:08:09,375 autoreload 20772 9508 C:\Users\HOME\PycharmProjects\contabilidad\inventory\views.py changed, reloading.
+INFO 2025-09-11 04:08:09,476 autoreload 14648 18024 C:\Users\HOME\PycharmProjects\contabilidad\inventory\views.py changed, reloading.
+INFO 2025-09-11 04:08:11,273 autoreload 8012 6460 Watching for file changes with StatReloader
+INFO 2025-09-11 04:08:11,322 autoreload 2284 20392 Watching for file changes with StatReloader
+INFO 2025-09-11 04:08:11,411 autoreload 2520 7224 Watching for file changes with StatReloader
+INFO 2025-09-11 04:08:43,216 autoreload 2520 7224 C:\Users\HOME\PycharmProjects\contabilidad\inventory\views.py changed, reloading.
+INFO 2025-09-11 04:08:44,227 autoreload 8012 6460 C:\Users\HOME\PycharmProjects\contabilidad\inventory\views.py changed, reloading.
+INFO 2025-09-11 04:08:44,409 autoreload 12748 17088 Watching for file changes with StatReloader
+INFO 2025-09-11 04:08:45,522 autoreload 23736 25192 Watching for file changes with StatReloader
+INFO 2025-09-11 04:08:50,245 autoreload 1524 9036 Watching for file changes with StatReloader
+INFO 2025-09-11 04:08:57,291 autoreload 23736 25192 C:\Users\HOME\PycharmProjects\contabilidad\inventory\views.py changed, reloading.
+INFO 2025-09-11 04:08:57,339 autoreload 12748 17088 C:\Users\HOME\PycharmProjects\contabilidad\inventory\views.py changed, reloading.
+INFO 2025-09-11 04:08:57,657 autoreload 1524 9036 C:\Users\HOME\PycharmProjects\contabilidad\inventory\views.py changed, reloading.
+INFO 2025-09-11 04:08:59,058 autoreload 5920 3876 Watching for file changes with StatReloader
+INFO 2025-09-11 04:08:59,125 autoreload 17400 14384 Watching for file changes with StatReloader
+INFO 2025-09-11 04:08:59,474 autoreload 20256 6132 Watching for file changes with StatReloader
+INFO 2025-09-11 04:09:14,193 autoreload 5920 3876 C:\Users\HOME\PycharmProjects\contabilidad\inventory\views.py changed, reloading.
+INFO 2025-09-11 04:09:14,252 autoreload 17400 14384 C:\Users\HOME\PycharmProjects\contabilidad\inventory\views.py changed, reloading.
+INFO 2025-09-11 04:09:14,277 autoreload 3396 16836 Watching for file changes with StatReloader
+INFO 2025-09-11 04:09:14,517 autoreload 20256 6132 C:\Users\HOME\PycharmProjects\contabilidad\inventory\views.py changed, reloading.
+INFO 2025-09-11 04:09:16,006 autoreload 24944 11144 Watching for file changes with StatReloader
+INFO 2025-09-11 04:09:16,098 autoreload 17396 16000 Watching for file changes with StatReloader
+INFO 2025-09-11 04:09:16,382 autoreload 7492 12776 Watching for file changes with StatReloader
+INFO 2025-09-11 04:09:24,107 autoreload 3396 16836 C:\Users\HOME\PycharmProjects\contabilidad\inventory\views.py changed, reloading.
+INFO 2025-09-11 04:09:24,492 autoreload 17396 16000 C:\Users\HOME\PycharmProjects\contabilidad\inventory\views.py changed, reloading.
+INFO 2025-09-11 04:09:24,508 autoreload 24944 11144 C:\Users\HOME\PycharmProjects\contabilidad\inventory\views.py changed, reloading.
+INFO 2025-09-11 04:09:24,510 autoreload 7492 12776 C:\Users\HOME\PycharmProjects\contabilidad\inventory\views.py changed, reloading.
+INFO 2025-09-11 04:09:26,059 autoreload 26576 25616 Watching for file changes with StatReloader
+INFO 2025-09-11 04:09:26,480 autoreload 13992 23332 Watching for file changes with StatReloader
+INFO 2025-09-11 04:09:26,489 autoreload 19072 14900 Watching for file changes with StatReloader
+INFO 2025-09-11 04:09:26,498 autoreload 15336 2096 Watching for file changes with StatReloader
+INFO 2025-09-11 04:09:39,664 autoreload 26576 25616 C:\Users\HOME\PycharmProjects\contabilidad\accounting\models.py changed, reloading.
+INFO 2025-09-11 04:09:40,165 autoreload 13992 23332 C:\Users\HOME\PycharmProjects\contabilidad\accounting\models.py changed, reloading.
+INFO 2025-09-11 04:09:40,180 autoreload 19072 14900 C:\Users\HOME\PycharmProjects\contabilidad\accounting\models.py changed, reloading.
+INFO 2025-09-11 04:09:40,223 autoreload 15336 2096 C:\Users\HOME\PycharmProjects\contabilidad\accounting\models.py changed, reloading.
+INFO 2025-09-11 04:09:41,623 autoreload 18640 11196 Watching for file changes with StatReloader
+INFO 2025-09-11 04:09:42,324 autoreload 22544 11624 Watching for file changes with StatReloader
+INFO 2025-09-11 04:09:42,364 autoreload 13156 12648 Watching for file changes with StatReloader
+INFO 2025-09-11 04:09:42,388 autoreload 21708 24852 Watching for file changes with StatReloader
+INFO 2025-09-11 04:09:52,570 autoreload 18640 11196 C:\Users\HOME\PycharmProjects\contabilidad\accounts_receivable\models_customer.py changed, reloading.
+INFO 2025-09-11 04:09:52,956 autoreload 22544 11624 C:\Users\HOME\PycharmProjects\contabilidad\accounts_receivable\models_customer.py changed, reloading.
+INFO 2025-09-11 04:09:53,024 autoreload 13156 12648 C:\Users\HOME\PycharmProjects\contabilidad\accounts_receivable\models_customer.py changed, reloading.
+INFO 2025-09-11 04:09:53,068 autoreload 21708 24852 C:\Users\HOME\PycharmProjects\contabilidad\accounts_receivable\models_customer.py changed, reloading.
+INFO 2025-09-11 04:09:54,861 autoreload 10488 22688 Watching for file changes with StatReloader
+INFO 2025-09-11 04:09:55,169 autoreload 7880 19380 Watching for file changes with StatReloader
+INFO 2025-09-11 04:09:55,202 autoreload 20748 25380 Watching for file changes with StatReloader
+INFO 2025-09-11 04:09:55,218 autoreload 12032 18092 Watching for file changes with StatReloader
+INFO 2025-09-11 04:10:26,622 autoreload 10488 22688 C:\Users\HOME\PycharmProjects\contabilidad\contabilidad_multiempresa\settings.py changed, reloading.
+INFO 2025-09-11 04:10:26,866 autoreload 20748 25380 C:\Users\HOME\PycharmProjects\contabilidad\contabilidad_multiempresa\settings.py changed, reloading.
+INFO 2025-09-11 04:10:26,873 autoreload 12032 18092 C:\Users\HOME\PycharmProjects\contabilidad\contabilidad_multiempresa\settings.py changed, reloading.
+INFO 2025-09-11 04:10:26,881 autoreload 7880 19380 C:\Users\HOME\PycharmProjects\contabilidad\contabilidad_multiempresa\settings.py changed, reloading.
+INFO 2025-09-11 04:10:28,678 autoreload 22252 7888 Watching for file changes with StatReloader
+INFO 2025-09-11 04:10:28,879 autoreload 5920 5960 Watching for file changes with StatReloader
+INFO 2025-09-11 04:10:28,881 autoreload 3668 17476 Watching for file changes with StatReloader
+INFO 2025-09-11 04:10:28,901 autoreload 10372 17004 Watching for file changes with StatReloader
+INFO 2025-09-11 04:10:34,052 autoreload 22252 7888 C:\Users\HOME\PycharmProjects\contabilidad\contabilidad_multiempresa\settings.py changed, reloading.
+INFO 2025-09-11 04:10:34,211 autoreload 3668 17476 C:\Users\HOME\PycharmProjects\contabilidad\contabilidad_multiempresa\settings.py changed, reloading.
+INFO 2025-09-11 04:10:34,235 autoreload 5920 5960 C:\Users\HOME\PycharmProjects\contabilidad\contabilidad_multiempresa\settings.py changed, reloading.
+INFO 2025-09-11 04:10:34,239 autoreload 10372 17004 C:\Users\HOME\PycharmProjects\contabilidad\contabilidad_multiempresa\settings.py changed, reloading.
+INFO 2025-09-11 04:10:35,753 autoreload 22928 19072 Watching for file changes with StatReloader
+INFO 2025-09-11 04:10:35,980 autoreload 7076 9132 Watching for file changes with StatReloader
+INFO 2025-09-11 04:10:35,990 autoreload 19864 6708 Watching for file changes with StatReloader
+INFO 2025-09-11 04:10:35,992 autoreload 25248 11564 Watching for file changes with StatReloader
+INFO 2025-09-11 04:11:19,171 autoreload 22928 19072 C:\Users\HOME\PycharmProjects\contabilidad\accounting\models_accounts.py changed, reloading.
+INFO 2025-09-11 04:11:19,467 autoreload 7076 9132 C:\Users\HOME\PycharmProjects\contabilidad\accounting\models_accounts.py changed, reloading.
+INFO 2025-09-11 04:11:19,477 autoreload 19864 6708 C:\Users\HOME\PycharmProjects\contabilidad\accounting\models_accounts.py changed, reloading.
+INFO 2025-09-11 04:11:19,483 autoreload 25248 11564 C:\Users\HOME\PycharmProjects\contabilidad\accounting\models_accounts.py changed, reloading.
+INFO 2025-09-11 04:11:20,976 autoreload 23168 11648 Watching for file changes with StatReloader
+INFO 2025-09-11 04:11:21,396 autoreload 22376 17940 Watching for file changes with StatReloader
+INFO 2025-09-11 04:11:21,411 autoreload 19484 11200 Watching for file changes with StatReloader
+INFO 2025-09-11 04:11:21,413 autoreload 19388 16296 Watching for file changes with StatReloader
+INFO 2025-09-11 04:11:30,284 autoreload 23168 11648 C:\Users\HOME\PycharmProjects\contabilidad\contabilidad_multiempresa\settings.py changed, reloading.
+INFO 2025-09-11 04:11:30,886 autoreload 19388 16296 C:\Users\HOME\PycharmProjects\contabilidad\contabilidad_multiempresa\settings.py changed, reloading.
+INFO 2025-09-11 04:11:30,924 autoreload 22376 17940 C:\Users\HOME\PycharmProjects\contabilidad\contabilidad_multiempresa\settings.py changed, reloading.
+INFO 2025-09-11 04:11:30,927 autoreload 19484 11200 C:\Users\HOME\PycharmProjects\contabilidad\contabilidad_multiempresa\settings.py changed, reloading.
+INFO 2025-09-11 04:11:31,984 autoreload 18476 7408 Watching for file changes with StatReloader
+INFO 2025-09-11 04:11:32,814 autoreload 21088 18560 Watching for file changes with StatReloader
+INFO 2025-09-11 04:11:32,883 autoreload 10888 24400 Watching for file changes with StatReloader
+INFO 2025-09-11 04:11:32,890 autoreload 9856 7828 Watching for file changes with StatReloader
+INFO 2025-09-11 04:12:25,128 autoreload 21088 18560 C:\Users\HOME\PycharmProjects\contabilidad\third_parties\forms.py changed, reloading.
+INFO 2025-09-11 04:12:25,250 autoreload 10888 24400 C:\Users\HOME\PycharmProjects\contabilidad\third_parties\forms.py changed, reloading.
+INFO 2025-09-11 04:12:25,264 autoreload 9856 7828 C:\Users\HOME\PycharmProjects\contabilidad\third_parties\forms.py changed, reloading.
+INFO 2025-09-11 04:12:25,315 autoreload 18476 7408 C:\Users\HOME\PycharmProjects\contabilidad\third_parties\forms.py changed, reloading.
+INFO 2025-09-11 04:12:27,760 autoreload 22292 18324 Watching for file changes with StatReloader
+INFO 2025-09-11 04:12:27,875 autoreload 15120 12320 Watching for file changes with StatReloader
+INFO 2025-09-11 04:12:27,896 autoreload 12512 23812 Watching for file changes with StatReloader
+INFO 2025-09-11 04:12:27,929 autoreload 8028 17312 Watching for file changes with StatReloader
+INFO 2025-09-11 04:13:05,631 autoreload 22292 18324 C:\Users\HOME\PycharmProjects\contabilidad\core\views.py changed, reloading.
+INFO 2025-09-11 04:13:05,742 autoreload 12512 23812 C:\Users\HOME\PycharmProjects\contabilidad\core\views.py changed, reloading.
+INFO 2025-09-11 04:13:05,744 autoreload 15120 12320 C:\Users\HOME\PycharmProjects\contabilidad\core\views.py changed, reloading.
+INFO 2025-09-11 04:13:05,817 autoreload 8028 17312 C:\Users\HOME\PycharmProjects\contabilidad\core\views.py changed, reloading.
+INFO 2025-09-11 04:13:08,553 autoreload 7432 16136 Watching for file changes with StatReloader
+INFO 2025-09-11 04:13:08,603 autoreload 18960 3236 Watching for file changes with StatReloader
+INFO 2025-09-11 04:13:08,607 autoreload 14664 23088 Watching for file changes with StatReloader
+INFO 2025-09-11 04:13:08,659 autoreload 6528 25524 Watching for file changes with StatReloader
+INFO 2025-09-11 04:13:16,530 autoreload 7432 16136 C:\Users\HOME\PycharmProjects\contabilidad\core\views.py changed, reloading.
+INFO 2025-09-11 04:13:16,553 autoreload 14664 23088 C:\Users\HOME\PycharmProjects\contabilidad\core\views.py changed, reloading.
+INFO 2025-09-11 04:13:16,584 autoreload 18960 3236 C:\Users\HOME\PycharmProjects\contabilidad\core\views.py changed, reloading.
+INFO 2025-09-11 04:13:16,601 autoreload 6528 25524 C:\Users\HOME\PycharmProjects\contabilidad\core\views.py changed, reloading.
+INFO 2025-09-11 04:13:18,832 autoreload 9568 16564 Watching for file changes with StatReloader
+INFO 2025-09-11 04:13:18,862 autoreload 1800 9996 Watching for file changes with StatReloader
+INFO 2025-09-11 04:13:18,862 autoreload 10920 10824 Watching for file changes with StatReloader
+INFO 2025-09-11 04:13:18,867 autoreload 16772 24436 Watching for file changes with StatReloader
+INFO 2025-09-11 04:14:42,943 autoreload 1800 9996 C:\Users\HOME\PycharmProjects\contabilidad\accounting\views.py changed, reloading.
+INFO 2025-09-11 04:14:42,966 autoreload 10920 10824 C:\Users\HOME\PycharmProjects\contabilidad\accounting\views.py changed, reloading.
+INFO 2025-09-11 04:14:42,973 autoreload 16772 24436 C:\Users\HOME\PycharmProjects\contabilidad\accounting\views.py changed, reloading.
+INFO 2025-09-11 04:14:42,986 autoreload 9568 16564 C:\Users\HOME\PycharmProjects\contabilidad\accounting\views.py changed, reloading.
+INFO 2025-09-11 04:14:45,410 autoreload 1872 21060 Watching for file changes with StatReloader
+INFO 2025-09-11 04:14:45,414 autoreload 10512 16588 Watching for file changes with StatReloader
+INFO 2025-09-11 04:14:45,459 autoreload 21212 21180 Watching for file changes with StatReloader
+INFO 2025-09-11 04:20:26,057 autoreload 16360 21184 Watching for file changes with StatReloader
+INFO 2025-09-11 04:21:04,599 autoreload 22748 19984 Watching for file changes with StatReloader
+INFO 2025-09-11 04:21:56,543 autoreload 23392 5924 Watching for file changes with StatReloader
+ERROR 2025-09-11 04:23:21,910 log 14240 8524 Internal Server Error: /
+Traceback (most recent call last):
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\HOME\PycharmProjects\contabilidad\core\views.py", line 38, in dashboard
+    return render(request, 'core/dashboard.html', context)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\backends\django.py", line 107, in render
+    return self.template.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 171, in render
+    return self._render(context)
+           ~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 1008, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 969, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\loader_tags.py", line 159, in render
+    return compiled_parent._render(context)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 1008, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 969, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\defaulttags.py", line 480, in render
+    url = reverse(view_name, args=args, kwargs=kwargs, current_app=current_app)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\urls\base.py", line 88, in reverse
+    return resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\urls\resolvers.py", line 831, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'core_costcenter_changelist' not found. 'core_costcenter_changelist' is not a valid view function or pattern name.
+WARNING 2025-09-11 04:23:22,269 log 14240 8524 Not Found: /favicon.ico
+ERROR 2025-09-11 04:24:33,868 log 14240 8524 Internal Server Error: /
+Traceback (most recent call last):
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\HOME\PycharmProjects\contabilidad\core\views.py", line 38, in dashboard
+    return render(request, 'core/dashboard.html', context)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\backends\django.py", line 107, in render
+    return self.template.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 171, in render
+    return self._render(context)
+           ~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 1008, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 969, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\loader_tags.py", line 159, in render
+    return compiled_parent._render(context)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 1008, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 969, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\defaulttags.py", line 480, in render
+    url = reverse(view_name, args=args, kwargs=kwargs, current_app=current_app)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\urls\base.py", line 88, in reverse
+    return resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\urls\resolvers.py", line 831, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'core_costcenter_changelist' not found. 'core_costcenter_changelist' is not a valid view function or pattern name.
+ERROR 2025-09-11 04:24:59,989 log 14240 8524 Internal Server Error: /
+Traceback (most recent call last):
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\HOME\PycharmProjects\contabilidad\core\views.py", line 38, in dashboard
+    return render(request, 'core/dashboard.html', context)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\backends\django.py", line 107, in render
+    return self.template.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 171, in render
+    return self._render(context)
+           ~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 1008, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 969, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\loader_tags.py", line 159, in render
+    return compiled_parent._render(context)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 1008, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 969, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\defaulttags.py", line 480, in render
+    url = reverse(view_name, args=args, kwargs=kwargs, current_app=current_app)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\urls\base.py", line 88, in reverse
+    return resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\urls\resolvers.py", line 831, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'core_costcenter_changelist' not found. 'core_costcenter_changelist' is not a valid view function or pattern name.
+ERROR 2025-09-11 04:25:02,046 log 14240 8524 Internal Server Error: /
+Traceback (most recent call last):
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\HOME\PycharmProjects\contabilidad\core\views.py", line 38, in dashboard
+    return render(request, 'core/dashboard.html', context)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\backends\django.py", line 107, in render
+    return self.template.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 171, in render
+    return self._render(context)
+           ~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 1008, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 969, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\loader_tags.py", line 159, in render
+    return compiled_parent._render(context)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 1008, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 969, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\defaulttags.py", line 480, in render
+    url = reverse(view_name, args=args, kwargs=kwargs, current_app=current_app)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\urls\base.py", line 88, in reverse
+    return resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\urls\resolvers.py", line 831, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'core_costcenter_changelist' not found. 'core_costcenter_changelist' is not a valid view function or pattern name.
+ERROR 2025-09-11 04:25:44,938 log 14240 8524 Internal Server Error: /
+Traceback (most recent call last):
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\HOME\PycharmProjects\contabilidad\core\views.py", line 38, in dashboard
+    return render(request, 'core/dashboard.html', context)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\backends\django.py", line 107, in render
+    return self.template.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 171, in render
+    return self._render(context)
+           ~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 1008, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 969, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\loader_tags.py", line 159, in render
+    return compiled_parent._render(context)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 1008, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 969, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\defaulttags.py", line 480, in render
+    url = reverse(view_name, args=args, kwargs=kwargs, current_app=current_app)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\urls\base.py", line 88, in reverse
+    return resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\urls\resolvers.py", line 831, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'core_costcenter_changelist' not found. 'core_costcenter_changelist' is not a valid view function or pattern name.
+ERROR 2025-09-11 04:25:45,946 log 14240 8524 Internal Server Error: /
+Traceback (most recent call last):
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\HOME\PycharmProjects\contabilidad\core\views.py", line 38, in dashboard
+    return render(request, 'core/dashboard.html', context)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\backends\django.py", line 107, in render
+    return self.template.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 171, in render
+    return self._render(context)
+           ~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 1008, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 969, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\loader_tags.py", line 159, in render
+    return compiled_parent._render(context)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 1008, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 969, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\defaulttags.py", line 480, in render
+    url = reverse(view_name, args=args, kwargs=kwargs, current_app=current_app)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\urls\base.py", line 88, in reverse
+    return resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\urls\resolvers.py", line 831, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'core_costcenter_changelist' not found. 'core_costcenter_changelist' is not a valid view function or pattern name.
+INFO 2025-09-11 04:25:46,615 autoreload 1872 21060 C:\Users\HOME\PycharmProjects\contabilidad\treasury\admin.py changed, reloading.
+INFO 2025-09-11 04:25:46,617 autoreload 17024 22892 C:\Users\HOME\PycharmProjects\contabilidad\treasury\admin.py changed, reloading.
+INFO 2025-09-11 04:25:46,872 autoreload 10512 16588 C:\Users\HOME\PycharmProjects\contabilidad\treasury\admin.py changed, reloading.
+INFO 2025-09-11 04:25:47,435 autoreload 22748 19984 C:\Users\HOME\PycharmProjects\contabilidad\treasury\admin.py changed, reloading.
+INFO 2025-09-11 04:25:50,877 autoreload 4684 24388 Watching for file changes with StatReloader
+INFO 2025-09-11 04:25:50,902 autoreload 24212 11276 Watching for file changes with StatReloader
+INFO 2025-09-11 04:25:51,259 autoreload 22360 6652 Watching for file changes with StatReloader
+INFO 2025-09-11 04:25:51,638 autoreload 11040 19192 Watching for file changes with StatReloader
+ERROR 2025-09-11 04:26:22,266 exception 3828 22328 Invalid HTTP_HOST header: 'testserver'. You may need to add 'testserver' to ALLOWED_HOSTS.
+Traceback (most recent call last):
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\utils\deprecation.py", line 128, in __call__
+    response = self.process_request(request)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\middleware\security.py", line 28, in process_request
+    host = self.redirect_host or request.get_host()
+                                 ~~~~~~~~~~~~~~~~^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\http\request.py", line 151, in get_host
+    raise DisallowedHost(msg)
+django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header: 'testserver'. You may need to add 'testserver' to ALLOWED_HOSTS.
+WARNING 2025-09-11 04:26:23,111 log 3828 22328 Bad Request: /
+INFO 2025-09-11 04:26:37,875 autoreload 24212 11276 C:\Users\HOME\PycharmProjects\contabilidad\contabilidad_multiempresa\settings.py changed, reloading.
+INFO 2025-09-11 04:26:37,883 autoreload 4684 24388 C:\Users\HOME\PycharmProjects\contabilidad\contabilidad_multiempresa\settings.py changed, reloading.
+INFO 2025-09-11 04:26:37,921 autoreload 22360 6652 C:\Users\HOME\PycharmProjects\contabilidad\contabilidad_multiempresa\settings.py changed, reloading.
+INFO 2025-09-11 04:26:38,064 autoreload 11040 19192 C:\Users\HOME\PycharmProjects\contabilidad\contabilidad_multiempresa\settings.py changed, reloading.
+INFO 2025-09-11 04:26:40,136 autoreload 5256 3852 Watching for file changes with StatReloader
+INFO 2025-09-11 04:26:40,159 autoreload 21912 6536 Watching for file changes with StatReloader
+INFO 2025-09-11 04:26:40,212 autoreload 10404 10568 Watching for file changes with StatReloader
+INFO 2025-09-11 04:26:40,426 autoreload 12492 15916 Watching for file changes with StatReloader
+ERROR 2025-09-11 04:27:00,531 log 7828 18072 Internal Server Error: /
+Traceback (most recent call last):
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\HOME\PycharmProjects\contabilidad\core\views.py", line 24, in dashboard
+    return render(request, 'core/login.html')
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\backends\django.py", line 107, in render
+    return self.template.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 171, in render
+    return self._render(context)
+           ~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 1008, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 969, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\loader_tags.py", line 159, in render
+    return compiled_parent._render(context)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 1008, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 969, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\defaulttags.py", line 480, in render
+    url = reverse(view_name, args=args, kwargs=kwargs, current_app=current_app)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\urls\base.py", line 88, in reverse
+    return resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\urls\resolvers.py", line 831, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'taxes_taxdeclaration_changelist' not found. 'taxes_taxdeclaration_changelist' is not a valid view function or pattern name.
+INFO 2025-09-11 04:27:45,455 autoreload 12492 15916 C:\Users\HOME\PycharmProjects\contabilidad\taxes\admin.py changed, reloading.
+INFO 2025-09-11 04:27:45,482 autoreload 21912 6536 C:\Users\HOME\PycharmProjects\contabilidad\taxes\admin.py changed, reloading.
+INFO 2025-09-11 04:27:45,502 autoreload 10404 10568 C:\Users\HOME\PycharmProjects\contabilidad\taxes\admin.py changed, reloading.
+INFO 2025-09-11 04:27:45,511 autoreload 5256 3852 C:\Users\HOME\PycharmProjects\contabilidad\taxes\admin.py changed, reloading.
+INFO 2025-09-11 04:27:47,768 autoreload 25948 2408 Watching for file changes with StatReloader
+INFO 2025-09-11 04:27:47,769 autoreload 11048 21608 Watching for file changes with StatReloader
+INFO 2025-09-11 04:27:47,786 autoreload 20692 25332 Watching for file changes with StatReloader
+INFO 2025-09-11 04:27:47,791 autoreload 6544 1816 Watching for file changes with StatReloader
+ERROR 2025-09-11 04:28:11,076 log 19952 9176 Internal Server Error: /
+Traceback (most recent call last):
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\HOME\PycharmProjects\contabilidad\core\views.py", line 24, in dashboard
+    return render(request, 'core/login.html')
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\backends\django.py", line 107, in render
+    return self.template.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 171, in render
+    return self._render(context)
+           ~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 1008, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 969, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\loader_tags.py", line 159, in render
+    return compiled_parent._render(context)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 1008, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 969, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\defaulttags.py", line 480, in render
+    url = reverse(view_name, args=args, kwargs=kwargs, current_app=current_app)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\urls\base.py", line 88, in reverse
+    return resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\urls\resolvers.py", line 831, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'inventory_productcategory_changelist' not found. 'inventory_productcategory_changelist' is not a valid view function or pattern name.
+INFO 2025-09-11 04:28:48,978 autoreload 11048 21608 C:\Users\HOME\PycharmProjects\contabilidad\inventory\admin.py changed, reloading.
+INFO 2025-09-11 04:28:49,782 autoreload 6544 1816 C:\Users\HOME\PycharmProjects\contabilidad\inventory\admin.py changed, reloading.
+INFO 2025-09-11 04:28:49,801 autoreload 25948 2408 C:\Users\HOME\PycharmProjects\contabilidad\inventory\admin.py changed, reloading.
+INFO 2025-09-11 04:28:49,811 autoreload 20692 25332 C:\Users\HOME\PycharmProjects\contabilidad\inventory\admin.py changed, reloading.
+INFO 2025-09-11 04:28:50,419 autoreload 23568 8320 Watching for file changes with StatReloader
+INFO 2025-09-11 04:28:51,472 autoreload 15016 6320 Watching for file changes with StatReloader
+INFO 2025-09-11 04:28:51,482 autoreload 12716 19260 Watching for file changes with StatReloader
+INFO 2025-09-11 04:28:51,508 autoreload 15232 22984 Watching for file changes with StatReloader
+INFO 2025-09-11 04:29:15,106 autoreload 15232 22984 C:\Users\HOME\PycharmProjects\contabilidad\fixed_assets\admin.py changed, reloading.
+INFO 2025-09-11 04:29:15,107 autoreload 15016 6320 C:\Users\HOME\PycharmProjects\contabilidad\fixed_assets\admin.py changed, reloading.
+INFO 2025-09-11 04:29:15,365 autoreload 23568 8320 C:\Users\HOME\PycharmProjects\contabilidad\fixed_assets\admin.py changed, reloading.
+INFO 2025-09-11 04:29:15,791 autoreload 12716 19260 C:\Users\HOME\PycharmProjects\contabilidad\fixed_assets\admin.py changed, reloading.
+INFO 2025-09-11 04:29:16,790 autoreload 9240 16636 Watching for file changes with StatReloader
+INFO 2025-09-11 04:29:16,799 autoreload 26228 14264 Watching for file changes with StatReloader
+INFO 2025-09-11 04:29:17,014 autoreload 18480 22204 Watching for file changes with StatReloader
+INFO 2025-09-11 04:29:17,359 autoreload 15080 15972 Watching for file changes with StatReloader
+ERROR 2025-09-11 04:29:29,143 log 1208 8688 Internal Server Error: /
+Traceback (most recent call last):
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\HOME\PycharmProjects\contabilidad\core\views.py", line 24, in dashboard
+    return render(request, 'core/login.html')
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\backends\django.py", line 107, in render
+    return self.template.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 171, in render
+    return self._render(context)
+           ~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 1008, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 969, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\loader_tags.py", line 159, in render
+    return compiled_parent._render(context)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 1008, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 969, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\defaulttags.py", line 480, in render
+    url = reverse(view_name, args=args, kwargs=kwargs, current_app=current_app)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\urls\base.py", line 88, in reverse
+    return resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\urls\resolvers.py", line 831, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'public_sector_budget_changelist' not found. 'public_sector_budget_changelist' is not a valid view function or pattern name.
+ERROR 2025-09-11 04:30:40,035 log 14240 22604 Internal Server Error: /
+Traceback (most recent call last):
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\HOME\PycharmProjects\contabilidad\core\views.py", line 38, in dashboard
+    return render(request, 'core/dashboard.html', context)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\backends\django.py", line 107, in render
+    return self.template.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 171, in render
+    return self._render(context)
+           ~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 1008, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 969, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\loader_tags.py", line 159, in render
+    return compiled_parent._render(context)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 1008, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 969, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\defaulttags.py", line 480, in render
+    url = reverse(view_name, args=args, kwargs=kwargs, current_app=current_app)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\urls\base.py", line 88, in reverse
+    return resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\urls\resolvers.py", line 831, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'core_costcenter_changelist' not found. 'core_costcenter_changelist' is not a valid view function or pattern name.
+ERROR 2025-09-11 04:30:41,033 log 14240 22604 Internal Server Error: /
+Traceback (most recent call last):
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\HOME\PycharmProjects\contabilidad\core\views.py", line 38, in dashboard
+    return render(request, 'core/dashboard.html', context)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\backends\django.py", line 107, in render
+    return self.template.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 171, in render
+    return self._render(context)
+           ~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 1008, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 969, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\loader_tags.py", line 159, in render
+    return compiled_parent._render(context)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 1008, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 969, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\defaulttags.py", line 480, in render
+    url = reverse(view_name, args=args, kwargs=kwargs, current_app=current_app)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\urls\base.py", line 88, in reverse
+    return resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\urls\resolvers.py", line 831, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'core_costcenter_changelist' not found. 'core_costcenter_changelist' is not a valid view function or pattern name.
+ERROR 2025-09-11 04:30:41,857 log 14240 22604 Internal Server Error: /
+Traceback (most recent call last):
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\HOME\PycharmProjects\contabilidad\core\views.py", line 38, in dashboard
+    return render(request, 'core/dashboard.html', context)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\backends\django.py", line 107, in render
+    return self.template.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 171, in render
+    return self._render(context)
+           ~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 1008, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 969, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\loader_tags.py", line 159, in render
+    return compiled_parent._render(context)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 1008, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 969, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\defaulttags.py", line 480, in render
+    url = reverse(view_name, args=args, kwargs=kwargs, current_app=current_app)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\urls\base.py", line 88, in reverse
+    return resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\urls\resolvers.py", line 831, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'core_costcenter_changelist' not found. 'core_costcenter_changelist' is not a valid view function or pattern name.
+INFO 2025-09-11 04:31:52,078 autoreload 9240 16636 C:\Users\HOME\PycharmProjects\contabilidad\taxes\admin.py changed, reloading.
+INFO 2025-09-11 04:31:52,087 autoreload 26228 14264 C:\Users\HOME\PycharmProjects\contabilidad\taxes\admin.py changed, reloading.
+INFO 2025-09-11 04:31:52,409 autoreload 15080 15972 C:\Users\HOME\PycharmProjects\contabilidad\taxes\admin.py changed, reloading.
+INFO 2025-09-11 04:31:53,162 autoreload 24888 15956 Watching for file changes with StatReloader
+INFO 2025-09-11 04:31:53,163 autoreload 10948 18968 Watching for file changes with StatReloader
+INFO 2025-09-11 04:31:53,465 autoreload 14132 18920 Watching for file changes with StatReloader
+INFO 2025-09-11 04:32:03,517 autoreload 24888 15956 C:\Users\HOME\PycharmProjects\contabilidad\inventory\admin.py changed, reloading.
+INFO 2025-09-11 04:32:03,519 autoreload 10948 18968 C:\Users\HOME\PycharmProjects\contabilidad\inventory\admin.py changed, reloading.
+INFO 2025-09-11 04:32:03,737 autoreload 14132 18920 C:\Users\HOME\PycharmProjects\contabilidad\inventory\admin.py changed, reloading.
+INFO 2025-09-11 04:32:04,521 autoreload 9500 12404 Watching for file changes with StatReloader
+INFO 2025-09-11 04:32:04,521 autoreload 6384 22496 Watching for file changes with StatReloader
+INFO 2025-09-11 04:32:04,703 autoreload 13788 22212 Watching for file changes with StatReloader
+INFO 2025-09-11 04:32:11,697 autoreload 6384 22496 C:\Users\HOME\PycharmProjects\contabilidad\fixed_assets\admin.py changed, reloading.
+INFO 2025-09-11 04:32:11,836 autoreload 13788 22212 C:\Users\HOME\PycharmProjects\contabilidad\fixed_assets\admin.py changed, reloading.
+INFO 2025-09-11 04:32:12,045 autoreload 9500 12404 C:\Users\HOME\PycharmProjects\contabilidad\fixed_assets\admin.py changed, reloading.
+INFO 2025-09-11 04:32:12,906 autoreload 21140 24672 Watching for file changes with StatReloader
+INFO 2025-09-11 04:32:13,030 autoreload 22432 18868 Watching for file changes with StatReloader
+INFO 2025-09-11 04:32:13,178 autoreload 17880 14732 Watching for file changes with StatReloader
+INFO 2025-09-11 04:32:21,833 autoreload 22808 10464 Watching for file changes with StatReloader
+INFO 2025-09-11 04:32:36,311 autoreload 21140 24672 C:\Users\HOME\PycharmProjects\contabilidad\inventory\admin.py changed, reloading.
+INFO 2025-09-11 04:32:36,386 autoreload 22432 18868 C:\Users\HOME\PycharmProjects\contabilidad\inventory\admin.py changed, reloading.
+INFO 2025-09-11 04:32:36,498 autoreload 22808 10464 C:\Users\HOME\PycharmProjects\contabilidad\inventory\admin.py changed, reloading.
+INFO 2025-09-11 04:32:37,182 autoreload 17880 14732 C:\Users\HOME\PycharmProjects\contabilidad\inventory\admin.py changed, reloading.
+INFO 2025-09-11 04:32:38,289 autoreload 10888 4704 Watching for file changes with StatReloader
+INFO 2025-09-11 04:32:38,398 autoreload 1792 3376 Watching for file changes with StatReloader
+INFO 2025-09-11 04:32:38,483 autoreload 1188 11232 Watching for file changes with StatReloader
+INFO 2025-09-11 04:32:39,138 autoreload 18592 20100 Watching for file changes with StatReloader
+INFO 2025-09-11 04:33:06,353 autoreload 18592 20100 C:\Users\HOME\PycharmProjects\contabilidad\inventory\admin.py changed, reloading.
+INFO 2025-09-11 04:33:06,846 autoreload 1792 3376 C:\Users\HOME\PycharmProjects\contabilidad\inventory\admin.py changed, reloading.
+INFO 2025-09-11 04:33:06,873 autoreload 10888 4704 C:\Users\HOME\PycharmProjects\contabilidad\inventory\admin.py changed, reloading.
+INFO 2025-09-11 04:33:06,914 autoreload 1188 11232 C:\Users\HOME\PycharmProjects\contabilidad\inventory\admin.py changed, reloading.
+INFO 2025-09-11 04:33:08,151 autoreload 2424 15280 Watching for file changes with StatReloader
+INFO 2025-09-11 04:33:08,781 autoreload 16536 14848 Watching for file changes with StatReloader
+INFO 2025-09-11 04:33:08,807 autoreload 17612 11764 Watching for file changes with StatReloader
+INFO 2025-09-11 04:33:08,846 autoreload 19100 12304 Watching for file changes with StatReloader
+INFO 2025-09-11 04:33:50,500 autoreload 2308 23988 Watching for file changes with StatReloader
+INFO 2025-09-11 04:35:09,632 autoreload 16536 14848 C:\Users\HOME\PycharmProjects\contabilidad\inventory\admin.py changed, reloading.
+INFO 2025-09-11 04:35:09,889 autoreload 19100 12304 C:\Users\HOME\PycharmProjects\contabilidad\inventory\admin.py changed, reloading.
+INFO 2025-09-11 04:35:09,967 autoreload 2424 15280 C:\Users\HOME\PycharmProjects\contabilidad\inventory\admin.py changed, reloading.
+INFO 2025-09-11 04:35:10,002 autoreload 2308 23988 C:\Users\HOME\PycharmProjects\contabilidad\inventory\admin.py changed, reloading.
+INFO 2025-09-11 04:35:11,945 autoreload 23148 3732 Watching for file changes with StatReloader
+INFO 2025-09-11 04:35:12,169 autoreload 8404 13456 Watching for file changes with StatReloader
+INFO 2025-09-11 04:35:12,224 autoreload 17328 15956 Watching for file changes with StatReloader
+INFO 2025-09-11 04:35:12,240 autoreload 24012 15356 Watching for file changes with StatReloader
+INFO 2025-09-11 04:35:17,429 autoreload 23148 3732 C:\Users\HOME\PycharmProjects\contabilidad\inventory\admin.py changed, reloading.
+INFO 2025-09-11 04:35:17,624 autoreload 8404 13456 C:\Users\HOME\PycharmProjects\contabilidad\inventory\admin.py changed, reloading.
+INFO 2025-09-11 04:35:17,676 autoreload 24012 15356 C:\Users\HOME\PycharmProjects\contabilidad\inventory\admin.py changed, reloading.
+INFO 2025-09-11 04:35:17,690 autoreload 17328 15956 C:\Users\HOME\PycharmProjects\contabilidad\inventory\admin.py changed, reloading.
+INFO 2025-09-11 04:35:20,185 autoreload 9344 15156 Watching for file changes with StatReloader
+INFO 2025-09-11 04:35:20,241 autoreload 17444 16140 Watching for file changes with StatReloader
+INFO 2025-09-11 04:35:20,287 autoreload 19768 6888 Watching for file changes with StatReloader
+INFO 2025-09-11 04:35:20,323 autoreload 7364 11036 Watching for file changes with StatReloader
+ERROR 2025-09-11 04:35:42,634 log 14240 15652 Internal Server Error: /
+Traceback (most recent call last):
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\HOME\PycharmProjects\contabilidad\core\views.py", line 24, in dashboard
+    return render(request, 'core/login.html')
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\backends\django.py", line 107, in render
+    return self.template.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 171, in render
+    return self._render(context)
+           ~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 1008, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 969, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\loader_tags.py", line 159, in render
+    return compiled_parent._render(context)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 1008, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 969, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\defaulttags.py", line 480, in render
+    url = reverse(view_name, args=args, kwargs=kwargs, current_app=current_app)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\urls\base.py", line 88, in reverse
+    return resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\urls\resolvers.py", line 831, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'core_costcenter_changelist' not found. 'core_costcenter_changelist' is not a valid view function or pattern name.
+INFO 2025-09-11 04:38:31,382 autoreload 6604 22044 Watching for file changes with StatReloader
+ERROR 2025-09-11 04:40:35,164 log 14240 23972 Internal Server Error: /
+Traceback (most recent call last):
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\HOME\PycharmProjects\contabilidad\core\views.py", line 38, in dashboard
+    return render(request, 'core/dashboard.html', context)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\backends\django.py", line 107, in render
+    return self.template.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 171, in render
+    return self._render(context)
+           ~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 1008, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 969, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\loader_tags.py", line 159, in render
+    return compiled_parent._render(context)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 1008, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 969, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\defaulttags.py", line 480, in render
+    url = reverse(view_name, args=args, kwargs=kwargs, current_app=current_app)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\urls\base.py", line 88, in reverse
+    return resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\urls\resolvers.py", line 831, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'core_costcenter_changelist' not found. 'core_costcenter_changelist' is not a valid view function or pattern name.
+INFO 2025-09-11 04:51:48,503 autoreload 11840 26308 Watching for file changes with StatReloader
+WARNING 2025-09-11 04:55:04,180 log 14240 9928 Not Found: /api/v1/auth/login/
+WARNING 2025-09-11 04:57:11,325 log 14240 22916 Not Found: /api/v1/auth/login/
+WARNING 2025-09-11 04:57:23,253 log 14240 22916 Not Found: /api/v1/auth/login/
+WARNING 2025-09-11 05:00:08,480 log 14240 22916 Not Found: /api/v1/auth/login/
+WARNING 2025-09-11 05:00:27,288 log 14240 22916 Not Found: /api/v1/auth/login/
+WARNING 2025-09-11 05:00:29,292 log 14240 22916 Not Found: /api/v1/auth/login/
+INFO 2025-09-11 05:03:18,616 autoreload 21276 1720 Watching for file changes with StatReloader
+INFO 2025-09-11 05:09:19,631 autoreload 13652 19296 Watching for file changes with StatReloader
+INFO 2025-09-11 05:11:25,648 autoreload 15680 13420 Watching for file changes with StatReloader
+INFO 2025-09-11 05:19:38,059 autoreload 1208 8040 Watching for file changes with StatReloader
+INFO 2025-09-11 05:23:43,358 autoreload 13732 10940 Watching for file changes with StatReloader
+INFO 2025-09-11 05:24:38,653 autoreload 23752 10788 Watching for file changes with StatReloader
+INFO 2025-09-11 05:27:20,837 autoreload 2376 23356 Watching for file changes with StatReloader
+ERROR 2025-09-11 05:27:27,538 exception 2376 4668 Invalid HTTP_HOST header: '192.168.20.7:8000'. You may need to add '192.168.20.7' to ALLOWED_HOSTS.
+Traceback (most recent call last):
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\utils\deprecation.py", line 128, in __call__
+    response = self.process_request(request)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\middleware\security.py", line 28, in process_request
+    host = self.redirect_host or request.get_host()
+                                 ~~~~~~~~~~~~~~~~^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\http\request.py", line 151, in get_host
+    raise DisallowedHost(msg)
+django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header: '192.168.20.7:8000'. You may need to add '192.168.20.7' to ALLOWED_HOSTS.
+WARNING 2025-09-11 05:27:27,586 log 2376 4668 Bad Request: /
+ERROR 2025-09-11 05:27:27,611 exception 2376 14940 Invalid HTTP_HOST header: '192.168.20.7:8000'. You may need to add '192.168.20.7' to ALLOWED_HOSTS.
+Traceback (most recent call last):
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\utils\deprecation.py", line 128, in __call__
+    response = self.process_request(request)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\middleware\security.py", line 28, in process_request
+    host = self.redirect_host or request.get_host()
+                                 ~~~~~~~~~~~~~~~~^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\http\request.py", line 151, in get_host
+    raise DisallowedHost(msg)
+django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header: '192.168.20.7:8000'. You may need to add '192.168.20.7' to ALLOWED_HOSTS.
+WARNING 2025-09-11 05:27:27,612 log 2376 14940 Bad Request: /favicon.ico
+ERROR 2025-09-11 05:27:42,216 exception 2376 5908 Invalid HTTP_HOST header: '192.168.20.7:8000'. You may need to add '192.168.20.7' to ALLOWED_HOSTS.
+Traceback (most recent call last):
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\utils\deprecation.py", line 128, in __call__
+    response = self.process_request(request)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\middleware\security.py", line 28, in process_request
+    host = self.redirect_host or request.get_host()
+                                 ~~~~~~~~~~~~~~~~^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\http\request.py", line 151, in get_host
+    raise DisallowedHost(msg)
+django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header: '192.168.20.7:8000'. You may need to add '192.168.20.7' to ALLOWED_HOSTS.
+WARNING 2025-09-11 05:27:42,218 log 2376 5908 Bad Request: /
+ERROR 2025-09-11 05:27:42,255 exception 2376 5680 Invalid HTTP_HOST header: '192.168.20.7:8000'. You may need to add '192.168.20.7' to ALLOWED_HOSTS.
+Traceback (most recent call last):
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\utils\deprecation.py", line 128, in __call__
+    response = self.process_request(request)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\middleware\security.py", line 28, in process_request
+    host = self.redirect_host or request.get_host()
+                                 ~~~~~~~~~~~~~~~~^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\http\request.py", line 151, in get_host
+    raise DisallowedHost(msg)
+django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header: '192.168.20.7:8000'. You may need to add '192.168.20.7' to ALLOWED_HOSTS.
+WARNING 2025-09-11 05:27:42,256 log 2376 5680 Bad Request: /favicon.ico
+INFO 2025-09-11 05:27:52,226 autoreload 2376 23356 C:\Users\HOME\PycharmProjects\contabilidad\contabilidad_multiempresa\settings.py changed, reloading.
+INFO 2025-09-11 05:27:53,032 autoreload 14880 20520 Watching for file changes with StatReloader
+INFO 2025-09-11 05:28:02,585 autoreload 1768 12044 Watching for file changes with StatReloader
+INFO 2025-09-11 05:30:01,650 autoreload 23840 7572 Watching for file changes with StatReloader
+WARNING 2025-09-11 05:30:11,270 base 23840 18256 Session data corrupted
+WARNING 2025-09-11 05:30:11,511 base 23840 18256 Session data corrupted
+WARNING 2025-09-11 05:30:11,516 log 23840 18256 Not Found: /favicon.ico
+WARNING 2025-09-11 05:30:18,650 base 23840 18256 Session data corrupted
+WARNING 2025-09-11 05:43:39,745 log 23840 2452 Not Found: /favicon.ico
+WARNING 2025-09-11 10:35:49,624 log 23840 23948 Not Found: /budget/cdp/create/
+ERROR 2025-09-11 10:36:10,733 log 23840 23948 Internal Server Error: /budget/pac/
+Traceback (most recent call last):
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\contrib\auth\decorators.py", line 60, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\HOME\PycharmProjects\contabilidad\budget\views.py", line 493, in pac_management
+    return render(request, 'budget/pac_management.html', context)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\loader.py", line 15, in get_template
+    return engine.get_template(template_name)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\backends\django.py", line 79, in get_template
+    return Template(self.engine.get_template(template_name), self)
+                    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\engine.py", line 177, in get_template
+    template, origin = self.find_template(template_name)
+                       ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\engine.py", line 159, in find_template
+    template = loader.get_template(name, skip=skip)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\loaders\cached.py", line 57, in get_template
+    template = super().get_template(template_name, skip)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\loaders\base.py", line 28, in get_template
+    return Template(
+        contents,
+    ...<2 lines>...
+        self.engine,
+    )
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 154, in __init__
+    self.nodelist = self.compile_nodelist()
+                    ~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 196, in compile_nodelist
+    nodelist = parser.parse()
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 518, in parse
+    raise self.error(token, e)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 516, in parse
+    compiled_result = compile_func(self, token)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\loader_tags.py", line 295, in do_extends
+    nodelist = parser.parse()
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 518, in parse
+    raise self.error(token, e)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 516, in parse
+    compiled_result = compile_func(self, token)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\loader_tags.py", line 234, in do_block
+    nodelist = parser.parse(("endblock",))
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 518, in parse
+    raise self.error(token, e)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 516, in parse
+    compiled_result = compile_func(self, token)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\defaulttags.py", line 862, in do_for
+    nodelist_loop = parser.parse(
+        (
+    ...<2 lines>...
+        )
+    )
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 518, in parse
+    raise self.error(token, e)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 516, in parse
+    compiled_result = compile_func(self, token)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\defaulttags.py", line 862, in do_for
+    nodelist_loop = parser.parse(
+        (
+    ...<2 lines>...
+        )
+    )
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 489, in parse
+    raise self.error(token, e)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 487, in parse
+    filter_expression = self.compile_filter(token.contents)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 605, in compile_filter
+    return FilterExpression(token, self)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 701, in __init__
+    filter_func = parser.find_filter(filter_name)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 611, in find_filter
+    raise TemplateSyntaxError("Invalid filter: '%s'" % filter_name)
+django.template.exceptions.TemplateSyntaxError: Invalid filter: 'get_item'
+ERROR 2025-09-11 10:36:22,026 log 23840 23948 Internal Server Error: /budget/execution-report/
+Traceback (most recent call last):
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\contrib\auth\decorators.py", line 60, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\HOME\PycharmProjects\contabilidad\budget\views.py", line 527, in budget_execution_report
+    return render(request, 'budget/execution_report.html', context)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\loader.py", line 15, in get_template
+    return engine.get_template(template_name)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\backends\django.py", line 79, in get_template
+    return Template(self.engine.get_template(template_name), self)
+                    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\engine.py", line 177, in get_template
+    template, origin = self.find_template(template_name)
+                       ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\engine.py", line 159, in find_template
+    template = loader.get_template(name, skip=skip)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\loaders\cached.py", line 57, in get_template
+    template = super().get_template(template_name, skip)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\loaders\base.py", line 28, in get_template
+    return Template(
+        contents,
+    ...<2 lines>...
+        self.engine,
+    )
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 154, in __init__
+    self.nodelist = self.compile_nodelist()
+                    ~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 196, in compile_nodelist
+    nodelist = parser.parse()
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 518, in parse
+    raise self.error(token, e)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 516, in parse
+    compiled_result = compile_func(self, token)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\loader_tags.py", line 295, in do_extends
+    nodelist = parser.parse()
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 518, in parse
+    raise self.error(token, e)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 516, in parse
+    compiled_result = compile_func(self, token)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\loader_tags.py", line 234, in do_block
+    nodelist = parser.parse(("endblock",))
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 518, in parse
+    raise self.error(token, e)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 516, in parse
+    compiled_result = compile_func(self, token)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\defaulttags.py", line 962, in do_if
+    nodelist = parser.parse(("elif", "else", "endif"))
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 489, in parse
+    raise self.error(token, e)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 487, in parse
+    filter_expression = self.compile_filter(token.contents)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 605, in compile_filter
+    return FilterExpression(token, self)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 701, in __init__
+    filter_func = parser.find_filter(filter_name)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 611, in find_filter
+    raise TemplateSyntaxError("Invalid filter: '%s'" % filter_name)
+django.template.exceptions.TemplateSyntaxError: Invalid filter: 'mul'
+WARNING 2025-09-11 10:37:11,275 log 23840 23948 Not Found: /admin/public_sector/budgetitem/
+INFO 2025-09-11 10:37:25,456 autoreload 23840 7572 C:\Users\HOME\PycharmProjects\contabilidad\budget\views.py changed, reloading.
+INFO 2025-09-11 10:37:26,276 autoreload 21756 23488 Watching for file changes with StatReloader
+WARNING 2025-09-11 10:37:27,191 base 21756 1372 Session data corrupted
+WARNING 2025-09-11 10:37:27,246 base 21756 1372 Session data corrupted
+WARNING 2025-09-11 10:37:34,271 base 21756 1372 Session data corrupted
+WARNING 2025-09-11 10:38:01,967 log 21756 1372 Forbidden: /reports/generate/balance-sheet/
+WARNING 2025-09-11 10:38:17,424 log 21756 1372 Forbidden: /reports/generate/income-statement/
+WARNING 2025-09-11 10:38:31,990 log 21756 1372 Forbidden: /reports/generate/trial-balance/
+WARNING 2025-09-11 10:39:12,446 log 21756 1372 Forbidden: /reports/generate/aging-report/
+WARNING 2025-09-11 10:39:23,845 log 21756 1372 Forbidden: /reports/generate/aging-report/
+WARNING 2025-09-11 10:39:33,060 log 21756 1372 Forbidden: /reports/generate/balance-sheet/
+WARNING 2025-09-11 10:39:40,479 log 21756 1372 Forbidden: /reports/generate/income-statement/
+INFO 2025-09-11 10:40:19,952 autoreload 21756 23488 C:\Users\HOME\PycharmProjects\contabilidad\core\middleware.py changed, reloading.
+INFO 2025-09-11 10:40:20,714 autoreload 6320 3512 Watching for file changes with StatReloader
+WARNING 2025-09-11 10:40:30,987 base 6320 18580 Session data corrupted
+WARNING 2025-09-11 10:40:31,059 base 6320 18580 Session data corrupted
+WARNING 2025-09-11 10:40:35,647 base 6320 18580 Session data corrupted
+INFO 2025-09-11 10:40:38,854 autoreload 6320 3512 C:\Users\HOME\PycharmProjects\contabilidad\reports\views.py changed, reloading.
+INFO 2025-09-11 10:40:39,769 autoreload 10576 13468 Watching for file changes with StatReloader
+WARNING 2025-09-11 10:40:41,297 base 10576 7036 Session data corrupted
+WARNING 2025-09-11 10:40:46,103 base 10576 7036 Session data corrupted
+ERROR 2025-09-11 10:40:55,020 log 10576 7036 Internal Server Error: /reports/generate/balance-sheet/
+INFO 2025-09-11 10:41:57,670 autoreload 10576 13468 C:\Users\HOME\PycharmProjects\contabilidad\reports\views.py changed, reloading.
+INFO 2025-09-11 10:41:58,423 autoreload 21488 17692 Watching for file changes with StatReloader
+INFO 2025-09-11 10:42:05,748 autoreload 21488 17692 C:\Users\HOME\PycharmProjects\contabilidad\reports\views.py changed, reloading.
+INFO 2025-09-11 10:42:06,456 autoreload 13720 9040 Watching for file changes with StatReloader
+INFO 2025-09-11 10:42:23,206 autoreload 13720 9040 C:\Users\HOME\PycharmProjects\contabilidad\reports\views.py changed, reloading.
+INFO 2025-09-11 10:42:23,928 autoreload 17348 13284 Watching for file changes with StatReloader
+INFO 2025-09-11 10:42:35,439 autoreload 17348 13284 C:\Users\HOME\PycharmProjects\contabilidad\reports\views.py changed, reloading.
+INFO 2025-09-11 10:42:36,143 autoreload 13296 22776 Watching for file changes with StatReloader
+INFO 2025-09-11 10:42:48,713 autoreload 13296 22776 C:\Users\HOME\PycharmProjects\contabilidad\reports\views.py changed, reloading.
+INFO 2025-09-11 10:42:49,414 autoreload 9240 22156 Watching for file changes with StatReloader
+WARNING 2025-09-11 10:45:12,829 base 9240 25000 Session data corrupted
+WARNING 2025-09-11 10:45:12,943 base 9240 25000 Session data corrupted
+WARNING 2025-09-11 10:45:16,881 base 9240 25000 Session data corrupted
+WARNING 2025-09-11 10:45:17,635 log 9240 25000 Method Not Allowed: /reports/generate/balance-sheet/
+ERROR 2025-09-11 10:45:32,108 log 9240 25000 Internal Server Error: /reports/generate/balance-sheet/
+ERROR 2025-09-11 10:45:47,148 log 9240 25000 Internal Server Error: /reports/generate/income-statement/
+ERROR 2025-09-11 10:46:39,071 log 9240 25000 Internal Server Error: /budget/execution-report/
+Traceback (most recent call last):
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\contrib\auth\decorators.py", line 60, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\HOME\PycharmProjects\contabilidad\budget\views.py", line 577, in budget_execution_report
+    return render(request, 'budget/execution_report.html', context)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\loader.py", line 15, in get_template
+    return engine.get_template(template_name)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\backends\django.py", line 79, in get_template
+    return Template(self.engine.get_template(template_name), self)
+                    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\engine.py", line 177, in get_template
+    template, origin = self.find_template(template_name)
+                       ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\engine.py", line 159, in find_template
+    template = loader.get_template(name, skip=skip)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\loaders\cached.py", line 57, in get_template
+    template = super().get_template(template_name, skip)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\loaders\base.py", line 28, in get_template
+    return Template(
+        contents,
+    ...<2 lines>...
+        self.engine,
+    )
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 154, in __init__
+    self.nodelist = self.compile_nodelist()
+                    ~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 196, in compile_nodelist
+    nodelist = parser.parse()
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 518, in parse
+    raise self.error(token, e)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 516, in parse
+    compiled_result = compile_func(self, token)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\loader_tags.py", line 295, in do_extends
+    nodelist = parser.parse()
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 518, in parse
+    raise self.error(token, e)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 516, in parse
+    compiled_result = compile_func(self, token)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\loader_tags.py", line 234, in do_block
+    nodelist = parser.parse(("endblock",))
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 489, in parse
+    raise self.error(token, e)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 487, in parse
+    filter_expression = self.compile_filter(token.contents)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 605, in compile_filter
+    return FilterExpression(token, self)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 701, in __init__
+    filter_func = parser.find_filter(filter_name)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 611, in find_filter
+    raise TemplateSyntaxError("Invalid filter: '%s'" % filter_name)
+django.template.exceptions.TemplateSyntaxError: Invalid filter: 'sub'
+WARNING 2025-09-11 10:47:28,450 log 9240 25000 Forbidden: /reports/api/company/22e28275-9830-4322-8fe2-9a5fce973efe/accounts/
+ERROR 2025-09-11 10:47:43,331 log 9240 25000 Internal Server Error: /reports/generate/income-statement/
+INFO 2025-09-11 10:48:42,157 autoreload 9240 22156 C:\Users\HOME\PycharmProjects\contabilidad\budget\templatetags\budget_extras.py changed, reloading.
+INFO 2025-09-11 10:48:42,912 autoreload 18708 18520 Watching for file changes with StatReloader
+WARNING 2025-09-11 10:59:51,205 base 18708 20436 Session data corrupted
+WARNING 2025-09-11 10:59:51,295 base 18708 20436 Session data corrupted
+WARNING 2025-09-11 10:59:55,484 base 18708 20436 Session data corrupted
+WARNING 2025-09-11 10:59:56,254 log 18708 20436 Method Not Allowed: /reports/generate/income-statement/
+WARNING 2025-09-11 11:00:01,980 log 18708 20436 Method Not Allowed: /reports/generate/income-statement/
+WARNING 2025-09-11 11:00:15,193 log 18708 20436 Forbidden: /reports/api/company/22e28275-9830-4322-8fe2-9a5fce973efe/accounts/
+INFO 2025-09-11 11:00:39,212 autoreload 18708 18520 C:\Users\HOME\PycharmProjects\contabilidad\reports\views.py changed, reloading.
+INFO 2025-09-11 11:00:40,016 autoreload 14188 11748 Watching for file changes with StatReloader
+WARNING 2025-09-11 11:00:41,740 base 14188 15924 Session data corrupted
+WARNING 2025-09-11 11:00:41,794 base 14188 15924 Session data corrupted
+WARNING 2025-09-11 11:00:48,051 base 14188 15924 Session data corrupted
+WARNING 2025-09-11 11:00:48,793 log 14188 15924 Method Not Allowed: /reports/generate/balance-sheet/
+INFO 2025-09-11 11:01:16,626 autoreload 14188 11748 C:\Users\HOME\PycharmProjects\contabilidad\reports\views.py changed, reloading.
+INFO 2025-09-11 11:01:17,410 autoreload 16960 15620 Watching for file changes with StatReloader
+WARNING 2025-09-11 11:01:22,523 base 16960 6940 Session data corrupted
+WARNING 2025-09-11 11:01:22,577 base 16960 6940 Session data corrupted
+INFO 2025-09-11 11:01:23,965 autoreload 16960 15620 C:\Users\HOME\PycharmProjects\contabilidad\reports\views.py changed, reloading.
+INFO 2025-09-11 11:01:24,740 autoreload 22964 21564 Watching for file changes with StatReloader
+WARNING 2025-09-11 11:01:25,832 base 22964 2960 Session data corrupted
+ERROR 2025-09-11 11:01:26,819 log 22964 2960 Internal Server Error: /reports/generate/income-statement/
+Traceback (most recent call last):
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\contrib\auth\decorators.py", line 60, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\HOME\PycharmProjects\contabilidad\reports\views.py", line 222, in generate_income_statement
+    return render(request, 'reports/report_form.html', context)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\backends\django.py", line 107, in render
+    return self.template.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 171, in render
+    return self._render(context)
+           ~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 1008, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 969, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\loader_tags.py", line 159, in render
+    return compiled_parent._render(context)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 1008, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 969, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\loader_tags.py", line 65, in render
+    result = block.nodelist.render(context)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 1008, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 969, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\defaulttags.py", line 480, in render
+    url = reverse(view_name, args=args, kwargs=kwargs, current_app=current_app)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\urls\base.py", line 88, in reverse
+    return resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\urls\resolvers.py", line 831, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'company_accounts' with keyword arguments '{'company_id': 'COMPANY_ID'}' not found. 1 pattern(s) tried: ['reports/api/company/(?P<company_id>[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/accounts/\\Z']
+INFO 2025-09-11 11:01:31,346 autoreload 22964 21564 C:\Users\HOME\PycharmProjects\contabilidad\reports\views.py changed, reloading.
+INFO 2025-09-11 11:01:32,154 autoreload 11868 25412 Watching for file changes with StatReloader
+INFO 2025-09-11 11:01:39,538 autoreload 11868 25412 C:\Users\HOME\PycharmProjects\contabilidad\reports\views.py changed, reloading.
+INFO 2025-09-11 11:01:40,259 autoreload 6348 14684 Watching for file changes with StatReloader
+WARNING 2025-09-11 11:01:47,329 base 6348 10220 Session data corrupted
+WARNING 2025-09-11 11:01:47,386 base 6348 10220 Session data corrupted
+WARNING 2025-09-11 11:01:50,707 base 6348 10220 Session data corrupted
+ERROR 2025-09-11 11:01:51,439 log 6348 10220 Internal Server Error: /reports/generate/income-statement/
+Traceback (most recent call last):
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\contrib\auth\decorators.py", line 60, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\HOME\PycharmProjects\contabilidad\reports\views.py", line 222, in generate_income_statement
+    return render(request, 'reports/report_form.html', context)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\backends\django.py", line 107, in render
+    return self.template.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 171, in render
+    return self._render(context)
+           ~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 1008, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 969, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\loader_tags.py", line 159, in render
+    return compiled_parent._render(context)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 1008, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 969, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\loader_tags.py", line 65, in render
+    result = block.nodelist.render(context)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 1008, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 969, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\defaulttags.py", line 480, in render
+    url = reverse(view_name, args=args, kwargs=kwargs, current_app=current_app)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\urls\base.py", line 88, in reverse
+    return resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\urls\resolvers.py", line 831, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'company_accounts' with keyword arguments '{'company_id': 'COMPANY_ID'}' not found. 1 pattern(s) tried: ['reports/api/company/(?P<company_id>[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/accounts/\\Z']
+INFO 2025-09-11 11:02:50,932 autoreload 6348 14684 C:\Users\HOME\PycharmProjects\contabilidad\reports\views.py changed, reloading.
+INFO 2025-09-11 11:02:51,797 autoreload 11620 9632 Watching for file changes with StatReloader
+WARNING 2025-09-11 11:03:01,380 base 11620 11924 Session data corrupted
+WARNING 2025-09-11 11:03:01,439 base 11620 11924 Session data corrupted
+WARNING 2025-09-11 11:03:04,940 base 11620 11924 Session data corrupted
+INFO 2025-09-11 11:03:17,599 autoreload 14836 23680 Watching for file changes with StatReloader
+WARNING 2025-09-11 11:03:18,387 base 14836 3016 Session data corrupted
+WARNING 2025-09-11 11:03:18,484 base 14836 3016 Session data corrupted
+WARNING 2025-09-11 11:03:21,606 base 14836 3016 Session data corrupted
+INFO 2025-09-11 11:07:09,979 autoreload 14836 23680 C:\Users\HOME\PycharmProjects\contabilidad\third_parties\models.py changed, reloading.
+INFO 2025-09-11 11:07:10,773 autoreload 14188 13608 Watching for file changes with StatReloader
+INFO 2025-09-11 11:07:41,939 autoreload 14188 13608 C:\Users\HOME\PycharmProjects\contabilidad\third_parties\models.py changed, reloading.
+INFO 2025-09-11 11:07:42,674 autoreload 18548 18308 Watching for file changes with StatReloader
+INFO 2025-09-11 11:08:32,586 autoreload 18548 18308 C:\Users\HOME\PycharmProjects\contabilidad\third_parties\admin.py changed, reloading.
+INFO 2025-09-11 11:08:33,362 autoreload 22352 9544 Watching for file changes with StatReloader
+WARNING 2025-09-11 11:09:10,758 base 22352 24232 Session data corrupted
+WARNING 2025-09-11 11:09:10,811 base 22352 24232 Session data corrupted
+WARNING 2025-09-11 11:09:14,699 base 22352 24232 Session data corrupted
+ERROR 2025-09-11 11:09:23,075 log 22352 24232 Internal Server Error: /third-parties/
+Traceback (most recent call last):
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\contrib\auth\decorators.py", line 60, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\HOME\PycharmProjects\contabilidad\third_parties\views.py", line 46, in third_party_list
+    third_parties = third_parties.filter(is_employee=True)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\query.py", line 1476, in filter
+    return self._filter_or_exclude(False, args, kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\query.py", line 1494, in _filter_or_exclude
+    clone._filter_or_exclude_inplace(negate, args, kwargs)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\query.py", line 1501, in _filter_or_exclude_inplace
+    self._query.add_q(Q(*args, **kwargs))
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\sql\query.py", line 1609, in add_q
+    clause, _ = self._add_q(q_object, self.used_aliases)
+                ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\sql\query.py", line 1641, in _add_q
+    child_clause, needed_inner = self.build_filter(
+                                 ~~~~~~~~~~~~~~~~~^
+        child,
+        ^^^^^^
+    ...<7 lines>...
+        update_join_types=update_join_types,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\sql\query.py", line 1491, in build_filter
+    lookups, parts, reffed_expression = self.solve_lookup_type(arg, summarize)
+                                        ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\sql\query.py", line 1303, in solve_lookup_type
+    _, field, _, lookup_parts = self.names_to_path(lookup_splitted, self.get_meta())
+                                ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\sql\query.py", line 1768, in names_to_path
+    raise FieldError(
+    ...<2 lines>...
+    )
+django.core.exceptions.FieldError: Cannot resolve keyword 'is_employee' into field. Choices are: address, addresses, bank_account_number, bank_account_type, bank_name, block_reason, chamber_commerce_file, ciiu_code, city, company, company_id, contact_email, contact_person, contact_phone, contact_position, contacts, country, created_at, created_by, created_by_id, credit_limit, discount_percentage, document_number, document_type, documents, economic_activity, email, fax, first_name, great_contributor_resolution, has_rut, id, internal_notes, is_active, is_bank, is_blocked, is_customer, is_government, is_great_contributor, is_ica_agent, is_self_withholding, is_shareholder, is_supplier, is_vat_responsible, is_withholding_agent, last_name, legal_rep_document, legal_representative, middle_name, mobile, neighborhood, nombre, notes, payment_term_days, person_type, phone, postal_code, primer_apellido, rating, razon_social, rut_file, second_last_name, segundo_apellido, segundo_nombre, state, tax_code, tax_regime, taxpayer_type, third_party_types, trade_name, updated_at, updated_by, updated_by_id, verification_digit, website

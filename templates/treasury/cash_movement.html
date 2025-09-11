@@ -1,0 +1,195 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Movimiento de Caja{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h2><i class="bi bi-cash-stack text-success"></i> Movimiento de Caja</h2>
+                    <p class="text-muted">Registra ingresos y egresos de efectivo</p>
+                </div>
+                <div>
+                    <a href="{% url 'treasury:dashboard' %}" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-left"></i> Volver a Tesorería
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Formulario de Movimiento -->
+        <div class="col-md-8">
+            <form method="post" id="cashMovementForm">
+                {% csrf_token %}
+                
+                <div class="card">
+                    <div class="card-header bg-success text-white">
+                        <h5><i class="bi bi-plus-circle"></i> Registrar Movimiento de Caja</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label for="company" class="form-label">Empresa *</label>
+                                <select class="form-select" id="company" name="company" required>
+                                    <option value="">Seleccione empresa...</option>
+                                    {% for company in companies %}
+                                        <option value="{{ company.id }}">{{ company.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="cash_account" class="form-label">Cuenta de Caja *</label>
+                                <select class="form-select" id="cash_account" name="cash_account" required>
+                                    <option value="">Seleccione caja...</option>
+                                    {% for account in cash_accounts %}
+                                        <option value="{{ account.id }}">{{ account.name }} - Saldo: ${{ account.current_balance|floatformat:0 }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="row mt-3">
+                            <div class="col-md-6">
+                                <label for="movement_type" class="form-label">Tipo de Movimiento *</label>
+                                <select class="form-select" id="movement_type" name="movement_type" required>
+                                    <option value="">Seleccione tipo...</option>
+                                    <option value="receipt">💰 Recibo de Caja (Ingreso)</option>
+                                    <option value="disbursement">💸 Egreso de Caja</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="amount" class="form-label">Monto *</label>
+                                <input type="number" class="form-control" id="amount" name="amount" 
+                                       step="0.01" min="0" placeholder="0.00" required>
+                            </div>
+                        </div>
+                        
+                        <div class="row mt-3">
+                            <div class="col-md-6">
+                                <label for="date" class="form-label">Fecha *</label>
+                                <input type="date" class="form-control" id="date" name="date" 
+                                       value="{{ today|date:'Y-m-d' }}" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="third_party_name" class="form-label">Tercero *</label>
+                                <input type="text" class="form-control" id="third_party_name" name="third_party_name" 
+                                       placeholder="Nombre del tercero" required>
+                            </div>
+                        </div>
+                        
+                        <div class="row mt-3">
+                            <div class="col-md-6">
+                                <label for="third_party_document" class="form-label">Documento Tercero</label>
+                                <input type="text" class="form-control" id="third_party_document" name="third_party_document" 
+                                       placeholder="CC, NIT, etc.">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="concept" class="form-label">Concepto *</label>
+                                <input type="text" class="form-control" id="concept" name="concept" 
+                                       placeholder="Concepto del movimiento" required>
+                            </div>
+                        </div>
+                        
+                        <div class="row mt-3">
+                            <div class="col-12">
+                                <label for="description" class="form-label">Descripción</label>
+                                <textarea class="form-control" id="description" name="description" rows="3" 
+                                          placeholder="Descripción detallada del movimiento..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card-footer text-center">
+                        <button type="submit" class="btn btn-success btn-lg me-3">
+                            <i class="bi bi-save"></i> Registrar Movimiento
+                        </button>
+                        <button type="reset" class="btn btn-secondary btn-lg">
+                            <i class="bi bi-arrow-clockwise"></i> Limpiar
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        
+        <!-- Movimientos Recientes -->
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h5><i class="bi bi-clock-history"></i> Movimientos Recientes</h5>
+                </div>
+                <div class="card-body">
+                    {% if recent_movements %}
+                        <div class="list-group list-group-flush">
+                            {% for movement in recent_movements %}
+                                <div class="list-group-item px-0">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div class="flex-grow-1">
+                                            <h6 class="mb-1">
+                                                {% if movement.movement_type == 'receipt' %}
+                                                    <i class="bi bi-arrow-down-circle text-success"></i>
+                                                {% else %}
+                                                    <i class="bi bi-arrow-up-circle text-danger"></i>
+                                                {% endif %}
+                                                {{ movement.concept|truncatechars:20 }}
+                                            </h6>
+                                            <p class="mb-1 small text-muted">
+                                                {{ movement.number }} - {{ movement.date }}
+                                            </p>
+                                        </div>
+                                        <div class="text-end">
+                                            <span class="badge {% if movement.movement_type == 'receipt' %}bg-success{% else %}bg-danger{% endif %}">
+                                                ${{ movement.amount|floatformat:0 }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center text-muted py-4">
+                            <i class="bi bi-inbox fs-1"></i>
+                            <p>No hay movimientos registrados</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.card-header {
+    font-weight: 500;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #198754;
+    box-shadow: 0 0 0 0.2rem rgba(25, 135, 84, 0.25);
+}
+
+.btn-lg {
+    padding: 0.75rem 2rem;
+    font-size: 1.1rem;
+}
+
+.list-group-item {
+    border-left: none;
+    border-right: none;
+}
+
+.list-group-item:first-child {
+    border-top: none;
+}
+
+.list-group-item:last-child {
+    border-bottom: none;
+}
+</style>
+{% endblock %}

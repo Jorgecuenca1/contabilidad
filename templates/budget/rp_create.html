@@ -1,0 +1,272 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block title %}Nuevo RP - {{ company.name }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-file-contract"></i> Nuevo Registro Presupuestal (RP)
+                    </h4>
+                    <small>{{ period.name }} - {{ company.name }}</small>
+                </div>
+                <div class="card-body">
+                    <form method="post" id="rpForm">
+                        {% csrf_token %}
+                        
+                        <!-- Información Básica -->
+                        <div class="row mb-3">
+                            <div class="col-md-3">
+                                <label for="date" class="form-label">Fecha <span class="text-danger">*</span></label>
+                                <input type="date" class="form-control" id="date" name="date" value="{{ today }}" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="beneficiary_type" class="form-label">Tipo de Beneficiario <span class="text-danger">*</span></label>
+                                <select class="form-select" id="beneficiary_type" name="beneficiary_type" required>
+                                    <option value="">-- Seleccione --</option>
+                                    <option value="person">Persona Natural</option>
+                                    <option value="company">Persona Jurídica</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="beneficiary_id" class="form-label">NIT/Cédula <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="beneficiary_id" name="beneficiary_id" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="beneficiary_name" class="form-label">Nombre/Razón Social <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="beneficiary_name" name="beneficiary_name" required>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <label for="contract_type" class="form-label">Tipo de Contrato <span class="text-danger">*</span></label>
+                                <select class="form-select" id="contract_type" name="contract_type" required>
+                                    <option value="">-- Seleccione --</option>
+                                    <option value="service">Prestación de Servicios</option>
+                                    <option value="supply">Suministro</option>
+                                    <option value="work">Obra</option>
+                                    <option value="consulting">Consultoría</option>
+                                    <option value="intervention">Interventoría</option>
+                                    <option value="lease">Arrendamiento</option>
+                                    <option value="insurance">Seguros</option>
+                                    <option value="agreement">Convenio</option>
+                                    <option value="purchase_order">Orden de Compra</option>
+                                    <option value="service_order">Orden de Servicio</option>
+                                    <option value="other">Otro</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="contract_number" class="form-label">Número de Contrato</label>
+                                <input type="text" class="form-control" id="contract_number" name="contract_number">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="total_amount" class="form-label">Valor Total <span class="text-danger">*</span></label>
+                                <input type="number" class="form-control text-end" id="total_amount" name="total_amount" 
+                                       step="0.01" min="0" required readonly>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-12">
+                                <label for="concept" class="form-label">Concepto/Objeto <span class="text-danger">*</span></label>
+                                <textarea class="form-control" id="concept" name="concept" rows="3" required
+                                          placeholder="Describa detalladamente el objeto del RP"></textarea>
+                            </div>
+                        </div>
+
+                        <!-- CDPs Disponibles -->
+                        <div class="card mb-3">
+                            <div class="card-header bg-secondary text-white">
+                                <h5 class="mb-0">CDPs Disponibles para Compromiso</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-sm" id="cdpsTable">
+                                        <thead>
+                                            <tr>
+                                                <th width="15%">CDP</th>
+                                                <th width="15%">Fecha</th>
+                                                <th width="20%">Rubro</th>
+                                                <th width="15%" class="text-end">Disponible</th>
+                                                <th width="20%" class="text-end">Valor a Comprometer</th>
+                                                <th width="10%" class="text-center">Seleccionar</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for cdp in cdps %}
+                                                {% for detail in cdp.details.all %}
+                                                {% if detail.available_amount > 0 %}
+                                                <tr class="cdp-row">
+                                                    <td>{{ cdp.number }}</td>
+                                                    <td>{{ cdp.date|date:"d/m/Y" }}</td>
+                                                    <td>{{ detail.rubro.code }} - {{ detail.rubro.name|truncatewords:3 }}</td>
+                                                    <td class="text-end">${{ detail.available_amount|floatformat:0|intcomma }}</td>
+                                                    <td>
+                                                        <input type="number" class="form-control text-end cdp-amount" 
+                                                               step="0.01" min="0" max="{{ detail.available_amount }}"
+                                                               data-cdp-id="{{ cdp.id }}" data-detail-id="{{ detail.id }}"
+                                                               onchange="calculateTotal()" disabled>
+                                                        <input type="hidden" name="cdp_id[]" value="{{ cdp.id }}">
+                                                        <input type="hidden" name="cdp_detail_id[]" value="{{ detail.id }}">
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <input type="checkbox" class="form-check-input cdp-checkbox" 
+                                                               onchange="toggleCdpAmount(this)">
+                                                    </td>
+                                                </tr>
+                                                {% endif %}
+                                                {% endfor %}
+                                            {% empty %}
+                                            <tr>
+                                                <td colspan="6" class="text-center text-muted">
+                                                    No hay CDPs disponibles para comprometer
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-12">
+                                <label for="observations" class="form-label">Observaciones</label>
+                                <textarea class="form-control" id="observations" name="observations" rows="2"></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Botones de Acción -->
+                        <div class="row">
+                            <div class="col-md-12 text-end">
+                                <button type="button" class="btn btn-secondary" onclick="window.history.back()">
+                                    <i class="fas fa-times"></i> Cancelar
+                                </button>
+                                <button type="submit" class="btn btn-primary" name="action" value="save">
+                                    <i class="fas fa-save"></i> Guardar Borrador
+                                </button>
+                                <button type="submit" class="btn btn-success" name="approve" value="true">
+                                    <i class="fas fa-check"></i> Guardar y Aprobar
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Información de Ayuda -->
+    <div class="row mt-3">
+        <div class="col-md-12">
+            <div class="alert alert-info">
+                <h5><i class="fas fa-info-circle"></i> Información Importante sobre RPs</h5>
+                <ul class="mb-0">
+                    <li><strong>RP (Registro Presupuestal):</strong> Documento que afecta definitivamente la apropiación presupuestal, registrando el compromiso.</li>
+                    <li>Compromete recursos de CDP previamente expedido.</li>
+                    <li>Es requisito previo para generar obligaciones presupuestales.</li>
+                    <li>Debe corresponder a contratos o compromisos legalmente adquiridos.</li>
+                    <li>Permite el control de la ejecución presupuestal por compromiso.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Función para habilitar/deshabilitar input de valor
+function toggleCdpAmount(checkbox) {
+    const row = checkbox.closest('tr');
+    const amountInput = row.querySelector('.cdp-amount');
+    const hiddenCdpId = row.querySelector('input[name="cdp_id[]"]');
+    const hiddenDetailId = row.querySelector('input[name="cdp_detail_id[]"]');
+    
+    if (checkbox.checked) {
+        amountInput.disabled = false;
+        amountInput.required = true;
+        hiddenCdpId.disabled = false;
+        hiddenDetailId.disabled = false;
+    } else {
+        amountInput.disabled = true;
+        amountInput.required = false;
+        amountInput.value = '';
+        hiddenCdpId.disabled = true;
+        hiddenDetailId.disabled = true;
+    }
+    
+    calculateTotal();
+}
+
+// Función para calcular total
+function calculateTotal() {
+    let total = 0;
+    const amounts = document.querySelectorAll('.cdp-amount:not(:disabled)');
+    
+    amounts.forEach(input => {
+        if (input.value) {
+            total += parseFloat(input.value);
+        }
+    });
+    
+    document.getElementById('total_amount').value = total;
+}
+
+// Preparar datos para envío
+document.getElementById('rpForm').addEventListener('submit', function(e) {
+    // Remover inputs deshabilitados del DOM antes del envío
+    const disabledInputs = this.querySelectorAll('input:disabled[name="cdp_id[]"], input:disabled[name="cdp_detail_id[]"]');
+    disabledInputs.forEach(input => input.remove());
+    
+    // Agregar valores de los inputs habilitados
+    const enabledAmounts = this.querySelectorAll('.cdp-amount:not(:disabled)');
+    enabledAmounts.forEach(input => {
+        if (input.value) {
+            const hiddenAmount = document.createElement('input');
+            hiddenAmount.type = 'hidden';
+            hiddenAmount.name = 'amount[]';
+            hiddenAmount.value = input.value;
+            this.appendChild(hiddenAmount);
+        }
+    });
+    
+    // Validaciones
+    const checkedCdps = this.querySelectorAll('.cdp-checkbox:checked');
+    if (checkedCdps.length === 0) {
+        e.preventDefault();
+        alert('Debe seleccionar al menos un CDP para comprometer');
+        return;
+    }
+    
+    let validAmounts = true;
+    enabledAmounts.forEach(input => {
+        if (!input.value || parseFloat(input.value) <= 0) {
+            validAmounts = false;
+        }
+    });
+    
+    if (!validAmounts) {
+        e.preventDefault();
+        alert('Debe ingresar valores válidos para todos los CDPs seleccionados');
+        return;
+    }
+    
+    const totalAmount = parseFloat(document.getElementById('total_amount').value);
+    if (totalAmount <= 0) {
+        e.preventDefault();
+        alert('El valor total del RP debe ser mayor a cero');
+        return;
+    }
+    
+    if (confirm('¿Está seguro de crear este RP?')) {
+        // Continuar con el envío
+    } else {
+        e.preventDefault();
+    }
+});
+</script>
+{% endblock %}

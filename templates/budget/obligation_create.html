@@ -1,0 +1,298 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block title %}Nueva Obligación - {{ company.name }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-warning text-dark">
+                    <h4 class="mb-0">
+                        <i class="fas fa-file-invoice"></i> Nueva Obligación Presupuestal
+                    </h4>
+                    <small>{{ period.name }} - {{ company.name }}</small>
+                </div>
+                <div class="card-body">
+                    <form method="post" id="obligationForm">
+                        {% csrf_token %}
+                        
+                        <!-- Información Básica -->
+                        <div class="row mb-3">
+                            <div class="col-md-3">
+                                <label for="date" class="form-label">Fecha <span class="text-danger">*</span></label>
+                                <input type="date" class="form-control" id="date" name="date" value="{{ today }}" required>
+                            </div>
+                            <div class="col-md-9">
+                                <label for="rp_id" class="form-label">Registro Presupuestal (RP) <span class="text-danger">*</span></label>
+                                <select class="form-select" id="rp_id" name="rp_id" required onchange="updateRpInfo()">
+                                    <option value="">-- Seleccione un RP --</option>
+                                    {% for rp in rps %}
+                                    <option value="{{ rp.id }}" 
+                                            data-beneficiary="{{ rp.beneficiary_name }}"
+                                            data-contract="{{ rp.contract_number }}"
+                                            data-available="{{ rp.available_amount }}">
+                                        RP {{ rp.number }} - {{ rp.beneficiary_name }} (Disponible: ${{ rp.available_amount|floatformat:0|intcomma }})
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Información del RP Seleccionado -->
+                        <div id="rpInfo" style="display: none;">
+                            <div class="alert alert-info mb-3">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <strong>Beneficiario:</strong> <span id="rpBeneficiary">-</span>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <strong>Contrato:</strong> <span id="rpContract">-</span>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <strong>Disponible:</strong> <span id="rpAvailable">-</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-12">
+                                <label for="concept" class="form-label">Concepto/Objeto de la Obligación <span class="text-danger">*</span></label>
+                                <textarea class="form-control" id="concept" name="concept" rows="3" required
+                                          placeholder="Describa detalladamente el concepto de la obligación"></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Información de la Factura -->
+                        <div class="card mb-3">
+                            <div class="card-header bg-light">
+                                <h6 class="mb-0">Información de la Factura/Documento</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="invoice_number" class="form-label">Número de Factura</label>
+                                        <input type="text" class="form-control" id="invoice_number" name="invoice_number">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="invoice_date" class="form-label">Fecha de Factura</label>
+                                        <input type="date" class="form-control" id="invoice_date" name="invoice_date">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Valores de la Obligación -->
+                        <div class="card mb-3">
+                            <div class="card-header bg-light">
+                                <h6 class="mb-0">Valores de la Obligación</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="row mb-3">
+                                    <div class="col-md-4">
+                                        <label for="gross_amount" class="form-label">Valor Bruto <span class="text-danger">*</span></label>
+                                        <input type="number" class="form-control text-end" id="gross_amount" name="gross_amount" 
+                                               step="0.01" min="0" required onchange="calculateNetAmount()">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="deductions" class="form-label">Deducciones</label>
+                                        <input type="number" class="form-control text-end" id="deductions" name="deductions" 
+                                               step="0.01" min="0" value="0" onchange="calculateNetAmount()">
+                                        <small class="text-muted">Retenciones, descuentos, etc.</small>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="net_amount" class="form-label">Valor Neto</label>
+                                        <input type="number" class="form-control text-end bg-light" id="net_amount" 
+                                               name="net_amount" readonly>
+                                    </div>
+                                </div>
+
+                                <!-- Detalle de Deducciones (Opcional) -->
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <button type="button" class="btn btn-sm btn-outline-secondary" 
+                                                data-bs-toggle="collapse" data-bs-target="#deductionDetails">
+                                            <i class="fas fa-plus"></i> Detalle de Deducciones
+                                        </button>
+                                        
+                                        <div class="collapse mt-3" id="deductionDetails">
+                                            <div class="card card-body bg-light">
+                                                <div class="row">
+                                                    <div class="col-md-3">
+                                                        <label for="retention_source" class="form-label">Ret. Fuente</label>
+                                                        <input type="number" class="form-control text-end" id="retention_source" 
+                                                               step="0.01" min="0" value="0" onchange="calculateDeductions()">
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <label for="retention_iva" class="form-label">Ret. IVA</label>
+                                                        <input type="number" class="form-control text-end" id="retention_iva" 
+                                                               step="0.01" min="0" value="0" onchange="calculateDeductions()">
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <label for="retention_ica" class="form-label">Ret. ICA</label>
+                                                        <input type="number" class="form-control text-end" id="retention_ica" 
+                                                               step="0.01" min="0" value="0" onchange="calculateDeductions()">
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <label for="other_deductions" class="form-label">Otras Deducciones</label>
+                                                        <input type="number" class="form-control text-end" id="other_deductions" 
+                                                               step="0.01" min="0" value="0" onchange="calculateDeductions()">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Opciones de Contabilización -->
+                        <div class="card mb-3">
+                            <div class="card-header bg-light">
+                                <h6 class="mb-0">Opciones de Contabilización</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="create_journal_entry" 
+                                           name="create_journal_entry" value="true" checked>
+                                    <label class="form-check-label" for="create_journal_entry">
+                                        Crear asiento contable automáticamente
+                                    </label>
+                                    <small class="form-text text-muted d-block">
+                                        Se generará automáticamente el asiento contable correspondiente a la obligación
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-12">
+                                <label for="observations" class="form-label">Observaciones</label>
+                                <textarea class="form-control" id="observations" name="observations" rows="2"></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Botones de Acción -->
+                        <div class="row">
+                            <div class="col-md-12 text-end">
+                                <button type="button" class="btn btn-secondary" onclick="window.history.back()">
+                                    <i class="fas fa-times"></i> Cancelar
+                                </button>
+                                <button type="submit" class="btn btn-primary" name="action" value="save">
+                                    <i class="fas fa-save"></i> Guardar Borrador
+                                </button>
+                                <button type="submit" class="btn btn-warning" name="approve" value="true">
+                                    <i class="fas fa-check"></i> Guardar y Aprobar
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Información de Ayuda -->
+    <div class="row mt-3">
+        <div class="col-md-12">
+            <div class="alert alert-info">
+                <h5><i class="fas fa-info-circle"></i> Información Importante sobre Obligaciones</h5>
+                <ul class="mb-0">
+                    <li><strong>Obligación Presupuestal:</strong> Acto administrativo por el cual se constituye una relación jurídica con terceros.</li>
+                    <li>Surge de contratos legalmente celebrados, de la recepción de bienes o servicios adquiridos.</li>
+                    <li>Debe corresponder a un RP previamente expedido.</li>
+                    <li>Es el soporte para el posterior reconocimiento y pago de la deuda.</li>
+                    <li>Las deducciones incluyen retenciones en la fuente, IVA, ICA, etc.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Función para actualizar información del RP seleccionado
+function updateRpInfo() {
+    const select = document.getElementById('rp_id');
+    const selectedOption = select.options[select.selectedIndex];
+    const infoDiv = document.getElementById('rpInfo');
+    
+    if (selectedOption.value) {
+        document.getElementById('rpBeneficiary').textContent = selectedOption.dataset.beneficiary;
+        document.getElementById('rpContract').textContent = selectedOption.dataset.contract || 'N/A';
+        document.getElementById('rpAvailable').textContent = '$' + parseFloat(selectedOption.dataset.available).toLocaleString('es-CO');
+        infoDiv.style.display = 'block';
+        
+        // Establecer límite máximo en valor bruto
+        const maxAmount = parseFloat(selectedOption.dataset.available);
+        document.getElementById('gross_amount').max = maxAmount;
+    } else {
+        infoDiv.style.display = 'none';
+    }
+}
+
+// Función para calcular deducciones automáticamente
+function calculateDeductions() {
+    const retSource = parseFloat(document.getElementById('retention_source').value) || 0;
+    const retIva = parseFloat(document.getElementById('retention_iva').value) || 0;
+    const retIca = parseFloat(document.getElementById('retention_ica').value) || 0;
+    const other = parseFloat(document.getElementById('other_deductions').value) || 0;
+    
+    const totalDeductions = retSource + retIva + retIca + other;
+    document.getElementById('deductions').value = totalDeductions.toFixed(2);
+    
+    calculateNetAmount();
+}
+
+// Función para calcular valor neto
+function calculateNetAmount() {
+    const grossAmount = parseFloat(document.getElementById('gross_amount').value) || 0;
+    const deductions = parseFloat(document.getElementById('deductions').value) || 0;
+    const netAmount = grossAmount - deductions;
+    
+    document.getElementById('net_amount').value = netAmount.toFixed(2);
+}
+
+// Validación del formulario
+document.getElementById('obligationForm').addEventListener('submit', function(e) {
+    const rpSelect = document.getElementById('rp_id');
+    const grossAmount = parseFloat(document.getElementById('gross_amount').value) || 0;
+    const netAmount = parseFloat(document.getElementById('net_amount').value) || 0;
+    
+    if (!rpSelect.value) {
+        e.preventDefault();
+        alert('Debe seleccionar un Registro Presupuestal (RP)');
+        return;
+    }
+    
+    if (grossAmount <= 0) {
+        e.preventDefault();
+        alert('El valor bruto debe ser mayor a cero');
+        return;
+    }
+    
+    if (netAmount <= 0) {
+        e.preventDefault();
+        alert('El valor neto debe ser mayor a cero');
+        return;
+    }
+    
+    // Validar que no exceda el disponible del RP
+    const selectedOption = rpSelect.options[rpSelect.selectedIndex];
+    const maxAvailable = parseFloat(selectedOption.dataset.available);
+    
+    if (netAmount > maxAvailable) {
+        e.preventDefault();
+        alert('El valor de la obligación no puede exceder el saldo disponible del RP');
+        return;
+    }
+    
+    if (confirm('¿Está seguro de crear esta obligación presupuestal?')) {
+        // Continuar con el envío
+    } else {
+        e.preventDefault();
+    }
+});
+</script>
+{% endblock %}

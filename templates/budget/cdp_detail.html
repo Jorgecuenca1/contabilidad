@@ -1,0 +1,193 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block title %}CDP {{ cdp.number }} - {{ cdp.company.name }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row mb-3">
+        <div class="col-md-8">
+            <h2 class="text-primary">
+                <i class="fas fa-file-alt"></i> CDP {{ cdp.number }}
+            </h2>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="{% url 'budget:dashboard' %}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Volver
+            </a>
+            {% if cdp.state == 'draft' %}
+            <a href="#" class="btn btn-success">
+                <i class="fas fa-check"></i> Aprobar CDP
+            </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Información del CDP -->
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5><i class="fas fa-info-circle"></i> Información del CDP</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <strong>Número:</strong> {{ cdp.number }}
+                        </div>
+                        <div class="col-md-4">
+                            <strong>Fecha:</strong> {{ cdp.date|date:"d/m/Y" }}
+                        </div>
+                        <div class="col-md-4">
+                            <strong>Estado:</strong>
+                            {% if cdp.state == 'approved' %}
+                                <span class="badge bg-success">Aprobado</span>
+                            {% elif cdp.state == 'draft' %}
+                                <span class="badge bg-secondary">Borrador</span>
+                            {% elif cdp.state == 'partial' %}
+                                <span class="badge bg-warning">Parcial</span>
+                            {% elif cdp.state == 'committed' %}
+                                <span class="badge bg-primary">Comprometido</span>
+                            {% else %}
+                                <span class="badge bg-danger">{{ cdp.get_state_display }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <strong>Área Solicitante:</strong> {{ cdp.request_area }}
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Solicitante:</strong> {{ cdp.request_person }}
+                        </div>
+                    </div>
+                    {% if cdp.project %}
+                    <div class="row mb-3">
+                        <div class="col-md-12">
+                            <strong>Proyecto:</strong> {{ cdp.project }}
+                        </div>
+                    </div>
+                    {% endif %}
+                    <div class="row mb-3">
+                        <div class="col-md-12">
+                            <strong>Concepto:</strong>
+                            <p class="mt-1">{{ cdp.concept }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Resumen Financiero -->
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h5><i class="fas fa-calculator"></i> Resumen Financiero</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <strong>Valor Total:</strong><br>
+                        <h4 class="text-success">${{ cdp.total_amount|floatformat:0|intcomma }}</h4>
+                    </div>
+                    <div class="mb-3">
+                        <strong>Comprometido:</strong><br>
+                        <h5 class="text-warning">${{ cdp.committed_amount|floatformat:0|intcomma }}</h5>
+                    </div>
+                    <div class="mb-3">
+                        <strong>Disponible:</strong><br>
+                        <h5 class="text-primary">${{ cdp.available_amount|floatformat:0|intcomma }}</h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Detalle por Rubros -->
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-secondary text-white">
+                    <h5><i class="fas fa-list"></i> Detalle por Rubros</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Código</th>
+                                    <th>Nombre del Rubro</th>
+                                    <th class="text-end">Valor CDP</th>
+                                    <th class="text-end">Comprometido</th>
+                                    <th class="text-end">Disponible</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for detail in cdp.details.all %}
+                                <tr>
+                                    <td>{{ detail.rubro.code }}</td>
+                                    <td>{{ detail.rubro.name }}</td>
+                                    <td class="text-end">${{ detail.amount|floatformat:0|intcomma }}</td>
+                                    <td class="text-end">${{ detail.committed_amount|floatformat:0|intcomma }}</td>
+                                    <td class="text-end">${{ detail.available_amount|floatformat:0|intcomma }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- RPs Asociados -->
+    {% if rps %}
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h5><i class="fas fa-file-contract"></i> Registros Presupuestales (RPs) Asociados</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Número RP</th>
+                                    <th>Fecha</th>
+                                    <th>Beneficiario</th>
+                                    <th class="text-end">Valor</th>
+                                    <th>Estado</th>
+                                    <th class="text-center">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for rp in rps %}
+                                <tr>
+                                    <td>{{ rp.number }}</td>
+                                    <td>{{ rp.date|date:"d/m/Y" }}</td>
+                                    <td>{{ rp.beneficiary_name }}</td>
+                                    <td class="text-end">${{ rp.total_amount|floatformat:0|intcomma }}</td>
+                                    <td>
+                                        {% if rp.state == 'approved' %}
+                                            <span class="badge bg-success">Aprobado</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">{{ rp.get_state_display }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-center">
+                                        <a href="{% url 'budget:rp_detail' rp.pk %}" class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

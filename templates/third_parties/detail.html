@@ -1,0 +1,370 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ third_party.get_full_name }} - Terceros{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>
+                    {% if third_party.person_type == 'NATURAL' %}
+                        <i class="bi bi-person"></i>
+                    {% else %}
+                        <i class="bi bi-building"></i>
+                    {% endif %}
+                    {{ third_party.get_full_name }}
+                </h2>
+                <div class="btn-group">
+                    <a href="{% url 'third_parties:edit' third_party.pk %}" class="btn btn-warning">
+                        <i class="bi bi-pencil"></i> Editar
+                    </a>
+                    <a href="{% url 'third_parties:list' %}" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left"></i> Volver a Lista
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Información Básica -->
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5><i class="bi bi-info-circle"></i> Información Básica</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <table class="table table-borderless">
+                                        <tr>
+                                            <th width="40%">Tipo de Persona:</th>
+                                            <td>
+                                                {% if third_party.person_type == 'NATURAL' %}
+                                                    <span class="badge bg-info">
+                                                        <i class="bi bi-person"></i> Persona Natural ({{ third_party.tax_code }})
+                                                    </span>
+                                                {% else %}
+                                                    <span class="badge bg-warning">
+                                                        <i class="bi bi-building"></i> Persona Jurídica ({{ third_party.tax_code }})
+                                                    </span>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th>Documento:</th>
+                                            <td>
+                                                {{ third_party.document_type }} {{ third_party.document_number }}
+                                                {% if third_party.verification_digit %}
+                                                    -{{ third_party.verification_digit }}
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                        {% if third_party.person_type == 'NATURAL' %}
+                                            <tr>
+                                                <th>Primer Nombre:</th>
+                                                <td>{{ third_party.nombre|default:"-" }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Segundo Nombre:</th>
+                                                <td>{{ third_party.segundo_nombre|default:"-" }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Primer Apellido:</th>
+                                                <td>{{ third_party.primer_apellido|default:"-" }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Segundo Apellido:</th>
+                                                <td>{{ third_party.segundo_apellido|default:"-" }}</td>
+                                            </tr>
+                                        {% else %}
+                                            <tr>
+                                                <th>Razón Social:</th>
+                                                <td>{{ third_party.razon_social|default:"-" }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Nombre Comercial:</th>
+                                                <td>{{ third_party.trade_name|default:"-" }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Actividad Económica:</th>
+                                                <td>{{ third_party.economic_activity|default:"-" }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Código CIIU:</th>
+                                                <td>{{ third_party.ciiu_code|default:"-" }}</td>
+                                            </tr>
+                                        {% endif %}
+                                    </table>
+                                </div>
+                                <div class="col-md-6">
+                                    <table class="table table-borderless">
+                                        <tr>
+                                            <th width="40%">Estado:</th>
+                                            <td>
+                                                {% if third_party.is_active %}
+                                                    <span class="badge bg-success">Activo</span>
+                                                {% else %}
+                                                    <span class="badge bg-danger">Inactivo</span>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                        {% if third_party.rating %}
+                                            <tr>
+                                                <th>Calificación:</th>
+                                                <td>
+                                                    <span class="badge bg-primary">{{ third_party.get_rating_display }}</span>
+                                                </td>
+                                            </tr>
+                                        {% endif %}
+                                        <tr>
+                                            <th>Creado:</th>
+                                            <td>{{ third_party.created_at|date:"d/m/Y H:i" }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Creado por:</th>
+                                            <td>{{ third_party.created_by.get_full_name }}</td>
+                                        </tr>
+                                        {% if third_party.updated_at %}
+                                            <tr>
+                                                <th>Última actualización:</th>
+                                                <td>{{ third_party.updated_at|date:"d/m/Y H:i" }}</td>
+                                            </tr>
+                                            {% if third_party.updated_by %}
+                                                <tr>
+                                                    <th>Actualizado por:</th>
+                                                    <td>{{ third_party.updated_by.get_full_name }}</td>
+                                                </tr>
+                                            {% endif %}
+                                        {% endif %}
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <!-- Clasificación -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h6><i class="bi bi-tags"></i> Clasificación</h6>
+                        </div>
+                        <div class="card-body">
+                            {% if third_party.is_customer %}
+                                <span class="badge bg-success mb-1">Cliente</span><br>
+                            {% endif %}
+                            {% if third_party.is_supplier %}
+                                <span class="badge bg-primary mb-1">Proveedor</span><br>
+                            {% endif %}
+                            {% if third_party.is_employee %}
+                                <span class="badge bg-info mb-1">Empleado</span><br>
+                            {% endif %}
+                            {% if third_party.is_shareholder %}
+                                <span class="badge bg-warning mb-1">Accionista</span><br>
+                            {% endif %}
+                            {% if third_party.is_bank %}
+                                <span class="badge bg-dark mb-1">Banco</span><br>
+                            {% endif %}
+                            {% if third_party.is_government %}
+                                <span class="badge bg-secondary mb-1">Entidad Gubernamental</span><br>
+                            {% endif %}
+                            {% if not third_party.is_customer and not third_party.is_supplier and not third_party.is_employee and not third_party.is_shareholder and not third_party.is_bank and not third_party.is_government %}
+                                <span class="text-muted">Sin clasificación específica</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Información de Contacto -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5><i class="bi bi-geo-alt"></i> Información de Contacto</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <table class="table table-borderless">
+                                <tr>
+                                    <th width="30%">Dirección:</th>
+                                    <td>{{ third_party.address|default:"-" }}</td>
+                                </tr>
+                                {% if third_party.neighborhood %}
+                                    <tr>
+                                        <th>Barrio:</th>
+                                        <td>{{ third_party.neighborhood }}</td>
+                                    </tr>
+                                {% endif %}
+                                <tr>
+                                    <th>Ciudad:</th>
+                                    <td>{{ third_party.city }}, {{ third_party.state }}</td>
+                                </tr>
+                                <tr>
+                                    <th>País:</th>
+                                    <td>{{ third_party.country }}</td>
+                                </tr>
+                                {% if third_party.postal_code %}
+                                    <tr>
+                                        <th>Código Postal:</th>
+                                        <td>{{ third_party.postal_code }}</td>
+                                    </tr>
+                                {% endif %}
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <table class="table table-borderless">
+                                {% if third_party.phone %}
+                                    <tr>
+                                        <th width="30%">Teléfono:</th>
+                                        <td>{{ third_party.phone }}</td>
+                                    </tr>
+                                {% endif %}
+                                {% if third_party.mobile %}
+                                    <tr>
+                                        <th>Móvil:</th>
+                                        <td>{{ third_party.mobile }}</td>
+                                    </tr>
+                                {% endif %}
+                                {% if third_party.email %}
+                                    <tr>
+                                        <th>Email:</th>
+                                        <td><a href="mailto:{{ third_party.email }}">{{ third_party.email }}</a></td>
+                                    </tr>
+                                {% endif %}
+                                {% if third_party.website %}
+                                    <tr>
+                                        <th>Sitio Web:</th>
+                                        <td><a href="{{ third_party.website }}" target="_blank">{{ third_party.website }}</a></td>
+                                    </tr>
+                                {% endif %}
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Información Tributaria -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5><i class="bi bi-receipt"></i> Información Tributaria</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <table class="table table-borderless">
+                                <tr>
+                                    <th width="40%">Régimen Tributario:</th>
+                                    <td>{{ third_party.get_tax_regime_display }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Tipo de Contribuyente:</th>
+                                    <td>{{ third_party.get_taxpayer_type_display }}</td>
+                                </tr>
+                                {% if third_party.great_contributor_resolution %}
+                                    <tr>
+                                        <th>Resolución Gran Contribuyente:</th>
+                                        <td>{{ third_party.great_contributor_resolution }}</td>
+                                    </tr>
+                                {% endif %}
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="d-flex flex-column gap-2">
+                                {% if third_party.is_vat_responsible %}
+                                    <span class="badge bg-success">Responsable de IVA</span>
+                                {% endif %}
+                                {% if third_party.is_withholding_agent %}
+                                    <span class="badge bg-warning">Agente Retenedor</span>
+                                {% endif %}
+                                {% if third_party.is_self_withholding %}
+                                    <span class="badge bg-info">Autorretenedor</span>
+                                {% endif %}
+                                {% if third_party.is_great_contributor %}
+                                    <span class="badge bg-danger">Gran Contribuyente</span>
+                                {% endif %}
+                                {% if third_party.is_ica_agent %}
+                                    <span class="badge bg-secondary">Agente de ICA</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Información Comercial y Bancaria -->
+            <div class="row">
+                {% if third_party.is_customer or third_party.is_supplier %}
+                    <div class="col-md-6">
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <h6><i class="bi bi-currency-dollar"></i> Información Comercial</h6>
+                            </div>
+                            <div class="card-body">
+                                <table class="table table-borderless">
+                                    <tr>
+                                        <th width="50%">Cupo de Crédito:</th>
+                                        <td>${{ third_party.credit_limit|floatformat:0 }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Días de Pago:</th>
+                                        <td>{{ third_party.payment_term_days }} días</td>
+                                    </tr>
+                                    {% if third_party.discount_percentage %}
+                                        <tr>
+                                            <th>Descuento:</th>
+                                            <td>{{ third_party.discount_percentage }}%</td>
+                                        </tr>
+                                    {% endif %}
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+                
+                {% if third_party.bank_name %}
+                    <div class="col-md-6">
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <h6><i class="bi bi-bank"></i> Información Bancaria</h6>
+                            </div>
+                            <div class="card-body">
+                                <table class="table table-borderless">
+                                    <tr>
+                                        <th width="40%">Banco:</th>
+                                        <td>{{ third_party.bank_name }}</td>
+                                    </tr>
+                                    {% if third_party.bank_account_type %}
+                                        <tr>
+                                            <th>Tipo de Cuenta:</th>
+                                            <td>{{ third_party.get_bank_account_type_display }}</td>
+                                        </tr>
+                                    {% endif %}
+                                    {% if third_party.bank_account_number %}
+                                        <tr>
+                                            <th>Número de Cuenta:</th>
+                                            <td>{{ third_party.bank_account_number }}</td>
+                                        </tr>
+                                    {% endif %}
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+            
+            <!-- Observaciones -->
+            {% if third_party.notes %}
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h6><i class="bi bi-chat-text"></i> Observaciones</h6>
+                    </div>
+                    <div class="card-body">
+                        {{ third_party.notes|linebreaks }}
+                    </div>
+                </div>
+            {% endif %}
+            
+        </div>
+    </div>
+</div>
+{% endblock %}

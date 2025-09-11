@@ -78,11 +78,19 @@ class ReportService:
         """
         accounts_data = self._get_trial_balance_data(period_end)
         
+        # Calcular totales
+        total_debits = sum(float(account[2]) for account in accounts_data) if accounts_data else 0
+        total_credits = sum(float(account[3]) for account in accounts_data) if accounts_data else 0
+        total_balance = sum(float(account[4]) for account in accounts_data) if accounts_data else 0
+        
         context = {
             'company': self.company,
             'period_end': period_end,
             'report_date': timezone.now(),
             'accounts_data': accounts_data,
+            'total_debits': total_debits,
+            'total_credits': total_credits,
+            'total_balance': total_balance,
             'title': 'BALANCE DE PRUEBA'
         }
         

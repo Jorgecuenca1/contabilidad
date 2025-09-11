@@ -100,6 +100,35 @@ class BudgetRubro(models.Model):
         """Actualiza la apropiación vigente"""
         self.current_appropriation = self.initial_appropriation + self.additions - self.reductions
         self.save()
+    
+    def validate_colombian_compliance(self):
+        """Valida cumplimiento normativo colombiano"""
+        errors = []
+        
+        # Validar que no se excedan las apropiaciones
+        if self.cdp_amount > self.current_appropriation:
+            errors.append("Los CDP no pueden exceder la apropiación vigente")
+        
+        # Validar que los RP no excedan los CDP
+        if self.rp_amount > self.cdp_amount:
+            errors.append("Los RP no pueden exceder los CDP expedidos")
+        
+        # Validar que las obligaciones no excedan los RP
+        if self.obligations > self.rp_amount:
+            errors.append("Las obligaciones no pueden exceder los RP")
+        
+        # Validar que los pagos no excedan las obligaciones
+        if self.payments > self.obligations:
+            errors.append("Los pagos no pueden exceder las obligaciones")
+        
+        return errors
+    
+    @property
+    def execution_percentage(self):
+        """Porcentaje de ejecución presupuestal"""
+        if self.current_appropriation > 0:
+            return (self.obligations / self.current_appropriation) * 100
+        return 0
 
 
 class CDP(models.Model):
@@ -172,6 +201,51 @@ class CDP(models.Model):
             new_number = 1
         
         return f"CDP-{year}-{str(new_number).zfill(5)}"
+    
+    def validate_cdp_requirements(self):
+        """Valida requisitos de CDP según normativa colombiana"""
+        errors = []
+        
+        # Validar que tenga concepto específico
+        if not self.concept or len(self.concept.strip()) < 10:
+            errors.append("El CDP debe tener un concepto específico mínimo de 10 caracteres")
+        
+        # Validar que tenga área y solicitante
+        if not self.request_area or not self.request_person:
+            errors.append("El CDP debe especificar área solicitante y responsable")
+        
+        # Validar que tenga valor positivo
+        if self.total_amount <= 0:
+            errors.append("El CDP debe tener un valor positivo")
+        
+        # Validar que no esté vencido
+        if self.expiry_date and self.expiry_date < timezone.now().date():
+            errors.append("El CDP está vencido y no puede ser utilizado")
+        
+        # Validar disponibilidad presupuestal
+        total_required = 0
+        for detail in self.details.all():
+            if detail.amount > detail.rubro.available_appropriation:
+                errors.append(f"Rubro {detail.rubro.code}: Insuficiente apropiación disponible")
+            total_required += detail.amount
+        
+        if abs(total_required - self.total_amount) > 0.01:
+            errors.append("El total del CDP no coincide con el detalle por rubros")
+        
+        return errors
+    
+    def can_be_committed(self, amount):
+        """Verifica si el CDP puede comprometer un monto específico"""
+        return self.state == 'approved' and self.available_amount >= amount
+    
+    @property
+    def days_to_expire(self):
+        """Días restantes hasta vencimiento"""
+        if self.expiry_date:
+            return (self.expiry_date - timezone.now().date()).days
+        # Si no tiene fecha de vencimiento, usar fin de vigencia fiscal
+        year_end = timezone.now().date().replace(month=12, day=31)
+        return (year_end - timezone.now().date()).days
 
 
 class CDPDetail(models.Model):

@@ -1,0 +1,292 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dashboard de Tesorería{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h2><i class="bi bi-bank text-info"></i> Dashboard de Tesorería</h2>
+                    <p class="text-muted">Control integral de bancos, caja y flujo de efectivo</p>
+                </div>
+                <div>
+                    <a href="{% url 'core:dashboard' %}" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-left"></i> Volver al Dashboard Principal
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Resumen Ejecutivo -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-info text-white shadow">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h3>${{ total_bank_balance|floatformat:0 }}</h3>
+                            <p class="mb-0">Saldo Bancos</p>
+                            <small>{{ total_bank_accounts }} cuentas activas</small>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="bi bi-bank fs-1"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card bg-success text-white shadow">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h3>${{ total_cash_balance|floatformat:0 }}</h3>
+                            <p class="mb-0">Saldo Cajas</p>
+                            <small>{{ total_cash_accounts }} cajas activas</small>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="bi bi-cash-stack fs-1"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card bg-primary text-white shadow">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h3>${{ total_balance|floatformat:0 }}</h3>
+                            <p class="mb-0">Total Disponible</p>
+                            <small>Bancos + Cajas</small>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="bi bi-cash-coin fs-1"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card bg-warning text-white shadow">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h3>{{ pending_reconciliations }}</h3>
+                            <p class="mb-0">Conciliaciones</p>
+                            <small>Pendientes</small>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="bi bi-check2-square fs-1"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Accesos Rápidos -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h3><i class="bi bi-lightning"></i> Accesos Rápidos</h3>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-2 mb-3">
+            <div class="card text-center h-100 shadow-sm">
+                <div class="card-body">
+                    <i class="bi bi-bank2 fs-1 text-info mb-2"></i>
+                    <h6>Cuentas Bancarias</h6>
+                    <a href="{% url 'treasury:bank_account_list' %}" class="btn btn-info btn-sm">Ver</a>
+                    <a href="{% url 'treasury:bank_account_create' %}" class="btn btn-outline-info btn-sm mt-1">Nueva</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-2 mb-3">
+            <div class="card text-center h-100 shadow-sm">
+                <div class="card-body">
+                    <i class="bi bi-cash-stack fs-1 text-success mb-2"></i>
+                    <h6>Cuentas de Caja</h6>
+                    <a href="{% url 'treasury:cash_account_list' %}" class="btn btn-success btn-sm">Ver</a>
+                    <a href="{% url 'treasury:cash_account_create' %}" class="btn btn-outline-success btn-sm mt-1">Nueva</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-2 mb-3">
+            <div class="card text-center h-100 shadow-sm">
+                <div class="card-body">
+                    <i class="bi bi-arrow-left-right fs-1 text-primary mb-2"></i>
+                    <h6>Mov. Bancarios</h6>
+                    <a href="{% url 'treasury:bank_movement' %}" class="btn btn-primary btn-sm">Nuevo</a>
+                    <a href="{% url 'treasury:bank_movement_list' %}" class="btn btn-outline-primary btn-sm mt-1">Lista</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-2 mb-3">
+            <div class="card text-center h-100 shadow-sm">
+                <div class="card-body">
+                    <i class="bi bi-receipt fs-1 text-warning mb-2"></i>
+                    <h6>Mov. de Caja</h6>
+                    <a href="{% url 'treasury:cash_movement' %}" class="btn btn-warning btn-sm">Nuevo</a>
+                    <a href="{% url 'treasury:cash_movement_list' %}" class="btn btn-outline-warning btn-sm mt-1">Lista</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-2 mb-3">
+            <div class="card text-center h-100 shadow-sm">
+                <div class="card-body">
+                    <i class="bi bi-check2-square fs-1 text-secondary mb-2"></i>
+                    <h6>Conciliaciones</h6>
+                    <a href="{% url 'treasury:bank_reconciliation' %}" class="btn btn-secondary btn-sm">Nueva</a>
+                    <a href="{% url 'treasury:bank_reconciliation_list' %}" class="btn btn-outline-secondary btn-sm mt-1">Lista</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-2 mb-3">
+            <div class="card text-center h-100 shadow-sm">
+                <div class="card-body">
+                    <i class="bi bi-graph-up-arrow fs-1 text-danger mb-2"></i>
+                    <h6>Flujo de Caja</h6>
+                    <a href="{% url 'treasury:cash_flow' %}" class="btn btn-danger btn-sm">Ver</a>
+                    <a href="{% url 'treasury:cash_flow_report' %}" class="btn btn-outline-danger btn-sm mt-1">Reporte</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Movimientos Recientes -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h5><i class="bi bi-bank"></i> Movimientos Bancarios Recientes</h5>
+                </div>
+                <div class="card-body">
+                    {% if recent_bank_movements %}
+                        <div class="list-group list-group-flush">
+                            {% for movement in recent_bank_movements %}
+                                <div class="list-group-item px-0">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div class="flex-grow-1">
+                                            <h6 class="mb-1">
+                                                {% if movement.movement_type == 'credit' %}
+                                                    <i class="bi bi-arrow-down-circle text-success"></i>
+                                                {% else %}
+                                                    <i class="bi bi-arrow-up-circle text-danger"></i>
+                                                {% endif %}
+                                                {{ movement.description|truncatechars:25 }}
+                                            </h6>
+                                            <p class="mb-1 small text-muted">
+                                                {{ movement.bank_account.bank.name }} - {{ movement.date }}
+                                            </p>
+                                        </div>
+                                        <div class="text-end">
+                                            <span class="badge {% if movement.movement_type == 'credit' %}bg-success{% else %}bg-danger{% endif %}">
+                                                ${{ movement.amount|floatformat:0 }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center text-muted py-4">
+                            <i class="bi bi-inbox fs-1"></i>
+                            <p>No hay movimientos bancarios registrados</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h5><i class="bi bi-cash-stack"></i> Movimientos de Caja Recientes</h5>
+                </div>
+                <div class="card-body">
+                    {% if recent_cash_movements %}
+                        <div class="list-group list-group-flush">
+                            {% for movement in recent_cash_movements %}
+                                <div class="list-group-item px-0">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div class="flex-grow-1">
+                                            <h6 class="mb-1">
+                                                {% if movement.movement_type == 'receipt' %}
+                                                    <i class="bi bi-arrow-down-circle text-success"></i>
+                                                {% else %}
+                                                    <i class="bi bi-arrow-up-circle text-danger"></i>
+                                                {% endif %}
+                                                {{ movement.concept|truncatechars:25 }}
+                                            </h6>
+                                            <p class="mb-1 small text-muted">
+                                                {{ movement.number }} - {{ movement.date }}
+                                            </p>
+                                        </div>
+                                        <div class="text-end">
+                                            <span class="badge {% if movement.movement_type == 'receipt' %}bg-success{% else %}bg-danger{% endif %}">
+                                                ${{ movement.amount|floatformat:0 }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center text-muted py-4">
+                            <i class="bi bi-inbox fs-1"></i>
+                            <p>No hay movimientos de caja registrados</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.card {
+    transition: transform 0.2s ease-in-out;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+}
+
+.shadow {
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important;
+}
+
+.fs-1 {
+    font-size: calc(1.375rem + 1.5vw) !important;
+}
+
+.list-group-item {
+    border-left: none;
+    border-right: none;
+}
+
+.list-group-item:first-child {
+    border-top: none;
+}
+
+.list-group-item:last-child {
+    border-bottom: none;
+}
+</style>
+{% endblock %}

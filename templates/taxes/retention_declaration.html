@@ -1,0 +1,136 @@
+{% extends 'base.html' %}
+
+{% block title %}Declaración de Retenciones{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h2 class="text-primary">
+                <i class="fas fa-file-invoice-dollar"></i> Declaración de Retenciones en la Fuente
+            </h2>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="{% url 'taxes:dashboard' %}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left"></i> Volver
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-warning text-white">
+                    <h5 class="mb-0"><i class="fas fa-percentage"></i> Nueva Declaración de Retenciones</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-3">
+                                <label>Empresa</label>
+                                <select name="company" class="form-control" required>
+                                    <option value="">Seleccione empresa...</option>
+                                    {% for company in companies %}
+                                    <option value="{{ company.id }}">{{ company.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label>Período Gravable</label>
+                                <select name="period" class="form-control" required>
+                                    <option value="">Seleccione mes...</option>
+                                    <option value="202501">Enero 2025</option>
+                                    <option value="202502">Febrero 2025</option>
+                                    <option value="202503">Marzo 2025</option>
+                                    <option value="202504">Abril 2025</option>
+                                    <option value="202505">Mayo 2025</option>
+                                    <option value="202506">Junio 2025</option>
+                                    <option value="202507">Julio 2025</option>
+                                    <option value="202508">Agosto 2025</option>
+                                    <option value="202509">Septiembre 2025</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label>Tipo de Formulario</label>
+                                <select name="form_type" class="form-control" required>
+                                    <option value="">Seleccione formulario...</option>
+                                    <option value="350">Formulario 350 - Grandes Contribuyentes</option>
+                                    <option value="370">Formulario 370 - Otros Declarantes</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label>&nbsp;</label>
+                                <button type="submit" class="btn btn-warning form-control">
+                                    <i class="fas fa-file-alt"></i> Generar Declaración
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                    
+                    <div class="alert alert-warning">
+                        <i class="fas fa-info-circle"></i>
+                        <strong>Información Retenciones:</strong>
+                        <ul class="mb-0">
+                            <li><strong>Retención en la Fuente:</strong> Se practica sobre pagos realizados</li>
+                            <li><strong>Presentación mensual:</strong> 15 días calendario después del período</li>
+                            <li><strong>Formularios:</strong> 350 (Grandes) / 370 (Otros)</li>
+                            <li><strong>Tarifas vigentes:</strong> Según tabla DIAN resolución 000013 de 2012</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6 class="text-muted">Principales Retenciones:</h6>
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <span>Honorarios y servicios</span>
+                                    <span class="badge bg-info">11%</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <span>Servicios generales</span>
+                                    <span class="badge bg-info">4%</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <span>Compra bienes</span>
+                                    <span class="badge bg-info">2.5%</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <span>Arrendamientos</span>
+                                    <span class="badge bg-info">3.5%</span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-muted">Calendario de Vencimientos:</h6>
+                            <div class="table-responsive">
+                                <table class="table table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Último Dígito NIT</th>
+                                            <th>Fecha Vencimiento</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr><td>1</td><td>17 del mes siguiente</td></tr>
+                                        <tr><td>2</td><td>18 del mes siguiente</td></tr>
+                                        <tr><td>3</td><td>19 del mes siguiente</td></tr>
+                                        <tr><td>4</td><td>20 del mes siguiente</td></tr>
+                                        <tr><td>5</td><td>21 del mes siguiente</td></tr>
+                                        <tr><td>6</td><td>22 del mes siguiente</td></tr>
+                                        <tr><td>7</td><td>23 del mes siguiente</td></tr>
+                                        <tr><td>8</td><td>24 del mes siguiente</td></tr>
+                                        <tr><td>9</td><td>25 del mes siguiente</td></tr>
+                                        <tr><td>0</td><td>26 del mes siguiente</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

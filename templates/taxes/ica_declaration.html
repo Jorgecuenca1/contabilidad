@@ -1,0 +1,144 @@
+{% extends 'base.html' %}
+
+{% block title %}Declaración ICA{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h2 class="text-primary">
+                <i class="fas fa-city"></i> Impuesto de Industria y Comercio (ICA)
+            </h2>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="{% url 'taxes:dashboard' %}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left"></i> Volver
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="fas fa-building"></i> Declaración ICA Municipal</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-3">
+                                <label>Empresa</label>
+                                <select name="company" class="form-control" required>
+                                    <option value="">Seleccione empresa...</option>
+                                    {% for company in companies %}
+                                    <option value="{{ company.id }}">{{ company.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label>Municipio</label>
+                                <select name="municipality" class="form-control" required>
+                                    <option value="">Seleccione municipio...</option>
+                                    <option value="11001">Bogotá D.C.</option>
+                                    <option value="05001">Medellín</option>
+                                    <option value="76001">Cali</option>
+                                    <option value="08001">Barranquilla</option>
+                                    <option value="68001">Bucaramanga</option>
+                                    <option value="13001">Cartagena</option>
+                                    <option value="52001">Pasto</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label>Período</label>
+                                <select name="period" class="form-control" required>
+                                    <option value="">Seleccione período...</option>
+                                    <option value="202501">Enero 2025</option>
+                                    <option value="202502">Febrero 2025</option>
+                                    <option value="202503">Marzo 2025</option>
+                                    <option value="202504">Abril 2025</option>
+                                    <option value="2025Q1">Trimestre 1 - 2025</option>
+                                    <option value="2025Q2">Trimestre 2 - 2025</option>
+                                    <option value="2025">Año 2025</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label>&nbsp;</label>
+                                <button type="submit" class="btn btn-info form-control">
+                                    <i class="fas fa-calculator"></i> Calcular ICA
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                    
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i>
+                        <strong>Información ICA:</strong>
+                        <ul class="mb-0">
+                            <li><strong>Base gravable:</strong> Ingresos brutos por actividad industrial, comercial o de servicios</li>
+                            <li><strong>Tarifas:</strong> Varían por municipio y actividad económica (entre 2x1000 y 17x1000)</li>
+                            <li><strong>Presentación:</strong> Mensual, bimestral o anual según el municipio</li>
+                            <li><strong>Registro:</strong> Inscripción previa en el RIT municipal</li>
+                        </ul>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6 class="text-muted">Actividades Económicas Principales:</h6>
+                            <div class="table-responsive">
+                                <table class="table table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Código CIIU</th>
+                                            <th>Actividad</th>
+                                            <th>Tarifa Bogotá</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr><td>4711</td><td>Comercio al por menor</td><td>4.14 x 1000</td></tr>
+                                        <tr><td>6201</td><td>Desarrollo de sistemas</td><td>4.14 x 1000</td></tr>
+                                        <tr><td>7020</td><td>Consultoría administrativa</td><td>9.66 x 1000</td></tr>
+                                        <tr><td>1010</td><td>Procesamiento de carnes</td><td>2.07 x 1000</td></tr>
+                                        <tr><td>4641</td><td>Venta al por mayor</td><td>2.07 x 1000</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-muted">Fechas de Vencimiento por Municipio:</h6>
+                            <div class="table-responsive">
+                                <table class="table table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Municipio</th>
+                                            <th>Periodicidad</th>
+                                            <th>Vencimiento</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr><td>Bogotá</td><td>Bimestral</td><td>15 del 2° mes siguiente</td></tr>
+                                        <tr><td>Medellín</td><td>Cuatrimestral</td><td>Abril, Agosto, Diciembre</td></tr>
+                                        <tr><td>Cali</td><td>Bimestral</td><td>15 del 2° mes siguiente</td></tr>
+                                        <tr><td>Barranquilla</td><td>Trimestral</td><td>30 del mes siguiente</td></tr>
+                                        <tr><td>Bucaramanga</td><td>Bimestral</td><td>20 del 2° mes siguiente</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <div class="alert alert-warning">
+                                <h6><i class="fas fa-exclamation-triangle"></i> Importante:</h6>
+                                <p class="mb-0">El ICA es un impuesto municipal que grava las actividades industriales, comerciales y de servicios. Cada municipio tiene su propia normatividad, tarifas y calendarios tributarios. Consulte siempre la normatividad específica del municipio donde desarrolla la actividad económica.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

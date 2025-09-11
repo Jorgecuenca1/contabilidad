@@ -38,24 +38,26 @@ def dashboard(request):
     return render(request, 'core/dashboard.html', context)
 
 
+@login_required
 def company_selector(request):
     """
     Selector de empresa para usuarios multiempresa.
     """
-    if request.user.is_authenticated:
-        companies = request.user.companies.filter(is_active=True)
-        return JsonResponse({
-            'companies': [
-                {
-                    'id': str(company.id),
-                    'name': company.name,
-                    'tax_id': company.tax_id
-                }
-                for company in companies
-            ]
-        })
-    
-    return JsonResponse({'companies': []})
+    # Filter companies that are active through the relationship
+    companies = Company.objects.filter(
+        id__in=request.user.companies.values_list('id', flat=True),
+        is_active=True
+    )
+    return JsonResponse({
+        'companies': [
+            {
+                'id': str(company.id),
+                'name': company.name,
+                'tax_id': company.tax_id
+            }
+            for company in companies
+        ]
+    })
 
 
 @login_required
@@ -163,7 +165,7 @@ def new_company(request):
             messages.error(request, f'Error al crear la empresa: {str(e)}')
     
     # Datos para el formulario
-    countries = Country.objects.filter(is_active=True)
+    countries = Country.objects.all()  # Country model doesn't have is_active field
     regime_choices = Company.REGIME_CHOICES
     sector_choices = Company.SECTOR_CHOICES
     
@@ -240,7 +242,7 @@ def edit_company(request, company_id):
             messages.error(request, f'Error al actualizar la empresa: {str(e)}')
     
     # Datos para el formulario
-    countries = Country.objects.filter(is_active=True)
+    countries = Country.objects.all()  # Country model doesn't have is_active field
     regime_choices = Company.REGIME_CHOICES
     sector_choices = Company.SECTOR_CHOICES
     

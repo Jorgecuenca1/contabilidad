@@ -19,7 +19,6 @@ class ThirdPartyType(models.Model):
     description = models.TextField(blank=True)
     is_customer = models.BooleanField(default=False)
     is_supplier = models.BooleanField(default=False)
-    is_employee = models.BooleanField(default=False)
     is_shareholder = models.BooleanField(default=False)
     is_bank = models.BooleanField(default=False)
     
@@ -74,14 +73,24 @@ class ThirdParty(models.Model):
     # Información básica
     company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='third_parties')
     person_type = models.CharField(max_length=10, choices=PERSON_TYPE_CHOICES)
+    tax_code = models.CharField(max_length=2, blank=True, help_text="Código tributario: 13 para personas naturales, 31 para jurídicas")
     document_type = models.CharField(max_length=10, choices=DOCUMENT_TYPE_CHOICES)
     document_number = models.CharField(max_length=20)
     verification_digit = models.CharField(max_length=1, blank=True)  # DV para NIT
     
-    # Nombre o Razón Social
-    first_name = models.CharField(max_length=100)  # Primer nombre o Razón Social
+    # Campos para personas naturales
+    nombre = models.CharField('Primer Nombre', max_length=100, blank=True)
+    segundo_nombre = models.CharField('Segundo Nombre', max_length=100, blank=True)
+    primer_apellido = models.CharField('Primer Apellido', max_length=100, blank=True)
+    segundo_apellido = models.CharField('Segundo Apellido', max_length=100, blank=True)
+    
+    # Campos para personas jurídicas
+    razon_social = models.CharField('Razón Social', max_length=200, blank=True)
+    
+    # Campo unificado (se mantiene para compatibilidad)
+    first_name = models.CharField(max_length=100, blank=True)  # Primer nombre o Razón Social
     middle_name = models.CharField(max_length=100, blank=True)
-    last_name = models.CharField(max_length=100, blank=True)  # Obligatorio para personas naturales
+    last_name = models.CharField(max_length=100, blank=True)
     second_last_name = models.CharField(max_length=100, blank=True)
     trade_name = models.CharField(max_length=200, blank=True)  # Nombre comercial
     
@@ -89,7 +98,6 @@ class ThirdParty(models.Model):
     third_party_types = models.ManyToManyField(ThirdPartyType, blank=True)
     is_customer = models.BooleanField(default=False)
     is_supplier = models.BooleanField(default=False)
-    is_employee = models.BooleanField(default=False)
     is_shareholder = models.BooleanField(default=False)
     is_bank = models.BooleanField(default=False)
     is_government = models.BooleanField(default=False)
@@ -104,13 +112,13 @@ class ThirdParty(models.Model):
     is_great_contributor = models.BooleanField(default=False)  # Gran contribuyente
     great_contributor_resolution = models.CharField(max_length=100, blank=True)
     
-    # Información de contacto
-    address = models.CharField(max_length=200)
-    neighborhood = models.CharField(max_length=100, blank=True)
-    city = models.CharField(max_length=100)
-    state = models.CharField(max_length=100)  # Departamento
-    country = models.CharField(max_length=100, default='Colombia')
-    postal_code = models.CharField(max_length=20, blank=True)
+    # Información de contacto y geográfica
+    address = models.CharField('Dirección', max_length=200)
+    neighborhood = models.CharField('Barrio', max_length=100, blank=True)
+    city = models.CharField('Ciudad', max_length=100)
+    state = models.CharField('Departamento', max_length=100)
+    country = models.CharField('País', max_length=100, default='Colombia')
+    postal_code = models.CharField('Código Postal', max_length=20, blank=True)
     phone = models.CharField(max_length=30, blank=True)
     mobile = models.CharField(max_length=30, blank=True)
     fax = models.CharField(max_length=30, blank=True)
@@ -179,18 +187,23 @@ class ThirdParty(models.Model):
         verbose_name_plural = 'Terceros'
     
     def __str__(self):
-        if self.person_type == 'NATURAL':
-            return f"{self.get_full_name()} - {self.document_number}"
-        else:
-            return f"{self.first_name} - {self.document_number}"
+        name = self.get_full_name()
+        return f"{name} - {self.document_number} ({self.get_person_type_display()})"
     
     def get_full_name(self):
         """Obtiene el nombre completo"""
         if self.person_type == 'NATURAL':
-            parts = [self.first_name, self.middle_name, self.last_name, self.second_last_name]
-            return ' '.join(filter(None, parts))
+            # Usar los campos específicos para personas naturales si están disponibles
+            if self.nombre or self.primer_apellido:
+                parts = [self.nombre, self.segundo_nombre, self.primer_apellido, self.segundo_apellido]
+                return ' '.join(filter(None, parts))
+            else:
+                # Fallback a campos legacy
+                parts = [self.first_name, self.middle_name, self.last_name, self.second_last_name]
+                return ' '.join(filter(None, parts))
         else:
-            return self.trade_name or self.first_name
+            # Para personas jurídicas
+            return self.razon_social or self.trade_name or self.first_name
     
     def calculate_verification_digit(self):
         """Calcula el dígito de verificación para NIT"""
@@ -216,12 +229,190 @@ class ThirdParty(models.Model):
         if self.document_type == 'NIT' and not self.verification_digit:
             self.verification_digit = self.calculate_verification_digit()
         
-        # Establecer valores por defecto según tipo de persona
-        if self.person_type == 'JURIDICA':
+        # Establecer código tributario según tipo de persona
+        if self.person_type == 'NATURAL':
+            self.tax_code = '13'
+            # Sincronizar campos para personas naturales
+            if self.nombre and self.primer_apellido and not self.first_name:
+                self.first_name = self.nombre
+                self.last_name = self.primer_apellido
+                self.middle_name = self.segundo_nombre
+                self.second_last_name = self.segundo_apellido
+        elif self.person_type == 'JURIDICA':
+            self.tax_code = '31'
             if not self.taxpayer_type:
                 self.taxpayer_type = 'PERSONA_JURIDICA'
+            # Sincronizar campos para personas jurídicas
+            if self.razon_social and not self.first_name:
+                self.first_name = self.razon_social
         
         super().save(*args, **kwargs)
+        
+        # Sincronizar con Customer si es cliente
+        if self.is_customer:
+            self._sync_to_customer()
+        
+        # Sincronizar con Supplier si es proveedor
+        if self.is_supplier:
+            self._sync_to_supplier()
+    
+    def _sync_to_customer(self):
+        """Sincroniza datos con el modelo Customer en accounts_receivable"""
+        try:
+            from accounts_receivable.models_customer import Customer, CustomerType
+            
+            # Buscar si ya existe el customer
+            customer = Customer.objects.filter(
+                company=self.company,
+                document_number=self.document_number,
+                document_type=self.document_type
+            ).first()
+            
+            # Si no existe, crear uno nuevo
+            if not customer:
+                # Obtener o crear tipo de cliente por defecto
+                customer_type, created = CustomerType.objects.get_or_create(
+                    company=self.company,
+                    code='GENERAL',
+                    defaults={
+                        'name': 'Cliente General',
+                        'created_by': self.created_by
+                    }
+                )
+                
+                # Obtener cuenta por cobrar por defecto (13050001 - Clientes Nacionales)
+                from accounting.models_accounts import Account
+                receivable_account = Account.objects.filter(
+                    company=self.company,
+                    code__startswith='1305'
+                ).first()
+                
+                if receivable_account:
+                    customer = Customer.objects.create(
+                        company=self.company,
+                        code=self.document_number,
+                        document_type=self.document_type,
+                        document_number=self.document_number,
+                        verification_digit=self.verification_digit,
+                        business_name=self.get_full_name(),
+                        trade_name=self.trade_name,
+                        first_name=self.first_name,
+                        last_name=self.last_name,
+                        customer_type=customer_type,
+                        address=self.address,
+                        city=self.city,
+                        state=self.state,
+                        country=self.country,
+                        postal_code=self.postal_code,
+                        phone=self.phone,
+                        mobile=self.mobile,
+                        email=self.email,
+                        credit_limit=self.credit_limit,
+                        credit_days=self.payment_term_days,
+                        receivable_account=receivable_account,
+                        created_by=self.created_by
+                    )
+            else:
+                # Actualizar datos existentes
+                customer.business_name = self.get_full_name()
+                customer.trade_name = self.trade_name
+                customer.first_name = self.first_name
+                customer.last_name = self.last_name
+                customer.address = self.address
+                customer.city = self.city
+                customer.state = self.state
+                customer.country = self.country
+                customer.postal_code = self.postal_code
+                customer.phone = self.phone
+                customer.mobile = self.mobile
+                customer.email = self.email
+                customer.credit_limit = self.credit_limit
+                customer.credit_days = self.payment_term_days
+                customer.save()
+                
+        except Exception as e:
+            print(f"Error sincronizando cliente: {e}")
+    
+    def _sync_to_supplier(self):
+        """Sincroniza datos con el modelo Supplier en accounts_payable"""
+        try:
+            from accounts_payable.models_supplier import Supplier, SupplierType
+            
+            # Buscar si ya existe el supplier
+            supplier = Supplier.objects.filter(
+                company=self.company,
+                document_number=self.document_number,
+                document_type=self.document_type
+            ).first()
+            
+            # Si no existe, crear uno nuevo
+            if not supplier:
+                # Obtener o crear tipo de proveedor por defecto
+                supplier_type, created = SupplierType.objects.get_or_create(
+                    company=self.company,
+                    code='GENERAL',
+                    defaults={
+                        'name': 'Proveedor General',
+                        'created_by': self.created_by
+                    }
+                )
+                
+                # Obtener cuenta por pagar por defecto (22050001 - Proveedores Nacionales)
+                from accounting.models_accounts import Account
+                payable_account = Account.objects.filter(
+                    company=self.company,
+                    code__startswith='2205'
+                ).first()
+                
+                if payable_account:
+                    supplier = Supplier.objects.create(
+                        company=self.company,
+                        code=self.document_number,
+                        document_type=self.document_type,
+                        document_number=self.document_number,
+                        verification_digit=self.verification_digit,
+                        business_name=self.get_full_name(),
+                        trade_name=self.trade_name,
+                        first_name=self.first_name,
+                        last_name=self.last_name,
+                        supplier_type=supplier_type,
+                        address=self.address,
+                        city=self.city,
+                        state=self.state,
+                        country=self.country,
+                        postal_code=self.postal_code,
+                        phone=self.phone,
+                        mobile=self.mobile,
+                        email=self.email,
+                        contact_name=self.contact_person,
+                        contact_phone=self.contact_phone,
+                        contact_email=self.contact_email,
+                        payment_days=self.payment_term_days,
+                        payable_account=payable_account,
+                        created_by=self.created_by
+                    )
+            else:
+                # Actualizar datos existentes
+                supplier.business_name = self.get_full_name()
+                supplier.trade_name = self.trade_name
+                supplier.first_name = self.first_name
+                supplier.last_name = self.last_name
+                supplier.address = self.address
+                supplier.city = self.city
+                supplier.state = self.state
+                supplier.country = self.country
+                supplier.postal_code = self.postal_code
+                supplier.phone = self.phone
+                supplier.mobile = self.mobile
+                supplier.email = self.email
+                supplier.contact_name = self.contact_person
+                supplier.contact_phone = self.contact_phone
+                supplier.contact_email = self.contact_email
+                supplier.payment_days = self.payment_term_days
+                supplier.save()
+                
+        except Exception as e:
+            print(f"Error sincronizando proveedor: {e}")
 
 
 class CompanyExtended(models.Model):

@@ -131,11 +131,15 @@ class Customer(models.Model):
     def __str__(self):
         return f"{self.code} - {self.business_name}"
     
+    def save(self, *args, **kwargs):
+        """Save customer with validations."""
+        super().save(*args, **kwargs)
+    
     def get_full_name(self):
         """Obtiene el nombre completo del cliente."""
         if self.first_name and self.last_name:
             return f"{self.first_name} {self.last_name}"
-        return self.business_name
+        return self.business_name or self.trade_name
     
     def get_current_balance(self):
         """Obtiene el saldo actual del cliente."""

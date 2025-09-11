@@ -138,6 +138,45 @@ class Account(models.Model):
         if self.parent:
             return f"{self.parent.get_full_code()}.{self.code}"
         return self.code
+    
+    def clean(self):
+        """Validaciones del modelo para el PUC colombiano."""
+        from django.core.exceptions import ValidationError
+        
+        # Validar estructura del código PUC
+        if not self.code.isdigit():
+            raise ValidationError("El código de cuenta debe contener solo números según el PUC colombiano")
+        
+        # Validar longitud según nivel
+        if self.level == 1 and len(self.code) != 1:
+            raise ValidationError("Las cuentas de nivel 1 deben tener 1 dígito (1-6)")
+        elif self.level == 2 and len(self.code) != 2:
+            raise ValidationError("Las cuentas de nivel 2 deben tener 2 dígitos")
+        elif self.level == 3 and len(self.code) != 4:
+            raise ValidationError("Las cuentas de nivel 3 deben tener 4 dígitos")
+        elif self.level == 4 and len(self.code) != 6:
+            raise ValidationError("Las cuentas de nivel 4 deben tener 6 dígitos")
+        
+        # Validar clase de cuenta según primer dígito (PUC colombiano)
+        if len(self.code) >= 1:
+            first_digit = self.code[0]
+            if first_digit == '1' and self.account_type.code != '1':
+                raise ValidationError("Las cuentas que inician con 1 deben ser de tipo Activo")
+            elif first_digit == '2' and self.account_type.code != '2':
+                raise ValidationError("Las cuentas que inician con 2 deben ser de tipo Pasivo")
+            elif first_digit == '3' and self.account_type.code != '3':
+                raise ValidationError("Las cuentas que inician con 3 deben ser de tipo Patrimonio")
+            elif first_digit == '4' and self.account_type.code != '4':
+                raise ValidationError("Las cuentas que inician con 4 deben ser de tipo Ingresos")
+            elif first_digit == '5' and self.account_type.code != '5':
+                raise ValidationError("Las cuentas que inician con 5 deben ser de tipo Gastos")
+            elif first_digit == '6' and self.account_type.code != '6':
+                raise ValidationError("Las cuentas que inician con 6 deben ser de tipo Costos")
+    
+    def save(self, *args, **kwargs):
+        """Override save para aplicar validaciones del PUC."""
+        self.full_clean()  # Ejecuta clean()
+        super().save(*args, **kwargs)
 
 
 class CostCenter(models.Model):

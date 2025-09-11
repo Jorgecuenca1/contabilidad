@@ -4,8 +4,8 @@ from .models import ThirdParty, ThirdPartyType, ThirdPartyContact, ThirdPartyAdd
 
 @admin.register(ThirdPartyType)
 class ThirdPartyTypeAdmin(admin.ModelAdmin):
-    list_display = ['code', 'name', 'company', 'is_customer', 'is_supplier', 'is_employee']
-    list_filter = ['company', 'is_customer', 'is_supplier', 'is_employee']
+    list_display = ['code', 'name', 'company', 'is_customer', 'is_supplier']
+    list_filter = ['company', 'is_customer', 'is_supplier']
     search_fields = ['code', 'name']
 
 
@@ -27,7 +27,7 @@ class ThirdPartyDocumentInline(admin.TabularInline):
 @admin.register(ThirdParty)
 class ThirdPartyAdmin(admin.ModelAdmin):
     list_display = ['document_number', 'get_full_name', 'person_type', 'is_customer', 'is_supplier', 'is_active']
-    list_filter = ['person_type', 'is_customer', 'is_supplier', 'is_employee', 'is_active', 'tax_regime']
+    list_filter = ['person_type', 'is_customer', 'is_supplier', 'is_active', 'tax_regime']
     search_fields = ['document_number', 'first_name', 'last_name', 'trade_name', 'email']
     inlines = [ThirdPartyContactInline, ThirdPartyAddressInline, ThirdPartyDocumentInline]
     
@@ -39,7 +39,7 @@ class ThirdPartyAdmin(admin.ModelAdmin):
             'fields': ('first_name', 'middle_name', 'last_name', 'second_last_name', 'trade_name')
         }),
         ('Clasificación', {
-            'fields': ('is_customer', 'is_supplier', 'is_employee', 'is_shareholder', 'is_bank', 'is_government')
+            'fields': ('is_customer', 'is_supplier', 'is_shareholder', 'is_bank', 'is_government')
         }),
         ('Información Tributaria', {
             'fields': ('tax_regime', 'taxpayer_type', 'is_vat_responsible', 'is_withholding_agent', 

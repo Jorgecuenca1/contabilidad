@@ -1,0 +1,168 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ report_title }} - Sistema de Contabilidad{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h1 class="mb-4">
+            <i class="bi bi-file-earmark-bar-graph"></i> {{ report_title }}
+        </h1>
+        <p class="text-muted">{{ report_description }}</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5><i class="bi bi-gear"></i> Configuración del Reporte</h5>
+            </div>
+            <div class="card-body">
+                <form method="post" action="{{ form_action }}">
+                    {% csrf_token %}
+                    
+                    <!-- Selector de Empresa -->
+                    <div class="mb-3">
+                        <label for="company_id" class="form-label">Empresa *</label>
+                        <select class="form-select" name="company_id" id="company_id" required>
+                            <option value="">Seleccione una empresa...</option>
+                            {% for company in companies %}
+                                <option value="{{ company.id }}">{{ company.name }} (NIT: {{ company.tax_id }})</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <!-- Fechas según el tipo de reporte -->
+                    {% if 'period_start' in date_fields and 'period_end' in date_fields %}
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="period_start" class="form-label">Fecha Inicio</label>
+                                    <input type="date" class="form-control" name="period_start" id="period_start">
+                                    <div class="form-text">Dejar vacío para usar inicio del año actual</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="period_end" class="form-label">Fecha Fin</label>
+                                    <input type="date" class="form-control" name="period_end" id="period_end">
+                                    <div class="form-text">Dejar vacío para usar fecha actual</div>
+                                </div>
+                            </div>
+                        </div>
+                    {% elif 'period_end' in date_fields %}
+                        <div class="mb-3">
+                            <label for="period_end" class="form-label">Fecha de Corte</label>
+                            <input type="date" class="form-control" name="period_end" id="period_end">
+                            <div class="form-text">Dejar vacío para usar fecha actual</div>
+                        </div>
+                    {% elif 'report_date' in date_fields %}
+                        <div class="mb-3">
+                            <label for="report_date" class="form-label">Fecha del Reporte</label>
+                            <input type="date" class="form-control" name="report_date" id="report_date">
+                            <div class="form-text">Dejar vacío para usar fecha actual</div>
+                        </div>
+                    {% endif %}
+                    
+                    <!-- Campos adicionales según el reporte -->
+                    {% if 'account_id' in additional_fields %}
+                        <div class="mb-3">
+                            <label for="account_id" class="form-label">Cuenta *</label>
+                            <select class="form-select" name="account_id" id="account_id" required>
+                                <option value="">Seleccione primero una empresa...</option>
+                            </select>
+                        </div>
+                    {% endif %}
+                    
+                    {% if 'report_type' in additional_fields %}
+                        <div class="mb-3">
+                            <label for="report_type" class="form-label">Tipo de Cartera</label>
+                            <select class="form-select" name="report_type" id="report_type">
+                                <option value="receivables">Cuentas por Cobrar (CxC)</option>
+                                <option value="payables">Cuentas por Pagar (CxP)</option>
+                            </select>
+                        </div>
+                    {% endif %}
+                    
+                    <!-- Formato de salida -->
+                    <div class="mb-3">
+                        <label for="format" class="form-label">Formato de Salida</label>
+                        <select class="form-select" name="format" id="format">
+                            <option value="pdf">PDF</option>
+                            <option value="excel">Excel</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Botones -->
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{% url 'reports:dashboard' %}" class="btn btn-secondary me-md-2">
+                            <i class="bi bi-arrow-left"></i> Volver
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-download"></i> Generar Reporte
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card bg-info text-white">
+            <div class="card-body">
+                <h5><i class="bi bi-info-circle"></i> Información</h5>
+                <ul class="list-unstyled">
+                    <li><i class="bi bi-check"></i> Cumple normas contables colombianas</li>
+                    <li><i class="bi bi-check"></i> Basado en Plan Único de Cuentas (PUC)</li>
+                    <li><i class="bi bi-check"></i> Exportable a PDF y Excel</li>
+                    <li><i class="bi bi-check"></i> Filtros por empresa y período</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="card mt-3">
+            <div class="card-header bg-warning text-dark">
+                <h6><i class="bi bi-lightbulb"></i> Sugerencias</h6>
+            </div>
+            <div class="card-body">
+                <small>
+                    • Deje las fechas vacías para usar valores por defecto<br>
+                    • Los reportes se generan en tiempo real<br>
+                    • PDF es recomendado para impresión<br>
+                    • Excel permite análisis posterior
+                </small>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.getElementById('company_id').addEventListener('change', function() {
+    const companyId = this.value;
+    const accountSelect = document.getElementById('account_id');
+    
+    if (!accountSelect) return; // Solo para reportes que requieren cuenta
+    
+    if (companyId) {
+        // Cargar cuentas de la empresa seleccionada
+        fetch(`/reports/api/company/${companyId}/accounts/`)
+            .then(response => response.json())
+            .then(data => {
+                accountSelect.innerHTML = '<option value="">Seleccione una cuenta...</option>';
+                data.forEach(account => {
+                    accountSelect.innerHTML += `<option value="${account.id}">${account.code} - ${account.name}</option>`;
+                });
+            })
+            .catch(error => {
+                console.error('Error loading accounts:', error);
+                accountSelect.innerHTML = '<option value="">Error cargando cuentas</option>';
+            });
+    } else {
+        accountSelect.innerHTML = '<option value="">Seleccione primero una empresa...</option>';
+    }
+});
+</script>
+{% endblock %}

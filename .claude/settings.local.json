@@ -3,7 +3,21 @@
     "allow": [
       "Bash(pip freeze)",
       "Bash(python manage.py:*)",
-      "Bash(curl:*)"
+      "Bash(curl:*)",
+      "Bash(find:*)",
+      "Bash(python:*)",
+      "WebSearch",
+      "Bash(sed:*)",
+      "Bash(dir:*)",
+      "Bash(for dir in accounting accounts_payable accounts_receivable payroll treasury taxes)",
+      "Bash(do echo \"=== $dir ===\")",
+      "Bash(done)",
+      "Bash(netstat:*)",
+      "Bash(taskkill:*)",
+      "Bash(wmic process where ProcessId=9344 delete:*)",
+      "Bash(ipconfig)",
+      "Bash(ping:*)",
+      "Bash(git add:*)"
     ],
     "deny": [],
     "ask": []

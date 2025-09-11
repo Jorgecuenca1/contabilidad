@@ -14,4 +14,4 @@ from core.models import Company, User, Period, Currency
 from accounting.models_accounts import Account, CostCenter, Project
 
 # Importar todos los modelos de fixed_assets
-from .models_asset import AssetCategory, FixedAsset
+from .models_asset import AssetCategory, FixedAsset, DepreciationEntry, AssetTransfer

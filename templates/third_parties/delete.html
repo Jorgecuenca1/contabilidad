@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+
+{% block title %}Eliminar Tercero - {{ third_party.get_full_name }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card border-danger">
+                <div class="card-header bg-danger text-white">
+                    <h5><i class="bi bi-exclamation-triangle"></i> Confirmar Eliminación</h5>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-warning">
+                        <i class="bi bi-info-circle"></i> 
+                        <strong>¡Atención!</strong> Esta acción no se puede deshacer.
+                    </div>
+                    
+                    <p>¿Está seguro que desea eliminar el siguiente tercero?</p>
+                    
+                    <div class="bg-light p-3 rounded">
+                        <h6>
+                            {% if third_party.person_type == 'NATURAL' %}
+                                <i class="bi bi-person"></i>
+                            {% else %}
+                                <i class="bi bi-building"></i>
+                            {% endif %}
+                            {{ third_party.get_full_name }}
+                        </h6>
+                        <p class="text-muted mb-1">
+                            <strong>Documento:</strong> {{ third_party.document_type }} {{ third_party.document_number }}
+                            {% if third_party.verification_digit %}-{{ third_party.verification_digit }}{% endif %}
+                        </p>
+                        <p class="text-muted mb-1">
+                            <strong>Tipo:</strong> {{ third_party.get_person_type_display }}
+                        </p>
+                        {% if third_party.email %}
+                            <p class="text-muted mb-1">
+                                <strong>Email:</strong> {{ third_party.email }}
+                            </p>
+                        {% endif %}
+                        <p class="text-muted mb-0">
+                            <strong>Clasificación:</strong>
+                            {% if third_party.is_customer %}Cliente {% endif %}
+                            {% if third_party.is_supplier %}Proveedor {% endif %}
+                            {% if third_party.is_employee %}Empleado {% endif %}
+                            {% if third_party.is_shareholder %}Accionista {% endif %}
+                        </p>
+                    </div>
+                    
+                    <div class="mt-3">
+                        <p><strong>Esta acción eliminará:</strong></p>
+                        <ul class="text-danger">
+                            <li>Toda la información del tercero</li>
+                            <li>Contactos adicionales asociados</li>
+                            <li>Direcciones adicionales</li>
+                            <li>Documentos adjuntos</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <i class="bi bi-lightbulb"></i>
+                        <strong>Alternativa:</strong> En lugar de eliminar, considere marcar el tercero como inactivo para preservar el historial contable.
+                    </div>
+                </div>
+                
+                <div class="card-footer">
+                    <form method="post" class="d-inline">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger">
+                            <i class="bi bi-trash"></i> Eliminar Definitivamente
+                        </button>
+                    </form>
+                    
+                    <a href="{% url 'third_parties:detail' third_party.pk %}" class="btn btn-secondary">
+                        <i class="bi bi-x-circle"></i> Cancelar
+                    </a>
+                    
+                    <a href="{% url 'third_parties:edit' third_party.pk %}" class="btn btn-warning">
+                        <i class="bi bi-pause-circle"></i> Marcar como Inactivo
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

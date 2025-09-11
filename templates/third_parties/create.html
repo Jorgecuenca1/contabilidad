@@ -1,0 +1,403 @@
+{% extends 'base.html' %}
+
+{% block title %}Crear Tercero - {{ company.name }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .natural-field, .juridica-field {
+        transition: opacity 0.3s ease;
+    }
+    .field-hidden {
+        opacity: 0.3;
+        pointer-events: none;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2><i class="bi bi-person-plus"></i> Crear Nuevo Tercero</h2>
+                <a href="{% url 'third_parties:list' %}" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left"></i> Volver a Lista
+                </a>
+            </div>
+            
+            <form method="post" class="needs-validation" novalidate>
+                {% csrf_token %}
+                
+                <!-- Información Básica -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5><i class="bi bi-info-circle"></i> Información Básica</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-md-3">
+                                {{ form.person_type.label_tag }}
+                                {{ form.person_type }}
+                            </div>
+                            <div class="col-md-3">
+                                {{ form.document_type.label_tag }}
+                                {{ form.document_type }}
+                            </div>
+                            <div class="col-md-4">
+                                {{ form.document_number.label_tag }}
+                                {{ form.document_number }}
+                            </div>
+                            <div class="col-md-2">
+                                {{ form.verification_digit.label_tag }}
+                                {{ form.verification_digit }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Nombres - Persona Natural -->
+                <div class="card mb-4" id="natural-fields">
+                    <div class="card-header bg-info text-white">
+                        <h5><i class="bi bi-person"></i> Información Personal (Persona Natural)</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-md-3">
+                                {{ form.nombre.label_tag }}
+                                {{ form.nombre }}
+                            </div>
+                            <div class="col-md-3">
+                                {{ form.segundo_nombre.label_tag }}
+                                {{ form.segundo_nombre }}
+                            </div>
+                            <div class="col-md-3">
+                                {{ form.primer_apellido.label_tag }}
+                                {{ form.primer_apellido }}
+                            </div>
+                            <div class="col-md-3">
+                                {{ form.segundo_apellido.label_tag }}
+                                {{ form.segundo_apellido }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Información Empresa - Persona Jurídica -->
+                <div class="card mb-4" id="juridica-fields">
+                    <div class="card-header bg-warning text-dark">
+                        <h5><i class="bi bi-building"></i> Información Empresarial (Persona Jurídica)</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                {{ form.razon_social.label_tag }}
+                                {{ form.razon_social }}
+                            </div>
+                            <div class="col-md-6">
+                                {{ form.trade_name.label_tag }}
+                                {{ form.trade_name }}
+                            </div>
+                            <div class="col-md-4">
+                                {{ form.economic_activity.label_tag }}
+                                {{ form.economic_activity }}
+                            </div>
+                            <div class="col-md-2">
+                                {{ form.ciiu_code.label_tag }}
+                                {{ form.ciiu_code }}
+                            </div>
+                            <div class="col-md-3">
+                                {{ form.legal_representative.label_tag }}
+                                {{ form.legal_representative }}
+                            </div>
+                            <div class="col-md-3">
+                                {{ form.legal_rep_document.label_tag }}
+                                {{ form.legal_rep_document }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Clasificación -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5><i class="bi bi-tags"></i> Clasificación del Tercero</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-md-2">
+                                <div class="form-check">
+                                    {{ form.is_customer }}
+                                    {{ form.is_customer.label_tag }}
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-check">
+                                    {{ form.is_supplier }}
+                                    {{ form.is_supplier.label_tag }}
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-check">
+                                    {{ form.is_employee }}
+                                    {{ form.is_employee.label_tag }}
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-check">
+                                    {{ form.is_shareholder }}
+                                    {{ form.is_shareholder.label_tag }}
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-check">
+                                    {{ form.is_bank }}
+                                    {{ form.is_bank.label_tag }}
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-check">
+                                    {{ form.is_government }}
+                                    {{ form.is_government.label_tag }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Información Tributaria -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5><i class="bi bi-receipt"></i> Información Tributaria</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-md-3">
+                                {{ form.tax_regime.label_tag }}
+                                {{ form.tax_regime }}
+                            </div>
+                            <div class="col-md-3">
+                                {{ form.taxpayer_type.label_tag }}
+                                {{ form.taxpayer_type }}
+                            </div>
+                            <div class="col-md-6">
+                                {{ form.great_contributor_resolution.label_tag }}
+                                {{ form.great_contributor_resolution }}
+                            </div>
+                        </div>
+                        <div class="row g-3 mt-2">
+                            <div class="col-md-3">
+                                <div class="form-check">
+                                    {{ form.is_vat_responsible }}
+                                    {{ form.is_vat_responsible.label_tag }}
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-check">
+                                    {{ form.is_withholding_agent }}
+                                    {{ form.is_withholding_agent.label_tag }}
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-check">
+                                    {{ form.is_self_withholding }}
+                                    {{ form.is_self_withholding.label_tag }}
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-check">
+                                    {{ form.is_great_contributor }}
+                                    {{ form.is_great_contributor.label_tag }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Información de Contacto y Ubicación -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5><i class="bi bi-geo-alt"></i> Contacto y Ubicación</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                {{ form.address.label_tag }}
+                                {{ form.address }}
+                            </div>
+                            <div class="col-md-3">
+                                {{ form.neighborhood.label_tag }}
+                                {{ form.neighborhood }}
+                            </div>
+                            <div class="col-md-3">
+                                {{ form.postal_code.label_tag }}
+                                {{ form.postal_code }}
+                            </div>
+                            <div class="col-md-4">
+                                {{ form.city.label_tag }}
+                                {{ form.city }}
+                            </div>
+                            <div class="col-md-4">
+                                {{ form.state.label_tag }}
+                                {{ form.state }}
+                            </div>
+                            <div class="col-md-4">
+                                {{ form.country.label_tag }}
+                                {{ form.country }}
+                            </div>
+                            <div class="col-md-3">
+                                {{ form.phone.label_tag }}
+                                {{ form.phone }}
+                            </div>
+                            <div class="col-md-3">
+                                {{ form.mobile.label_tag }}
+                                {{ form.mobile }}
+                            </div>
+                            <div class="col-md-3">
+                                {{ form.email.label_tag }}
+                                {{ form.email }}
+                            </div>
+                            <div class="col-md-3">
+                                {{ form.website.label_tag }}
+                                {{ form.website }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Información Bancaria -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5><i class="bi bi-bank"></i> Información Bancaria</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                {{ form.bank_name.label_tag }}
+                                {{ form.bank_name }}
+                            </div>
+                            <div class="col-md-4">
+                                {{ form.bank_account_type.label_tag }}
+                                {{ form.bank_account_type }}
+                            </div>
+                            <div class="col-md-4">
+                                {{ form.bank_account_number.label_tag }}
+                                {{ form.bank_account_number }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Información Comercial -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5><i class="bi bi-currency-dollar"></i> Información Comercial</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                {{ form.credit_limit.label_tag }}
+                                {{ form.credit_limit }}
+                            </div>
+                            <div class="col-md-4">
+                                {{ form.payment_term_days.label_tag }}
+                                {{ form.payment_term_days }}
+                            </div>
+                            <div class="col-md-4">
+                                {{ form.discount_percentage.label_tag }}
+                                {{ form.discount_percentage }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Observaciones -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5><i class="bi bi-chat-text"></i> Observaciones</h5>
+                    </div>
+                    <div class="card-body">
+                        {{ form.notes.label_tag }}
+                        {{ form.notes }}
+                    </div>
+                </div>
+                
+                <!-- Botones -->
+                <div class="d-flex justify-content-end gap-2">
+                    <a href="{% url 'third_parties:list' %}" class="btn btn-secondary">
+                        <i class="bi bi-x-circle"></i> Cancelar
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-check-circle"></i> Crear Tercero
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function togglePersonFields(personType) {
+    const naturalFields = document.getElementById('natural-fields');
+    const juridicaFields = document.getElementById('juridica-fields');
+    
+    if (personType === 'NATURAL') {
+        naturalFields.style.display = 'block';
+        juridicaFields.style.display = 'none';
+        
+        // Hacer campos obligatorios
+        document.querySelector('[name="nombre"]').required = true;
+        document.querySelector('[name="primer_apellido"]').required = true;
+        document.querySelector('[name="razon_social"]').required = false;
+    } else if (personType === 'JURIDICA') {
+        naturalFields.style.display = 'none';
+        juridicaFields.style.display = 'block';
+        
+        // Hacer campos obligatorios
+        document.querySelector('[name="razon_social"]').required = true;
+        document.querySelector('[name="nombre"]').required = false;
+        document.querySelector('[name="primer_apellido"]').required = false;
+    } else {
+        naturalFields.style.display = 'block';
+        juridicaFields.style.display = 'block';
+    }
+}
+
+function handleDocumentType(docType) {
+    const dvField = document.querySelector('[name="verification_digit"]');
+    if (docType === 'NIT') {
+        dvField.parentElement.style.display = 'block';
+    } else {
+        dvField.parentElement.style.display = 'none';
+        dvField.value = '';
+    }
+}
+
+function calculateDV() {
+    const docType = document.querySelector('[name="document_type"]').value;
+    const docNumber = document.querySelector('[name="document_number"]').value;
+    
+    if (docType === 'NIT' && docNumber) {
+        // Llamada AJAX para calcular DV
+        fetch(`/third-parties/api/verify-nit/?nit=${docNumber}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.valid) {
+                    document.querySelector('[name="verification_digit"]').value = data.dv;
+                }
+            })
+            .catch(error => console.error('Error:', error));
+    }
+}
+
+// Inicializar vista al cargar
+document.addEventListener('DOMContentLoaded', function() {
+    const personType = document.querySelector('[name="person_type"]').value;
+    const docType = document.querySelector('[name="document_type"]').value;
+    
+    togglePersonFields(personType);
+    handleDocumentType(docType);
+});
+</script>
+{% endblock %}

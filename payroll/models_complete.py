@@ -17,10 +17,10 @@ class PayrollConfiguration(models.Model):
     """Configuración general de nómina por empresa"""
     company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='payroll_configs')
     
-    # Salarios mínimos y auxilio de transporte
-    minimum_wage = models.DecimalField(max_digits=12, decimal_places=2, default=1300000)
-    transport_allowance = models.DecimalField(max_digits=12, decimal_places=2, default=162000)
-    transport_allowance_limit = models.DecimalField(max_digits=12, decimal_places=2, default=2600000)
+    # Salarios mínimos y auxilio de transporte - Valores 2025 Colombia
+    minimum_wage = models.DecimalField(max_digits=12, decimal_places=2, default=1423500)  # SMMLV 2025
+    transport_allowance = models.DecimalField(max_digits=12, decimal_places=2, default=176600)  # Auxilio transporte 2025
+    transport_allowance_limit = models.DecimalField(max_digits=12, decimal_places=2, default=2847000)  # 2 SMMLV
     
     # Porcentajes de seguridad social - Empleador
     health_employer = models.DecimalField(max_digits=5, decimal_places=2, default=8.5)

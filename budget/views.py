@@ -34,8 +34,12 @@ def get_user_company(request):
         except Company.DoesNotExist:
             pass
     
-    # Si no hay empresa en sesión, usar la default o la primera disponible
-    company = get_user_company(request) or request.user.companies.first()
+    # Si no hay empresa en sesión, usar la primera disponible
+    if request.user.is_superuser:
+        company = Company.objects.filter(is_active=True).first()
+    else:
+        company = request.user.companies.filter(is_active=True).first()
+    
     if company:
         request.session['selected_company_id'] = str(company.id)
     return company
@@ -121,7 +125,17 @@ def cdp_create(request):
     
     current_year = timezone.now().year
     
-    period = get_object_or_404(BudgetPeriod, company=company, year=current_year)
+    # Obtener o crear el período presupuestal para el año actual
+    period, created = BudgetPeriod.objects.get_or_create(
+        company=company, 
+        year=current_year,
+        defaults={
+            'name': f'Presupuesto {current_year}',
+            'start_date': timezone.datetime(current_year, 1, 1).date(),
+            'end_date': timezone.datetime(current_year, 12, 31).date(),
+            'status': 'active'
+        }
+    )
     
     if request.method == 'POST':
         try:
@@ -219,7 +233,17 @@ def rp_create(request):
     
     current_year = timezone.now().year
     
-    period = get_object_or_404(BudgetPeriod, company=company, year=current_year)
+    # Obtener o crear el período presupuestal para el año actual
+    period, created = BudgetPeriod.objects.get_or_create(
+        company=company, 
+        year=current_year,
+        defaults={
+            'name': f'Presupuesto {current_year}',
+            'start_date': timezone.datetime(current_year, 1, 1).date(),
+            'end_date': timezone.datetime(current_year, 12, 31).date(),
+            'status': 'active'
+        }
+    )
     
     if request.method == 'POST':
         try:
@@ -324,7 +348,17 @@ def obligation_create(request):
     company = get_user_company(request)
     current_year = timezone.now().year
     
-    period = get_object_or_404(BudgetPeriod, company=company, year=current_year)
+    # Obtener o crear el período presupuestal para el año actual
+    period, created = BudgetPeriod.objects.get_or_create(
+        company=company, 
+        year=current_year,
+        defaults={
+            'name': f'Presupuesto {current_year}',
+            'start_date': timezone.datetime(current_year, 1, 1).date(),
+            'end_date': timezone.datetime(current_year, 12, 31).date(),
+            'status': 'active'
+        }
+    )
     
     if request.method == 'POST':
         try:
@@ -428,7 +462,17 @@ def pac_management(request):
     company = get_user_company(request)
     current_year = timezone.now().year
     
-    period = get_object_or_404(BudgetPeriod, company=company, year=current_year)
+    # Obtener o crear el período presupuestal para el año actual
+    period, created = BudgetPeriod.objects.get_or_create(
+        company=company, 
+        year=current_year,
+        defaults={
+            'name': f'Presupuesto {current_year}',
+            'start_date': timezone.datetime(current_year, 1, 1).date(),
+            'end_date': timezone.datetime(current_year, 12, 31).date(),
+            'status': 'active'
+        }
+    )
     
     if request.method == 'POST':
         # Actualizar PAC
@@ -495,7 +539,17 @@ def budget_execution_report(request):
     company = get_user_company(request)
     current_year = timezone.now().year
     
-    period = get_object_or_404(BudgetPeriod, company=company, year=current_year)
+    # Obtener o crear el período presupuestal para el año actual
+    period, created = BudgetPeriod.objects.get_or_create(
+        company=company, 
+        year=current_year,
+        defaults={
+            'name': f'Presupuesto {current_year}',
+            'start_date': timezone.datetime(current_year, 1, 1).date(),
+            'end_date': timezone.datetime(current_year, 12, 31).date(),
+            'status': 'active'
+        }
+    )
     
     # Obtener rubros con ejecución
     rubros = BudgetRubro.objects.filter(
@@ -529,7 +583,17 @@ def budget_modifications(request):
     company = get_user_company(request)
     current_year = timezone.now().year
     
-    period = get_object_or_404(BudgetPeriod, company=company, year=current_year)
+    # Obtener o crear el período presupuestal para el año actual
+    period, created = BudgetPeriod.objects.get_or_create(
+        company=company, 
+        year=current_year,
+        defaults={
+            'name': f'Presupuesto {current_year}',
+            'start_date': timezone.datetime(current_year, 1, 1).date(),
+            'end_date': timezone.datetime(current_year, 12, 31).date(),
+            'status': 'active'
+        }
+    )
     
     if request.method == 'POST':
         try:

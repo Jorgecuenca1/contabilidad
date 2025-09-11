@@ -1,0 +1,180 @@
+{% extends 'base.html' %}
+
+{% block title %}Gestión de Terceros - {{ company.name }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2><i class="bi bi-people"></i> Gestión de Terceros</h2>
+                <a href="{% url 'third_parties:create' %}" class="btn btn-primary">
+                    <i class="bi bi-person-plus"></i> Nuevo Tercero
+                </a>
+            </div>
+            
+            <!-- Filtros -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <form method="get" class="row g-3">
+                        <div class="col-md-4">
+                            <input type="text" name="search" class="form-control" placeholder="Buscar por documento, nombre, email..." value="{{ search }}">
+                        </div>
+                        <div class="col-md-3">
+                            <select name="type" class="form-select">
+                                <option value="">Todos los tipos</option>
+                                <option value="customer" {% if filter_type == 'customer' %}selected{% endif %}>Clientes</option>
+                                <option value="supplier" {% if filter_type == 'supplier' %}selected{% endif %}>Proveedores</option>
+                                <option value="employee" {% if filter_type == 'employee' %}selected{% endif %}>Empleados</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <button type="submit" class="btn btn-outline-primary">
+                                <i class="bi bi-search"></i> Buscar
+                            </button>
+                        </div>
+                        <div class="col-md-2">
+                            <a href="{% url 'third_parties:list' %}" class="btn btn-outline-secondary">
+                                <i class="bi bi-x-circle"></i> Limpiar
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Lista de terceros -->
+            <div class="card">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Tipo</th>
+                                    <th>Documento</th>
+                                    <th>Nombre/Razón Social</th>
+                                    <th>Email</th>
+                                    <th>Ciudad</th>
+                                    <th>Clasificación</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for third_party in page_obj %}
+                                <tr>
+                                    <td>
+                                        {% if third_party.person_type == 'NATURAL' %}
+                                            <span class="badge bg-info">
+                                                <i class="bi bi-person"></i> Natural ({{ third_party.tax_code }})
+                                            </span>
+                                        {% else %}
+                                            <span class="badge bg-warning">
+                                                <i class="bi bi-building"></i> Jurídica ({{ third_party.tax_code }})
+                                            </span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {{ third_party.document_type }} {{ third_party.document_number }}
+                                        {% if third_party.verification_digit %}
+                                            -{{ third_party.verification_digit }}
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <strong>{{ third_party.get_full_name }}</strong>
+                                        {% if third_party.trade_name and third_party.trade_name != third_party.get_full_name %}
+                                            <br><small class="text-muted">{{ third_party.trade_name }}</small>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if third_party.email %}
+                                            <a href="mailto:{{ third_party.email }}">{{ third_party.email }}</a>
+                                        {% else %}
+                                            <span class="text-muted">No registrado</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ third_party.city }}, {{ third_party.state }}</td>
+                                    <td>
+                                        {% if third_party.is_customer %}
+                                            <span class="badge bg-success">Cliente</span>
+                                        {% endif %}
+                                        {% if third_party.is_supplier %}
+                                            <span class="badge bg-primary">Proveedor</span>
+                                        {% endif %}
+                                        {% if third_party.is_employee %}
+                                            <span class="badge bg-info">Empleado</span>
+                                        {% endif %}
+                                        {% if third_party.is_shareholder %}
+                                            <span class="badge bg-warning">Accionista</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if third_party.is_active %}
+                                            <span class="badge bg-success">Activo</span>
+                                        {% else %}
+                                            <span class="badge bg-danger">Inactivo</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <a href="{% url 'third_parties:detail' third_party.pk %}" class="btn btn-outline-info">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+                                            <a href="{% url 'third_parties:edit' third_party.pk %}" class="btn btn-outline-warning">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                            <a href="{% url 'third_parties:delete' third_party.pk %}" class="btn btn-outline-danger">
+                                                <i class="bi bi-trash"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="8" class="text-center text-muted">
+                                        No se encontraron terceros
+                                        {% if search %}
+                                            con el criterio "{{ search }}"
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- Paginación -->
+                    {% if page_obj.has_other_pages %}
+                    <nav aria-label="Navegación de páginas">
+                        <ul class="pagination justify-content-center">
+                            {% if page_obj.has_previous %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page=1{% if search %}&search={{ search }}{% endif %}{% if filter_type %}&type={{ filter_type }}{% endif %}">&laquo; Primera</a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if search %}&search={{ search }}{% endif %}{% if filter_type %}&type={{ filter_type }}{% endif %}">Anterior</a>
+                                </li>
+                            {% endif %}
+                            
+                            <li class="page-item active">
+                                <span class="page-link">
+                                    Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
+                                </span>
+                            </li>
+                            
+                            {% if page_obj.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if search %}&search={{ search }}{% endif %}{% if filter_type %}&type={{ filter_type }}{% endif %}">Siguiente</a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if search %}&search={{ search }}{% endif %}{% if filter_type %}&type={{ filter_type }}{% endif %}">Última &raquo;</a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
