@@ -1,0 +1,277 @@
+{% extends 'base.html' %}
+
+{% block title %}Historias Clínicas{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1><i class="bi bi-file-medical me-2"></i>Historias Clínicas</h1>
+                <div>
+                    <a href="{% url 'medical_records:new_record' %}" class="btn btn-primary">
+                        <i class="bi bi-plus-circle me-1"></i>Nueva Historia Clínica
+                    </a>
+                    <a href="{% url 'medical_records:dashboard' %}" class="btn btn-outline-secondary">
+                        <i class="bi bi-house me-1"></i>Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Breadcrumb -->
+    <div class="row mb-3">
+        <div class="col-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'core:dashboard' %}">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'medical_records:dashboard' %}">Historia Clínica</a></li>
+                    <li class="breadcrumb-item active">Historias Clínicas</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Filtros -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-funnel me-2"></i>Filtros de Búsqueda</h5>
+                </div>
+                <div class="card-body">
+                    <form method="get" class="row g-3">
+                        <div class="col-md-3">
+                            <label for="record_type" class="form-label">Especialidad</label>
+                            <select class="form-select" id="record_type" name="record_type">
+                                <option value="">Todas las especialidades</option>
+                                {% for value, label in record_type_choices %}
+                                <option value="{{ value }}" {% if filters.record_type == value %}selected{% endif %}>{{ label }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label for="status" class="form-label">Estado</label>
+                            <select class="form-select" id="status" name="status">
+                                <option value="">Todos los estados</option>
+                                {% for value, label in status_choices %}
+                                <option value="{{ value }}" {% if filters.status == value %}selected{% endif %}>{{ label }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-5">
+                            <label for="search" class="form-label">Buscar</label>
+                            <input type="text" class="form-control" id="search" name="search" 
+                                   placeholder="Número, paciente o médico..." value="{{ filters.search }}">
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">&nbsp;</label>
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-search"></i> Buscar
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lista de Historias Clínicas -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="bi bi-list me-2"></i>Lista de Historias Clínicas</h5>
+                    <span class="badge bg-primary">{{ records.paginator.count }} historias</span>
+                </div>
+                <div class="card-body">
+                    {% if records %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>N° Historia</th>
+                                        <th>Paciente</th>
+                                        <th>Especialidad</th>
+                                        <th>Médico Tratante</th>
+                                        <th>Estado</th>
+                                        <th>Última Actualización</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for record in records %}
+                                    <tr>
+                                        <td>
+                                            <strong class="text-primary">{{ record.record_number }}</strong>
+                                        </td>
+                                        <td>
+                                            <div>
+                                                <strong>{{ record.patient.get_full_name }}</strong>
+                                                <br><small class="text-muted">{{ record.patient.document_number }}</small>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            {% if record.record_type == 'general' %}
+                                                <span class="badge bg-info">{{ record.get_record_type_display }}</span>
+                                            {% elif record.record_type == 'ginecologia' %}
+                                                <span class="badge bg-danger">{{ record.get_record_type_display }}</span>
+                                            {% elif record.record_type == 'pediatria' %}
+                                                <span class="badge bg-success">{{ record.get_record_type_display }}</span>
+                                            {% elif record.record_type == 'cardiologia' %}
+                                                <span class="badge bg-warning">{{ record.get_record_type_display }}</span>
+                                            {% else %}
+                                                <span class="badge bg-secondary">{{ record.get_record_type_display }}</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {{ record.attending_physician.get_full_name }}
+                                        </td>
+                                        <td>
+                                            {% if record.status == 'active' %}
+                                                <span class="badge bg-success">{{ record.get_status_display }}</span>
+                                            {% elif record.status == 'inactive' %}
+                                                <span class="badge bg-secondary">{{ record.get_status_display }}</span>
+                                            {% elif record.status == 'transferred' %}
+                                                <span class="badge bg-warning">{{ record.get_status_display }}</span>
+                                            {% else %}
+                                                <span class="badge bg-danger">{{ record.get_status_display }}</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <small>{{ record.last_update|date:"d/m/Y H:i" }}</small>
+                                        </td>
+                                        <td>
+                                            <div class="btn-group btn-group-sm" role="group">
+                                                <a href="{% url 'medical_records:detail' record.id %}" 
+                                                   class="btn btn-outline-primary" title="Ver Historia">
+                                                    <i class="bi bi-eye"></i>
+                                                </a>
+                                                <a href="{% url 'medical_records:new_consultation' record.id %}" 
+                                                   class="btn btn-outline-success" title="Nueva Consulta">
+                                                    <i class="bi bi-plus-circle"></i>
+                                                </a>
+                                                <button type="button" class="btn btn-outline-info" 
+                                                        onclick="printRecord('{{ record.id }}')" title="Imprimir">
+                                                    <i class="bi bi-printer"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Paginación -->
+                        {% if records.has_other_pages %}
+                        <nav aria-label="Paginación" class="mt-3">
+                            <ul class="pagination justify-content-center">
+                                {% if records.has_previous %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page=1{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">&laquo; Primera</a>
+                                    </li>
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ records.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">Anterior</a>
+                                    </li>
+                                {% endif %}
+
+                                <li class="page-item active">
+                                    <span class="page-link">
+                                        Página {{ records.number }} de {{ records.paginator.num_pages }}
+                                    </span>
+                                </li>
+
+                                {% if records.has_next %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ records.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">Siguiente</a>
+                                    </li>
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ records.paginator.num_pages }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">Última &raquo;</a>
+                                    </li>
+                                {% endif %}
+                            </ul>
+                        </nav>
+                        {% endif %}
+                    {% else %}
+                        <div class="text-center py-5">
+                            <i class="bi bi-file-medical-fill display-1 text-muted"></i>
+                            <h3 class="mt-3">No hay historias clínicas</h3>
+                            <p class="text-muted">No se encontraron historias clínicas que coincidan con los filtros seleccionados.</p>
+                            <a href="{% url 'medical_records:new_record' %}" class="btn btn-primary">
+                                <i class="bi bi-plus-circle me-1"></i>Crear Primera Historia Clínica
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function printRecord(recordId) {
+    window.open(`/medical-records/records/${recordId}/print/`, '_blank');
+}
+
+// Filtros dinámicos
+document.addEventListener('DOMContentLoaded', function() {
+    const recordTypeFilter = document.getElementById('record_type');
+    const statusFilter = document.getElementById('status');
+    
+    // Auto-submit en cambio de filtros
+    recordTypeFilter.addEventListener('change', function() {
+        this.form.submit();
+    });
+    
+    statusFilter.addEventListener('change', function() {
+        this.form.submit();
+    });
+    
+    // Búsqueda con delay
+    const searchFilter = document.getElementById('search');
+    let searchTimeout;
+    searchFilter.addEventListener('input', function() {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+            this.form.submit();
+        }, 500);
+    });
+});
+</script>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.table th {
+    font-weight: 600;
+    background-color: #f8f9fa;
+}
+
+.badge {
+    font-size: 0.75em;
+}
+
+.btn-group-sm .btn {
+    padding: 0.25rem 0.5rem;
+}
+
+.card-header {
+    background-color: #f8f9fa;
+    border-bottom: 2px solid #dee2e6;
+}
+
+.table td {
+    vertical-align: middle;
+}
+
+.pagination {
+    margin-top: 1rem;
+}
+</style>
+{% endblock %}

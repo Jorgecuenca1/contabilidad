@@ -1,0 +1,290 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ record.record_number }} - Historia Clínica{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1><i class="bi bi-file-medical me-2"></i>Historia Clínica</h1>
+                <div>
+                    <a href="{% url 'medical_records:new_consultation' record.id %}" class="btn btn-success me-2">
+                        <i class="bi bi-plus-circle me-1"></i>Nueva Consulta
+                    </a>
+                    <a href="{% url 'medical_records:list' %}" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-left me-1"></i>Volver a Lista
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Breadcrumb -->
+    <div class="row mb-3">
+        <div class="col-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'core:dashboard' %}">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'medical_records:dashboard' %}">Historia Clínica</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'medical_records:list' %}">Historias</a></li>
+                    <li class="breadcrumb-item active">{{ record.record_number }}</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Información Principal -->
+        <div class="col-lg-8">
+            <!-- Datos del Paciente -->
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-person me-2"></i>Información del Paciente
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <h6 class="text-muted mb-2">Nombre Completo</h6>
+                            <h4 class="text-dark">{{ record.patient.get_full_name }}</h4>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-muted mb-2">Documento</h6>
+                            <p class="h5">{{ record.patient.document_number }}</p>
+                        </div>
+                        {% if record.patient.birth_date %}
+                        <div class="col-md-4">
+                            <h6 class="text-muted mb-2">Fecha de Nacimiento</h6>
+                            <p class="mb-0">{{ record.patient.birth_date|date:"d/m/Y" }}</p>
+                        </div>
+                        {% endif %}
+                        {% if record.patient.phone %}
+                        <div class="col-md-4">
+                            <h6 class="text-muted mb-2">Teléfono</h6>
+                            <p class="mb-0">{{ record.patient.phone }}</p>
+                        </div>
+                        {% endif %}
+                        {% if record.patient.email %}
+                        <div class="col-md-4">
+                            <h6 class="text-muted mb-2">Email</h6>
+                            <p class="mb-0">{{ record.patient.email }}</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Historial de Consultas -->
+            <div class="card mb-4">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-calendar2-check me-2"></i>Historial de Consultas
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if consultations %}
+                        <div class="timeline">
+                            {% for consultation in consultations %}
+                            <div class="timeline-item mb-4">
+                                <div class="timeline-marker"></div>
+                                <div class="timeline-content">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div>
+                                            <h6 class="mb-1">
+                                                <a href="{% url 'medical_records:consultation_detail' consultation.id %}" 
+                                                   class="text-decoration-none">
+                                                    {{ consultation.get_consultation_type_display }}
+                                                </a>
+                                            </h6>
+                                            <p class="text-muted mb-1">
+                                                {{ consultation.consultation_date|date:"d/m/Y H:i" }} - 
+                                                Dr. {{ consultation.attending_physician.get_full_name }}
+                                            </p>
+                                            {% if consultation.reason %}
+                                                <p class="mb-2">{{ consultation.reason|truncatechars:100 }}</p>
+                                            {% endif %}
+                                        </div>
+                                        <span class="badge bg-{{ consultation.status == 'completed'|yesno:'success,warning' }}">
+                                            {{ consultation.get_status_display }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="bi bi-calendar-x fs-1 text-muted"></i>
+                            <p class="text-muted mt-2">No hay consultas registradas</p>
+                            <a href="{% url 'medical_records:new_consultation' record.id %}" class="btn btn-primary">
+                                <i class="bi bi-plus-circle me-1"></i>Primera Consulta
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Panel Lateral -->
+        <div class="col-lg-4">
+            <!-- Información de la Historia -->
+            <div class="card mb-4">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-file-medical me-2"></i>Datos de la Historia
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <h6 class="text-muted mb-1">Número de Historia</h6>
+                        <h4 class="text-success">{{ record.record_number }}</h4>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <h6 class="text-muted mb-1">Especialidad</h6>
+                        <span class="badge bg-info fs-6">{{ record.get_record_type_display }}</span>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <h6 class="text-muted mb-1">Estado</h6>
+                        <span class="badge bg-{{ record.status == 'active'|yesno:'success,secondary' }} fs-6">
+                            {{ record.get_status_display }}
+                        </span>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <h6 class="text-muted mb-1">Médico Tratante</h6>
+                        <p class="mb-0">{{ record.attending_physician.get_full_name }}</p>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <h6 class="text-muted mb-1">Creada</h6>
+                        <p class="mb-0">{{ record.created_at|date:"d/m/Y H:i" }}</p>
+                    </div>
+                    
+                    <div>
+                        <h6 class="text-muted mb-1">Última Actualización</h6>
+                        <p class="mb-0">{{ record.last_update|date:"d/m/Y H:i" }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Acciones Rápidas -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h6 class="mb-0">
+                        <i class="bi bi-lightning-charge me-1"></i>Acciones Rápidas
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'medical_records:new_consultation' record.id %}" class="btn btn-primary">
+                            <i class="bi bi-plus-circle me-1"></i>Nueva Consulta
+                        </a>
+                        <button type="button" class="btn btn-outline-info" onclick="printRecord()">
+                            <i class="bi bi-printer me-1"></i>Imprimir Historia
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary" onclick="editRecord()">
+                            <i class="bi bi-pencil me-1"></i>Editar Historia
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Archivos Adjuntos -->
+            {% if attachments %}
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="mb-0">
+                        <i class="bi bi-paperclip me-1"></i>Archivos Adjuntos
+                    </h6>
+                </div>
+                <div class="card-body">
+                    {% for attachment in attachments %}
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <div>
+                            <small class="text-muted">{{ attachment.created_at|date:"d/m/Y" }}</small>
+                            <br>{{ attachment.description|default:"Sin descripción" }}
+                        </div>
+                        <a href="{{ attachment.file.url }}" target="_blank" class="btn btn-outline-primary btn-sm">
+                            <i class="bi bi-download"></i>
+                        </a>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function printRecord() {
+    window.open('{% url "medical_records:detail" record.id %}print/', '_blank');
+}
+
+function editRecord() {
+    window.location.href = '{% url "medical_records:detail" record.id %}edit/';
+}
+</script>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.timeline {
+    position: relative;
+    padding-left: 30px;
+}
+
+.timeline::before {
+    content: '';
+    position: absolute;
+    left: 15px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: #007bff;
+}
+
+.timeline-item {
+    position: relative;
+}
+
+.timeline-marker {
+    position: absolute;
+    left: -37px;
+    top: 5px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #007bff;
+    border: 3px solid #fff;
+    box-shadow: 0 0 0 2px #007bff;
+}
+
+.timeline-content {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    border-left: 3px solid #007bff;
+}
+
+.card {
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    border: 1px solid rgba(0, 0, 0, 0.125);
+}
+
+.badge {
+    font-size: 0.875rem;
+    padding: 0.5rem 0.75rem;
+}
+
+.fs-6 {
+    font-size: 1rem !important;
+}
+</style>
+{% endblock %}

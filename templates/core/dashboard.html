@@ -77,7 +77,6 @@
 </div>
 {% endif %}
 
-
 <!-- Gestión de Módulos -->
 <div class="row mb-4">
     <div class="col-12">
@@ -87,9 +86,11 @@
                 <p class="text-muted">Haga clic en cualquier módulo para acceder a sus funcionalidades completas</p>
             </div>
             <div>
-                <a href="{% url 'core:manage_modules' %}" class="btn btn-primary">
-                    <i class="bi bi-plus-circle"></i> Agregar Módulos
-                </a>
+                {% if is_admin %}
+                    <a href="{% url 'core:company_modules_config' active_company.id %}" class="btn btn-primary">
+                        <i class="bi bi-gear"></i> Configurar Módulos
+                    </a>
+                {% endif %}
             </div>
         </div>
     </div>
@@ -246,7 +247,6 @@
                 <h5><i class="bi bi-journal-bookmark"></i> CONTABILIDAD GENERAL</h5>
             </div>
             <div class="card-body">
-                
                 <div class="d-grid gap-2">
                     <a href="{% url 'accounting:new_journal_entry' %}" class="btn btn-primary btn-sm">
                         <i class="bi bi-plus-circle"></i> Nuevo Asiento Contable
@@ -266,7 +266,6 @@
                 <h5><i class="bi bi-person-check"></i> CUENTAS POR COBRAR</h5>
             </div>
             <div class="card-body">
-                
                 <div class="d-grid gap-2">
                     <a href="{% url 'accounts_receivable:new_invoice' %}" class="btn btn-success btn-sm">
                         <i class="bi bi-receipt"></i> Nueva Factura de Venta
@@ -286,7 +285,6 @@
                 <h5><i class="bi bi-truck"></i> CUENTAS POR PAGAR</h5>
             </div>
             <div class="card-body">
-                
                 <div class="d-grid gap-2">
                     <a href="{% url 'accounts_payable:new_purchase_invoice' %}" class="btn btn-danger btn-sm">
                         <i class="bi bi-file-earmark-plus"></i> Nueva Factura Compra
@@ -308,7 +306,6 @@
                 <h5><i class="bi bi-bank"></i> TESORERÍA</h5>
             </div>
             <div class="card-body">
-                
                 <div class="d-grid gap-2">
                     <a href="{% url 'treasury:bank_movement' %}" class="btn btn-info btn-sm">
                         <i class="bi bi-arrow-left-right"></i> Movimiento Bancario
@@ -328,7 +325,6 @@
                 <h5><i class="bi bi-people-fill"></i> NÓMINA ELECTRÓNICA</h5>
             </div>
             <div class="card-body">
-                
                 <div class="d-grid gap-2">
                     <a href="/payroll/" class="btn btn-warning btn-sm">
                         <i class="bi bi-calculator"></i> Dashboard Nómina
@@ -348,7 +344,6 @@
                 <h5><i class="bi bi-receipt-cutoff"></i> IMPUESTOS COLOMBIA</h5>
             </div>
             <div class="card-body">
-                
                 <div class="d-grid gap-2">
                     <a href="/taxes/" class="btn btn-secondary btn-sm">
                         <i class="bi bi-file-earmark-text"></i> Dashboard Impuestos
@@ -370,33 +365,63 @@
 </div>
 
 <div class="row mb-4">
-    <!-- Sector Público -->
-    <div class="col-md-6 mb-3">
-        <div class="card h-100 border-primary shadow-sm">
-            <div class="card-header bg-primary text-white">
-                <h5><i class="bi bi-building-gear"></i> SECTOR PÚBLICO</h5>
+    <!-- Módulos del Sector Público - Solo mostrar si la empresa es pública -->
+    {% if is_public_company %}
+    <div class="col-md-4 mb-3">
+        <div class="card h-100 border-success shadow-sm">
+            <div class="card-header bg-success text-white">
+                <h5><i class="bi bi-bank2"></i> PRESUPUESTO</h5>
             </div>
             <div class="card-body">
-                
                 <div class="d-grid gap-2">
-                    <a href="/public-sector/" class="btn btn-primary btn-sm">
-                        <i class="bi bi-building-gear"></i> Dashboard Sector Público
+                    <a href="/budget/" class="btn btn-success btn-sm">
+                        <i class="bi bi-clipboard-data"></i> Dashboard Presupuesto
                     </a>
                 </div>
             </div>
         </div>
     </div>
+    
+    <div class="col-md-4 mb-3">
+        <div class="card h-100 border-warning shadow-sm">
+            <div class="card-header bg-warning text-white">
+                <h5><i class="bi bi-clipboard-check"></i> CDP</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="/cdp/" class="btn btn-warning btn-sm">
+                        <i class="bi bi-file-earmark-check"></i> Dashboard CDP
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4 mb-3">
+        <div class="card h-100 border-info shadow-sm">
+            <div class="card-header bg-info text-white">
+                <h5><i class="bi bi-diagram-3"></i> BANCO PROYECTOS</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="/project-bank/" class="btn btn-info btn-sm">
+                        <i class="bi bi-folder-plus"></i> Dashboard Proyectos
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
 
-    <!-- Reportes -->
+    <!-- Reportes (Siempre visible) -->
     <div class="col-md-6 mb-3">
-        <div class="card h-100 border-success shadow-sm">
-            <div class="card-header bg-success text-white">
+        <div class="card h-100 border-primary shadow-sm">
+            <div class="card-header bg-primary text-white">
                 <h5><i class="bi bi-file-earmark-bar-graph"></i> CENTRO DE REPORTES</h5>
             </div>
             <div class="card-body">
-                
                 <div class="d-grid gap-2">
-                    <a href="{% url 'reports:dashboard' %}" class="btn btn-success btn-sm">
+                    <a href="{% url 'reports:dashboard' %}" class="btn btn-primary btn-sm">
                         <i class="bi bi-file-earmark-bar-graph"></i> Centro de Reportes
                     </a>
                 </div>
@@ -508,38 +533,59 @@
     </div>
 </div>
 
-<!-- Módulos Disponibles -->
-<div class="row">
+<!-- Estado de Módulos Activos -->
+{% if active_company %}
+<div class="row mb-4">
     <div class="col-12">
-        <div class="card bg-light">
-            <div class="card-header">
-                <h5><i class="bi bi-grid-3x3-gap"></i> Módulos del Sistema</h5>
+        <div class="card border-success">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0">
+                    <i class="bi bi-check-circle me-2"></i>
+                    Estado de Módulos - {{ active_company.name }}
+                </h5>
             </div>
             <div class="card-body">
                 <div class="row">
-                    <div class="col-md-6">
-                        <ul class="list-unstyled">
-                            <li>📊 <strong>Contabilidad General</strong> - Plan de cuentas PUC, asientos contables</li>
-                            <li>💰 <strong>Cuentas por Cobrar</strong> - Facturación, clientes, cartera</li>
-                            <li>🏪 <strong>Cuentas por Pagar</strong> - Proveedores, compras, pagos</li>
-                            <li>🏦 <strong>Tesorería</strong> - Bancos, flujo de caja, conciliaciones</li>
-                            <li>👥 <strong>Nómina</strong> - Empleados, liquidaciones, prestaciones sociales</li>
-                        </ul>
-                    </div>
-                    <div class="col-md-6">
-                        <ul class="list-unstyled">
-                            <li>📋 <strong>Impuestos</strong> - IVA, retenciones, declaraciones DIAN</li>
-                            <li>🏛️ <strong>Sector Público</strong> - Presupuesto, CDP, RP, contabilidad pública</li>
-                            <li>📈 <strong>Reportes</strong> - Estados financieros, informes legales</li>
-                            <li>📦 <strong>Inventarios</strong> - Control de mercancías y productos</li>
-                            <li>🏢 <strong>Activos Fijos</strong> - Depreciaciones, mantenimientos</li>
-                        </ul>
-                    </div>
+                    {% if active_modules_by_category %}
+                        {% for category, modules_info in active_modules_by_category.items %}
+                        <div class="col-md-6 col-lg-4 mb-3">
+                            <div class="card h-100 border-light">
+                                <div class="card-header bg-light">
+                                    <h6 class="mb-0">{{ category }}</h6>
+                                </div>
+                                <div class="card-body p-2">
+                                    {% for module_info in modules_info %}
+                                    {% with module=module_info.module %}
+                                    <div class="d-flex align-items-center mb-2">
+                                        <i class="bi bi-check-circle-fill text-success me-2"></i>
+                                        <small class="text-success">{{ module.name }}</small>
+                                    </div>
+                                    {% endwith %}
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="col-12 text-center">
+                            <div class="alert alert-warning">
+                                <i class="bi bi-exclamation-triangle me-2"></i>
+                                No hay módulos activos para esta empresa.
+                                {% if is_admin %}
+                                <br><a href="{% url 'core:company_modules_config' active_company.id %}" class="btn btn-warning btn-sm mt-2">
+                                    <i class="bi bi-gear me-1"></i>
+                                    Activar Módulos
+                                </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endif %}
                 </div>
             </div>
         </div>
     </div>
 </div>
+{% endif %}
 
 {% endblock %}
 
@@ -598,6 +644,29 @@
 .alert-success {
     border-left-color: #198754;
 }
+
+/* Módulos dinámicos */
+.module-card {
+    transition: all 0.3s ease;
+    border-radius: 15px;
+}
+
+.module-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.module-card.border-success {
+    border-color: #28a745 !important;
+    border-width: 2px;
+}
+
+.module-icon {
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
 </style>
 {% endblock %}
 
@@ -605,20 +674,40 @@
 <script>
 function updateDateTime() {
     const now = new Date();
-    const dateOptions = { 
-        weekday: 'long', 
+    const options = { 
+        weekday: 'short', 
         year: 'numeric', 
-        month: 'long', 
-        day: 'numeric' 
-    };
-    const timeOptions = { 
+        month: 'short', 
+        day: 'numeric',
         hour: '2-digit', 
-        minute: '2-digit', 
-        second: '2-digit' 
+        minute: '2-digit'
     };
     
-    document.getElementById('currentDate').textContent = now.toLocaleDateString('es-CO', dateOptions);
-    document.getElementById('currentTime').textContent = now.toLocaleTimeString('es-CO', timeOptions);
+    // Actualizar fecha y hora en encabezado principal si existe
+    const currentDate = document.getElementById('currentDate');
+    if (currentDate) {
+        currentDate.textContent = now.toLocaleDateString('es-CO', {
+            weekday: 'long', 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric'
+        });
+    }
+    
+    const currentTime = document.getElementById('currentTime');
+    if (currentTime) {
+        currentTime.textContent = now.toLocaleTimeString('es-CO', { 
+            hour: '2-digit', 
+            minute: '2-digit', 
+            second: '2-digit' 
+        });
+    }
+    
+    // Actualizar fecha y hora en empresa activa
+    const currentDateTime = document.getElementById('currentDateTime');
+    if (currentDateTime) {
+        currentDateTime.textContent = now.toLocaleDateString('es-CO', options);
+    }
 }
 
 // Actualizar fecha y hora cada segundo

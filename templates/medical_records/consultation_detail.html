@@ -1,0 +1,402 @@
+{% extends 'base.html' %}
+
+{% block title %}Consulta {{ consultation.id|truncatechars:8 }} - Detalle{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1><i class="bi bi-calendar2-check me-2"></i>Detalle de Consulta</h1>
+                <div>
+                    <button type="button" class="btn btn-outline-info me-2" onclick="printConsultation()">
+                        <i class="bi bi-printer me-1"></i>Imprimir
+                    </button>
+                    <a href="{% url 'medical_records:consultations_list' %}" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-left me-1"></i>Volver a Lista
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Breadcrumb -->
+    <div class="row mb-3">
+        <div class="col-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'core:dashboard' %}">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'medical_records:dashboard' %}">Historia Clínica</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'medical_records:consultations_list' %}">Consultas</a></li>
+                    <li class="breadcrumb-item active">{{ consultation.id|truncatechars:8 }}</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Información Principal -->
+        <div class="col-lg-8">
+            <!-- Información de la Consulta -->
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-info-circle me-2"></i>Información de la Consulta
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <h6 class="text-muted mb-2">Fecha y Hora</h6>
+                            <h4 class="text-primary">{{ consultation.consultation_date|date:"d/m/Y H:i" }}</h4>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-muted mb-2">Tipo de Consulta</h6>
+                            <span class="badge bg-info fs-6">{{ consultation.get_consultation_type_display }}</span>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <h6 class="text-muted mb-2">Paciente</h6>
+                            <p class="h5">
+                                <a href="{% url 'medical_records:detail' record.id %}" class="text-decoration-none">
+                                    {{ record.patient.get_full_name }}
+                                </a>
+                            </p>
+                            <small class="text-muted">{{ record.patient.document_number }}</small>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <h6 class="text-muted mb-2">Historia Clínica</h6>
+                            <p class="h5">
+                                <a href="{% url 'medical_records:detail' record.id %}" class="text-decoration-none text-primary">
+                                    {{ record.record_number }}
+                                </a>
+                            </p>
+                            <small class="text-muted">{{ record.get_record_type_display }}</small>
+                        </div>
+                        
+                        <div class="col-12">
+                            <h6 class="text-muted mb-2">Médico Tratante</h6>
+                            <p class="mb-0">{{ consultation.attending_physician.get_full_name }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Motivo de Consulta -->
+            {% if consultation.reason %}
+            <div class="card mb-4">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-chat-text me-2"></i>Motivo de Consulta
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <p class="mb-0">{{ consultation.reason|linebreaks }}</p>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Historia Actual -->
+            {% if consultation.current_history %}
+            <div class="card mb-4">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0">
+                        <i class="bi bi-journal-text me-2"></i>Historia de la Enfermedad Actual
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <p class="mb-0">{{ consultation.current_history|linebreaks }}</p>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Examen Físico -->
+            {% if consultation.physical_examination %}
+            <div class="card mb-4">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-activity me-2"></i>Examen Físico
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <p class="mb-0">{{ consultation.physical_examination|linebreaks }}</p>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Diagnósticos -->
+            {% if consultation.diagnosis %}
+            <div class="card mb-4">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-clipboard-data me-2"></i>Diagnósticos
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <p class="mb-0">{{ consultation.diagnosis|linebreaks }}</p>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Plan de Tratamiento -->
+            {% if consultation.treatment_plan %}
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-prescription2 me-2"></i>Plan de Tratamiento
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <p class="mb-0">{{ consultation.treatment_plan|linebreaks }}</p>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Observaciones -->
+            {% if consultation.observations %}
+            <div class="card mb-4">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-journal-check me-2"></i>Observaciones Adicionales
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <p class="mb-0">{{ consultation.observations|linebreaks }}</p>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Panel Lateral -->
+        <div class="col-lg-4">
+            <!-- Estado y Información -->
+            <div class="card mb-4">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-info-square me-2"></i>Estado de la Consulta
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <h6 class="text-muted mb-1">Estado Actual</h6>
+                        {% if consultation.status == 'scheduled' %}
+                            <span class="badge bg-secondary fs-6">{{ consultation.get_status_display }}</span>
+                        {% elif consultation.status == 'in_progress' %}
+                            <span class="badge bg-warning fs-6">{{ consultation.get_status_display }}</span>
+                        {% elif consultation.status == 'completed' %}
+                            <span class="badge bg-success fs-6">{{ consultation.get_status_display }}</span>
+                        {% elif consultation.status == 'cancelled' %}
+                            <span class="badge bg-danger fs-6">{{ consultation.get_status_display }}</span>
+                        {% else %}
+                            <span class="badge bg-info fs-6">{{ consultation.get_status_display }}</span>
+                        {% endif %}
+                    </div>
+                    
+                    {% if consultation.vital_signs %}
+                    <div class="mb-3">
+                        <h6 class="text-muted mb-1">Signos Vitales</h6>
+                        <div class="bg-light p-3 rounded">
+                            <p class="mb-0 small">{{ consultation.vital_signs|linebreaks }}</p>
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="mb-3">
+                        <h6 class="text-muted mb-1">Duración</h6>
+                        <p class="mb-0">{{ consultation.duration|default:"No especificada" }}</p>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <h6 class="text-muted mb-1">Próxima Cita</h6>
+                        {% if consultation.next_appointment_date %}
+                            <p class="mb-0 text-primary">{{ consultation.next_appointment_date|date:"d/m/Y" }}</p>
+                        {% else %}
+                            <p class="mb-0 text-muted">No programada</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Acciones Rápidas -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h6 class="mb-0">
+                        <i class="bi bi-lightning-charge me-1"></i>Acciones Rápidas
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        {% if consultation.status != 'completed' %}
+                        <button type="button" class="btn btn-primary" onclick="editConsultation()">
+                            <i class="bi bi-pencil me-1"></i>Editar Consulta
+                        </button>
+                        {% endif %}
+                        <button type="button" class="btn btn-outline-info" onclick="printConsultation()">
+                            <i class="bi bi-printer me-1"></i>Imprimir Consulta
+                        </button>
+                        <a href="{% url 'medical_records:new_consultation' record.id %}" class="btn btn-outline-success">
+                            <i class="bi bi-plus-circle me-1"></i>Nueva Consulta
+                        </a>
+                        <a href="{% url 'medical_records:detail' record.id %}" class="btn btn-outline-secondary">
+                            <i class="bi bi-file-medical me-1"></i>Ver Historia Completa
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Información del Sistema -->
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="mb-0">
+                        <i class="bi bi-gear me-1"></i>Información del Sistema
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="small">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-muted">Creada:</span>
+                            <span>{{ consultation.created_at|date:"d/m/Y H:i" }}</span>
+                        </div>
+                        {% if consultation.updated_at %}
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-muted">Actualizada:</span>
+                            <span>{{ consultation.updated_at|date:"d/m/Y H:i" }}</span>
+                        </div>
+                        {% endif %}
+                        <div class="d-flex justify-content-between">
+                            <span class="text-muted">Por:</span>
+                            <span>{{ consultation.created_by.get_full_name|default:consultation.created_by.username }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function editConsultation() {
+    window.location.href = '{% url "medical_records:consultation_detail" consultation.id %}edit/';
+}
+
+function printConsultation() {
+    const printWindow = window.open('', '_blank');
+    const consultationInfo = `
+        <html>
+            <head>
+                <title>Consulta Médica - {{ record.patient.get_full_name }}</title>
+                <style>
+                    body { font-family: Arial, sans-serif; margin: 20px; }
+                    .header { text-align: center; border-bottom: 2px solid #007bff; padding-bottom: 10px; margin-bottom: 20px; }
+                    .section { margin-bottom: 20px; }
+                    .label { font-weight: bold; color: #333; }
+                    .value { color: #666; margin-bottom: 10px; }
+                    .content { background-color: #f8f9fa; padding: 15px; border-left: 4px solid #007bff; margin: 10px 0; }
+                </style>
+            </head>
+            <body>
+                <div class="header">
+                    <h1>Consulta Médica</h1>
+                    <p>{{ record.patient.get_full_name }} - Historia: {{ record.record_number }}</p>
+                    <p>Fecha: {{ consultation.consultation_date|date:"d/m/Y H:i" }}</p>
+                </div>
+                
+                <div class="section">
+                    <span class="label">Tipo de Consulta:</span>
+                    <div class="value">{{ consultation.get_consultation_type_display }}</div>
+                </div>
+                
+                <div class="section">
+                    <span class="label">Médico Tratante:</span>
+                    <div class="value">{{ consultation.attending_physician.get_full_name }}</div>
+                </div>
+                
+                {% if consultation.reason %}
+                <div class="content">
+                    <h3>Motivo de Consulta</h3>
+                    {{ consultation.reason|linebreaks }}
+                </div>
+                {% endif %}
+                
+                {% if consultation.current_history %}
+                <div class="content">
+                    <h3>Historia de la Enfermedad Actual</h3>
+                    {{ consultation.current_history|linebreaks }}
+                </div>
+                {% endif %}
+                
+                {% if consultation.physical_examination %}
+                <div class="content">
+                    <h3>Examen Físico</h3>
+                    {{ consultation.physical_examination|linebreaks }}
+                </div>
+                {% endif %}
+                
+                {% if consultation.diagnosis %}
+                <div class="content">
+                    <h3>Diagnósticos</h3>
+                    {{ consultation.diagnosis|linebreaks }}
+                </div>
+                {% endif %}
+                
+                {% if consultation.treatment_plan %}
+                <div class="content">
+                    <h3>Plan de Tratamiento</h3>
+                    {{ consultation.treatment_plan|linebreaks }}
+                </div>
+                {% endif %}
+                
+                <div style="margin-top: 30px; font-size: 12px; color: #888; text-align: center;">
+                    Impreso el {{ "now"|date:"d/m/Y H:i" }}
+                </div>
+            </body>
+        </html>
+    `;
+    
+    printWindow.document.write(consultationInfo);
+    printWindow.document.close();
+    printWindow.focus();
+    setTimeout(() => {
+        printWindow.print();
+    }, 500);
+}
+</script>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.card {
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    border: 1px solid rgba(0, 0, 0, 0.125);
+}
+
+.card-header {
+    font-weight: 500;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+}
+
+.badge {
+    font-size: 0.875rem;
+    padding: 0.5rem 0.75rem;
+}
+
+.fs-6 {
+    font-size: 1rem !important;
+}
+
+.bg-light {
+    background-color: #f8f9fa !important;
+}
+
+.rounded {
+    border-radius: 0.375rem !important;
+}
+
+.small {
+    font-size: 0.875rem;
+}
+</style>
+{% endblock %}

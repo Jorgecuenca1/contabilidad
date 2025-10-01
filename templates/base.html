@@ -153,9 +153,11 @@
                         </a>
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="{% url 'core:company_list' %}">Ver Empresas</a></li>
+                            {% if user.role == 'superadmin' %}
                             <li><a class="dropdown-item" href="{% url 'core:new_company' %}">Nueva Empresa</a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item" href="{% url 'admin:core_company_changelist' %}">Administrar Empresas</a></li>
+                            {% endif %}
                         </ul>
                     </li>
                     {% if user.is_authenticated %}
@@ -167,9 +169,11 @@
                                 <li><a class="dropdown-item" href="{% url 'core:profile' %}">
                                     <i class="bi bi-person"></i> Mi Perfil
                                 </a></li>
+                                {% if user.role == 'superadmin' %}
                                 <li><a class="dropdown-item" href="{% url 'admin:index' %}">
                                     <i class="bi bi-gear"></i> Administración
                                 </a></li>
+                                {% endif %}
                                 <li><hr class="dropdown-divider"></li>
                                 <li><a class="dropdown-item" href="{% url 'core:logout' %}">
                                     <i class="bi bi-box-arrow-right"></i> Cerrar Sesión

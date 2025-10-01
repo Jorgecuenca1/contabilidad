@@ -4344,3 +4344,660 @@ INFO 2025-09-11 17:48:07,486 autoreload 4748 18724 Watching for file changes wit
 INFO 2025-09-11 17:48:07,506 autoreload 18440 24248 Watching for file changes with StatReloader
 INFO 2025-09-11 17:48:07,513 autoreload 15076 3444 Watching for file changes with StatReloader
 INFO 2025-09-11 17:48:07,650 autoreload 13132 24832 Watching for file changes with StatReloader
+WARNING 2025-09-11 17:53:24,629 base 13132 14956 Session data corrupted
+WARNING 2025-09-11 17:53:24,692 base 13132 14956 Session data corrupted
+WARNING 2025-09-11 17:53:30,014 base 13132 14956 Session data corrupted
+INFO 2025-09-11 18:15:48,315 autoreload 18440 24248 C:\Users\HOME\PycharmProjects\contabilidad\core\models_extended.py changed, reloading.
+INFO 2025-09-11 18:15:48,315 autoreload 4748 18724 C:\Users\HOME\PycharmProjects\contabilidad\core\models_extended.py changed, reloading.
+INFO 2025-09-11 18:15:48,323 autoreload 15076 3444 C:\Users\HOME\PycharmProjects\contabilidad\core\models_extended.py changed, reloading.
+INFO 2025-09-11 18:15:48,324 autoreload 13132 24832 C:\Users\HOME\PycharmProjects\contabilidad\core\models_extended.py changed, reloading.
+INFO 2025-09-11 18:15:49,859 autoreload 2420 14932 Watching for file changes with StatReloader
+INFO 2025-09-11 18:15:49,859 autoreload 23020 11388 Watching for file changes with StatReloader
+INFO 2025-09-11 18:15:49,859 autoreload 11548 2108 Watching for file changes with StatReloader
+INFO 2025-09-11 18:15:49,859 autoreload 15136 8604 Watching for file changes with StatReloader
+INFO 2025-09-11 18:15:56,774 autoreload 2420 14932 C:\Users\HOME\PycharmProjects\contabilidad\core\models.py changed, reloading.
+INFO 2025-09-11 18:15:56,777 autoreload 23020 11388 C:\Users\HOME\PycharmProjects\contabilidad\core\models.py changed, reloading.
+INFO 2025-09-11 18:15:56,780 autoreload 15136 8604 C:\Users\HOME\PycharmProjects\contabilidad\core\models.py changed, reloading.
+INFO 2025-09-11 18:15:56,787 autoreload 11548 2108 C:\Users\HOME\PycharmProjects\contabilidad\core\models.py changed, reloading.
+INFO 2025-09-11 18:15:57,887 autoreload 18612 12508 Watching for file changes with StatReloader
+INFO 2025-09-11 18:15:57,888 autoreload 18352 21928 Watching for file changes with StatReloader
+INFO 2025-09-11 18:15:57,895 autoreload 3908 4808 Watching for file changes with StatReloader
+INFO 2025-09-11 18:15:57,898 autoreload 9572 25680 Watching for file changes with StatReloader
+INFO 2025-09-11 18:16:36,824 autoreload 9572 25680 C:\Users\HOME\PycharmProjects\contabilidad\core\models_extended.py changed, reloading.
+INFO 2025-09-11 18:16:36,825 autoreload 18352 21928 C:\Users\HOME\PycharmProjects\contabilidad\core\models_extended.py changed, reloading.
+INFO 2025-09-11 18:16:36,827 autoreload 3908 4808 C:\Users\HOME\PycharmProjects\contabilidad\core\models_extended.py changed, reloading.
+INFO 2025-09-11 18:16:36,828 autoreload 18612 12508 C:\Users\HOME\PycharmProjects\contabilidad\core\models_extended.py changed, reloading.
+INFO 2025-09-11 18:16:37,835 autoreload 19044 7136 Watching for file changes with StatReloader
+
+INFO 2025-09-11 18:16:37,835 autoreload 7728 22716 Watching for file changes with StatReloader
+INFO 2025-09-11 18:16:37,835 autoreload 20396 6020 Watching for file changes with StatReloader
+INFO 2025-09-11 18:16:45,207 autoreload 24488 14096 C:\Users\HOME\PycharmProjects\contabilidad\core\models.py changed, reloading.
+INFO 2025-09-11 18:16:45,207 autoreload 20396 6020 C:\Users\HOME\PycharmProjects\contabilidad\core\models.py changed, reloading.
+INFO 2025-09-11 18:16:45,208 autoreload 19044 7136 C:\Users\HOME\PycharmProjects\contabilidad\core\models.py changed, reloading.
+INFO 2025-09-11 18:16:45,209 autoreload 7728 22716 C:\Users\HOME\PycharmProjects\contabilidad\core\models.py changed, reloading.
+INFO 2025-09-11 18:16:46,191 autoreload 20556 1864 Watching for file changes with StatReloader
+INFO 2025-09-11 18:16:46,191 autoreload 6820 5984 Watching for file changes with StatReloader
+INFO 2025-09-11 18:16:46,206 autoreload 13596 16316 Watching for file changes with StatReloader
+INFO 2025-09-11 18:16:46,209 autoreload 19416 12100 Watching for file changes with StatReloader
+INFO 2025-09-11 18:19:24,626 autoreload 13596 16316 C:\Users\HOME\PycharmProjects\contabilidad\core\urls.py changed, reloading.
+INFO 2025-09-11 18:19:24,630 autoreload 6820 5984 C:\Users\HOME\PycharmProjects\contabilidad\core\urls.py changed, reloading.
+INFO 2025-09-11 18:19:24,645 autoreload 19416 12100 C:\Users\HOME\PycharmProjects\contabilidad\core\urls.py changed, reloading.
+INFO 2025-09-11 18:19:25,373 autoreload 20556 1864 C:\Users\HOME\PycharmProjects\contabilidad\core\urls.py changed, reloading.
+INFO 2025-09-11 18:19:25,869 autoreload 15260 7216 Watching for file changes with StatReloader
+INFO 2025-09-11 18:19:25,880 autoreload 22124 23568 Watching for file changes with StatReloader
+INFO 2025-09-11 18:19:25,897 autoreload 18032 2116 Watching for file changes with StatReloader
+INFO 2025-09-11 18:19:26,502 autoreload 15464 19824 Watching for file changes with StatReloader
+INFO 2025-09-11 18:19:36,129 autoreload 18032 2116 C:\Users\HOME\PycharmProjects\contabilidad\core\urls.py changed, reloading.
+INFO 2025-09-11 18:19:36,138 autoreload 15260 7216 C:\Users\HOME\PycharmProjects\contabilidad\core\urls.py changed, reloading.
+INFO 2025-09-11 18:19:36,143 autoreload 22124 23568 C:\Users\HOME\PycharmProjects\contabilidad\core\urls.py changed, reloading.
+INFO 2025-09-11 18:19:36,455 autoreload 15464 19824 C:\Users\HOME\PycharmProjects\contabilidad\core\urls.py changed, reloading.
+INFO 2025-09-11 18:19:37,343 autoreload 23460 24312 Watching for file changes with StatReloader
+INFO 2025-09-11 18:19:37,362 autoreload 13400 10380 Watching for file changes with StatReloader
+INFO 2025-09-11 18:19:37,364 autoreload 10924 25904 Watching for file changes with StatReloader
+INFO 2025-09-11 18:19:37,619 autoreload 12348 15480 Watching for file changes with StatReloader
+INFO 2025-09-11 18:20:05,512 autoreload 13400 10380 C:\Users\HOME\PycharmProjects\contabilidad\core\views.py changed, reloading.
+INFO 2025-09-11 18:20:05,533 autoreload 12348 15480 C:\Users\HOME\PycharmProjects\contabilidad\core\views.py changed, reloading.
+INFO 2025-09-11 18:20:05,535 autoreload 10924 25904 C:\Users\HOME\PycharmProjects\contabilidad\core\views.py changed, reloading.
+INFO 2025-09-11 18:20:05,536 autoreload 23460 24312 C:\Users\HOME\PycharmProjects\contabilidad\core\views.py changed, reloading.
+INFO 2025-09-11 18:20:06,794 autoreload 4640 21640 Watching for file changes with StatReloader
+INFO 2025-09-11 18:20:06,796 autoreload 7360 5432 Watching for file changes with StatReloader
+INFO 2025-09-11 18:20:06,797 autoreload 5376 8904 Watching for file changes with StatReloader
+
+INFO 2025-09-11 18:20:17,004 autoreload 4640 21640 C:\Users\HOME\PycharmProjects\contabilidad\core\views.py changed, reloading.
+INFO 2025-09-11 18:20:17,014 autoreload 2160 17084 C:\Users\HOME\PycharmProjects\contabilidad\core\views.py changed, reloading.
+INFO 2025-09-11 18:20:17,021 autoreload 7360 5432 C:\Users\HOME\PycharmProjects\contabilidad\core\views.py changed, reloading.
+INFO 2025-09-11 18:20:17,032 autoreload 5376 8904 C:\Users\HOME\PycharmProjects\contabilidad\core\views.py changed, reloading.
+INFO 2025-09-11 18:20:18,242 autoreload 20436 1308 Watching for file changes with StatReloader
+INFO 2025-09-11 18:20:18,248 autoreload 19252 23244 Watching for file changes with StatReloader
+INFO 2025-09-11 18:20:18,265 autoreload 12560 19340 Watching for file changes with StatReloader
+INFO 2025-09-11 18:20:18,280 autoreload 2140 25804 Watching for file changes with StatReloader
+INFO 2025-09-11 18:20:25,313 autoreload 20436 1308 C:\Users\HOME\PycharmProjects\contabilidad\core\views.py changed, reloading.
+INFO 2025-09-11 18:20:25,333 autoreload 19252 23244 C:\Users\HOME\PycharmProjects\contabilidad\core\views.py changed, reloading.
+INFO 2025-09-11 18:20:25,344 autoreload 12560 19340 C:\Users\HOME\PycharmProjects\contabilidad\core\views.py changed, reloading.
+INFO 2025-09-11 18:20:25,371 autoreload 2140 25804 C:\Users\HOME\PycharmProjects\contabilidad\core\views.py changed, reloading.
+INFO 2025-09-11 18:20:26,593 autoreload 22816 15648 Watching for file changes with StatReloader
+INFO 2025-09-11 18:20:26,606 autoreload 19336 1660 Watching for file changes with StatReloader
+INFO 2025-09-11 18:20:26,616 autoreload 9512 4908 Watching for file changes with StatReloader
+INFO 2025-09-11 18:20:26,628 autoreload 19156 3716 Watching for file changes with StatReloader
+WARNING 2025-09-11 18:23:30,704 base 22816 15528 Session data corrupted
+WARNING 2025-09-11 18:23:30,788 base 22816 15528 Session data corrupted
+WARNING 2025-09-11 18:23:30,800 base 22816 15528 Session data corrupted
+WARNING 2025-09-11 18:23:35,486 base 22816 15528 Session data corrupted
+INFO 2025-09-11 18:25:04,756 autoreload 19156 3716 C:\Users\HOME\PycharmProjects\contabilidad\core\models_modules.py changed, reloading.
+INFO 2025-09-11 18:25:04,757 autoreload 9512 4908 C:\Users\HOME\PycharmProjects\contabilidad\core\models_modules.py changed, reloading.
+INFO 2025-09-11 18:25:05,046 autoreload 22816 15648 C:\Users\HOME\PycharmProjects\contabilidad\core\models_modules.py changed, reloading.
+INFO 2025-09-11 18:25:05,048 autoreload 19336 1660 C:\Users\HOME\PycharmProjects\contabilidad\core\models_modules.py changed, reloading.
+INFO 2025-09-11 18:25:05,879 autoreload 25536 9860 Watching for file changes with StatReloader
+INFO 2025-09-11 18:25:05,881 autoreload 17008 2492 Watching for file changes with StatReloader
+INFO 2025-09-11 18:25:06,099 autoreload 2516 19264 Watching for file changes with StatReloader
+INFO 2025-09-11 18:25:06,147 autoreload 2160 10476 Watching for file changes with StatReloader
+INFO 2025-09-11 18:25:12,520 autoreload 17008 2492 C:\Users\HOME\PycharmProjects\contabilidad\core\models_modules.py changed, reloading.
+INFO 2025-09-11 18:25:12,523 autoreload 25536 9860 C:\Users\HOME\PycharmProjects\contabilidad\core\models_modules.py changed, reloading.
+INFO 2025-09-11 18:25:12,655 autoreload 2516 19264 C:\Users\HOME\PycharmProjects\contabilidad\core\models_modules.py changed, reloading.
+INFO 2025-09-11 18:25:12,685 autoreload 2160 10476 C:\Users\HOME\PycharmProjects\contabilidad\core\models_modules.py changed, reloading.
+INFO 2025-09-11 18:25:13,641 autoreload 2996 18160 Watching for file changes with StatReloader
+INFO 2025-09-11 18:25:13,641 autoreload 17956 16360 Watching for file changes with StatReloader
+INFO 2025-09-11 18:25:13,755 autoreload 22688 4652 Watching for file changes with StatReloader
+INFO 2025-09-11 18:25:13,773 autoreload 8108 9564 Watching for file changes with StatReloader
+WARNING 2025-09-11 18:27:53,569 base 8108 6652 Session data corrupted
+WARNING 2025-09-11 18:27:53,633 base 8108 6652 Session data corrupted
+WARNING 2025-09-11 18:27:56,492 base 8108 6652 Session data corrupted
+WARNING 2025-09-11 18:28:29,336 log 8108 6652 Not Found: /accounts_payable
+WARNING 2025-09-11 18:28:35,537 log 8108 6652 Not Found: /accounting
+INFO 2025-09-11 18:29:26,226 autoreload 2996 18160 C:\Users\HOME\PycharmProjects\contabilidad\core\views.py changed, reloading.
+INFO 2025-09-11 18:29:26,246 autoreload 8108 9564 C:\Users\HOME\PycharmProjects\contabilidad\core\views.py changed, reloading.
+INFO 2025-09-11 18:29:26,258 autoreload 22688 4652 C:\Users\HOME\PycharmProjects\contabilidad\core\views.py changed, reloading.
+INFO 2025-09-11 18:29:26,268 autoreload 17956 16360 C:\Users\HOME\PycharmProjects\contabilidad\core\views.py changed, reloading.
+INFO 2025-09-11 18:29:27,580 autoreload 21496 8724 Watching for file changes with StatReloader
+INFO 2025-09-11 18:29:27,621 autoreload 24156 26460 Watching for file changes with StatReloader
+INFO 2025-09-11 18:29:27,623 autoreload 14956 13388 Watching for file changes with StatReloader
+INFO 2025-09-11 18:29:27,626 autoreload 15480 26156 Watching for file changes with StatReloader
+INFO 2025-09-11 18:29:40,674 autoreload 24156 26460 C:\Users\HOME\PycharmProjects\contabilidad\core\views.py changed, reloading.
+INFO 2025-09-11 18:29:40,681 autoreload 15480 26156 C:\Users\HOME\PycharmProjects\contabilidad\core\views.py changed, reloading.
+INFO 2025-09-11 18:29:40,683 autoreload 14956 13388 C:\Users\HOME\PycharmProjects\contabilidad\core\views.py changed, reloading.
+INFO 2025-09-11 18:29:40,685 autoreload 21496 8724 C:\Users\HOME\PycharmProjects\contabilidad\core\views.py changed, reloading.
+INFO 2025-09-11 18:29:41,808 autoreload 8684 15156 Watching for file changes with StatReloader
+INFO 2025-09-11 18:29:41,818 autoreload 19916 9380 Watching for file changes with StatReloader
+INFO 2025-09-11 18:29:41,818 autoreload 21612 21112 Watching for file changes with StatReloader
+INFO 2025-09-11 18:29:41,821 autoreload 12820 18724 Watching for file changes with StatReloader
+INFO 2025-09-11 18:29:50,615 autoreload 21612 21112 C:\Users\HOME\PycharmProjects\contabilidad\core\views.py changed, reloading.
+INFO 2025-09-11 18:29:50,619 autoreload 8684 15156 C:\Users\HOME\PycharmProjects\contabilidad\core\views.py changed, reloading.
+INFO 2025-09-11 18:29:50,626 autoreload 19916 9380 C:\Users\HOME\PycharmProjects\contabilidad\core\views.py changed, reloading.
+INFO 2025-09-11 18:29:50,628 autoreload 12820 18724 C:\Users\HOME\PycharmProjects\contabilidad\core\views.py changed, reloading.
+INFO 2025-09-11 18:29:51,748 autoreload 3804 25344 Watching for file changes with StatReloader
+INFO 2025-09-11 18:29:51,757 autoreload 14496 8660 Watching for file changes with StatReloader
+INFO 2025-09-11 18:29:51,760 autoreload 24792 3824 Watching for file changes with StatReloader
+INFO 2025-09-11 18:29:51,778 autoreload 3344 13156 Watching for file changes with StatReloader
+WARNING 2025-09-11 18:30:31,521 base 24792 1968 Session data corrupted
+WARNING 2025-09-11 18:30:34,433 base 24792 1968 Session data corrupted
+INFO 2025-09-11 18:31:21,483 autoreload 14496 8660 C:\Users\HOME\PycharmProjects\contabilidad\core\views.py changed, reloading.
+INFO 2025-09-11 18:31:21,486 autoreload 3804 25344 C:\Users\HOME\PycharmProjects\contabilidad\core\views.py changed, reloading.
+INFO 2025-09-11 18:31:21,488 autoreload 3344 13156 C:\Users\HOME\PycharmProjects\contabilidad\core\views.py changed, reloading.
+INFO 2025-09-11 18:31:21,927 autoreload 24792 3824 C:\Users\HOME\PycharmProjects\contabilidad\core\views.py changed, reloading.
+INFO 2025-09-11 18:31:22,758 autoreload 10936 22856 Watching for file changes with StatReloader
+INFO 2025-09-11 18:31:22,760 autoreload 19376 9188 Watching for file changes with StatReloader
+INFO 2025-09-11 18:31:22,765 autoreload 22208 14192 Watching for file changes with StatReloader
+INFO 2025-09-11 18:31:23,083 autoreload 14020 6644 Watching for file changes with StatReloader
+INFO 2025-09-11 18:31:34,583 autoreload 22208 14192 C:\Users\HOME\PycharmProjects\contabilidad\core\views.py changed, reloading.
+INFO 2025-09-11 18:31:34,611 autoreload 10936 22856 C:\Users\HOME\PycharmProjects\contabilidad\core\views.py changed, reloading.
+INFO 2025-09-11 18:31:34,634 autoreload 19376 9188 C:\Users\HOME\PycharmProjects\contabilidad\core\views.py changed, reloading.
+INFO 2025-09-11 18:31:34,795 autoreload 14020 6644 C:\Users\HOME\PycharmProjects\contabilidad\core\views.py changed, reloading.
+INFO 2025-09-11 18:31:35,827 autoreload 22816 13904 Watching for file changes with StatReloader
+INFO 2025-09-11 18:31:35,850 autoreload 18844 11108 Watching for file changes with StatReloader
+INFO 2025-09-11 18:31:35,853 autoreload 19156 15716 Watching for file changes with StatReloader
+INFO 2025-09-11 18:31:35,990 autoreload 3340 11392 Watching for file changes with StatReloader
+INFO 2025-09-11 18:33:55,177 autoreload 19796 15980 Watching for file changes with StatReloader
+INFO 2025-09-11 18:34:38,903 autoreload 19156 15716 C:\Users\HOME\PycharmProjects\contabilidad\core\views.py changed, reloading.
+INFO 2025-09-11 18:34:38,912 autoreload 3340 11392 C:\Users\HOME\PycharmProjects\contabilidad\core\views.py changed, reloading.
+INFO 2025-09-11 18:34:38,914 autoreload 18844 11108 C:\Users\HOME\PycharmProjects\contabilidad\core\views.py changed, reloading.
+INFO 2025-09-11 18:34:38,937 autoreload 22816 13904 C:\Users\HOME\PycharmProjects\contabilidad\core\views.py changed, reloading.
+INFO 2025-09-11 18:34:39,297 autoreload 19796 15980 C:\Users\HOME\PycharmProjects\contabilidad\core\views.py changed, reloading.
+INFO 2025-09-11 18:34:40,207 autoreload 4008 7332 Watching for file changes with StatReloader
+INFO 2025-09-11 18:34:40,217 autoreload 17508 5944 Watching for file changes with StatReloader
+INFO 2025-09-11 18:34:40,217 autoreload 7184 9564 Watching for file changes with StatReloader
+INFO 2025-09-11 18:34:40,226 autoreload 11656 9448 Watching for file changes with StatReloader
+INFO 2025-09-11 18:34:40,450 autoreload 13100 11792 Watching for file changes with StatReloader
+INFO 2025-09-11 18:34:52,290 autoreload 7184 9564 C:\Users\HOME\PycharmProjects\contabilidad\core\views.py changed, reloading.
+INFO 2025-09-11 18:34:52,293 autoreload 17508 5944 C:\Users\HOME\PycharmProjects\contabilidad\core\views.py changed, reloading.
+INFO 2025-09-11 18:34:52,301 autoreload 4008 7332 C:\Users\HOME\PycharmProjects\contabilidad\core\views.py changed, reloading.
+INFO 2025-09-11 18:34:52,305 autoreload 11656 9448 C:\Users\HOME\PycharmProjects\contabilidad\core\views.py changed, reloading.
+INFO 2025-09-11 18:34:52,328 autoreload 13100 11792 C:\Users\HOME\PycharmProjects\contabilidad\core\views.py changed, reloading.
+INFO 2025-09-11 18:34:53,724 autoreload 3600 1500 Watching for file changes with StatReloader
+INFO 2025-09-11 18:34:53,736 autoreload 15148 2412 Watching for file changes with StatReloader
+INFO 2025-09-11 18:34:53,738 autoreload 7224 13676 Watching for file changes with StatReloader
+INFO 2025-09-11 18:34:53,755 autoreload 24008 1116 Watching for file changes with StatReloader
+INFO 2025-09-11 18:34:53,782 autoreload 24716 16624 Watching for file changes with StatReloader
+WARNING 2025-09-11 18:36:58,936 base 7224 21368 Session data corrupted
+WARNING 2025-09-11 18:37:01,728 base 7224 21368 Session data corrupted
+ERROR 2025-09-11 18:37:14,730 log 7224 21368 Internal Server Error: /
+Traceback (most recent call last):
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\HOME\PycharmProjects\contabilidad\core\views.py", line 97, in dashboard
+    'total_accounts': Account.objects.filter(company=active_company).count() if active_company else 0,
+                      ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\query.py", line 1476, in filter
+    return self._filter_or_exclude(False, args, kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\query.py", line 1494, in _filter_or_exclude
+    clone._filter_or_exclude_inplace(negate, args, kwargs)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\query.py", line 1501, in _filter_or_exclude_inplace
+    self._query.add_q(Q(*args, **kwargs))
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\sql\query.py", line 1609, in add_q
+    clause, _ = self._add_q(q_object, self.used_aliases)
+                ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\sql\query.py", line 1641, in _add_q
+    child_clause, needed_inner = self.build_filter(
+                                 ~~~~~~~~~~~~~~~~~^
+        child,
+        ^^^^^^
+    ...<7 lines>...
+        update_join_types=update_join_types,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\sql\query.py", line 1491, in build_filter
+    lookups, parts, reffed_expression = self.solve_lookup_type(arg, summarize)
+                                        ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\sql\query.py", line 1303, in solve_lookup_type
+    _, field, _, lookup_parts = self.names_to_path(lookup_splitted, self.get_meta())
+                                ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\sql\query.py", line 1768, in names_to_path
+    raise FieldError(
+    ...<2 lines>...
+    )
+django.core.exceptions.FieldError: Cannot resolve keyword 'company' into field. Choices are: account_type, account_type_id, allow_multi_currency, asset_categories_asset, asset_categories_depreciation, asset_categories_expense, bank_accounts, budgetitem, cash_accounts, categories_cost, categories_inventory, categories_revenue, chart_of_accounts, chart_of_accounts_id, children, code, control_type, created_at, created_by, created_by_id, currency, currency_id, custom_company, custom_company_id, customers_advance, customers_receivable, description, id, invoice_lines_revenue, is_active, is_custom, is_detail, journal_lines, level, name, parent, parent_id, payment, payrollconcept, products_cost, products_inventory, products_revenue, purchase_lines_expense, requires_cost_center, requires_project, requires_third_party, supplierpayment, suppliers_advance, suppliers_expense, suppliers_payable, tax_payable, tax_receivable, updated_at
+ERROR 2025-09-11 18:37:25,826 log 7224 21368 Internal Server Error: /
+Traceback (most recent call last):
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\HOME\PycharmProjects\contabilidad\core\views.py", line 97, in dashboard
+    'total_accounts': Account.objects.filter(company=active_company).count() if active_company else 0,
+                      ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\query.py", line 1476, in filter
+    return self._filter_or_exclude(False, args, kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\query.py", line 1494, in _filter_or_exclude
+    clone._filter_or_exclude_inplace(negate, args, kwargs)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\query.py", line 1501, in _filter_or_exclude_inplace
+    self._query.add_q(Q(*args, **kwargs))
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\sql\query.py", line 1609, in add_q
+    clause, _ = self._add_q(q_object, self.used_aliases)
+                ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\sql\query.py", line 1641, in _add_q
+    child_clause, needed_inner = self.build_filter(
+                                 ~~~~~~~~~~~~~~~~~^
+        child,
+        ^^^^^^
+    ...<7 lines>...
+        update_join_types=update_join_types,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\sql\query.py", line 1491, in build_filter
+    lookups, parts, reffed_expression = self.solve_lookup_type(arg, summarize)
+                                        ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\sql\query.py", line 1303, in solve_lookup_type
+    _, field, _, lookup_parts = self.names_to_path(lookup_splitted, self.get_meta())
+                                ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\sql\query.py", line 1768, in names_to_path
+    raise FieldError(
+    ...<2 lines>...
+    )
+django.core.exceptions.FieldError: Cannot resolve keyword 'company' into field. Choices are: account_type, account_type_id, allow_multi_currency, asset_categories_asset, asset_categories_depreciation, asset_categories_expense, bank_accounts, budgetitem, cash_accounts, categories_cost, categories_inventory, categories_revenue, chart_of_accounts, chart_of_accounts_id, children, code, control_type, created_at, created_by, created_by_id, currency, currency_id, custom_company, custom_company_id, customers_advance, customers_receivable, description, id, invoice_lines_revenue, is_active, is_custom, is_detail, journal_lines, level, name, parent, parent_id, payment, payrollconcept, products_cost, products_inventory, products_revenue, purchase_lines_expense, requires_cost_center, requires_project, requires_third_party, supplierpayment, suppliers_advance, suppliers_expense, suppliers_payable, tax_payable, tax_receivable, updated_at
+INFO 2025-09-11 18:37:55,113 autoreload 3600 1500 C:\Users\HOME\PycharmProjects\contabilidad\core\views.py changed, reloading.
+INFO 2025-09-11 18:37:55,131 autoreload 24716 16624 C:\Users\HOME\PycharmProjects\contabilidad\core\views.py changed, reloading.
+INFO 2025-09-11 18:37:55,143 autoreload 24008 1116 C:\Users\HOME\PycharmProjects\contabilidad\core\views.py changed, reloading.
+INFO 2025-09-11 18:37:55,419 autoreload 15148 2412 C:\Users\HOME\PycharmProjects\contabilidad\core\views.py changed, reloading.
+INFO 2025-09-11 18:37:55,522 autoreload 7224 13676 C:\Users\HOME\PycharmProjects\contabilidad\core\views.py changed, reloading.
+INFO 2025-09-11 18:37:56,369 autoreload 6960 4856 Watching for file changes with StatReloader
+INFO 2025-09-11 18:37:56,377 autoreload 15516 25956 Watching for file changes with StatReloader
+INFO 2025-09-11 18:37:56,400 autoreload 13304 25268 Watching for file changes with StatReloader
+INFO 2025-09-11 18:37:56,633 autoreload 22688 7912 Watching for file changes with StatReloader
+INFO 2025-09-11 18:37:56,704 autoreload 19580 22756 Watching for file changes with StatReloader
+WARNING 2025-09-11 18:38:26,664 base 19580 4688 Session data corrupted
+WARNING 2025-09-11 18:41:26,404 base 19580 4688 Session data corrupted
+INFO 2025-09-11 18:45:06,703 autoreload 22688 7912 C:\Users\HOME\PycharmProjects\contabilidad\core\views.py changed, reloading.
+INFO 2025-09-11 18:45:06,711 autoreload 19580 22756 C:\Users\HOME\PycharmProjects\contabilidad\core\views.py changed, reloading.
+INFO 2025-09-11 18:45:06,720 autoreload 6960 4856 C:\Users\HOME\PycharmProjects\contabilidad\core\views.py changed, reloading.
+INFO 2025-09-11 18:45:07,043 autoreload 13304 25268 C:\Users\HOME\PycharmProjects\contabilidad\core\views.py changed, reloading.
+INFO 2025-09-11 18:45:07,055 autoreload 15516 25956 C:\Users\HOME\PycharmProjects\contabilidad\core\views.py changed, reloading.
+INFO 2025-09-11 18:45:08,208 autoreload 132 14992 Watching for file changes with StatReloader
+INFO 2025-09-11 18:45:08,218 autoreload 19132 10180 Watching for file changes with StatReloader
+INFO 2025-09-11 18:45:08,249 autoreload 9168 3404 Watching for file changes with StatReloader
+INFO 2025-09-11 18:45:08,440 autoreload 12360 1188 Watching for file changes with StatReloader
+INFO 2025-09-11 18:45:08,465 autoreload 18796 21400 Watching for file changes with StatReloader
+INFO 2025-09-11 18:45:16,304 autoreload 19132 10180 C:\Users\HOME\PycharmProjects\contabilidad\core\views.py changed, reloading.
+INFO 2025-09-11 18:45:16,312 autoreload 9168 3404 C:\Users\HOME\PycharmProjects\contabilidad\core\views.py changed, reloading.
+INFO 2025-09-11 18:45:16,326 autoreload 132 14992 C:\Users\HOME\PycharmProjects\contabilidad\core\views.py changed, reloading.
+INFO 2025-09-11 18:45:16,387 autoreload 12360 1188 C:\Users\HOME\PycharmProjects\contabilidad\core\views.py changed, reloading.
+INFO 2025-09-11 18:45:16,417 autoreload 18796 21400 C:\Users\HOME\PycharmProjects\contabilidad\core\views.py changed, reloading.
+INFO 2025-09-11 18:45:17,728 autoreload 2516 10924 Watching for file changes with StatReloader
+INFO 2025-09-11 18:45:17,729 autoreload 20576 22716 Watching for file changes with StatReloader
+INFO 2025-09-11 18:45:17,734 autoreload 20004 13824 Watching for file changes with StatReloader
+INFO 2025-09-11 18:45:17,806 autoreload 18512 12508 Watching for file changes with StatReloader
+INFO 2025-09-11 18:45:17,813 autoreload 19332 19636 Watching for file changes with StatReloader
+ERROR 2025-09-11 18:45:58,784 log 7460 24336 Internal Server Error: /
+Traceback (most recent call last):
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\HOME\PycharmProjects\contabilidad\core\views.py", line 109, in dashboard
+    return render(request, 'core/dashboard.html', context)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\loader.py", line 15, in get_template
+    return engine.get_template(template_name)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\backends\django.py", line 79, in get_template
+    return Template(self.engine.get_template(template_name), self)
+                    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\engine.py", line 177, in get_template
+    template, origin = self.find_template(template_name)
+                       ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\engine.py", line 159, in find_template
+    template = loader.get_template(name, skip=skip)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\loaders\cached.py", line 57, in get_template
+    template = super().get_template(template_name, skip)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\loaders\base.py", line 28, in get_template
+    return Template(
+        contents,
+    ...<2 lines>...
+        self.engine,
+    )
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 154, in __init__
+    self.nodelist = self.compile_nodelist()
+                    ~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 196, in compile_nodelist
+    nodelist = parser.parse()
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 518, in parse
+    raise self.error(token, e)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 516, in parse
+    compiled_result = compile_func(self, token)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\loader_tags.py", line 295, in do_extends
+    nodelist = parser.parse()
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 518, in parse
+    raise self.error(token, e)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 516, in parse
+    compiled_result = compile_func(self, token)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\loader_tags.py", line 234, in do_block
+    nodelist = parser.parse(("endblock",))
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 518, in parse
+    raise self.error(token, e)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 516, in parse
+    compiled_result = compile_func(self, token)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\defaulttags.py", line 962, in do_if
+    nodelist = parser.parse(("elif", "else", "endif"))
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 489, in parse
+    raise self.error(token, e)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 487, in parse
+    filter_expression = self.compile_filter(token.contents)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 605, in compile_filter
+    return FilterExpression(token, self)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 706, in __init__
+    raise TemplateSyntaxError(
+    ...<2 lines>...
+    )
+django.template.exceptions.TemplateSyntaxError: Could not parse the remainder: ' == 'public' and 'success' or 'info'' from 'active_company.sector == 'public' and 'success' or 'info''
+WARNING 2025-09-11 18:54:43,044 base 2516 22816 Session data corrupted
+WARNING 2025-09-11 18:54:43,117 base 2516 22816 Session data corrupted
+WARNING 2025-09-11 18:54:48,761 base 2516 22816 Session data corrupted
+INFO 2025-09-11 18:56:53,547 autoreload 19332 19636 C:\Users\HOME\PycharmProjects\contabilidad\core\views_company_selector.py changed, reloading.
+INFO 2025-09-11 18:56:53,620 autoreload 20576 22716 C:\Users\HOME\PycharmProjects\contabilidad\core\views_company_selector.py changed, reloading.
+INFO 2025-09-11 18:56:53,654 autoreload 20004 13824 C:\Users\HOME\PycharmProjects\contabilidad\core\views_company_selector.py changed, reloading.
+INFO 2025-09-11 18:56:54,129 autoreload 18512 12508 C:\Users\HOME\PycharmProjects\contabilidad\core\views_company_selector.py changed, reloading.
+INFO 2025-09-11 18:56:54,136 autoreload 2516 10924 C:\Users\HOME\PycharmProjects\contabilidad\core\views_company_selector.py changed, reloading.
+INFO 2025-09-11 18:56:55,340 autoreload 25668 26256 Watching for file changes with StatReloader
+INFO 2025-09-11 18:56:55,418 autoreload 18768 13896 Watching for file changes with StatReloader
+INFO 2025-09-11 18:56:55,456 autoreload 8776 16132 Watching for file changes with StatReloader
+INFO 2025-09-11 18:56:56,086 autoreload 22124 14404 Watching for file changes with StatReloader
+INFO 2025-09-11 18:56:56,110 autoreload 21808 15992 Watching for file changes with StatReloader
+INFO 2025-09-11 18:57:07,864 autoreload 25668 26256 C:\Users\HOME\PycharmProjects\contabilidad\core\views_company_selector.py changed, reloading.
+INFO 2025-09-11 18:57:07,960 autoreload 8776 16132 C:\Users\HOME\PycharmProjects\contabilidad\core\views_company_selector.py changed, reloading.
+INFO 2025-09-11 18:57:07,969 autoreload 18768 13896 C:\Users\HOME\PycharmProjects\contabilidad\core\views_company_selector.py changed, reloading.
+INFO 2025-09-11 18:57:08,312 autoreload 22124 14404 C:\Users\HOME\PycharmProjects\contabilidad\core\views_company_selector.py changed, reloading.
+INFO 2025-09-11 18:57:08,323 autoreload 21808 15992 C:\Users\HOME\PycharmProjects\contabilidad\core\views_company_selector.py changed, reloading.
+INFO 2025-09-11 18:57:09,605 autoreload 11704 22944 Watching for file changes with StatReloader
+INFO 2025-09-11 18:57:09,718 autoreload 2116 17340 Watching for file changes with StatReloader
+INFO 2025-09-11 18:57:09,720 autoreload 21264 12996 Watching for file changes with StatReloader
+INFO 2025-09-11 18:57:09,947 autoreload 13876 2352 Watching for file changes with StatReloader
+INFO 2025-09-11 18:57:09,964 autoreload 16676 4040 Watching for file changes with StatReloader
+INFO 2025-09-11 19:17:10,909 autoreload 13876 2352 C:\Users\HOME\PycharmProjects\contabilidad\core\views.py changed, reloading.
+INFO 2025-09-11 19:17:10,913 autoreload 16676 4040 C:\Users\HOME\PycharmProjects\contabilidad\core\views.py changed, reloading.
+INFO 2025-09-11 19:17:10,914 autoreload 11704 22944 C:\Users\HOME\PycharmProjects\contabilidad\core\views.py changed, reloading.
+INFO 2025-09-11 19:17:10,924 autoreload 21264 12996 C:\Users\HOME\PycharmProjects\contabilidad\core\views.py changed, reloading.
+INFO 2025-09-11 19:17:10,924 autoreload 2116 17340 C:\Users\HOME\PycharmProjects\contabilidad\core\views.py changed, reloading.
+INFO 2025-09-11 19:17:12,377 autoreload 21324 11312 Watching for file changes with StatReloader
+INFO 2025-09-11 19:17:12,380 autoreload 18640 19516 Watching for file changes with StatReloader
+INFO 2025-09-11 19:17:12,381 autoreload 20436 4624 Watching for file changes with StatReloader
+INFO 2025-09-11 19:17:12,392 autoreload 26408 26476 Watching for file changes with StatReloader
+INFO 2025-09-11 19:17:12,398 autoreload 8708 10384 Watching for file changes with StatReloader
+WARNING 2025-09-11 19:19:16,074 base 8708 15320 Session data corrupted
+WARNING 2025-09-11 19:19:16,133 base 8708 15320 Session data corrupted
+WARNING 2025-09-11 19:19:19,814 base 8708 15320 Session data corrupted
+WARNING 2025-09-11 19:19:20,554 log 8708 15320 Method Not Allowed (GET): /select-company/
+WARNING 2025-09-11 19:19:39,700 log 8708 21464 Method Not Allowed (GET): /select-company/
+INFO 2025-09-11 19:34:08,413 autoreload 20436 4624 C:\Users\HOME\PycharmProjects\contabilidad\core\models.py changed, reloading.
+INFO 2025-09-11 19:34:08,414 autoreload 21324 11312 C:\Users\HOME\PycharmProjects\contabilidad\core\models.py changed, reloading.
+INFO 2025-09-11 19:34:08,918 autoreload 8708 10384 C:\Users\HOME\PycharmProjects\contabilidad\core\models.py changed, reloading.
+INFO 2025-09-11 19:34:08,924 autoreload 26408 26476 C:\Users\HOME\PycharmProjects\contabilidad\core\models.py changed, reloading.
+INFO 2025-09-11 19:34:09,460 autoreload 18640 19516 C:\Users\HOME\PycharmProjects\contabilidad\core\models.py changed, reloading.
+INFO 2025-09-11 19:34:09,618 autoreload 7248 23840 Watching for file changes with StatReloader
+INFO 2025-09-11 19:34:09,619 autoreload 6040 1944 Watching for file changes with StatReloader
+INFO 2025-09-11 19:34:10,102 autoreload 1500 9012 Watching for file changes with StatReloader
+INFO 2025-09-11 19:34:10,138 autoreload 5844 10852 Watching for file changes with StatReloader
+INFO 2025-09-11 19:34:10,562 autoreload 20696 13280 Watching for file changes with StatReloader
+INFO 2025-09-11 19:34:20,945 autoreload 5844 10852 C:\Users\HOME\PycharmProjects\contabilidad\core\models.py changed, reloading.
+INFO 2025-09-11 19:34:20,949 autoreload 1500 9012 C:\Users\HOME\PycharmProjects\contabilidad\core\models.py changed, reloading.
+INFO 2025-09-11 19:34:21,250 autoreload 20696 13280 C:\Users\HOME\PycharmProjects\contabilidad\core\models.py changed, reloading.
+INFO 2025-09-11 19:34:21,664 autoreload 7248 23840 C:\Users\HOME\PycharmProjects\contabilidad\core\models.py changed, reloading.
+INFO 2025-09-11 19:34:21,680 autoreload 6040 1944 C:\Users\HOME\PycharmProjects\contabilidad\core\models.py changed, reloading.
+INFO 2025-09-11 19:34:22,161 autoreload 3344 14192 Watching for file changes with StatReloader
+INFO 2025-09-11 19:34:22,166 autoreload 16592 4072 Watching for file changes with StatReloader
+INFO 2025-09-11 19:34:22,407 autoreload 6556 10700 Watching for file changes with StatReloader
+INFO 2025-09-11 19:34:22,802 autoreload 9404 22612 Watching for file changes with StatReloader
+INFO 2025-09-11 19:34:22,811 autoreload 19332 19624 Watching for file changes with StatReloader
+WARNING 2025-09-11 19:34:55,740 base 3344 1032 Session data corrupted
+INFO 2025-09-11 19:35:55,540 autoreload 9404 22612 C:\Users\HOME\PycharmProjects\contabilidad\core\views_company_selector.py changed, reloading.
+INFO 2025-09-11 19:35:55,544 autoreload 19332 19624 C:\Users\HOME\PycharmProjects\contabilidad\core\views_company_selector.py changed, reloading.
+INFO 2025-09-11 19:35:55,547 autoreload 3344 14192 C:\Users\HOME\PycharmProjects\contabilidad\core\views_company_selector.py changed, reloading.
+INFO 2025-09-11 19:35:56,142 autoreload 16592 4072 C:\Users\HOME\PycharmProjects\contabilidad\core\views_company_selector.py changed, reloading.
+INFO 2025-09-11 19:35:56,157 autoreload 6556 10700 C:\Users\HOME\PycharmProjects\contabilidad\core\views_company_selector.py changed, reloading.
+INFO 2025-09-11 19:35:56,832 autoreload 3932 18304 Watching for file changes with StatReloader
+INFO 2025-09-11 19:35:56,832 autoreload 12112 14836 Watching for file changes with StatReloader
+INFO 2025-09-11 19:35:56,854 autoreload 19388 22368 Watching for file changes with StatReloader
+INFO 2025-09-11 19:35:57,310 autoreload 11924 21848 Watching for file changes with StatReloader
+INFO 2025-09-11 19:35:57,319 autoreload 5884 22520 Watching for file changes with StatReloader
+INFO 2025-09-11 19:36:02,890 autoreload 11924 21848 C:\Users\HOME\PycharmProjects\contabilidad\core\views.py changed, reloading.
+INFO 2025-09-11 19:36:02,893 autoreload 5884 22520 C:\Users\HOME\PycharmProjects\contabilidad\core\views.py changed, reloading.
+INFO 2025-09-11 19:36:03,555 autoreload 19388 22368 C:\Users\HOME\PycharmProjects\contabilidad\core\views.py changed, reloading.
+INFO 2025-09-11 19:36:03,555 autoreload 12112 14836 C:\Users\HOME\PycharmProjects\contabilidad\core\views.py changed, reloading.
+INFO 2025-09-11 19:36:03,565 autoreload 3932 18304 C:\Users\HOME\PycharmProjects\contabilidad\core\views.py changed, reloading.
+INFO 2025-09-11 19:36:04,041 autoreload 11624 18896 Watching for file changes with StatReloader
+INFO 2025-09-11 19:36:04,049 autoreload 25660 13464 Watching for file changes with StatReloader
+INFO 2025-09-11 19:36:04,639 autoreload 3468 12452 Watching for file changes with StatReloader
+INFO 2025-09-11 19:36:04,643 autoreload 12856 3076 Watching for file changes with StatReloader
+INFO 2025-09-11 19:36:04,652 autoreload 7760 10932 Watching for file changes with StatReloader
+INFO 2025-09-11 19:36:24,969 autoreload 3468 12452 C:\Users\HOME\PycharmProjects\contabilidad\core\views_company_selector.py changed, reloading.
+INFO 2025-09-11 19:36:24,981 autoreload 12856 3076 C:\Users\HOME\PycharmProjects\contabilidad\core\views_company_selector.py changed, reloading.
+INFO 2025-09-11 19:36:24,987 autoreload 7760 10932 C:\Users\HOME\PycharmProjects\contabilidad\core\views_company_selector.py changed, reloading.
+INFO 2025-09-11 19:36:25,462 autoreload 25660 13464 C:\Users\HOME\PycharmProjects\contabilidad\core\views_company_selector.py changed, reloading.
+INFO 2025-09-11 19:36:25,468 autoreload 11624 18896 C:\Users\HOME\PycharmProjects\contabilidad\core\views_company_selector.py changed, reloading.
+INFO 2025-09-11 19:36:26,276 autoreload 8280 16252 Watching for file changes with StatReloader
+INFO 2025-09-11 19:36:26,290 autoreload 11220 15516 Watching for file changes with StatReloader
+INFO 2025-09-11 19:36:26,320 autoreload 9036 25364 Watching for file changes with StatReloader
+INFO 2025-09-11 19:36:26,675 autoreload 14200 15744 Watching for file changes with StatReloader
+INFO 2025-09-11 19:36:26,683 autoreload 19376 12464 Watching for file changes with StatReloader
+INFO 2025-09-11 19:36:33,231 autoreload 19376 12464 C:\Users\HOME\PycharmProjects\contabilidad\core\views_company_selector.py changed, reloading.
+INFO 2025-09-11 19:36:33,238 autoreload 14200 15744 C:\Users\HOME\PycharmProjects\contabilidad\core\views_company_selector.py changed, reloading.
+INFO 2025-09-11 19:36:34,050 autoreload 8280 16252 C:\Users\HOME\PycharmProjects\contabilidad\core\views_company_selector.py changed, reloading.
+INFO 2025-09-11 19:36:34,067 autoreload 11220 15516 C:\Users\HOME\PycharmProjects\contabilidad\core\views_company_selector.py changed, reloading.
+INFO 2025-09-11 19:36:34,075 autoreload 9036 25364 C:\Users\HOME\PycharmProjects\contabilidad\core\views_company_selector.py changed, reloading.
+INFO 2025-09-11 19:36:34,297 autoreload 1968 1664 Watching for file changes with StatReloader
+INFO 2025-09-11 19:36:34,323 autoreload 23040 2764 Watching for file changes with StatReloader
+INFO 2025-09-11 19:36:35,198 autoreload 11164 12408 Watching for file changes with StatReloader
+INFO 2025-09-11 19:36:35,216 autoreload 3580 1624 Watching for file changes with StatReloader
+WARNING 2025-09-11 19:37:19,450 base 11164 19660 Session data corrupted
+WARNING 2025-09-11 19:37:22,661 base 11164 19660 Session data corrupted
+WARNING 2025-09-11 19:38:26,980 log 11164 23084 Forbidden (Permission denied): /admin/core/user/
+Traceback (most recent call last):
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\contrib\admin\options.py", line 718, in wrapper
+    return self.admin_site.admin_view(view)(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\utils\decorators.py", line 188, in _view_wrapper
+    result = _process_exception(request, e)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\utils\decorators.py", line 186, in _view_wrapper
+    response = view_func(request, *args, **kwargs)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\views\decorators\cache.py", line 80, in _view_wrapper
+    response = view_func(request, *args, **kwargs)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\contrib\admin\sites.py", line 241, in inner
+    return view(request, *args, **kwargs)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\utils\decorators.py", line 48, in _wrapper
+    return bound_method(*args, **kwargs)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\utils\decorators.py", line 188, in _view_wrapper
+    result = _process_exception(request, e)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\utils\decorators.py", line 186, in _view_wrapper
+    response = view_func(request, *args, **kwargs)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\contrib\admin\options.py", line 1998, in changelist_view
+    raise PermissionDenied
+django.core.exceptions.PermissionDenied
+WARNING 2025-09-11 19:38:29,551 log 11164 23084 Forbidden (Permission denied): /admin/core/user/5544df26-c8a5-4e21-9c5f-f69a544fb1c2/change/
+Traceback (most recent call last):
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\contrib\admin\options.py", line 718, in wrapper
+    return self.admin_site.admin_view(view)(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\utils\decorators.py", line 188, in _view_wrapper
+    result = _process_exception(request, e)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\utils\decorators.py", line 186, in _view_wrapper
+    response = view_func(request, *args, **kwargs)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\views\decorators\cache.py", line 80, in _view_wrapper
+    response = view_func(request, *args, **kwargs)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\contrib\admin\sites.py", line 241, in inner
+    return view(request, *args, **kwargs)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\contrib\admin\options.py", line 1964, in change_view
+    return self.changeform_view(request, object_id, form_url, extra_context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\utils\decorators.py", line 48, in _wrapper
+    return bound_method(*args, **kwargs)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\utils\decorators.py", line 188, in _view_wrapper
+    result = _process_exception(request, e)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\utils\decorators.py", line 186, in _view_wrapper
+    response = view_func(request, *args, **kwargs)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\contrib\admin\options.py", line 1820, in changeform_view
+    return self._changeform_view(request, object_id, form_url, extra_context)
+           ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\contrib\admin\options.py", line 1847, in _changeform_view
+    raise PermissionDenied
+django.core.exceptions.PermissionDenied
+WARNING 2025-09-11 19:38:31,153 log 11164 23084 Forbidden (Permission denied): /admin/core/company/
+Traceback (most recent call last):
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\contrib\admin\options.py", line 718, in wrapper
+    return self.admin_site.admin_view(view)(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\utils\decorators.py", line 188, in _view_wrapper
+    result = _process_exception(request, e)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\utils\decorators.py", line 186, in _view_wrapper
+    response = view_func(request, *args, **kwargs)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\views\decorators\cache.py", line 80, in _view_wrapper
+    response = view_func(request, *args, **kwargs)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\contrib\admin\sites.py", line 241, in inner
+    return view(request, *args, **kwargs)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\utils\decorators.py", line 48, in _wrapper
+    return bound_method(*args, **kwargs)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\utils\decorators.py", line 188, in _view_wrapper
+    result = _process_exception(request, e)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\utils\decorators.py", line 186, in _view_wrapper
+    response = view_func(request, *args, **kwargs)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\contrib\admin\options.py", line 1998, in changelist_view
+    raise PermissionDenied
+django.core.exceptions.PermissionDenied
+INFO 2025-09-11 19:40:40,645 autoreload 23040 2764 C:\Users\HOME\PycharmProjects\contabilidad\core\views.py changed, reloading.
+INFO 2025-09-11 19:40:40,664 autoreload 1968 1664 C:\Users\HOME\PycharmProjects\contabilidad\core\views.py changed, reloading.
+INFO 2025-09-11 19:40:40,926 autoreload 3580 1624 C:\Users\HOME\PycharmProjects\contabilidad\core\views.py changed, reloading.
+INFO 2025-09-11 19:40:40,938 autoreload 11164 12408 C:\Users\HOME\PycharmProjects\contabilidad\core\views.py changed, reloading.
+INFO 2025-09-11 19:40:40,947 autoreload 11788 19976 C:\Users\HOME\PycharmProjects\contabilidad\core\views.py changed, reloading.
+INFO 2025-09-11 19:40:42,049 autoreload 6016 20212 Watching for file changes with StatReloader
+INFO 2025-09-11 19:40:42,059 autoreload 14888 23072 Watching for file changes with StatReloader
+INFO 2025-09-11 19:40:42,344 autoreload 5892 1556 Watching for file changes with StatReloader
+INFO 2025-09-11 19:40:42,357 autoreload 26240 22712 Watching for file changes with StatReloader
+INFO 2025-09-11 19:40:42,394 autoreload 20912 5860 Watching for file changes with StatReloader
+WARNING 2025-09-11 19:42:14,805 base 20912 4004 Session data corrupted
+WARNING 2025-09-11 19:42:14,879 base 20912 4004 Session data corrupted
+WARNING 2025-09-11 19:45:26,049 base 20912 19884 Session data corrupted
+WARNING 2025-09-11 19:49:03,366 log 20912 23636 Forbidden (CSRF token from POST incorrect.): /select-company/
+WARNING 2025-09-11 19:49:05,144 log 20912 23636 Method Not Allowed (GET): /select-company/
+ERROR 2025-09-11 19:50:29,343 log 20912 23636 Internal Server Error: /medical-records/records/new/
+Traceback (most recent call last):
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\contrib\auth\decorators.py", line 60, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\contrib\auth\decorators.py", line 60, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\HOME\PycharmProjects\contabilidad\core\decorators.py", line 36, in _wrapped_view
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\contrib\auth\decorators.py", line 60, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\HOME\PycharmProjects\contabilidad\core\decorators.py", line 338, in _wrapped_view
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\HOME\PycharmProjects\contabilidad\medical_records\views.py", line 198, in new_medical_record
+    return render(request, 'medical_records/new_medical_record.html')
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\loader.py", line 19, in get_template
+    raise TemplateDoesNotExist(template_name, chain=chain)
+django.template.exceptions.TemplateDoesNotExist: medical_records/new_medical_record.html
+WARNING 2025-09-11 19:50:50,578 log 20912 23636 Forbidden (CSRF token from POST incorrect.): /select-company/
+WARNING 2025-09-11 19:50:59,311 middleware 20912 23636 User admin tried to access /accounting/new-journal-entry/ without can_access_accounting permission
+WARNING 2025-09-11 19:50:59,324 log 20912 23636 Forbidden: /accounting/new-journal-entry/
+WARNING 2025-09-11 19:51:03,024 middleware 20912 23636 User admin tried to access /accounting/chart-of-accounts/ without can_access_accounting permission
+WARNING 2025-09-11 19:51:03,038 log 20912 23636 Forbidden: /accounting/chart-of-accounts/
+WARNING 2025-09-11 19:51:10,910 middleware 20912 23636 User admin tried to access /accounts_receivable/invoices/new/ without can_access_receivables permission
+WARNING 2025-09-11 19:51:10,916 log 20912 23636 Forbidden: /accounts_receivable/invoices/new/
+INFO 2025-09-11 19:51:28,351 autoreload 20912 5860 C:\Users\HOME\PycharmProjects\contabilidad\medical_records\views.py changed, reloading.
+INFO 2025-09-11 19:51:28,845 autoreload 6016 20212 C:\Users\HOME\PycharmProjects\contabilidad\medical_records\views.py changed, reloading.
+INFO 2025-09-11 19:51:28,848 autoreload 26240 22712 C:\Users\HOME\PycharmProjects\contabilidad\medical_records\views.py changed, reloading.
+INFO 2025-09-11 19:51:28,853 autoreload 5892 1556 C:\Users\HOME\PycharmProjects\contabilidad\medical_records\views.py changed, reloading.
+INFO 2025-09-11 19:51:28,863 autoreload 14888 23072 C:\Users\HOME\PycharmProjects\contabilidad\medical_records\views.py changed, reloading.
+INFO 2025-09-11 19:51:29,910 autoreload 13504 11416 Watching for file changes with StatReloader
+INFO 2025-09-11 19:51:30,355 autoreload 23200 22908 Watching for file changes with StatReloader
+INFO 2025-09-11 19:51:30,385 autoreload 20436 17672 Watching for file changes with StatReloader
+INFO 2025-09-11 19:51:30,386 autoreload 12160 24436 Watching for file changes with StatReloader
+INFO 2025-09-11 19:51:30,392 autoreload 5336 9176 Watching for file changes with StatReloader
+WARNING 2025-09-11 19:52:40,603 base 13504 18008 Session data corrupted
+WARNING 2025-09-11 19:52:40,858 base 13504 18008 Session data corrupted
+WARNING 2025-09-11 19:52:48,283 base 13504 18008 Session data corrupted
+INFO 2025-09-11 19:55:44,288 autoreload 5336 9176 C:\Users\HOME\PycharmProjects\contabilidad\core\decorators.py changed, reloading.
+INFO 2025-09-11 19:55:44,994 autoreload 12160 24436 C:\Users\HOME\PycharmProjects\contabilidad\core\decorators.py changed, reloading.
+INFO 2025-09-11 19:55:45,005 autoreload 13504 11416 C:\Users\HOME\PycharmProjects\contabilidad\core\decorators.py changed, reloading.
+INFO 2025-09-11 19:55:45,018 autoreload 23200 22908 C:\Users\HOME\PycharmProjects\contabilidad\core\decorators.py changed, reloading.
+INFO 2025-09-11 19:55:45,022 autoreload 20436 17672 C:\Users\HOME\PycharmProjects\contabilidad\core\decorators.py changed, reloading.
+INFO 2025-09-11 19:55:46,036 autoreload 20600 25728 Watching for file changes with StatReloader
+INFO 2025-09-11 19:55:46,701 autoreload 24044 26108 Watching for file changes with StatReloader
+INFO 2025-09-11 19:55:46,705 autoreload 1908 24016 Watching for file changes with StatReloader
+INFO 2025-09-11 19:55:46,731 autoreload 19940 25912 Watching for file changes with StatReloader
+INFO 2025-09-11 19:55:46,736 autoreload 18440 26192 Watching for file changes with StatReloader
+WARNING 2025-09-11 19:55:57,013 base 18440 20276 Session data corrupted
+WARNING 2025-09-11 19:55:57,195 base 18440 20276 Session data corrupted
+WARNING 2025-09-11 19:57:10,974 base 18440 20276 Session data corrupted
+WARNING 2025-09-11 19:59:45,060 middleware 18440 20276 User admin tried to access /accounting/new-journal-entry/ without can_access_accounting permission
+WARNING 2025-09-11 19:59:45,071 log 18440 20276 Forbidden: /accounting/new-journal-entry/
+WARNING 2025-09-11 21:12:52,847 middleware 18440 28504 User admin tried to access /accounts_payable/new-purchase-invoice/ without can_access_payables permission
+WARNING 2025-09-11 21:12:52,857 log 18440 28504 Forbidden: /accounts_payable/new-purchase-invoice/
+WARNING 2025-09-11 21:16:05,788 middleware 18440 28504 User admin tried to access /accounts_payable/new-purchase-invoice/ without can_access_payables permission
+WARNING 2025-09-11 21:16:05,803 log 18440 28504 Forbidden: /accounts_payable/new-purchase-invoice/
+WARNING 2025-09-11 21:16:06,764 middleware 18440 28504 User admin tried to access /accounts_payable/new-purchase-invoice/ without can_access_payables permission
+WARNING 2025-09-11 21:16:06,782 log 18440 28504 Forbidden: /accounts_payable/new-purchase-invoice/
+WARNING 2025-09-11 21:16:17,237 middleware 18440 28504 User admin tried to access /treasury/bank-movement/ without can_access_treasury permission
+WARNING 2025-09-11 21:16:17,250 log 18440 28504 Forbidden: /treasury/bank-movement/
+INFO 2025-09-11 21:17:20,974 autoreload 18440 26192 C:\Users\HOME\PycharmProjects\contabilidad\core\decorators.py changed, reloading.
+INFO 2025-09-11 21:17:20,935 autoreload 1908 24016 C:\Users\HOME\PycharmProjects\contabilidad\core\decorators.py changed, reloading.
+INFO 2025-09-11 21:17:20,932 autoreload 19940 25912 C:\Users\HOME\PycharmProjects\contabilidad\core\decorators.py changed, reloading.
+INFO 2025-09-11 21:17:20,964 autoreload 24044 26108 C:\Users\HOME\PycharmProjects\contabilidad\core\decorators.py changed, reloading.
+INFO 2025-09-11 21:17:21,044 autoreload 20600 25728 C:\Users\HOME\PycharmProjects\contabilidad\core\decorators.py changed, reloading.
+INFO 2025-09-11 21:17:23,357 autoreload 28592 26852 Watching for file changes with StatReloader
+INFO 2025-09-11 21:17:23,382 autoreload 26920 28172 Watching for file changes with StatReloader
+INFO 2025-09-11 21:17:23,387 autoreload 22068 5912 Watching for file changes with StatReloader
+INFO 2025-09-11 21:17:23,388 autoreload 16140 26516 Watching for file changes with StatReloader
+INFO 2025-09-11 21:17:23,412 autoreload 20504 28564 Watching for file changes with StatReloader
+WARNING 2025-09-11 21:22:37,614 base 28592 27024 Session data corrupted
+WARNING 2025-09-11 21:22:42,022 base 28592 27024 Session data corrupted
+WARNING 2025-09-11 21:23:04,342 base 28592 27024 Session data corrupted
+WARNING 2025-09-11 21:23:08,247 base 28592 27024 Session data corrupted
+WARNING 2025-09-11 21:23:12,618 base 28592 27024 Session data corrupted
+INFO 2025-09-11 21:25:47,452 autoreload 27492 25612 Watching for file changes with StatReloader
+WARNING 2025-09-11 21:26:10,550 base 27492 6356 Session data corrupted
+WARNING 2025-09-11 21:26:10,721 base 27492 6356 Session data corrupted
+WARNING 2025-09-11 21:26:10,978 base 27492 6356 Session data corrupted
+WARNING 2025-09-11 21:26:11,001 log 27492 6356 Not Found: /favicon.ico
+WARNING 2025-09-11 21:26:13,926 base 27492 6356 Session data corrupted
+WARNING 2025-09-11 21:26:15,894 log 27492 24192 Forbidden (CSRF token from POST incorrect.): /accounts/login/
+WARNING 2025-09-11 21:27:07,206 middleware 27492 24192 User admin tried to access /reports/ without can_access_reports permission
+WARNING 2025-09-11 21:27:07,222 log 27492 24192 Forbidden: /reports/
+INFO 2025-09-11 13:33:06,922 autoreload 11712 23148 C:\Users\HOME\PycharmProjects\contabilidad\accounting\views.py changed, reloading.
+INFO 2025-09-30 01:37:27,641 autoreload 14452 6192 Watching for file changes with StatReloader
+WARNING 2025-09-30 01:37:32,704 log 14452 22260 Not Found: /favicon.ico
+WARNING 2025-09-30 09:27:04,443 log 14452 14440 Not Found: /favicon.ico
+WARNING 2025-09-30 10:15:08,838 log 14452 22104 Not Found: /hotel/api/agregar-ajuste/
+WARNING 2025-09-30 10:15:10,896 log 14452 14844 Not Found: /hotel/api/agregar-ajuste/
+WARNING 2025-09-30 10:15:12,950 log 14452 8760 Not Found: /hotel/api/agregar-ajuste/
+WARNING 2025-09-30 10:15:14,997 log 14452 18824 Not Found: /hotel/api/agregar-ajuste/
+WARNING 2025-09-30 10:17:11,050 log 14452 22016 Not Found: /hotel/api/agregar-ajuste/
+WARNING 2025-09-30 10:17:13,105 log 14452 7928 Not Found: /hotel/api/agregar-ajuste/
+WARNING 2025-09-30 10:17:15,168 log 14452 19068 Not Found: /hotel/api/agregar-ajuste/
+WARNING 2025-09-30 10:17:17,252 log 14452 15068 Not Found: /hotel/api/agregar-ajuste/
+INFO 2025-10-01 16:29:24,854 autoreload 23824 24196 Watching for file changes with StatReloader
+WARNING 2025-10-01 16:29:54,537 log 23824 2420 Not Found: /favicon.ico

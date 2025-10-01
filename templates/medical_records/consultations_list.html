@@ -1,0 +1,351 @@
+{% extends 'base.html' %}
+
+{% block title %}Consultas Médicas{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1><i class="bi bi-calendar2-check me-2"></i>Consultas Médicas</h1>
+                <div>
+                    <a href="{% url 'medical_records:new_consultation' %}" class="btn btn-primary">
+                        <i class="bi bi-plus-circle me-1"></i>Nueva Consulta
+                    </a>
+                    <a href="{% url 'medical_records:dashboard' %}" class="btn btn-outline-secondary">
+                        <i class="bi bi-house me-1"></i>Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Breadcrumb -->
+    <div class="row mb-3">
+        <div class="col-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'core:dashboard' %}">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'medical_records:dashboard' %}">Historia Clínica</a></li>
+                    <li class="breadcrumb-item active">Consultas</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Filtros -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-funnel me-2"></i>Filtros de Búsqueda</h5>
+                </div>
+                <div class="card-body">
+                    <form method="get" class="row g-3">
+                        <div class="col-md-2">
+                            <label for="status" class="form-label">Estado</label>
+                            <select class="form-select" id="status" name="status">
+                                <option value="">Todos los estados</option>
+                                {% for value, label in status_choices %}
+                                <option value="{{ value }}" {% if filters.status == value %}selected{% endif %}>{{ label }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="consultation_type" class="form-label">Tipo de Consulta</label>
+                            <select class="form-select" id="consultation_type" name="consultation_type">
+                                <option value="">Todos los tipos</option>
+                                {% for value, label in type_choices %}
+                                <option value="{{ value }}" {% if filters.consultation_type == value %}selected{% endif %}>{{ label }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label for="date_from" class="form-label">Desde</label>
+                            <input type="date" class="form-control" id="date_from" name="date_from" value="{{ filters.date_from }}">
+                        </div>
+                        <div class="col-md-2">
+                            <label for="date_to" class="form-label">Hasta</label>
+                            <input type="date" class="form-control" id="date_to" name="date_to" value="{{ filters.date_to }}">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">&nbsp;</label>
+                            <div class="d-flex gap-2">
+                                <button type="submit" class="btn btn-primary flex-fill">
+                                    <i class="bi bi-search"></i> Buscar
+                                </button>
+                                <button type="button" class="btn btn-outline-secondary" onclick="clearFilters()">
+                                    <i class="bi bi-x-circle"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lista de Consultas -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="bi bi-list me-2"></i>Lista de Consultas</h5>
+                    <span class="badge bg-primary">{{ consultations.paginator.count }} consultas</span>
+                </div>
+                <div class="card-body">
+                    {% if consultations %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Fecha y Hora</th>
+                                        <th>Paciente</th>
+                                        <th>N° Historia</th>
+                                        <th>Tipo</th>
+                                        <th>Médico</th>
+                                        <th>Estado</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for consultation in consultations %}
+                                    <tr>
+                                        <td>
+                                            <div>
+                                                <strong>{{ consultation.consultation_date|date:"d/m/Y" }}</strong>
+                                                <br><small class="text-muted">{{ consultation.consultation_date|time:"H:i" }}</small>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div>
+                                                <strong>{{ consultation.medical_record.patient.get_full_name }}</strong>
+                                                <br><small class="text-muted">{{ consultation.medical_record.patient.document_number }}</small>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <a href="{% url 'medical_records:detail' consultation.medical_record.id %}" 
+                                               class="text-decoration-none text-primary">
+                                                <strong>{{ consultation.medical_record.record_number }}</strong>
+                                            </a>
+                                        </td>
+                                        <td>
+                                            {% if consultation.consultation_type == 'primera_vez' %}
+                                                <span class="badge bg-success">{{ consultation.get_consultation_type_display }}</span>
+                                            {% elif consultation.consultation_type == 'control' %}
+                                                <span class="badge bg-info">{{ consultation.get_consultation_type_display }}</span>
+                                            {% elif consultation.consultation_type == 'urgencia' %}
+                                                <span class="badge bg-danger">{{ consultation.get_consultation_type_display }}</span>
+                                            {% elif consultation.consultation_type == 'especializada' %}
+                                                <span class="badge bg-warning">{{ consultation.get_consultation_type_display }}</span>
+                                            {% else %}
+                                                <span class="badge bg-secondary">{{ consultation.get_consultation_type_display }}</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <div>
+                                                <strong>{{ consultation.attending_physician.get_full_name }}</strong>
+                                                <br><small class="text-muted">{{ consultation.medical_record.get_record_type_display }}</small>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            {% if consultation.status == 'scheduled' %}
+                                                <span class="badge bg-secondary">{{ consultation.get_status_display }}</span>
+                                            {% elif consultation.status == 'in_progress' %}
+                                                <span class="badge bg-warning">{{ consultation.get_status_display }}</span>
+                                            {% elif consultation.status == 'completed' %}
+                                                <span class="badge bg-success">{{ consultation.get_status_display }}</span>
+                                            {% elif consultation.status == 'cancelled' %}
+                                                <span class="badge bg-danger">{{ consultation.get_status_display }}</span>
+                                            {% else %}
+                                                <span class="badge bg-info">{{ consultation.get_status_display }}</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <div class="btn-group btn-group-sm" role="group">
+                                                <a href="{% url 'medical_records:consultation_detail' consultation.id %}" 
+                                                   class="btn btn-outline-primary" title="Ver Consulta">
+                                                    <i class="bi bi-eye"></i>
+                                                </a>
+                                                {% if consultation.status != 'completed' %}
+                                                <button type="button" class="btn btn-outline-success" 
+                                                        onclick="editConsultation('{{ consultation.id }}')" title="Editar">
+                                                    <i class="bi bi-pencil"></i>
+                                                </button>
+                                                {% endif %}
+                                                <button type="button" class="btn btn-outline-info" 
+                                                        onclick="printConsultation('{{ consultation.id }}')" title="Imprimir">
+                                                    <i class="bi bi-printer"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Estadísticas rápidas -->
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        <div class="card border-0 bg-light text-center">
+                                            <div class="card-body p-2">
+                                                <h6 class="card-title mb-1">{{ consultations.paginator.count }}</h6>
+                                                <small class="text-muted">Total Consultas</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="card border-0 bg-success text-white text-center">
+                                            <div class="card-body p-2">
+                                                <h6 class="card-title mb-1">
+                                                    {{ consultations|length|add:"-1"|add:"1" }}
+                                                </h6>
+                                                <small>En esta página</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Paginación -->
+                        {% if consultations.has_other_pages %}
+                        <nav aria-label="Paginación" class="mt-3">
+                            <ul class="pagination justify-content-center">
+                                {% if consultations.has_previous %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page=1{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">&laquo; Primera</a>
+                                    </li>
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ consultations.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">Anterior</a>
+                                    </li>
+                                {% endif %}
+
+                                <li class="page-item active">
+                                    <span class="page-link">
+                                        Página {{ consultations.number }} de {{ consultations.paginator.num_pages }}
+                                    </span>
+                                </li>
+
+                                {% if consultations.has_next %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ consultations.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">Siguiente</a>
+                                    </li>
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ consultations.paginator.num_pages }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">Última &raquo;</a>
+                                    </li>
+                                {% endif %}
+                            </ul>
+                        </nav>
+                        {% endif %}
+                    {% else %}
+                        <div class="text-center py-5">
+                            <i class="bi bi-calendar2-x display-1 text-muted"></i>
+                            <h3 class="mt-3">No hay consultas registradas</h3>
+                            <p class="text-muted">No se encontraron consultas que coincidan con los filtros seleccionados.</p>
+                            <a href="{% url 'medical_records:new_consultation' %}" class="btn btn-primary">
+                                <i class="bi bi-plus-circle me-1"></i>Registrar Primera Consulta
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function editConsultation(consultationId) {
+    window.location.href = `/medical-records/consultations/${consultationId}/edit/`;
+}
+
+function printConsultation(consultationId) {
+    window.open(`/medical-records/consultations/${consultationId}/print/`, '_blank');
+}
+
+function clearFilters() {
+    window.location.href = window.location.pathname;
+}
+
+// Filtros dinámicos
+document.addEventListener('DOMContentLoaded', function() {
+    const statusFilter = document.getElementById('status');
+    const typeFilter = document.getElementById('consultation_type');
+    
+    // Auto-submit en cambio de filtros principales
+    statusFilter.addEventListener('change', function() {
+        this.form.submit();
+    });
+    
+    typeFilter.addEventListener('change', function() {
+        this.form.submit();
+    });
+    
+    // Validación de fechas
+    const dateFrom = document.getElementById('date_from');
+    const dateTo = document.getElementById('date_to');
+    
+    dateFrom.addEventListener('change', function() {
+        if (dateTo.value && this.value > dateTo.value) {
+            alert('La fecha inicial no puede ser mayor que la fecha final');
+            this.value = '';
+        }
+    });
+    
+    dateTo.addEventListener('change', function() {
+        if (dateFrom.value && this.value < dateFrom.value) {
+            alert('La fecha final no puede ser menor que la fecha inicial');
+            this.value = '';
+        }
+    });
+});
+</script>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.table th {
+    font-weight: 600;
+    background-color: #f8f9fa;
+}
+
+.badge {
+    font-size: 0.75em;
+}
+
+.btn-group-sm .btn {
+    padding: 0.25rem 0.5rem;
+}
+
+.card-header {
+    background-color: #f8f9fa;
+    border-bottom: 2px solid #dee2e6;
+}
+
+.table td {
+    vertical-align: middle;
+}
+
+.pagination {
+    margin-top: 1rem;
+}
+
+.text-primary {
+    font-weight: 600;
+}
+
+.card-title {
+    font-size: 1.1rem;
+    margin-bottom: 0.25rem;
+}
+
+.bg-light {
+    background-color: #f8f9fa !important;
+}
+</style>
+{% endblock %}

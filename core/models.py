@@ -19,7 +19,8 @@ class User(AbstractUser):
     Usuario personalizado del sistema con roles y permisos granulares.
     """
     ROLE_CHOICES = [
-        ('admin', 'Administrador del Sistema'),
+        ('superadmin', 'Super Administrador'),
+        ('admin', 'Administrador/Contador'),
         ('contador', 'Contador'),
         ('dueno_empresa', 'Dueño de Empresa'),
         ('auxiliar_contable', 'Auxiliar Contable'),
@@ -53,19 +54,15 @@ class User(AbstractUser):
     
     def get_accessible_companies(self):
         """Obtiene las empresas a las que el usuario tiene acceso según su rol."""
-        if self.role == 'dueno_empresa':
+        if self.role == 'superadmin':
+            # Superadministradores pueden ver todas las empresas (incluso inactivas)
+            return Company.objects.all()
+        elif self.role == 'dueno_empresa':
             # Dueños de empresa solo ven su propia empresa
             return Company.objects.filter(id=self.owned_company_id) if self.owned_company else Company.objects.none()
         elif self.role in ['admin', 'contador']:
-            # Administradores y contadores pueden ver todas las empresas o las asignadas
-            if self.role == 'admin':
-                return Company.objects.filter(is_active=True)
-            else:
-                # Contadores ven las empresas donde tienen permisos
-                return Company.objects.filter(
-                    usercompanypermission__user=self,
-                    is_active=True
-                ).distinct()
+            # Administradores y contadores pueden ver todas las empresas activas
+            return Company.objects.filter(is_active=True)
         else:
             # Otros roles ven solo las empresas asignadas específicamente
             return Company.objects.filter(

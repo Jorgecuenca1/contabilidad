@@ -195,7 +195,7 @@ def consultation_detail(request, consultation_id):
 def new_medical_record(request):
     """Crear nueva historia clínica."""
     # Vista placeholder - implementar formulario completo
-    return render(request, 'medical_records/new_medical_record.html')
+    return render(request, 'medical_records/new_record.html')
 
 
 @login_required

@@ -25,12 +25,32 @@ def dashboard(request):
     if not request.user.is_authenticated:
         return render(request, 'core/login.html')
     
-    # Obtener empresa activa
-    active_company = request.user.companies.first() if hasattr(request.user, 'companies') and request.user.companies.exists() else None
+    # Verificar si hay empresa seleccionada en sesión
+    active_company_id = request.session.get('active_company')
+    active_company = None
+    
+    if active_company_id:
+        try:
+            active_company = Company.objects.get(id=active_company_id, is_active=True)
+            # Verificar que el usuario aún tenga acceso a esta empresa
+            if not request.user.can_access_company(active_company):
+                # Limpiar sesión y redirigir a selector
+                if 'active_company' in request.session:
+                    del request.session['active_company']
+                return redirect('core:company_selector')
+        except Company.DoesNotExist:
+            # Empresa no existe, limpiar sesión y redirigir
+            if 'active_company' in request.session:
+                del request.session['active_company']
+            return redirect('core:company_selector')
+    else:
+        # No hay empresa en sesión, redirigir a selector
+        return redirect('core:company_selector')
     
     # Obtener módulos disponibles y activos para la empresa
     available_modules = []
     active_modules = []
+    active_modules_by_category = {}
     
     if active_company:
         # Módulos del sistema disponibles para esta empresa
@@ -42,19 +62,52 @@ def dashboard(request):
             company=active_company,
             is_enabled=True
         ).select_related('module')
+        
+        # Organizar módulos activos por categoría
+        for company_module in active_modules:
+            module = company_module.module
+            category_display = {
+                'finance': 'Módulos Financieros',
+                'operations': 'Módulos Operacionales', 
+                'healthcare': 'Módulos de Salud',
+                'education': 'Módulos Educativos',
+                'manufacturing': 'Módulos de Manufactura'
+            }.get(module.category, module.category.title())
+            
+            if category_display not in active_modules_by_category:
+                active_modules_by_category[category_display] = []
+            
+            active_modules_by_category[category_display].append({
+                'module': module,
+                'is_active': True,
+                'can_access': True
+            })
+    
+    # Verificar si puede cambiar de empresa (simplificado - si tiene acceso a más de una empresa)
+    accessible_companies_count = request.user.get_accessible_companies().count()
+    can_switch_company = accessible_companies_count > 1
     
     # Estadísticas básicas
     context = {
         'user': request.user,
         'active_company': active_company,
+        'can_switch_company': can_switch_company,
+        'can_select_company': can_switch_company,  # Para compatibilidad con template
+        'current_company': active_company,  # Para compatibilidad con template
+        'user_companies': request.user.get_accessible_companies(),  # Para el selector
+        'user_role': request.user.role,  # Para mostrar rol en template
         'total_companies': Company.objects.count(),
         'total_users': User.objects.count(),
-        'total_accounts': Account.objects.count(),
-        'total_customers': Customer.objects.count(),
-        'total_suppliers': Supplier.objects.count(),
+        'total_accounts': Account.objects.filter(custom_company=active_company).count() if active_company else 0,
+        'total_customers': Customer.objects.filter(company=active_company).count() if active_company else 0,
+        'total_suppliers': Supplier.objects.filter(company=active_company).count() if active_company else 0,
         'available_modules': available_modules,
         'active_modules': active_modules,
+        'active_modules_by_category': active_modules_by_category,
         'is_healthcare_company': active_company.is_healthcare_company() if active_company else False,
+        'is_public_company': active_company.sector == 'public' if active_company else False,
+        'is_admin': request.user.role in ['superadmin', 'admin'],
+        'accessible_companies_count': accessible_companies_count,
     }
     
     return render(request, 'core/dashboard.html', context)
@@ -156,6 +209,11 @@ def new_company(request):
     """
     Crear nueva empresa.
     """
+    # Solo superadmin puede crear empresas
+    if request.user.role != 'superadmin':
+        messages.error(request, 'No tienes permisos para crear nuevas empresas.')
+        return redirect('core:dashboard')
+    
     if request.method == 'POST':
         try:
             # Obtener datos del formulario

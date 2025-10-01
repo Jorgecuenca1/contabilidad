@@ -333,11 +333,11 @@ def module_permission_required(module_code, permission_level='view'):
             if not request.user.is_authenticated:
                 return redirect('login')
             
-            # Si es superusuario o admin, permitir acceso
-            if request.user.is_superuser or request.user.is_staff:
+            # Si es superusuario, admin o superadmin, permitir acceso
+            if request.user.is_superuser or request.user.is_staff or request.user.role in ['superadmin', 'admin']:
                 return view_func(request, *args, **kwargs)
             
-            company_id = request.session.get('active_company_id')
+            company_id = request.session.get('active_company')
             if not company_id:
                 messages.warning(request, 'Debe seleccionar una empresa para acceder.')
                 return redirect('core:dashboard')

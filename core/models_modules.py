@@ -34,6 +34,7 @@ class SystemModule(models.Model):
     
     # Configuración de activación
     requires_company_category = models.CharField(max_length=20, blank=True, help_text="Categoría de empresa requerida")
+    requires_company_sector = models.CharField(max_length=20, blank=True, help_text="Sector de empresa requerido (public/private)")
     is_core_module = models.BooleanField(default=False, help_text="Módulo core que no se puede desactivar")
     
     # Estado
@@ -54,8 +55,15 @@ class SystemModule(models.Model):
         if not self.is_available:
             return False
         
+        # Verificar sector requerido (público/privado)
+        if self.requires_company_sector:
+            if self.requires_company_sector != company.sector:
+                return False
+        
+        # Verificar categoría requerida (salud, educación, etc.)
         if self.requires_company_category:
-            return company.category == self.requires_company_category
+            if self.requires_company_category != company.category:
+                return False
         
         return True
 

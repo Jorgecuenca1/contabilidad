@@ -27,7 +27,8 @@
       "Bash(cat:*)",
       "WebFetch(domain:web.sispro.gov.co)",
       "WebFetch(domain:revista.fecolsog.org)",
-      "WebFetch(domain:www.minsalud.gov.co)"
+      "WebFetch(domain:www.minsalud.gov.co)",
+      "Bash(.venv\\Scripts\\python.exe manage.py runserver:*)"
     ],
     "deny": [],
     "ask": []
