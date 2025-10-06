@@ -5001,3 +5001,5 @@ WARNING 2025-09-30 10:17:15,168 log 14452 19068 Not Found: /hotel/api/agregar-aj
 WARNING 2025-09-30 10:17:17,252 log 14452 15068 Not Found: /hotel/api/agregar-ajuste/
 INFO 2025-10-01 16:29:24,854 autoreload 23824 24196 Watching for file changes with StatReloader
 WARNING 2025-10-01 16:29:54,537 log 23824 2420 Not Found: /favicon.ico
+ERROR 2025-10-01 16:36:52,484 log 23824 2420 Internal Server Error: /reports/generate/aging-report/
+INFO 2025-10-02 01:20:42,924 autoreload 11140 16672 Watching for file changes with StatReloader
