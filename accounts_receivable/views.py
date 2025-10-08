@@ -353,6 +353,70 @@ def customer_list(request):
     return render(request, 'accounts_receivable/customer_list.html', context)
 
 @login_required
+@require_company_access
+def new_customer(request):
+    """Crear nuevo cliente."""
+    current_company = request.current_company
+    customer_types = CustomerType.objects.filter(is_active=True)
+
+    if request.method == 'POST':
+        try:
+            # Generate customer code
+            last_customer = Customer.objects.filter(company=current_company).order_by('-code').first()
+            if last_customer and last_customer.code:
+                try:
+                    last_number = int(last_customer.code.split('-')[-1])
+                    new_code = f"CLI-{last_number + 1:06d}"
+                except:
+                    new_code = "CLI-000001"
+            else:
+                new_code = "CLI-000001"
+
+            # Create customer
+            customer = Customer.objects.create(
+                company=current_company,
+                code=new_code,
+                document_type=request.POST.get('document_type'),
+                document_number=request.POST.get('document_number'),
+                verification_digit=request.POST.get('verification_digit', ''),
+                business_name=request.POST.get('business_name'),
+                trade_name=request.POST.get('trade_name', ''),
+                first_name=request.POST.get('first_name', ''),
+                last_name=request.POST.get('last_name', ''),
+                customer_type_id=request.POST.get('customer_type'),
+                regime=request.POST.get('regime', 'common'),
+                address=request.POST.get('address'),
+                city=request.POST.get('city'),
+                state=request.POST.get('state'),
+                country=request.POST.get('country', 'Colombia'),
+                postal_code=request.POST.get('postal_code', ''),
+                phone=request.POST.get('phone', ''),
+                mobile=request.POST.get('mobile', ''),
+                email=request.POST.get('email', ''),
+                website=request.POST.get('website', ''),
+                credit_limit=Decimal(request.POST.get('credit_limit', '0')),
+                credit_days=int(request.POST.get('credit_days', '30')),
+                discount_percentage=Decimal(request.POST.get('discount_percentage', '0')),
+                is_tax_responsible=bool(request.POST.get('is_tax_responsible')),
+                is_active=True,
+                created_by=request.user
+            )
+
+            messages.success(request, f'Cliente {customer.code} creado exitosamente')
+            return redirect('accounts_receivable:customer_list')
+
+        except Exception as e:
+            messages.error(request, f'Error al crear cliente: {str(e)}')
+
+    context = {
+        'customer_types': customer_types,
+        'current_company': current_company,
+    }
+
+    return render(request, 'accounts_receivable/new_customer.html', context)
+
+
+@login_required
 def customer_detail(request, customer_id):
     """Detalle del cliente."""
     customer = get_object_or_404(Customer, id=customer_id)

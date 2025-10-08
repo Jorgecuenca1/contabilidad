@@ -14,7 +14,7 @@ urlpatterns = [
     
     # Customer management
     path('customers/', views.customer_list, name='customer_list'),
-    # path('customers/new/', views.new_customer, name='new_customer'),
+    path('customers/new/', views.new_customer, name='new_customer'),
     # path('customers/<uuid:customer_id>/', views.customer_detail, name='customer_detail'),
     # path('customers/<uuid:customer_id>/edit/', views.edit_customer, name='edit_customer'),
     

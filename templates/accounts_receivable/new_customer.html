@@ -3,18 +3,49 @@
 {% block title %}Nuevo Cliente - {{ block.super }}{% endblock %}
 
 {% block content %}
-                        <!-- Empresa Seleccionada -->
-                        <div class="col-12 mb-3">
-                            <div class="alert alert-info">
-                                <i class="bi bi-building"></i> <strong>Empresa:</strong> {{ current_company.name }}{% if current_company.tax_id %} - {{ current_company.tax_id }}{% endif %}
-                                <small class="d-block">Trabajando con la empresa seleccionada en el dashboard</small>
-                            </div>
+<!-- Encabezado -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card bg-gradient-primary text-white shadow-lg">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h1><i class="bi bi-person-plus"></i> Nuevo Cliente</h1>
+                        <p class="lead mb-0">Registro de clientes para cuentas por cobrar</p>
+                    </div>
+                    <div class="col-md-4 text-end">
+                        <div class="display-4">
+                            <i class="bi bi-people"></i>
                         </div>
-                            
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Formulario -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="bi bi-pencil-square"></i> Datos del Cliente</h5>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+
+                    <div class="row">
+                        <!-- Información Básica -->
+                        <div class="col-md-6">
+                            <h6 class="text-primary mb-3">Información Básica</h6>
+
+                            <!-- Empresa Seleccionada -->
                             <div class="mb-3">
-                                <label for="code" class="form-label">Código *</label>
-                                <input type="text" class="form-control" id="code" name="code" required>
-                                <div class="form-text">Código único del cliente</div>
+                                <div class="alert alert-info">
+                                    <i class="bi bi-building"></i> <strong>Empresa:</strong> {{ current_company.name }}{% if current_company.tax_id %} - {{ current_company.tax_id }}{% endif %}
+                                    <small class="d-block">Trabajando con la empresa seleccionada en el dashboard</small>
+                                </div>
                             </div>
                             
                             <div class="row">
@@ -223,7 +254,7 @@
                         <div class="col-12">
                             <hr>
                             <div class="d-flex justify-content-end gap-2">
-                                <a href="/admin/accounts_receivable/customer/" class="btn btn-secondary">
+                                <a href="{% url 'accounts_receivable:customer_list' %}" class="btn btn-secondary">
                                     <i class="bi bi-x-circle"></i> Cancelar
                                 </a>
                                 <button type="submit" class="btn btn-primary">

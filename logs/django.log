@@ -5003,3 +5003,132 @@ INFO 2025-10-01 16:29:24,854 autoreload 23824 24196 Watching for file changes wi
 WARNING 2025-10-01 16:29:54,537 log 23824 2420 Not Found: /favicon.ico
 ERROR 2025-10-01 16:36:52,484 log 23824 2420 Internal Server Error: /reports/generate/aging-report/
 INFO 2025-10-02 01:20:42,924 autoreload 11140 16672 Watching for file changes with StatReloader
+INFO 2025-10-07 13:25:09,233 autoreload 8080 14044 Watching for file changes with StatReloader
+INFO 2025-10-07 13:55:50,862 autoreload 24428 24492 Watching for file changes with StatReloader
+WARNING 2025-10-07 13:56:57,134 log 24428 18448 Not Found: /favicon.ico
+ERROR 2025-10-07 14:13:19,346 log 24428 29600 Internal Server Error: /accounts_receivable/customers/
+Traceback (most recent call last):
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\contrib\auth\decorators.py", line 60, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\HOME\PycharmProjects\contabilidad\core\utils.py", line 37, in wrapper
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\HOME\PycharmProjects\contabilidad\accounts_receivable\views.py", line 353, in customer_list
+    return render(request, 'accounts_receivable/customer_list.html', context)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\backends\django.py", line 107, in render
+    return self.template.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 171, in render
+    return self._render(context)
+           ~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 1008, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 969, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\loader_tags.py", line 159, in render
+    return compiled_parent._render(context)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 1008, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 969, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\loader_tags.py", line 65, in render
+    result = block.nodelist.render(context)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 1008, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 969, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\defaulttags.py", line 327, in render
+    return nodelist.render(context)
+           ~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 1008, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 969, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\defaulttags.py", line 327, in render
+    return nodelist.render(context)
+           ~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 1008, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\base.py", line 969, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\defaulttags.py", line 480, in render
+    url = reverse(view_name, args=args, kwargs=kwargs, current_app=current_app)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\urls\base.py", line 88, in reverse
+    return resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\urls\resolvers.py", line 831, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'new_customer' not found. 'new_customer' is not a valid view function or pattern name.
+ERROR 2025-10-07 14:14:58,395 log 24428 21372 Internal Server Error: /accounts_receivable/payments/
+Traceback (most recent call last):
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\contrib\auth\decorators.py", line 60, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\HOME\PycharmProjects\contabilidad\core\utils.py", line 37, in wrapper
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\HOME\PycharmProjects\contabilidad\accounts_receivable\views.py", line 552, in payment_list
+    return render(request, 'accounts_receivable/payment_list.html', context)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\loader.py", line 19, in get_template
+    raise TemplateDoesNotExist(template_name, chain=chain)
+django.template.exceptions.TemplateDoesNotExist: accounts_receivable/payment_list.html
+INFO 2025-10-07 14:15:08,252 autoreload 24428 24492 C:\Users\HOME\PycharmProjects\contabilidad\accounts_receivable\views.py changed, reloading.
+INFO 2025-10-07 14:15:12,519 autoreload 22980 10256 Watching for file changes with StatReloader
+WARNING 2025-10-07 14:15:18,566 base 22980 23468 Session data corrupted
+WARNING 2025-10-07 14:15:18,884 base 22980 23468 Session data corrupted
+WARNING 2025-10-07 14:15:22,869 base 22980 23468 Session data corrupted
+WARNING 2025-10-07 14:15:22,907 base 22980 23468 Session data corrupted
+INFO 2025-10-07 14:15:27,318 autoreload 22980 10256 C:\Users\HOME\PycharmProjects\contabilidad\accounts_receivable\urls.py changed, reloading.
+INFO 2025-10-07 14:15:30,249 autoreload 2412 2396 Watching for file changes with StatReloader
+WARNING 2025-10-07 14:15:33,276 base 2412 29336 Session data corrupted
+WARNING 2025-10-07 14:15:36,143 log 2412 19828 Forbidden (CSRF token from POST incorrect.): /accounts/login/
+ERROR 2025-10-07 14:16:30,668 log 2412 23464 Internal Server Error: /accounts_receivable/payments/
+Traceback (most recent call last):
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\contrib\auth\decorators.py", line 60, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\HOME\PycharmProjects\contabilidad\core\utils.py", line 37, in wrapper
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\HOME\PycharmProjects\contabilidad\accounts_receivable\views.py", line 616, in payment_list
+    return render(request, 'accounts_receivable/payment_list.html', context)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+  File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\loader.py", line 19, in get_template
+    raise TemplateDoesNotExist(template_name, chain=chain)
+django.template.exceptions.TemplateDoesNotExist: accounts_receivable/payment_list.html
