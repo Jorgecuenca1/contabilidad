@@ -5132,3 +5132,4 @@ Traceback (most recent call last):
   File "C:\Users\HOME\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\loader.py", line 19, in get_template
     raise TemplateDoesNotExist(template_name, chain=chain)
 django.template.exceptions.TemplateDoesNotExist: accounts_receivable/payment_list.html
+INFO 2025-10-12 13:32:08,762 autoreload 9456 18264 Watching for file changes with StatReloader
