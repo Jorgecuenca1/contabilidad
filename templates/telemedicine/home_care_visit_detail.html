@@ -1,0 +1,306 @@
+{% extends 'base.html' %}
+{% block title %}Detalle de Visita Domiciliaria - {{ visit.visit_number }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-house-heart"></i> Visita Domiciliaria: {{ visit.visit_number }}</h2>
+        <div>
+            <a href="{% url 'telemedicine:document_create' %}?visit={{ visit.id }}" class="btn btn-success">
+                <i class="bi bi-file-earmark-plus"></i> Generar Documento
+            </a>
+            <a href="{% url 'telemedicine:home_care_visit_list' %}" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Volver
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <!-- Información Básica -->
+            <div class="card mb-3">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="bi bi-info-circle"></i> Información de la Visita</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <strong>Número de Visita:</strong>
+                            <p class="mb-0">{{ visit.visit_number }}</p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <strong>Fecha y Hora:</strong>
+                            <p class="mb-0">{{ visit.visit_date|date:"d/m/Y H:i" }}</p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <strong>Paciente:</strong>
+                            <p class="mb-0">{{ visit.patient.third_party.name }}</p>
+                            <small class="text-muted">{{ visit.patient.third_party.identification_number }}</small>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <strong>Profesional:</strong>
+                            <p class="mb-0">{{ visit.professional.third_party.name }}</p>
+                            <small class="text-muted">{{ visit.professional.specialty }}</small>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <strong>Tipo de Visita:</strong>
+                            <p class="mb-0">
+                                {% if visit.visit_type == 'nursing' %}
+                                <span class="badge bg-primary">Enfermería</span>
+                                {% elif visit.visit_type == 'medical' %}
+                                <span class="badge bg-success">Médica</span>
+                                {% elif visit.visit_type == 'therapy' %}
+                                <span class="badge bg-info">Terapia</span>
+                                {% elif visit.visit_type == 'palliative' %}
+                                <span class="badge bg-warning text-dark">Cuidados Paliativos</span>
+                                {% elif visit.visit_type == 'post_surgical' %}
+                                <span class="badge bg-danger">Post-quirúrgica</span>
+                                {% else %}
+                                <span class="badge bg-secondary">Curaciones</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <strong>Motivo:</strong>
+                            <p class="mb-0">{{ visit.visit_reason }}</p>
+                        </div>
+                        {% if visit.appointment %}
+                        <div class="col-md-12 mb-3">
+                            <strong>Cita Relacionada:</strong>
+                            <p class="mb-0">
+                                <a href="{% url 'telemedicine:appointment_detail' visit.appointment.id %}" class="btn btn-sm btn-outline-primary">
+                                    <i class="bi bi-calendar-event"></i> Ver Cita {{ visit.appointment.appointment_number }}
+                                </a>
+                            </p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dirección -->
+            <div class="card mb-3">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="bi bi-geo-alt"></i> Dirección de la Visita</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-2">
+                        <strong>Dirección:</strong>
+                        <p class="mb-0">{{ visit.address }}</p>
+                        <p class="mb-0">{{ visit.city }}, {{ visit.state }} {% if visit.postal_code %}{{ visit.postal_code }}{% endif %}</p>
+                    </div>
+                    {% if visit.address_reference %}
+                    <div class="mb-2">
+                        <strong>Referencias:</strong>
+                        <p class="mb-0">{{ visit.address_reference }}</p>
+                    </div>
+                    {% endif %}
+                    {% if visit.contact_name or visit.contact_phone %}
+                    <div class="mt-3">
+                        <strong>Contacto en sitio:</strong>
+                        <p class="mb-0">
+                            {% if visit.contact_name %}{{ visit.contact_name }}{% endif %}
+                            {% if visit.contact_phone %} - Tel: {{ visit.contact_phone }}{% endif %}
+                        </p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Signos Vitales -->
+            {% if visit.blood_pressure or visit.heart_rate or visit.respiratory_rate or visit.temperature or visit.oxygen_saturation or visit.blood_glucose %}
+            <div class="card mb-3">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0"><i class="bi bi-heart-pulse"></i> Signos Vitales</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        {% if visit.blood_pressure %}
+                        <div class="col-md-2 mb-2">
+                            <small class="text-muted">PA</small>
+                            <p class="mb-0"><strong>{{ visit.blood_pressure }}</strong></p>
+                        </div>
+                        {% endif %}
+                        {% if visit.heart_rate %}
+                        <div class="col-md-2 mb-2">
+                            <small class="text-muted">FC</small>
+                            <p class="mb-0"><strong>{{ visit.heart_rate }} lpm</strong></p>
+                        </div>
+                        {% endif %}
+                        {% if visit.respiratory_rate %}
+                        <div class="col-md-2 mb-2">
+                            <small class="text-muted">FR</small>
+                            <p class="mb-0"><strong>{{ visit.respiratory_rate }} rpm</strong></p>
+                        </div>
+                        {% endif %}
+                        {% if visit.temperature %}
+                        <div class="col-md-2 mb-2">
+                            <small class="text-muted">Temp</small>
+                            <p class="mb-0"><strong>{{ visit.temperature }}°C</strong></p>
+                        </div>
+                        {% endif %}
+                        {% if visit.oxygen_saturation %}
+                        <div class="col-md-2 mb-2">
+                            <small class="text-muted">Sat. O2</small>
+                            <p class="mb-0"><strong>{{ visit.oxygen_saturation }}%</strong></p>
+                        </div>
+                        {% endif %}
+                        {% if visit.blood_glucose %}
+                        <div class="col-md-2 mb-2">
+                            <small class="text-muted">Glicemia</small>
+                            <p class="mb-0"><strong>{{ visit.blood_glucose }} mg/dL</strong></p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Procedimientos y Medicamentos -->
+            <div class="card mb-3">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="bi bi-clipboard2-pulse"></i> Procedimientos y Medicamentos</h5>
+                </div>
+                <div class="card-body">
+                    {% if visit.procedures_performed %}
+                    <div class="mb-3">
+                        <strong>Procedimientos Realizados:</strong>
+                        <p class="mb-0">{{ visit.procedures_performed }}</p>
+                    </div>
+                    {% endif %}
+                    {% if visit.medications_administered %}
+                    <div class="mb-3">
+                        <strong>Medicamentos Administrados:</strong>
+                        <div class="alert alert-warning mb-0">
+                            {{ visit.medications_administered }}
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% if visit.supplies_used %}
+                    <div class="mb-0">
+                        <strong>Insumos Utilizados:</strong>
+                        <p class="mb-0">{{ visit.supplies_used }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Evaluación Clínica -->
+            <div class="card mb-3">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="mb-0"><i class="bi bi-clipboard-data"></i> Evaluación Clínica</h5>
+                </div>
+                <div class="card-body">
+                    {% if visit.clinical_assessment %}
+                    <div class="mb-3">
+                        <strong>Valoración Clínica:</strong>
+                        <p class="mb-0">{{ visit.clinical_assessment }}</p>
+                    </div>
+                    {% endif %}
+                    {% if visit.diagnosis %}
+                    <div class="mb-3">
+                        <strong>Diagnóstico:</strong>
+                        <p class="mb-0">{{ visit.diagnosis }}</p>
+                    </div>
+                    {% endif %}
+                    {% if visit.treatment_plan %}
+                    <div class="mb-0">
+                        <strong>Plan de Tratamiento:</strong>
+                        <p class="mb-0">{{ visit.treatment_plan }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Instrucciones y Educación -->
+            {% if visit.patient_instructions or visit.health_education or visit.warning_signs %}
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h6 class="mb-0"><i class="bi bi-chat-left-text"></i> Instrucciones y Educación</h6>
+                </div>
+                <div class="card-body">
+                    {% if visit.patient_instructions %}
+                    <div class="mb-3">
+                        <strong>Instrucciones al Paciente/Cuidador:</strong>
+                        <p class="mb-0">{{ visit.patient_instructions }}</p>
+                    </div>
+                    {% endif %}
+                    {% if visit.health_education %}
+                    <div class="mb-3">
+                        <strong>Educación en Salud:</strong>
+                        <p class="mb-0">{{ visit.health_education }}</p>
+                    </div>
+                    {% endif %}
+                    {% if visit.warning_signs %}
+                    <div class="mb-0">
+                        <strong>Signos de Alarma:</strong>
+                        <div class="alert alert-danger mb-0">
+                            <i class="bi bi-exclamation-triangle"></i> {{ visit.warning_signs }}
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Seguimiento -->
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h6 class="mb-0"><i class="bi bi-calendar-check"></i> Seguimiento</h6>
+                </div>
+                <div class="card-body">
+                    {% if visit.requires_next_visit %}
+                    <div class="alert alert-info mb-3">
+                        <i class="bi bi-calendar-check"></i> <strong>Requiere próxima visita</strong>
+                        {% if visit.suggested_next_visit_date %}
+                        <br>Fecha sugerida: {{ visit.suggested_next_visit_date|date:"d/m/Y" }}
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                    {% if visit.observations %}
+                    <div>
+                        <strong>Observaciones Generales:</strong>
+                        <p class="mb-0">{{ visit.observations }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Panel Lateral -->
+        <div class="col-md-4">
+            <!-- Documentos Relacionados -->
+            {% if related_documents %}
+            <div class="card mb-3">
+                <div class="card-header bg-success text-white">
+                    <h6 class="mb-0"><i class="bi bi-file-earmark-text"></i> Documentos Generados</h6>
+                </div>
+                <div class="card-body">
+                    {% for document in related_documents %}
+                    <div class="mb-2">
+                        <a href="{% url 'telemedicine:document_detail' document.id %}" class="btn btn-sm btn-outline-primary w-100">
+                            <i class="bi bi-file-earmark"></i> {{ document.get_document_type_display }}
+                        </a>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Información del Sistema -->
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="mb-0"><i class="bi bi-clock-history"></i> Información del Sistema</h6>
+                </div>
+                <div class="card-body">
+                    <small class="text-muted">
+                        <p class="mb-2"><strong>Creado:</strong><br>{{ visit.created_at|date:"d/m/Y H:i" }}</p>
+                        <p class="mb-2"><strong>Creado por:</strong><br>{{ visit.created_by.get_full_name }}</p>
+                        <p class="mb-0"><strong>Última modificación:</strong><br>{{ visit.updated_at|date:"d/m/Y H:i" }}</p>
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

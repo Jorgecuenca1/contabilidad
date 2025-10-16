@@ -1,0 +1,223 @@
+{% extends 'base.html' %}
+{% block title %}Crear Admisión de Urgencias{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <h2 class="mb-4">
+        <i class="bi bi-clipboard-plus"></i> Nueva Admisión de Urgencias
+    </h2>
+
+    <form method="post" id="admissionForm">
+        {% csrf_token %}
+
+        <!-- Selección de Triage -->
+        <div class="card mb-3">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="bi bi-clipboard-pulse"></i> Selección de Triage</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-12">
+                        <label class="form-label">Triage Pendiente <span class="text-danger">*</span></label>
+                        <select name="triage" id="triageSelect" class="form-select" required>
+                            <option value="">Seleccionar triage...</option>
+                            {% for triage in available_triages %}
+                            <option value="{{ triage.id }}"
+                                    data-patient="{{ triage.patient.third_party.name }}"
+                                    data-level="{{ triage.triage_level }}"
+                                    data-complaint="{{ triage.chief_complaint }}"
+                                    data-arrival="{{ triage.arrival_datetime|date:'d/m/Y H:i' }}"
+                                    {% if request.GET.triage == triage.id|stringformat:"s" %}selected{% endif %}>
+                                {{ triage.triage_number }} - {{ triage.patient.third_party.name }} -
+                                Nivel {{ triage.triage_level }} ({{ triage.triage_color }}) -
+                                {{ triage.arrival_datetime|date:"d/m/Y H:i" }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                        <small class="text-muted">Seleccione un triage pendiente de admisión</small>
+                    </div>
+                    <div class="col-md-12" id="triageInfo" style="display: none;">
+                        <div class="alert alert-info">
+                            <strong>Paciente:</strong> <span id="patientName"></span><br>
+                            <strong>Nivel de Triage:</strong> <span id="triageLevel"></span><br>
+                            <strong>Motivo:</strong> <span id="chiefComplaint"></span><br>
+                            <strong>Llegada:</strong> <span id="arrivalTime"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Información de Admisión -->
+        <div class="card mb-3">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0"><i class="bi bi-clock-history"></i> Información de Admisión</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Fecha y Hora de Admisión <span class="text-danger">*</span></label>
+                        <input type="datetime-local" name="admission_datetime" id="admissionDatetime" class="form-control" required>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ubicación en Urgencias -->
+        <div class="card mb-3">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0"><i class="bi bi-geo-alt"></i> Ubicación en Urgencias</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Área de Urgencias</label>
+                        <input type="text" name="emergency_area" class="form-control" placeholder="Ej: Reanimación, Observación, Consultorio 1">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Número de Cama/Camilla</label>
+                        <input type="text" name="bed_number" class="form-control" placeholder="Ej: Cama 5, Camilla 12">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Personal Médico -->
+        <div class="card mb-3">
+            <div class="card-header bg-warning text-dark">
+                <h5 class="mb-0"><i class="bi bi-people"></i> Personal Médico Asignado</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Médico Tratante <span class="text-danger">*</span></label>
+                        <select name="attending_physician" class="form-select" required>
+                            <option value="">Seleccionar médico...</option>
+                            {% for physician in physicians %}
+                            <option value="{{ physician.id }}">{{ physician.get_full_name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Enfermera Asignada</label>
+                        <select name="assigned_nurse" class="form-select">
+                            <option value="">Seleccionar enfermera...</option>
+                            {% for nurse in nurses %}
+                            <option value="{{ nurse.id }}">{{ nurse.get_full_name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Información de Seguro -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-shield-check"></i> Información de Seguro y Autorización</h6>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Aseguradora/EPS</label>
+                        <input type="text" name="insurance_company" class="form-control" placeholder="Nombre de la aseguradora">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Número de Autorización</label>
+                        <input type="text" name="authorization_number" class="form-control" placeholder="Número de autorización">
+                    </div>
+                    <div class="col-md-12">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="requires_authorization" id="requiresAuth">
+                            <label class="form-check-label" for="requiresAuth">
+                                Requiere autorización previa
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Notas de Admisión -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-journal-text"></i> Notas de Admisión</h6>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-12">
+                        <label class="form-label">Observaciones</label>
+                        <textarea name="admission_notes" class="form-control" rows="4" placeholder="Notas adicionales sobre la admisión"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Botones -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <button type="submit" class="btn btn-success btn-lg">
+                    <i class="bi bi-save"></i> Crear Admisión
+                </button>
+                <a href="{% url 'emergency:admission_list' %}" class="btn btn-secondary btn-lg">
+                    <i class="bi bi-x-circle"></i> Cancelar
+                </a>
+            </div>
+        </div>
+    </form>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const triageSelect = document.getElementById('triageSelect');
+    const triageInfo = document.getElementById('triageInfo');
+    const patientName = document.getElementById('patientName');
+    const triageLevel = document.getElementById('triageLevel');
+    const chiefComplaint = document.getElementById('chiefComplaint');
+    const arrivalTime = document.getElementById('arrivalTime');
+    const admissionDatetime = document.getElementById('admissionDatetime');
+
+    // Set current datetime
+    const now = new Date();
+    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+    admissionDatetime.value = now.toISOString().slice(0, 16);
+
+    triageSelect.addEventListener('change', function() {
+        const selectedOption = this.options[this.selectedIndex];
+
+        if (this.value) {
+            patientName.textContent = selectedOption.getAttribute('data-patient');
+            const level = selectedOption.getAttribute('data-level');
+            const levelColors = {
+                'I': 'danger',
+                'II': 'warning',
+                'III': 'info',
+                'IV': 'success',
+                'V': 'primary'
+            };
+            const levelNames = {
+                'I': 'I - Resucitación (Rojo)',
+                'II': 'II - Emergencia (Naranja)',
+                'III': 'III - Urgencia (Amarillo)',
+                'IV': 'IV - Urgencia Menor (Verde)',
+                'V': 'V - No Urgente (Azul)'
+            };
+            triageLevel.innerHTML = `<span class="badge bg-${levelColors[level]}">${levelNames[level]}</span>`;
+            chiefComplaint.textContent = selectedOption.getAttribute('data-complaint');
+            arrivalTime.textContent = selectedOption.getAttribute('data-arrival');
+            triageInfo.style.display = 'block';
+        } else {
+            triageInfo.style.display = 'none';
+        }
+    });
+
+    // Trigger change event if pre-selected
+    if (triageSelect.value) {
+        triageSelect.dispatchEvent(new Event('change'));
+    }
+});
+</script>
+{% endblock %}

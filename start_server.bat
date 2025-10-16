@@ -1,0 +1,3 @@
+@echo off
+echo Iniciando servidor Django...
+python manage.py runserver 8000 --noreload

@@ -49,7 +49,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',
     
-    # Local apps
+    # Local apps - Core business modules
     'core',
     'accounting',
     'accounts_receivable',
@@ -63,11 +63,35 @@ INSTALLED_APPS = [
     'reports',
     'budget',
     'third_parties',
+
+    # Health modules - existing
     'gynecology',
     'laboratory',
     'medical_records',
     'medical_appointments',
     'medical_procedures',
+    'cardiology',            # Cardiología especializada
+
+    # Health modules - new (IPS comprehensive system)
+    'patients',              # Gestión maestro de pacientes
+    'diagnostics',           # Catálogo CIE-10
+    'catalogs',              # CUPS/CUMS centralizados
+    'rips',                  # Generador RIPS automático
+    'emergency',             # Urgencias y triage
+    'hospitalization',       # Hospitalización y camas
+    'surgery',               # Cirugías y quirófano
+    'blood_bank',            # Banco de sangre
+    'occupational_health',   # Salud ocupacional
+    'imaging',               # Imágenes diagnósticas
+    'ophthalmology',         # Oftalmología
+    'dentistry',             # Odontología
+    'psychology',            # Psicología
+    'rehabilitation',        # Rehabilitación
+    'authorizations',        # Autorizaciones EPS
+    'pharmacy',              # Farmacia
+    'billing_health',        # Facturación salud
+    'health_reports',        # Reportes clínicos
+    'telemedicine',          # Telemedicina
 ]
 
 MIDDLEWARE = [

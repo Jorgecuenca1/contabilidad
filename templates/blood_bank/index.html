@@ -1,0 +1,397 @@
+{% extends 'base.html' %}
+
+{% block title %}Banco de Sangre - Dashboard{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'core:dashboard' %}">Dashboard</a></li>
+                    <li class="breadcrumb-item active">Banco de Sangre</li>
+                </ol>
+            </nav>
+
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h2 class="text-danger">
+                        <i class="bi bi-droplet-fill"></i> Banco de Sangre
+                    </h2>
+                    <p class="text-muted">Gestión de donantes, cribado, compatibilidad e inventario de hemocomponentes</p>
+                </div>
+                <div>
+                    <a href="{% url 'blood_bank:donor_create' %}" class="btn btn-success me-2">
+                        <i class="bi bi-person-plus"></i> Nuevo Donante
+                    </a>
+                    <a href="{% url 'blood_bank:donation_create' %}" class="btn btn-danger">
+                        <i class="bi bi-droplet-half"></i> Nueva Donación
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Estadísticas principales -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h3 class="mb-0">{{ active_donors }}</h3>
+                            <p class="mb-0">Donantes Activos</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="bi bi-people fs-1 opacity-75"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card bg-danger text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h3 class="mb-0">{{ available_components|length }}</h3>
+                            <p class="mb-0">Unidades Disponibles</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="bi bi-droplet-fill fs-1 opacity-75"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card bg-warning text-dark">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h3 class="mb-0">{{ expiring_soon }}</h3>
+                            <p class="mb-0">Por Vencer</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="bi bi-exclamation-triangle fs-1 opacity-75"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h3 class="mb-0">{{ donations_month }}</h3>
+                            <p class="mb-0">Donaciones Este Mes</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="bi bi-calendar-check fs-1 opacity-75"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Inventario por tipo de sangre -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="mb-0"><i class="bi bi-droplet-half"></i> Inventario por Tipo de Sangre</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-md-3 mb-3">
+                            <div class="card border-danger">
+                                <div class="card-body">
+                                    <h2 class="text-danger mb-0">O+</h2>
+                                    <p class="text-muted mb-1">Tipo O Positivo</p>
+                                    <h4 class="mb-2">32 unidades</h4>
+                                    <div class="progress" style="height: 10px;">
+                                        <div class="progress-bar bg-success" role="progressbar" style="width: 75%"></div>
+                                    </div>
+                                    <small class="text-muted">75% capacidad</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3 mb-3">
+                            <div class="card border-warning">
+                                <div class="card-body">
+                                    <h2 class="text-danger mb-0">A+</h2>
+                                    <p class="text-muted mb-1">Tipo A Positivo</p>
+                                    <h4 class="mb-2">28 unidades</h4>
+                                    <div class="progress" style="height: 10px;">
+                                        <div class="progress-bar bg-warning" role="progressbar" style="width: 60%"></div>
+                                    </div>
+                                    <small class="text-muted">60% capacidad</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3 mb-3">
+                            <div class="card border-info">
+                                <div class="card-body">
+                                    <h2 class="text-danger mb-0">B+</h2>
+                                    <p class="text-muted mb-1">Tipo B Positivo</p>
+                                    <h4 class="mb-2">18 unidades</h4>
+                                    <div class="progress" style="height: 10px;">
+                                        <div class="progress-bar bg-info" role="progressbar" style="width: 45%"></div>
+                                    </div>
+                                    <small class="text-muted">45% capacidad</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3 mb-3">
+                            <div class="card border-primary">
+                                <div class="card-body">
+                                    <h2 class="text-danger mb-0">AB+</h2>
+                                    <p class="text-muted mb-1">Tipo AB Positivo</p>
+                                    <h4 class="mb-2">8 unidades</h4>
+                                    <div class="progress" style="height: 10px;">
+                                        <div class="progress-bar bg-primary" role="progressbar" style="width: 30%"></div>
+                                    </div>
+                                    <small class="text-muted">30% capacidad</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3 mb-3">
+                            <div class="card border-success">
+                                <div class="card-body">
+                                    <h2 class="text-danger mb-0">O-</h2>
+                                    <p class="text-muted mb-1">Tipo O Negativo</p>
+                                    <h4 class="mb-2">15 unidades</h4>
+                                    <div class="progress" style="height: 10px;">
+                                        <div class="progress-bar bg-success" role="progressbar" style="width: 80%"></div>
+                                    </div>
+                                    <small class="text-muted">80% capacidad</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3 mb-3">
+                            <div class="card border-secondary">
+                                <div class="card-body">
+                                    <h2 class="text-danger mb-0">A-</h2>
+                                    <p class="text-muted mb-1">Tipo A Negativo</p>
+                                    <h4 class="mb-2">12 unidades</h4>
+                                    <div class="progress" style="height: 10px;">
+                                        <div class="progress-bar bg-secondary" role="progressbar" style="width: 55%"></div>
+                                    </div>
+                                    <small class="text-muted">55% capacidad</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3 mb-3">
+                            <div class="card border-dark">
+                                <div class="card-body">
+                                    <h2 class="text-danger mb-0">B-</h2>
+                                    <p class="text-muted mb-1">Tipo B Negativo</p>
+                                    <h4 class="mb-2">9 unidades</h4>
+                                    <div class="progress" style="height: 10px;">
+                                        <div class="progress-bar bg-dark" role="progressbar" style="width: 40%"></div>
+                                    </div>
+                                    <small class="text-muted">40% capacidad</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3 mb-3">
+                            <div class="card border-danger">
+                                <div class="card-body">
+                                    <h2 class="text-danger mb-0">AB-</h2>
+                                    <p class="text-muted mb-1">Tipo AB Negativo</p>
+                                    <h4 class="mb-2">6 unidades</h4>
+                                    <div class="progress" style="height: 10px;">
+                                        <div class="progress-bar bg-danger" role="progressbar" style="width: 25%"></div>
+                                    </div>
+                                    <small class="text-muted">25% capacidad - CRÍTICO</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Accesos rápidos -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0"><i class="bi bi-grid"></i> Accesos Rápidos</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-md-2 mb-3">
+                            <div class="d-grid">
+                                <a href="{% url 'blood_bank:donor_create' %}" class="btn btn-outline-success p-3">
+                                    <i class="bi bi-person-plus fs-2 d-block mb-2"></i>
+                                    <span>Registro Donante</span>
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="col-md-2 mb-3">
+                            <div class="d-grid">
+                                <a href="{% url 'blood_bank:donation_create' %}" class="btn btn-outline-danger p-3">
+                                    <i class="bi bi-droplet-half fs-2 d-block mb-2"></i>
+                                    <span>Nueva Donación</span>
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="col-md-2 mb-3">
+                            <div class="d-grid">
+                                <a href="{% url 'blood_bank:donation_list' %}" class="btn btn-outline-warning p-3">
+                                    <i class="bi bi-clipboard-check fs-2 d-block mb-2"></i>
+                                    <span>Donaciones</span>
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="col-md-2 mb-3">
+                            <div class="d-grid">
+                                <a href="{% url 'blood_bank:component_list' %}" class="btn btn-outline-primary p-3">
+                                    <i class="bi bi-arrow-left-right fs-2 d-block mb-2"></i>
+                                    <span>Componentes</span>
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="col-md-2 mb-3">
+                            <div class="d-grid">
+                                <a href="{% url 'blood_bank:transfusion_list' %}" class="btn btn-outline-info p-3">
+                                    <i class="bi bi-box-seam fs-2 d-block mb-2"></i>
+                                    <span>Transfusiones</span>
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="col-md-2 mb-3">
+                            <div class="d-grid">
+                                <a href="{% url 'blood_bank:inventory_report' %}" class="btn btn-outline-dark p-3">
+                                    <i class="bi bi-bar-chart fs-2 d-block mb-2"></i>
+                                    <span>Reportes</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Donaciones recientes y alertas -->
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="mb-0"><i class="bi bi-droplet-half"></i> Donaciones Recientes</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Nº Donación</th>
+                                    <th>Donante</th>
+                                    <th>Tipo Sangre</th>
+                                    <th>Tipo Donación</th>
+                                    <th>Volumen (ml)</th>
+                                    <th>Fecha</th>
+                                    <th>Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for donation in recent_donations %}
+                                <tr>
+                                    <td><strong><a href="{% url 'blood_bank:donation_detail' donation.id %}">{{ donation.donation_number }}</a></strong></td>
+                                    <td>{{ donation.donor }}<br><small class="text-muted">{{ donation.donor.donor_code }}</small></td>
+                                    <td><span class="badge bg-danger">{{ donation.donor.blood_type }}</span></td>
+                                    <td>{{ donation.get_donation_type_display }}</td>
+                                    <td>{{ donation.volume_ml|default:"-" }} ml</td>
+                                    <td>{{ donation.donation_date|date:"d/m/Y" }}</td>
+                                    <td>
+                                        {% if donation.status == 'completed' %}
+                                        <span class="badge bg-success">Completada</span>
+                                        {% elif donation.status == 'in_process' %}
+                                        <span class="badge bg-warning">En Proceso</span>
+                                        {% elif donation.status == 'scheduled' %}
+                                        <span class="badge bg-info">Programada</span>
+                                        {% elif donation.status == 'cancelled' %}
+                                        <span class="badge bg-secondary">Cancelada</span>
+                                        {% else %}
+                                        <span class="badge bg-dark">{{ donation.get_status_display }}</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="7" class="text-center text-muted py-4">
+                                        No hay donaciones registradas. <a href="{% url 'blood_bank:donation_create' %}">Crear primera donación</a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="text-center">
+                        <a href="{% url 'blood_bank:donation_list' %}" class="btn btn-outline-danger">
+                            Ver todas las donaciones <i class="bi bi-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0"><i class="bi bi-exclamation-triangle"></i> Alertas</h5>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-danger mb-3">
+                        <strong><i class="bi bi-droplet-fill"></i> Nivel Crítico</strong><br>
+                        <span>Tipo AB- con solo 6 unidades</span><br>
+                        <small class="text-muted">Requiere atención inmediata</small>
+                    </div>
+
+                    <div class="alert alert-warning mb-3">
+                        <strong><i class="bi bi-clock-history"></i> Próximos a Vencer</strong><br>
+                        <span>15 unidades vencen en 5 días</span><br>
+                        <small class="text-muted">Revisar y gestionar</small>
+                    </div>
+
+                    <div class="alert alert-info mb-3">
+                        <strong><i class="bi bi-calendar-check"></i> Screening Pendiente</strong><br>
+                        <span>8 donaciones requieren pruebas</span><br>
+                        <small class="text-muted">Completar screening</small>
+                    </div>
+
+                    <div class="alert alert-success mb-0">
+                        <strong><i class="bi bi-check-circle"></i> Meta del Mes</strong><br>
+                        <span>42 de 50 donaciones (84%)</span><br>
+                        <div class="progress mt-2" style="height: 15px;">
+                            <div class="progress-bar bg-success" role="progressbar" style="width: 84%">84%</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,140 @@
+{% extends 'base.html' %}
+{% block title %}Agregar Ejercicio - Plan {{ plan.plan_number }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <h2 class="mb-4">
+        <i class="bi bi-clipboard-pulse"></i> Agregar Ejercicio al Plan {{ plan.plan_number }}
+    </h2>
+
+    <div class="alert alert-info">
+        <strong>Paciente:</strong> {{ plan.patient.third_party.name }} |
+        <strong>Diagnóstico:</strong> {{ plan.diagnosis|truncatewords:10 }}
+    </div>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <!-- Información del Ejercicio -->
+        <div class="card mb-3">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="bi bi-info-circle"></i> Información del Ejercicio</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-8">
+                        <label class="form-label">Nombre del Ejercicio <span class="text-danger">*</span></label>
+                        <input type="text" name="exercise_name" class="form-control" required placeholder="Ej: Estiramiento de cuádriceps">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Tipo de Ejercicio <span class="text-danger">*</span></label>
+                        <select name="exercise_type" class="form-select" required>
+                            <option value="">Seleccionar...</option>
+                            <option value="stretching">Estiramiento</option>
+                            <option value="strengthening">Fortalecimiento</option>
+                            <option value="balance">Balance</option>
+                            <option value="cardio">Cardio</option>
+                            <option value="functional">Funcional</option>
+                            <option value="proprioception">Propiocepción</option>
+                            <option value="coordination">Coordinación</option>
+                        </select>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">Descripción <span class="text-danger">*</span></label>
+                        <textarea name="description" class="form-control" rows="3" required placeholder="Descripción detallada de cómo realizar el ejercicio..."></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dosificación -->
+        <div class="card mb-3">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0"><i class="bi bi-graph-up"></i> Dosificación</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <label class="form-label">Series <span class="text-danger">*</span></label>
+                        <input type="number" name="sets" class="form-control" min="1" required value="3">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Repeticiones <span class="text-danger">*</span></label>
+                        <input type="number" name="repetitions" class="form-control" min="1" required value="10">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Duración (segundos)</label>
+                        <input type="number" name="duration_seconds" class="form-control" min="0" value="30" placeholder="Para estiramientos">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Nivel de Resistencia</label>
+                        <input type="text" name="resistance_level" class="form-control" placeholder="Ej: Ligera, Moderada, Pesada">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Frecuencia -->
+        <div class="card mb-3">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0"><i class="bi bi-calendar3"></i> Frecuencia</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Veces por Día <span class="text-danger">*</span></label>
+                        <input type="number" name="frequency_per_day" class="form-control" min="1" max="10" required value="2">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Días por Semana <span class="text-danger">*</span></label>
+                        <input type="number" name="days_per_week" class="form-control" min="1" max="7" required value="5">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Progresión y Precauciones -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-arrow-up-circle"></i> Progresión y Precauciones</h6>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Criterios de Progresión</label>
+                        <textarea name="progression_criteria" class="form-control" rows="3" placeholder="Cuándo y cómo progresar el ejercicio..."></textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Precauciones</label>
+                        <textarea name="precautions" class="form-control" rows="3" placeholder="Advertencias o limitaciones al realizar el ejercicio..."></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Estado -->
+        <div class="card mb-3">
+            <div class="card-body">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="is_active" id="is_active" checked>
+                    <label class="form-check-label" for="is_active">
+                        <strong>Ejercicio Activo</strong> (El paciente debe realizar este ejercicio actualmente)
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Botones de Acción -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <button type="submit" class="btn btn-primary btn-lg">
+                    <i class="bi bi-save"></i> Agregar Ejercicio
+                </button>
+                <a href="{% url 'rehabilitation:exercise_list' plan.id %}" class="btn btn-secondary btn-lg">
+                    <i class="bi bi-x-circle"></i> Cancelar
+                </a>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}

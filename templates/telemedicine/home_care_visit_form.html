@@ -1,0 +1,253 @@
+{% extends 'base.html' %}
+{% block title %}Nueva Visita Domiciliaria{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <h2 class="mb-4">
+        <i class="bi bi-house-heart"></i> Nueva Visita Domiciliaria
+    </h2>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <!-- Información Básica -->
+        <div class="card mb-3">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="bi bi-info-circle"></i> Información Básica</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label">Paciente <span class="text-danger">*</span></label>
+                        <select name="patient" class="form-select" required>
+                            <option value="">Seleccionar paciente...</option>
+                            {% for patient in patients %}
+                            <option value="{{ patient.id }}">{{ patient.third_party.name }} - {{ patient.third_party.identification_number }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Profesional de Salud <span class="text-danger">*</span></label>
+                        <select name="professional" class="form-select" required>
+                            <option value="">Seleccionar profesional...</option>
+                            {% for professional in professionals %}
+                            <option value="{{ professional.id }}">{{ professional.third_party.name }} - {{ professional.specialty }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Tipo de Visita <span class="text-danger">*</span></label>
+                        <select name="visit_type" class="form-select" required>
+                            <option value="">Seleccionar tipo...</option>
+                            <option value="nursing">Enfermería</option>
+                            <option value="medical">Médica</option>
+                            <option value="therapy">Terapia</option>
+                            <option value="palliative">Cuidados Paliativos</option>
+                            <option value="post_surgical">Post-quirúrgica</option>
+                            <option value="wound_care">Curaciones</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Fecha y Hora de la Visita <span class="text-danger">*</span></label>
+                        <input type="datetime-local" name="visit_date" class="form-control" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Motivo de la Visita <span class="text-danger">*</span></label>
+                        <input type="text" name="visit_reason" class="form-control" required placeholder="Breve descripción del motivo">
+                    </div>
+                    {% if appointment %}
+                    <input type="hidden" name="appointment" value="{{ appointment.id }}">
+                    <div class="col-md-12">
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle"></i> Esta visita está relacionada con la cita: <strong>{{ appointment.appointment_number }}</strong>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Dirección Completa -->
+        <div class="card mb-3">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0"><i class="bi bi-geo-alt"></i> Dirección de la Visita</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-12">
+                        <label class="form-label">Dirección Completa <span class="text-danger">*</span></label>
+                        <input type="text" name="address" class="form-control" required placeholder="Calle, carrera, número, apartamento, etc.">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Ciudad <span class="text-danger">*</span></label>
+                        <input type="text" name="city" class="form-control" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Departamento <span class="text-danger">*</span></label>
+                        <input type="text" name="state" class="form-control" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Código Postal</label>
+                        <input type="text" name="postal_code" class="form-control">
+                    </div>
+                    <div class="col-md-12">
+                        <label class="form-label">Referencias de la Dirección</label>
+                        <textarea name="address_reference" class="form-control" rows="2" placeholder="Ej: Casa esquinera, portón blanco, segundo piso, frente al parque, etc."></textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Teléfono de Contacto en Sitio</label>
+                        <input type="tel" name="contact_phone" class="form-control" placeholder="Para coordinar la visita">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Nombre del Contacto</label>
+                        <input type="text" name="contact_name" class="form-control" placeholder="Persona que recibirá al profesional">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Signos Vitales -->
+        <div class="card mb-3">
+            <div class="card-header bg-warning text-dark">
+                <h5 class="mb-0"><i class="bi bi-heart-pulse"></i> Signos Vitales</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-2">
+                        <label class="form-label">Presión Arterial</label>
+                        <input type="text" name="blood_pressure" class="form-control" placeholder="120/80">
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">FC (lpm)</label>
+                        <input type="number" name="heart_rate" class="form-control" placeholder="72">
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">FR (rpm)</label>
+                        <input type="number" name="respiratory_rate" class="form-control" placeholder="16">
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">Temperatura (°C)</label>
+                        <input type="number" name="temperature" class="form-control" step="0.1" placeholder="36.5">
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">Sat. O2 (%)</label>
+                        <input type="number" name="oxygen_saturation" class="form-control" min="0" max="100" placeholder="98">
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">Glicemia (mg/dL)</label>
+                        <input type="number" name="blood_glucose" class="form-control" placeholder="90">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Procedimientos y Medicamentos -->
+        <div class="card mb-3">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0"><i class="bi bi-clipboard2-pulse"></i> Procedimientos y Medicamentos</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Procedimientos Realizados</label>
+                        <textarea name="procedures_performed" class="form-control" rows="4" placeholder="Descripción detallada de los procedimientos realizados durante la visita"></textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Medicamentos Administrados</label>
+                        <textarea name="medications_administered" class="form-control" rows="4" placeholder="Medicamentos administrados con dosis, vía y hora"></textarea>
+                    </div>
+                    <div class="col-md-12">
+                        <label class="form-label">Insumos y Suministros Utilizados</label>
+                        <textarea name="supplies_used" class="form-control" rows="2" placeholder="Lista de insumos médicos utilizados"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Evaluación Clínica -->
+        <div class="card mb-3">
+            <div class="card-header bg-danger text-white">
+                <h5 class="mb-0"><i class="bi bi-clipboard-data"></i> Evaluación Clínica</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-12">
+                        <label class="form-label">Valoración Clínica</label>
+                        <textarea name="clinical_assessment" class="form-control" rows="4" placeholder="Evaluación del estado general del paciente, evolución, hallazgos importantes"></textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Diagnóstico</label>
+                        <textarea name="diagnosis" class="form-control" rows="3" placeholder="Diagnóstico principal y secundarios (CIE-10)"></textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Plan de Tratamiento</label>
+                        <textarea name="treatment_plan" class="form-control" rows="3" placeholder="Plan de tratamiento y cuidados a seguir"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Instrucciones y Educación -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-chat-left-text"></i> Instrucciones y Educación al Paciente/Cuidador</h6>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-12">
+                        <label class="form-label">Instrucciones Dadas</label>
+                        <textarea name="patient_instructions" class="form-control" rows="4" placeholder="Instrucciones detalladas dadas al paciente o cuidador sobre medicamentos, cuidados, alimentación, etc."></textarea>
+                    </div>
+                    <div class="col-md-12">
+                        <label class="form-label">Educación en Salud Brindada</label>
+                        <textarea name="health_education" class="form-control" rows="3" placeholder="Temas de educación en salud explicados al paciente o familia"></textarea>
+                    </div>
+                    <div class="col-md-12">
+                        <label class="form-label">Signos de Alarma</label>
+                        <textarea name="warning_signs" class="form-control" rows="2" placeholder="Signos de alarma que debe vigilar el paciente o cuidador"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Seguimiento -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-calendar-check"></i> Seguimiento</h6>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="requires_next_visit" id="requiresNextVisit">
+                            <label class="form-check-label" for="requiresNextVisit">
+                                Requiere Próxima Visita
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Fecha Sugerida para Próxima Visita</label>
+                        <input type="date" name="suggested_next_visit_date" class="form-control">
+                    </div>
+                    <div class="col-md-12">
+                        <label class="form-label">Observaciones Generales</label>
+                        <textarea name="observations" class="form-control" rows="3" placeholder="Observaciones adicionales sobre la visita, condiciones del hogar, apoyo familiar, etc."></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Botones -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <button type="submit" class="btn btn-primary btn-lg">
+                    <i class="bi bi-save"></i> Guardar Visita
+                </button>
+                <a href="{% url 'telemedicine:home_care_visit_list' %}" class="btn btn-secondary btn-lg">
+                    <i class="bi bi-x-circle"></i> Cancelar
+                </a>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}

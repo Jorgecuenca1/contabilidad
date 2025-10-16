@@ -1,0 +1,125 @@
+{% extends 'base.html' %}
+
+{% block title %}Consultas Cardiológicas{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'core:dashboard' %}">Dashboard</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'cardiology:dashboard' %}">Cardiología</a></li>
+            <li class="breadcrumb-item active">Consultas</li>
+        </ol>
+    </nav>
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-clipboard2-pulse"></i> Consultas Cardiológicas</h2>
+        <a href="{% url 'cardiology:consultation_create' %}" class="btn btn-danger">
+            <i class="bi bi-plus-lg"></i> Nueva Consulta
+        </a>
+    </div>
+
+    <!-- Filtros -->
+    <div class="card mb-3">
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-3">
+                    <input type="text" class="form-control" name="search" placeholder="Buscar..." value="{{ search_query }}">
+                </div>
+                <div class="col-md-2">
+                    <select name="status" class="form-select">
+                        <option value="">Todos los estados</option>
+                        {% for value, label in status_choices %}
+                            <option value="{{ value }}" {% if status_filter == value %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <select name="consultation_type" class="form-select">
+                        <option value="">Todos los tipos</option>
+                        {% for value, label in consultation_type_choices %}
+                            <option value="{{ value }}" {% if consultation_type_filter == value %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100">Filtrar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Tabla de Consultas -->
+    <div class="card">
+        <div class="card-body">
+            {% if page_obj %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Número</th>
+                                <th>Paciente</th>
+                                <th>Tipo</th>
+                                <th>Cardiólogo</th>
+                                <th>Fecha</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for consultation in page_obj %}
+                            <tr>
+                                <td><span class="badge bg-danger">{{ consultation.consultation_number }}</span></td>
+                                <td>{{ consultation.patient.nombre }}</td>
+                                <td>{{ consultation.get_consultation_type_display }}</td>
+                                <td>{{ consultation.cardiologist.full_name }}</td>
+                                <td>{{ consultation.consultation_date|date:"d/m/Y H:i" }}</td>
+                                <td>
+                                    {% if consultation.status == 'completed' %}
+                                        <span class="badge bg-success">Completada</span>
+                                    {% elif consultation.status == 'in_progress' %}
+                                        <span class="badge bg-warning">En Curso</span>
+                                    {% elif consultation.status == 'scheduled' %}
+                                        <span class="badge bg-info">Programada</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">{{ consultation.get_status_display }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <a href="{% url 'cardiology:consultation_detail' consultation.id %}" class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    <a href="{% url 'cardiology:consultation_update' consultation.id %}" class="btn btn-sm btn-outline-warning">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Paginación -->
+                {% if page_obj.has_other_pages %}
+                <nav>
+                    <ul class="pagination justify-content-center">
+                        {% if page_obj.has_previous %}
+                            <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">Anterior</a></li>
+                        {% endif %}
+                        <li class="page-item active"><span class="page-link">{{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span></li>
+                        {% if page_obj.has_next %}
+                            <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">Siguiente</a></li>
+                        {% endif %}
+                    </ul>
+                </nav>
+                {% endif %}
+            {% else %}
+                <p class="text-muted text-center py-5">
+                    <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+                    No hay consultas registradas
+                </p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,252 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard Diagnósticos CIE-10{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-file-medical"></i> Diagnósticos CIE-10</h2>
+        <div>
+            <a href="{% url 'diagnostics:import_form' %}" class="btn btn-success">
+                <i class="bi bi-upload"></i> Importar Catálogo
+            </a>
+            <a href="{% url 'diagnostics:diagnosis_list' %}" class="btn btn-primary">
+                <i class="bi bi-search"></i> Buscar Diagnósticos
+            </a>
+        </div>
+    </div>
+
+    <!-- Versión Activa -->
+    {% if current_version %}
+    <div class="alert alert-info">
+        <i class="bi bi-info-circle"></i>
+        <strong>Versión Activa:</strong> {{ current_version.version_code }} - {{ current_version.name }}
+        ({{ current_version.release_date|date:"d/m/Y" }})
+    </div>
+    {% else %}
+    <div class="alert alert-warning">
+        <i class="bi bi-exclamation-triangle"></i>
+        <strong>Atención:</strong> No hay una versión activa de CIE-10.
+        <a href="{% url 'diagnostics:import_form' %}">Importar catálogo aquí</a>
+    </div>
+    {% endif %}
+
+    <!-- Estadísticas Principales -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card border-primary">
+                <div class="card-body text-center">
+                    <i class="bi bi-file-medical display-4 text-primary"></i>
+                    <h3 class="mt-2">{{ total_diagnoses|default:"0" }}</h3>
+                    <p class="text-muted mb-0">Diagnósticos Totales</p>
+                    <small class="text-muted">({{ active_diagnoses }} activos)</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card border-danger">
+                <div class="card-body text-center">
+                    <i class="bi bi-cash-stack display-4 text-danger"></i>
+                    <h3 class="mt-2">{{ high_cost_diagnoses|default:"0" }}</h3>
+                    <p class="text-muted mb-0">Alto Costo</p>
+                    <small class="text-muted">Enfermedades CAC</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card border-warning">
+                <div class="card-body text-center">
+                    <i class="bi bi-exclamation-triangle display-4 text-warning"></i>
+                    <h3 class="mt-2">{{ mandatory_notification_diagnoses|default:"0" }}</h3>
+                    <p class="text-muted mb-0">Notificación Obligatoria</p>
+                    <small class="text-muted">SIVIGILA</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card border-info">
+                <div class="card-body text-center">
+                    <i class="bi bi-fingerprint display-4 text-info"></i>
+                    <h3 class="mt-2">{{ rare_diseases|default:"0" }}</h3>
+                    <p class="text-muted mb-0">Enfermedades Raras</p>
+                    <small class="text-muted">Huérfanas</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Diagnósticos Más Usados -->
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <i class="bi bi-bar-chart"></i> Diagnósticos Más Utilizados
+                </div>
+                <div class="card-body">
+                    {% if most_used_diagnoses %}
+                    <div class="list-group">
+                        {% for diagnosis in most_used_diagnoses %}
+                        <a href="{% url 'diagnostics:diagnosis_detail' diagnosis.id %}"
+                           class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>{{ diagnosis.code }}</strong> - {{ diagnosis.name|truncatewords:8 }}
+                            </div>
+                            <span class="badge bg-primary rounded-pill">{{ diagnosis.use_count }}</span>
+                        </a>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <p class="text-muted">No hay diagnósticos utilizados aún</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Mis Favoritos -->
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header bg-success text-white">
+                    <i class="bi bi-star-fill"></i> Mis Diagnósticos Favoritos
+                </div>
+                <div class="card-body">
+                    {% if user_favorites %}
+                    <div class="list-group">
+                        {% for favorite in user_favorites %}
+                        <a href="{% url 'diagnostics:diagnosis_detail' favorite.diagnosis.id %}"
+                           class="list-group-item list-group-item-action">
+                            <strong>{{ favorite.diagnosis.code }}</strong> - {{ favorite.diagnosis.name|truncatewords:8 }}
+                            {% if favorite.specialty %}
+                            <small class="text-muted">({{ favorite.specialty }})</small>
+                            {% endif %}
+                        </a>
+                        {% endfor %}
+                    </div>
+                    <div class="mt-2">
+                        <a href="{% url 'diagnostics:favorites_list' %}" class="btn btn-sm btn-success">
+                            Ver todos los favoritos
+                        </a>
+                    </div>
+                    {% else %}
+                    <p class="text-muted">No tiene diagnósticos favoritos</p>
+                    <a href="{% url 'diagnostics:diagnosis_list' %}" class="btn btn-sm btn-primary">
+                        Explorar diagnósticos
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Importaciones Recientes -->
+    {% if recent_imports %}
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-secondary text-white">
+                    <i class="bi bi-clock-history"></i> Importaciones Recientes
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Archivo</th>
+                                    <th>Versión</th>
+                                    <th>Estado</th>
+                                    <th>Registros</th>
+                                    <th>Fecha</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for log in recent_imports %}
+                                <tr>
+                                    <td>{{ log.file_name }}</td>
+                                    <td>{{ log.version.version_code|default:"-" }}</td>
+                                    <td>
+                                        {% if log.status == 'completed' %}
+                                            <span class="badge bg-success">Completado</span>
+                                        {% elif log.status == 'failed' %}
+                                            <span class="badge bg-danger">Fallido</span>
+                                        {% elif log.status == 'partial' %}
+                                            <span class="badge bg-warning">Parcial</span>
+                                        {% else %}
+                                            <span class="badge bg-info">{{ log.get_status_display }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ log.successful_imports }} / {{ log.total_records }}</td>
+                                    <td>{{ log.started_at|date:"d/m/Y H:i" }}</td>
+                                    <td>
+                                        <a href="{% url 'diagnostics:import_log_detail' log.id %}"
+                                           class="btn btn-sm btn-info">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <a href="{% url 'diagnostics:import_logs_list' %}" class="btn btn-sm btn-secondary">
+                        Ver todos los logs
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Accesos Rápidos -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <i class="bi bi-lightning"></i> Accesos Rápidos
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <a href="{% url 'diagnostics:diagnosis_list' %}" class="btn btn-outline-primary w-100">
+                                <i class="bi bi-search"></i><br>
+                                Buscar Diagnósticos
+                            </a>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <a href="{% url 'diagnostics:import_form' %}" class="btn btn-outline-success w-100">
+                                <i class="bi bi-upload"></i><br>
+                                Importar Catálogo
+                            </a>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <a href="{% url 'diagnostics:export_diagnoses_csv' %}" class="btn btn-outline-info w-100">
+                                <i class="bi bi-download"></i><br>
+                                Exportar a CSV
+                            </a>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <a href="{% url 'diagnostics:favorites_list' %}" class="btn btn-outline-warning w-100">
+                                <i class="bi bi-star"></i><br>
+                                Mis Favoritos
+                            </a>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <a href="{% url 'diagnostics:versions_list' %}" class="btn btn-outline-secondary w-100">
+                                <i class="bi bi-list-check"></i><br>
+                                Versiones CIE-10
+                            </a>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <a href="{% url 'diagnostics:import_logs_list' %}" class="btn btn-outline-dark w-100">
+                                <i class="bi bi-clock-history"></i><br>
+                                Logs de Importación
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

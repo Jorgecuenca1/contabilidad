@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% block title %}Nota Postoperatoria{% endblock %}
+{% block content %}
+<div class="container-fluid">
+    <h2><i class="bi bi-clipboard-check"></i> Nota Postoperatoria</h2>
+    <p class="text-muted">Cirugía: {{ surgery.surgery_number }} - Paciente: {{ surgery.patient.nombre }}</p>
+
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <div class="card mb-3">
+                <div class="card-header bg-success text-white">Condición del Paciente</div>
+                <div class="card-body">
+                    <p><strong>Condición:</strong> {{ postop_note.patient_condition }}</p>
+                    <p><strong>Nivel de Conciencia:</strong> {{ postop_note.consciousness_level }}</p>
+                    <p><strong>Escala de Dolor:</strong> <span class="badge bg-{% if postop_note.pain_scale >= 7 %}danger{% elif postop_note.pain_scale >= 4 %}warning{% else %}success{% endif %}">{{ postop_note.pain_scale }}/10</span></p>
+                </div>
+            </div>
+
+            <div class="card mb-3">
+                <div class="card-header bg-primary text-white">Signos Vitales Postoperatorios</div>
+                <div class="card-body">
+                    <p><strong>Presión Arterial:</strong> {{ postop_note.blood_pressure_systolic }}/{{ postop_note.blood_pressure_diastolic }} mmHg</p>
+                    <p><strong>Frecuencia Cardíaca:</strong> {{ postop_note.heart_rate }} lpm</p>
+                    <p><strong>Frecuencia Respiratoria:</strong> {{ postop_note.respiratory_rate }} rpm</p>
+                    <p><strong>Saturación O2:</strong> {{ postop_note.oxygen_saturation }}%</p>
+                    <p><strong>Temperatura:</strong> {{ postop_note.temperature }}°C</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card mb-3">
+                <div class="card-header bg-warning text-white">Órdenes Postoperatorias</div>
+                <div class="card-body">
+                    <h6>Plan Analgésico:</h6>
+                    <p>{{ postop_note.analgesic_plan|default:"No especificado" }}</p>
+                    <h6>Dieta:</h6>
+                    <p>{{ postop_note.diet_orders|default:"No especificado" }}</p>
+                    <h6>Actividad:</h6>
+                    <p>{{ postop_note.activity_orders|default:"No especificado" }}</p>
+                    <h6>Medicamentos:</h6>
+                    <p>{{ postop_note.medication_orders|default:"No especificado" }}</p>
+                </div>
+            </div>
+
+            <div class="card mb-3">
+                <div class="card-header bg-info text-white">Seguimiento</div>
+                <div class="card-body">
+                    {% if postop_note.next_evaluation_time %}
+                    <p><strong>Próxima Evaluación:</strong> {{ postop_note.next_evaluation_time|date:"d/m/Y H:i" }}</p>
+                    {% endif %}
+                    {% if postop_note.warnings %}
+                    <h6 class="text-danger">Advertencias:</h6>
+                    <p>{{ postop_note.warnings }}</p>
+                    {% endif %}
+                    {% if postop_note.observations %}
+                    <h6>Observaciones:</h6>
+                    <p>{{ postop_note.observations }}</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-3">
+        <a href="{% url 'surgery:postop_note_update' surgery.id %}" class="btn btn-warning">Editar</a>
+        <a href="{% url 'surgery:surgery_detail' surgery.id %}" class="btn btn-secondary">Volver</a>
+    </div>
+</div>
+{% endblock %}

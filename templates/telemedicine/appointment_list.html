@@ -1,0 +1,185 @@
+{% extends 'base.html' %}
+{% block title %}Listado de Citas - Telemedicina{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-calendar-event"></i> Citas de Telemedicina</h2>
+        <div>
+            <a href="{% url 'telemedicine:appointment_create' %}" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> Nueva Cita
+            </a>
+            <a href="{% url 'telemedicine:dashboard' %}" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Volver
+            </a>
+        </div>
+    </div>
+
+    <!-- Filtros -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-3">
+                    <label class="form-label">Buscar</label>
+                    <input type="text" name="search" class="form-control" placeholder="Número, paciente, médico..." value="{{ request.GET.search }}">
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Estado</label>
+                    <select name="status" class="form-select">
+                        <option value="">Todos</option>
+                        <option value="scheduled" {% if request.GET.status == 'scheduled' %}selected{% endif %}>Programada</option>
+                        <option value="in_progress" {% if request.GET.status == 'in_progress' %}selected{% endif %}>En Progreso</option>
+                        <option value="completed" {% if request.GET.status == 'completed' %}selected{% endif %}>Completada</option>
+                        <option value="cancelled" {% if request.GET.status == 'cancelled' %}selected{% endif %}>Cancelada</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Tipo</label>
+                    <select name="appointment_type" class="form-select">
+                        <option value="">Todos</option>
+                        <option value="virtual" {% if request.GET.appointment_type == 'virtual' %}selected{% endif %}>Virtual</option>
+                        <option value="home_care" {% if request.GET.appointment_type == 'home_care' %}selected{% endif %}>Domicilio</option>
+                        <option value="phone" {% if request.GET.appointment_type == 'phone' %}selected{% endif %}>Teléfono</option>
+                        <option value="chat" {% if request.GET.appointment_type == 'chat' %}selected{% endif %}>Chat</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Prioridad</label>
+                    <select name="priority" class="form-select">
+                        <option value="">Todas</option>
+                        <option value="urgent" {% if request.GET.priority == 'urgent' %}selected{% endif %}>Urgente</option>
+                        <option value="high" {% if request.GET.priority == 'high' %}selected{% endif %}>Alta</option>
+                        <option value="medium" {% if request.GET.priority == 'medium' %}selected{% endif %}>Media</option>
+                        <option value="low" {% if request.GET.priority == 'low' %}selected{% endif %}>Baja</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Fecha Desde</label>
+                    <input type="date" name="date_from" class="form-control" value="{{ request.GET.date_from }}">
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Fecha Hasta</label>
+                    <input type="date" name="date_to" class="form-control" value="{{ request.GET.date_to }}">
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Médico</label>
+                    <select name="doctor" class="form-select">
+                        <option value="">Todos</option>
+                        {% for doctor in doctors %}
+                        <option value="{{ doctor.id }}" {% if request.GET.doctor == doctor.id|stringformat:"s" %}selected{% endif %}>
+                            {{ doctor.third_party.name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-1 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Tabla de Citas -->
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Número</th>
+                            <th>Paciente</th>
+                            <th>Médico</th>
+                            <th>Tipo</th>
+                            <th>Fecha y Hora</th>
+                            <th>Estado</th>
+                            <th>Prioridad</th>
+                            <th>Duración</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for appointment in appointments %}
+                        <tr>
+                            <td><strong>{{ appointment.appointment_number }}</strong></td>
+                            <td>{{ appointment.patient.third_party.name }}</td>
+                            <td>{{ appointment.doctor.third_party.name }}</td>
+                            <td>
+                                {% if appointment.appointment_type == 'virtual' %}
+                                <span class="badge bg-success"><i class="bi bi-laptop"></i> Virtual</span>
+                                {% elif appointment.appointment_type == 'home_care' %}
+                                <span class="badge bg-info"><i class="bi bi-house-heart"></i> Domicilio</span>
+                                {% elif appointment.appointment_type == 'phone' %}
+                                <span class="badge bg-primary"><i class="bi bi-telephone"></i> Teléfono</span>
+                                {% else %}
+                                <span class="badge bg-secondary"><i class="bi bi-chat-dots"></i> Chat</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ appointment.appointment_date|date:"d/m/Y H:i" }}</td>
+                            <td>
+                                {% if appointment.status == 'completed' %}
+                                <span class="badge bg-success">Completada</span>
+                                {% elif appointment.status == 'in_progress' %}
+                                <span class="badge bg-warning text-dark">En Progreso</span>
+                                {% elif appointment.status == 'scheduled' %}
+                                <span class="badge bg-info">Programada</span>
+                                {% else %}
+                                <span class="badge bg-danger">Cancelada</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if appointment.priority == 'urgent' %}
+                                <span class="badge bg-danger">Urgente</span>
+                                {% elif appointment.priority == 'high' %}
+                                <span class="badge bg-warning text-dark">Alta</span>
+                                {% elif appointment.priority == 'medium' %}
+                                <span class="badge bg-info">Media</span>
+                                {% else %}
+                                <span class="badge bg-secondary">Baja</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ appointment.duration_minutes }} min</td>
+                            <td>
+                                <a href="{% url 'telemedicine:appointment_detail' appointment.id %}" class="btn btn-sm btn-outline-primary" title="Ver detalle">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="9" class="text-center text-muted py-4">
+                                No hay citas registradas. <a href="{% url 'telemedicine:appointment_create' %}">Crear primera cita</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Paginación -->
+            {% if appointments.has_other_pages %}
+            <nav class="mt-4">
+                <ul class="pagination justify-content-center">
+                    {% if appointments.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ appointments.previous_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.appointment_type %}&appointment_type={{ request.GET.appointment_type }}{% endif %}{% if request.GET.priority %}&priority={{ request.GET.priority }}{% endif %}">Anterior</a>
+                    </li>
+                    {% endif %}
+
+                    <li class="page-item active">
+                        <span class="page-link">Página {{ appointments.number }} de {{ appointments.paginator.num_pages }}</span>
+                    </li>
+
+                    {% if appointments.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ appointments.next_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.appointment_type %}&appointment_type={{ request.GET.appointment_type }}{% endif %}{% if request.GET.priority %}&priority={{ request.GET.priority }}{% endif %}">Siguiente</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

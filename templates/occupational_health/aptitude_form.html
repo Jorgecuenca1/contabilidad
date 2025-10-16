@@ -1,0 +1,130 @@
+{% extends 'base.html' %}
+{% block title %}Emitir Aptitud Laboral{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <h2 class="mb-4">
+        <i class="bi bi-award"></i> Emitir Aptitud Laboral - {{ exam.exam_number }}
+    </h2>
+
+    <div class="alert alert-info">
+        <strong>Trabajador:</strong> {{ exam.patient.third_party.name }} |
+        <strong>Empresa:</strong> {{ exam.company_name }} |
+        <strong>Cargo:</strong> {{ exam.job_position }}
+    </div>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <div class="card mb-3">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="bi bi-award"></i> Concepto de Aptitud</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label">Aptitud Laboral <span class="text-danger">*</span></label>
+                        <select name="aptitude" class="form-select" required>
+                            <option value="">Seleccionar...</option>
+                            <option value="apto">Apto</option>
+                            <option value="apto_con_restricciones">Apto con Restricciones</option>
+                            <option value="apto_con_recomendaciones">Apto con Recomendaciones</option>
+                            <option value="no_apto_temporal">No Apto Temporal</option>
+                            <option value="no_apto_permanente">No Apto Permanente</option>
+                            <option value="aplazado">Aplazado</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Fecha de Emisión <span class="text-danger">*</span></label>
+                        <input type="date" name="issue_date" class="form-control" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Vigencia Hasta</label>
+                        <input type="date" name="valid_until" class="form-control">
+                        <small class="text-muted">Opcional, solo si aplica</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mb-3">
+            <div class="card-header bg-warning">
+                <h5 class="mb-0"><i class="bi bi-exclamation-triangle"></i> Restricciones y Recomendaciones</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Restricciones Laborales</label>
+                        <textarea name="restrictions" class="form-control" rows="5" placeholder="Limitaciones específicas para el trabajo...&#10;Ej: No cargar peso mayor a 10 kg&#10;Evitar trabajo en alturas&#10;No exposición a ruido"></textarea>
+                        <small class="text-muted">Especifique limitaciones si la persona es apta con restricciones</small>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Recomendaciones</label>
+                        <textarea name="recommendations" class="form-control" rows="5" placeholder="Recomendaciones médicas y de salud ocupacional...&#10;Ej: Uso permanente de gafas de protección&#10;Realizar pausas activas cada 2 horas&#10;Control médico en 6 meses"></textarea>
+                        <small class="text-muted">Sugerencias para el trabajador y la empresa</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mb-3">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0"><i class="bi bi-clipboard-check"></i> Justificación Médica</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-12">
+                        <label class="form-label">Justificación del Concepto <span class="text-danger">*</span></label>
+                        <textarea name="medical_justification" class="form-control" rows="6" required placeholder="Justificación médica detallada del concepto de aptitud emitido..."></textarea>
+                        <small class="text-muted">Explique los hallazgos y razones que fundamentan este concepto</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mb-3">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-calendar-check"></i> Seguimiento</h6>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="requires_follow_up" id="requires_follow_up">
+                            <label class="form-check-label" for="requires_follow_up">
+                                <strong>Requiere Seguimiento</strong>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Fecha de Seguimiento</label>
+                        <input type="date" name="follow_up_date" class="form-control">
+                    </div>
+                    <div class="col-md-12">
+                        <label class="form-label">Notas de Seguimiento</label>
+                        <textarea name="follow_up_notes" class="form-control" rows="2" placeholder="Indicaciones para el seguimiento..."></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mb-3">
+            <div class="card-body">
+                <label class="form-label">Observaciones Adicionales</label>
+                <textarea name="observations" class="form-control" rows="3"></textarea>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-body">
+                <button type="submit" class="btn btn-success btn-lg">
+                    <i class="bi bi-award"></i> Emitir Aptitud Laboral
+                </button>
+                <a href="{% url 'occupational_health:exam_detail' exam.id %}" class="btn btn-secondary btn-lg">
+                    <i class="bi bi-x-circle"></i> Cancelar
+                </a>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,170 @@
+{% extends 'base.html' %}
+{% block title %}Nueva Orden - Imágenes Diagnósticas{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-plus-circle"></i> Nueva Orden de Imagen Diagnóstica</h2>
+        <a href="{% url 'imaging:order_list' %}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Volver
+        </a>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-10 mx-auto">
+            <div class="card">
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+
+                        <div class="row g-3">
+                            <!-- Información del Paciente -->
+                            <div class="col-12">
+                                <h5 class="border-bottom pb-2"><i class="bi bi-person"></i> Información del Paciente</h5>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Paciente <span class="text-danger">*</span></label>
+                                <select name="patient" class="form-select" required>
+                                    <option value="">Seleccione un paciente...</option>
+                                    {% for patient in patients %}
+                                    <option value="{{ patient.id }}">
+                                        {{ patient.third_party.name }} - {{ patient.third_party.identification_number }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <!-- Información del Estudio -->
+                            <div class="col-12 mt-4">
+                                <h5 class="border-bottom pb-2"><i class="bi bi-x-ray"></i> Información del Estudio</h5>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Modalidad <span class="text-danger">*</span></label>
+                                <select name="modality" class="form-select" id="modalitySelect" required>
+                                    <option value="">Seleccione una modalidad...</option>
+                                    {% for modality in modalities %}
+                                    <option value="{{ modality.id }}"
+                                            data-price="{{ modality.base_price }}"
+                                            data-contrast="{{ modality.requires_contrast }}"
+                                            data-sedation="{{ modality.requires_sedation }}"
+                                            data-fasting="{{ modality.requires_fasting }}">
+                                        {{ modality.name }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Prioridad <span class="text-danger">*</span></label>
+                                <select name="priority" class="form-select" required>
+                                    <option value="routine">Rutina</option>
+                                    <option value="urgent">Urgente</option>
+                                    <option value="stat">STAT (Inmediato)</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-12">
+                                <label class="form-label">Descripción del Procedimiento <span class="text-danger">*</span></label>
+                                <input type="text" name="procedure_description" class="form-control"
+                                       placeholder="Ej: Radiografía de tórax AP y lateral" required>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Región Anatómica <span class="text-danger">*</span></label>
+                                <input type="text" name="anatomical_region" class="form-control"
+                                       placeholder="Ej: Tórax" required>
+                            </div>
+
+                            <div class="col-md-12">
+                                <label class="form-label">Indicación Clínica <span class="text-danger">*</span></label>
+                                <textarea name="clinical_indication" class="form-control" rows="3"
+                                          placeholder="Motivo del estudio, sospecha diagnóstica..." required></textarea>
+                            </div>
+
+                            <div class="col-md-12">
+                                <label class="form-label">Historia Clínica Relevante</label>
+                                <textarea name="clinical_history" class="form-control" rows="2"
+                                          placeholder="Antecedentes, cirugías previas, medicamentos..."></textarea>
+                            </div>
+
+                            <!-- Alergias -->
+                            <div class="col-12 mt-3">
+                                <h5 class="border-bottom pb-2"><i class="bi bi-exclamation-triangle"></i> Información de Seguridad</h5>
+                            </div>
+
+                            <div class="col-md-12">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="has_allergies" id="hasAllergies">
+                                    <label class="form-check-label" for="hasAllergies">
+                                        El paciente tiene alergias conocidas
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="col-md-12" id="allergiesDescriptionDiv" style="display: none;">
+                                <label class="form-label">Descripción de Alergias</label>
+                                <textarea name="allergies_description" class="form-control" rows="2"
+                                          placeholder="Describa las alergias..."></textarea>
+                            </div>
+
+                            <!-- Preparación Requerida -->
+                            <div class="col-md-12" id="preparationInfo" style="display: none;">
+                                <div class="alert alert-info">
+                                    <h6><i class="bi bi-info-circle"></i> Preparación Requerida:</h6>
+                                    <ul id="preparationList" class="mb-0"></ul>
+                                </div>
+                            </div>
+
+                            <div class="col-12 mt-4">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-save"></i> Crear Orden
+                                </button>
+                                <a href="{% url 'imaging:order_list' %}" class="btn btn-secondary">
+                                    <i class="bi bi-x-circle"></i> Cancelar
+                                </a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Mostrar/ocultar descripción de alergias
+document.getElementById('hasAllergies').addEventListener('change', function() {
+    document.getElementById('allergiesDescriptionDiv').style.display = this.checked ? 'block' : 'none';
+});
+
+// Mostrar información de preparación según modalidad
+document.getElementById('modalitySelect').addEventListener('change', function() {
+    const selectedOption = this.options[this.selectedIndex];
+    const requiresContrast = selectedOption.dataset.contrast === 'True';
+    const requiresSedation = selectedOption.dataset.sedation === 'True';
+    const requiresFasting = selectedOption.dataset.fasting === 'True';
+
+    const preparationList = document.getElementById('preparationList');
+    const preparationInfo = document.getElementById('preparationInfo');
+
+    preparationList.innerHTML = '';
+
+    if (requiresContrast || requiresSedation || requiresFasting) {
+        if (requiresFasting) {
+            preparationList.innerHTML += '<li>Ayuno requerido</li>';
+        }
+        if (requiresContrast) {
+            preparationList.innerHTML += '<li>Se utilizará medio de contraste</li>';
+        }
+        if (requiresSedation) {
+            preparationList.innerHTML += '<li>Puede requerir sedación</li>';
+        }
+        preparationInfo.style.display = 'block';
+    } else {
+        preparationInfo.style.display = 'none';
+    }
+});
+</script>
+{% endblock %}

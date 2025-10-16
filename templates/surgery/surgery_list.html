@@ -1,0 +1,170 @@
+{% extends 'base.html' %}
+{% load surgery_filters %}
+{% block title %}Lista de Cirugías{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-clipboard2-pulse"></i> Lista de Cirugías</h2>
+        <a href="{% url 'surgery:surgery_create' %}" class="btn btn-primary">
+            <i class="bi bi-plus-lg"></i> Nueva Cirugía
+        </a>
+    </div>
+
+    <!-- Filtros -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="bi bi-funnel"></i> Filtros
+        </div>
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-3">
+                    <label class="form-label">Estado</label>
+                    <select name="status" class="form-select">
+                        <option value="">Todos</option>
+                        <option value="scheduled" {% if status_filter == 'scheduled' %}selected{% endif %}>Programada</option>
+                        <option value="confirmed" {% if status_filter == 'confirmed' %}selected{% endif %}>Confirmada</option>
+                        <option value="in_progress" {% if status_filter == 'in_progress' %}selected{% endif %}>En Curso</option>
+                        <option value="completed" {% if status_filter == 'completed' %}selected{% endif %}>Completada</option>
+                        <option value="cancelled" {% if status_filter == 'cancelled' %}selected{% endif %}>Cancelada</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Urgencia</label>
+                    <select name="urgency" class="form-select">
+                        <option value="">Todas</option>
+                        <option value="elective" {% if urgency_filter == 'elective' %}selected{% endif %}>Electiva</option>
+                        <option value="urgent" {% if urgency_filter == 'urgent' %}selected{% endif %}>Urgente</option>
+                        <option value="emergency" {% if urgency_filter == 'emergency' %}selected{% endif %}>Emergencia</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Desde</label>
+                    <input type="date" name="date_from" class="form-control" value="{{ date_from }}">
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Hasta</label>
+                    <input type="date" name="date_to" class="form-control" value="{{ date_to }}">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Buscar</label>
+                    <input type="text" name="search" class="form-control" placeholder="N°, Paciente, Procedimiento" value="{{ search }}">
+                </div>
+                <div class="col-md-12">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-search"></i> Filtrar
+                    </button>
+                    <a href="{% url 'surgery:surgery_list' %}" class="btn btn-secondary">
+                        <i class="bi bi-x-circle"></i> Limpiar
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Resultados -->
+    <div class="card">
+        <div class="card-header">
+            <i class="bi bi-list-ul"></i> Resultados ({{ page_obj.paginator.count }} cirugías)
+        </div>
+        <div class="card-body">
+            {% if page_obj %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>N° Cirugía</th>
+                                <th>Fecha</th>
+                                <th>Hora</th>
+                                <th>Paciente</th>
+                                <th>Procedimiento</th>
+                                <th>Quirófano</th>
+                                <th>Cirujano</th>
+                                <th>Urgencia</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for surgery in page_obj %}
+                            <tr>
+                                <td><strong>{{ surgery.surgery_number }}</strong></td>
+                                <td>{{ surgery.scheduled_date|date:"d/m/Y" }}</td>
+                                <td>{{ surgery.scheduled_time|time:"H:i" }}</td>
+                                <td>{{ surgery.patient.nombre }}</td>
+                                <td>{{ surgery.surgical_procedure.name|truncatewords:6 }}</td>
+                                <td><span class="badge bg-secondary">{{ surgery.operating_room.room_number }}</span></td>
+                                <td>{{ surgery.surgeon|full_name|truncatewords:2 }}</td>
+                                <td>
+                                    {% if surgery.urgency == 'elective' %}
+                                        <span class="badge bg-info">Electiva</span>
+                                    {% elif surgery.urgency == 'urgent' %}
+                                        <span class="badge bg-warning">Urgente</span>
+                                    {% elif surgery.urgency == 'emergency' %}
+                                        <span class="badge bg-danger">Emergencia</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if surgery.status == 'scheduled' %}
+                                        <span class="badge bg-warning">Programada</span>
+                                    {% elif surgery.status == 'confirmed' %}
+                                        <span class="badge bg-info">Confirmada</span>
+                                    {% elif surgery.status == 'in_progress' %}
+                                        <span class="badge bg-primary">En Curso</span>
+                                    {% elif surgery.status == 'completed' %}
+                                        <span class="badge bg-success">Completada</span>
+                                    {% elif surgery.status == 'cancelled' %}
+                                        <span class="badge bg-danger">Cancelada</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">{{ surgery.get_status_display }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <a href="{% url 'surgery:surgery_detail' surgery.id %}" class="btn btn-sm btn-info" title="Ver">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    <a href="{% url 'surgery:surgery_update' surgery.id %}" class="btn btn-sm btn-warning" title="Editar">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Paginación -->
+                {% if page_obj.has_other_pages %}
+                <nav>
+                    <ul class="pagination justify-content-center">
+                        {% if page_obj.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page=1{% if status_filter %}&status={{ status_filter }}{% endif %}{% if urgency_filter %}&urgency={{ urgency_filter }}{% endif %}{% if date_from %}&date_from={{ date_from }}{% endif %}{% if date_to %}&date_to={{ date_to }}{% endif %}{% if search %}&search={{ search }}{% endif %}">Primera</a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if status_filter %}&status={{ status_filter }}{% endif %}{% if urgency_filter %}&urgency={{ urgency_filter }}{% endif %}{% if date_from %}&date_from={{ date_from }}{% endif %}{% if date_to %}&date_to={{ date_to }}{% endif %}{% if search %}&search={{ search }}{% endif %}">Anterior</a>
+                            </li>
+                        {% endif %}
+
+                        <li class="page-item active">
+                            <span class="page-link">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+                        </li>
+
+                        {% if page_obj.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if status_filter %}&status={{ status_filter }}{% endif %}{% if urgency_filter %}&urgency={{ urgency_filter }}{% endif %}{% if date_from %}&date_from={{ date_from }}{% endif %}{% if date_to %}&date_to={{ date_to }}{% endif %}{% if search %}&search={{ search }}{% endif %}">Siguiente</a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if status_filter %}&status={{ status_filter }}{% endif %}{% if urgency_filter %}&urgency={{ urgency_filter }}{% endif %}{% if date_from %}&date_from={{ date_from }}{% endif %}{% if date_to %}&date_to={{ date_to }}{% endif %}{% if search %}&search={{ search }}{% endif %}">Última</a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+                {% endif %}
+            {% else %}
+                <p class="text-muted">No se encontraron cirugías</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

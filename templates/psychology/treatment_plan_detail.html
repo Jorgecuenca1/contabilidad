@@ -1,0 +1,260 @@
+{% extends 'base.html' %}
+{% block title %}Plan {{ plan.plan_number }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-clipboard-pulse"></i> Plan de Tratamiento {{ plan.plan_number }}</h2>
+        <div>
+            <a href="{% url 'psychology:treatment_plan_list' %}" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Volver
+            </a>
+        </div>
+    </div>
+
+    <!-- Información Básica -->
+    <div class="card mb-3">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0"><i class="bi bi-info-circle"></i> Información del Plan</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>Paciente:</strong> {{ plan.patient.third_party.name }}</p>
+                    <p><strong>Documento:</strong> {{ plan.patient.third_party.identification_number }}</p>
+                    <p><strong>Psicólogo:</strong> {{ plan.psychologist.get_full_name }}</p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>Fecha de Inicio:</strong> {{ plan.start_date|date:"d/m/Y" }}</p>
+                    {% if plan.end_date %}
+                    <p><strong>Fecha Estimada de Finalización:</strong> {{ plan.end_date|date:"d/m/Y" }}</p>
+                    {% endif %}
+                    <p><strong>Estado:</strong>
+                        {% if plan.status == 'active' %}
+                        <span class="badge bg-success">Activo</span>
+                        {% elif plan.status == 'completed' %}
+                        <span class="badge bg-info">Completado</span>
+                        {% elif plan.status == 'discontinued' %}
+                        <span class="badge bg-danger">Discontinuado</span>
+                        {% elif plan.status == 'on_hold' %}
+                        <span class="badge bg-warning text-dark">En pausa</span>
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+            <div class="row mt-2">
+                <div class="col-12">
+                    <p><strong>Consulta Relacionada:</strong>
+                        <a href="{% url 'psychology:consultation_detail' plan.consultation.id %}">
+                            {{ plan.consultation.consultation_number }} - {{ plan.consultation.consultation_date|date:"d/m/Y" }}
+                        </a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Diagnóstico -->
+    <div class="card mb-3">
+        <div class="card-header bg-info text-white">
+            <h6 class="mb-0"><i class="bi bi-file-medical"></i> Diagnóstico</h6>
+        </div>
+        <div class="card-body">
+            <p>{{ plan.diagnosis|linebreaks }}</p>
+        </div>
+    </div>
+
+    <!-- Objetivos -->
+    <div class="card mb-3">
+        <div class="card-header bg-success text-white">
+            <h6 class="mb-0"><i class="bi bi-bullseye"></i> Objetivos</h6>
+        </div>
+        <div class="card-body">
+            <h6 class="text-muted">Objetivos a Largo Plazo</h6>
+            <p>{{ plan.long_term_goals|linebreaks }}</p>
+
+            <hr>
+
+            <h6 class="text-muted mt-3">Objetivos a Corto Plazo</h6>
+            <p>{{ plan.short_term_goals|linebreaks }}</p>
+        </div>
+    </div>
+
+    <!-- Enfoque e Intervenciones -->
+    <div class="card mb-3">
+        <div class="card-header bg-warning">
+            <h6 class="mb-0"><i class="bi bi-tools"></i> Enfoque e Intervenciones</h6>
+        </div>
+        <div class="card-body">
+            <p><strong>Enfoque Terapéutico:</strong> {{ plan.therapeutic_approach }}</p>
+            <hr>
+            <h6 class="text-muted">Intervenciones Planificadas</h6>
+            <p>{{ plan.interventions|linebreaks }}</p>
+        </div>
+    </div>
+
+    <!-- Frecuencia de Sesiones -->
+    <div class="card mb-3">
+        <div class="card-header">
+            <h6 class="mb-0"><i class="bi bi-calendar-week"></i> Frecuencia de Sesiones</h6>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>Frecuencia:</strong> {{ plan.session_frequency }}</p>
+                </div>
+                {% if plan.estimated_sessions %}
+                <div class="col-md-6">
+                    <p><strong>Sesiones Estimadas:</strong> {{ plan.estimated_sessions }}</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Observaciones -->
+    {% if plan.observations %}
+    <div class="card mb-3">
+        <div class="card-header">
+            <h6 class="mb-0"><i class="bi bi-pencil-square"></i> Observaciones</h6>
+        </div>
+        <div class="card-body">
+            <p>{{ plan.observations|linebreaks }}</p>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Notas de Progreso -->
+    {% if progress_notes %}
+    <div class="card mb-3">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h6 class="mb-0"><i class="bi bi-file-earmark-medical"></i> Notas de Progreso</h6>
+            <span class="badge bg-primary">{{ progress_notes|length }}</span>
+        </div>
+        <div class="card-body">
+            <div class="accordion" id="progressNotesAccordion">
+                {% for note in progress_notes %}
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="heading{{ forloop.counter }}">
+                        <button class="accordion-button {% if not forloop.first %}collapsed{% endif %}" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ forloop.counter }}" aria-expanded="{% if forloop.first %}true{% else %}false{% endif %}" aria-controls="collapse{{ forloop.counter }}">
+                            <strong>{{ note.note_date|date:"d/m/Y" }}</strong>
+                            {% if note.session %}
+                            <span class="ms-2 badge bg-info">{{ note.session.session_number }}</span>
+                            {% endif %}
+                        </button>
+                    </h2>
+                    <div id="collapse{{ forloop.counter }}" class="accordion-collapse collapse {% if forloop.first %}show{% endif %}" aria-labelledby="heading{{ forloop.counter }}" data-bs-parent="#progressNotesAccordion">
+                        <div class="accordion-body">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <h6 class="text-muted"><strong>Subjetivo (S)</strong></h6>
+                                    <p>{{ note.subjective|linebreaks }}</p>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <h6 class="text-muted"><strong>Objetivo (O)</strong></h6>
+                                    <p>{{ note.objective|linebreaks }}</p>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <h6 class="text-muted"><strong>Evaluación (A)</strong></h6>
+                                    <p>{{ note.assessment|linebreaks }}</p>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <h6 class="text-muted"><strong>Plan (P)</strong></h6>
+                                    <p>{{ note.plan|linebreaks }}</p>
+                                </div>
+                            </div>
+                            {% if note.goals_progress %}
+                            <hr>
+                            <h6 class="text-muted"><strong>Progreso hacia Objetivos</strong></h6>
+                            <p>{{ note.goals_progress|linebreaks }}</p>
+                            {% endif %}
+                            {% if note.plan_modifications %}
+                            <hr>
+                            <h6 class="text-muted"><strong>Modificaciones al Plan</strong></h6>
+                            <p>{{ note.plan_modifications|linebreaks }}</p>
+                            {% endif %}
+                            {% if note.observations %}
+                            <hr>
+                            <h6 class="text-muted"><strong>Observaciones</strong></h6>
+                            <p>{{ note.observations|linebreaks }}</p>
+                            {% endif %}
+                            <hr>
+                            <small class="text-muted">
+                                <strong>Registrado por:</strong> {{ note.created_by.get_full_name }} |
+                                <strong>Fecha:</strong> {{ note.created_at|date:"d/m/Y H:i" }}
+                            </small>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Sesiones Relacionadas -->
+    {% if sessions %}
+    <div class="card mb-3">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h6 class="mb-0"><i class="bi bi-chat-square-text"></i> Sesiones Realizadas</h6>
+            <span class="badge bg-primary">{{ sessions|length }}</span>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-sm table-hover">
+                    <thead>
+                        <tr>
+                            <th>Número</th>
+                            <th>Fecha</th>
+                            <th>Tipo</th>
+                            <th>Duración</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for session in sessions %}
+                        <tr>
+                            <td>{{ session.session_number }}</td>
+                            <td>{{ session.session_date|date:"d/m/Y" }}</td>
+                            <td>{{ session.get_session_type_display }}</td>
+                            <td>{{ session.session_duration }} min</td>
+                            <td>
+                                {% if session.status == 'completed' %}
+                                <span class="badge bg-success">Completada</span>
+                                {% elif session.status == 'scheduled' %}
+                                <span class="badge bg-warning text-dark">Programada</span>
+                                {% elif session.status == 'cancelled' %}
+                                <span class="badge bg-danger">Cancelada</span>
+                                {% elif session.status == 'no_show' %}
+                                <span class="badge bg-secondary">No asistió</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{% url 'psychology:session_detail' session.id %}" class="btn btn-sm btn-info">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Metadatos -->
+    <div class="card">
+        <div class="card-body">
+            <small class="text-muted">
+                <strong>Creado por:</strong> {{ plan.created_by.get_full_name }} |
+                <strong>Fecha:</strong> {{ plan.created_at|date:"d/m/Y H:i" }}
+                {% if plan.updated_at != plan.created_at %}
+                | <strong>Última actualización:</strong> {{ plan.updated_at|date:"d/m/Y H:i" }}
+                {% endif %}
+            </small>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% block title %}Ecocardiogramas{% endblock %}
+{% block content %}
+<div class="container-fluid">
+    <h2><i class="bi bi-soundwave"></i> Ecocardiogramas</h2>
+    <a href="{% url 'cardiology:echo_create' %}" class="btn btn-info my-3">
+        <i class="bi bi-plus-lg"></i> Nuevo Ecocardiograma
+    </a>
+    <div class="alert alert-info">
+        <i class="bi bi-info-circle"></i> Lista de ecocardiogramas disponible. Total: {{ page_obj.paginator.count|default:"0" }}
+    </div>
+</div>
+{% endblock %}

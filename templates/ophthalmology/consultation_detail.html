@@ -1,0 +1,363 @@
+{% extends 'base.html' %}
+{% block title %}Consulta {{ consultation.consultation_number }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-clipboard-pulse"></i> Consulta {{ consultation.consultation_number }}</h2>
+        <div>
+            <a href="{% url 'ophthalmology:consultation_list' %}" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Volver
+            </a>
+        </div>
+    </div>
+
+    <!-- Información del Paciente -->
+    <div class="card mb-3">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">Información del Paciente</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-4">
+                    <p><strong>Paciente:</strong> {{ consultation.patient.third_party.name }}</p>
+                    <p><strong>Identificación:</strong> {{ consultation.patient.third_party.identification_number }}</p>
+                </div>
+                <div class="col-md-4">
+                    <p><strong>Oftalmólogo:</strong> {{ consultation.ophthalmologist.get_full_name }}</p>
+                    <p><strong>Fecha:</strong> {{ consultation.consultation_date|date:"d/m/Y H:i" }}</p>
+                </div>
+                <div class="col-md-4">
+                    <p><strong>Estado:</strong>
+                        {% if consultation.status == 'scheduled' %}
+                            <span class="badge bg-warning">Programada</span>
+                        {% elif consultation.status == 'in_progress' %}
+                            <span class="badge bg-primary">En Proceso</span>
+                        {% elif consultation.status == 'completed' %}
+                            <span class="badge bg-success">Completada</span>
+                        {% elif consultation.status == 'cancelled' %}
+                            <span class="badge bg-danger">Cancelada</span>
+                        {% endif %}
+                    </p>
+                    <p>
+                        <strong>Usa Gafas:</strong> {% if consultation.uses_glasses %}Sí{% else %}No{% endif %}<br>
+                        <strong>Usa Lentes de Contacto:</strong> {% if consultation.uses_contact_lenses %}Sí{% else %}No{% endif %}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Motivo y Síntomas -->
+    <div class="card mb-3">
+        <div class="card-header bg-info text-white">
+            <h5 class="mb-0">Motivo de Consulta y Síntomas</h5>
+        </div>
+        <div class="card-body">
+            <p><strong>Motivo Principal:</strong><br>{{ consultation.chief_complaint }}</p>
+            {% if consultation.symptoms %}
+            <p><strong>Síntomas:</strong><br>{{ consultation.symptoms }}</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Agudeza Visual -->
+    <div class="card mb-3">
+        <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Agudeza Visual</h5>
+            <a href="{% url 'ophthalmology:visual_acuity_create' consultation.id %}" class="btn btn-sm btn-light">
+                {% if visual_acuity %}<i class="bi bi-pencil"></i> Editar{% else %}<i class="bi bi-plus"></i> Agregar{% endif %}
+            </a>
+        </div>
+        <div class="card-body">
+            {% if visual_acuity %}
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Ojo</th>
+                            <th>Distancia SC</th>
+                            <th>Distancia CC</th>
+                            <th>Cerca SC</th>
+                            <th>Cerca CC</th>
+                            <th>Estenopeico</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>OD (Derecho)</strong></td>
+                            <td>{{ visual_acuity.od_distance_sc|default:"-" }}</td>
+                            <td>{{ visual_acuity.od_distance_cc|default:"-" }}</td>
+                            <td>{{ visual_acuity.od_near_sc|default:"-" }}</td>
+                            <td>{{ visual_acuity.od_near_cc|default:"-" }}</td>
+                            <td>{{ visual_acuity.od_pinhole|default:"-" }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>OS (Izquierdo)</strong></td>
+                            <td>{{ visual_acuity.os_distance_sc|default:"-" }}</td>
+                            <td>{{ visual_acuity.os_distance_cc|default:"-" }}</td>
+                            <td>{{ visual_acuity.os_near_sc|default:"-" }}</td>
+                            <td>{{ visual_acuity.os_near_cc|default:"-" }}</td>
+                            <td>{{ visual_acuity.os_pinhole|default:"-" }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>OU (Ambos)</strong></td>
+                            <td>{{ visual_acuity.ou_distance_sc|default:"-" }}</td>
+                            <td>{{ visual_acuity.ou_distance_cc|default:"-" }}</td>
+                            <td>{{ visual_acuity.ou_near_sc|default:"-" }}</td>
+                            <td>{{ visual_acuity.ou_near_cc|default:"-" }}</td>
+                            <td>-</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            {% if visual_acuity.observations %}
+            <p class="mb-0"><strong>Observaciones:</strong> {{ visual_acuity.observations }}</p>
+            {% endif %}
+            {% else %}
+            <p class="text-muted mb-0">No se ha registrado agudeza visual para esta consulta</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Refracción -->
+    <div class="card mb-3">
+        <div class="card-header bg-warning text-dark d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Refracción</h5>
+            <a href="{% url 'ophthalmology:refraction_create' consultation.id %}" class="btn btn-sm btn-dark">
+                {% if refraction %}<i class="bi bi-pencil"></i> Editar{% else %}<i class="bi bi-plus"></i> Agregar{% endif %}
+            </a>
+        </div>
+        <div class="card-body">
+            {% if refraction %}
+            <p><strong>Tipo:</strong> {{ refraction.get_refraction_type_display }}</p>
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Ojo</th>
+                            <th>Esfera</th>
+                            <th>Cilindro</th>
+                            <th>Eje</th>
+                            <th>Adición</th>
+                            <th>Prisma</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>OD (Derecho)</strong></td>
+                            <td>{{ refraction.od_sphere|default:"-" }}</td>
+                            <td>{{ refraction.od_cylinder|default:"-" }}</td>
+                            <td>{{ refraction.od_axis|default:"-" }}°</td>
+                            <td>{{ refraction.od_add|default:"-" }}</td>
+                            <td>{{ refraction.od_prism|default:"-" }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>OS (Izquierdo)</strong></td>
+                            <td>{{ refraction.os_sphere|default:"-" }}</td>
+                            <td>{{ refraction.os_cylinder|default:"-" }}</td>
+                            <td>{{ refraction.os_axis|default:"-" }}°</td>
+                            <td>{{ refraction.os_add|default:"-" }}</td>
+                            <td>{{ refraction.os_prism|default:"-" }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <p><strong>Distancia Pupilar (DP):</strong> Distancia: {{ refraction.pd_distance|default:"-" }} mm, Cerca: {{ refraction.pd_near|default:"-" }} mm</p>
+            {% if refraction.observations %}
+            <p class="mb-0"><strong>Observaciones:</strong> {{ refraction.observations }}</p>
+            {% endif %}
+            {% else %}
+            <p class="text-muted mb-0">No se ha registrado refracción para esta consulta</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Presión Intraocular -->
+    {% if intraocular_pressure %}
+    <div class="card mb-3">
+        <div class="card-header bg-danger text-white">
+            <h5 class="mb-0">Presión Intraocular (PIO)</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>OD (Derecho):</strong> {{ intraocular_pressure.od_pressure }} mmHg</p>
+                    <p><strong>Método OD:</strong> {{ intraocular_pressure.get_od_measurement_method_display }}</p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>OS (Izquierdo):</strong> {{ intraocular_pressure.os_pressure }} mmHg</p>
+                    <p><strong>Método OS:</strong> {{ intraocular_pressure.get_os_measurement_method_display }}</p>
+                </div>
+            </div>
+            {% if intraocular_pressure.observations %}
+            <p class="mb-0"><strong>Observaciones:</strong> {{ intraocular_pressure.observations }}</p>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Biomicroscopia -->
+    {% if biomicroscopy %}
+    <div class="card mb-3">
+        <div class="card-header bg-secondary text-white">
+            <h5 class="mb-0">Biomicroscopía</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <h6>Ojo Derecho (OD)</h6>
+                    <p><strong>Párpados:</strong> {{ biomicroscopy.od_lids|default:"-" }}</p>
+                    <p><strong>Conjuntiva:</strong> {{ biomicroscopy.od_conjunctiva|default:"-" }}</p>
+                    <p><strong>Córnea:</strong> {{ biomicroscopy.od_cornea|default:"-" }}</p>
+                    <p><strong>Cámara Anterior:</strong> {{ biomicroscopy.od_anterior_chamber|default:"-" }}</p>
+                    <p><strong>Iris:</strong> {{ biomicroscopy.od_iris|default:"-" }}</p>
+                    <p><strong>Cristalino:</strong> {{ biomicroscopy.od_lens|default:"-" }}</p>
+                </div>
+                <div class="col-md-6">
+                    <h6>Ojo Izquierdo (OS)</h6>
+                    <p><strong>Párpados:</strong> {{ biomicroscopy.os_lids|default:"-" }}</p>
+                    <p><strong>Conjuntiva:</strong> {{ biomicroscopy.os_conjunctiva|default:"-" }}</p>
+                    <p><strong>Córnea:</strong> {{ biomicroscopy.os_cornea|default:"-" }}</p>
+                    <p><strong>Cámara Anterior:</strong> {{ biomicroscopy.os_anterior_chamber|default:"-" }}</p>
+                    <p><strong>Iris:</strong> {{ biomicroscopy.os_iris|default:"-" }}</p>
+                    <p><strong>Cristalino:</strong> {{ biomicroscopy.os_lens|default:"-" }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Fondo de Ojo -->
+    {% if fundus_exam %}
+    <div class="card mb-3">
+        <div class="card-header bg-info text-white">
+            <h5 class="mb-0">Fondo de Ojo</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <h6>Ojo Derecho (OD)</h6>
+                    <p><strong>Disco Óptico:</strong> {{ fundus_exam.od_optic_disc|default:"-" }}</p>
+                    <p><strong>Relación C/D:</strong> {{ fundus_exam.od_cup_disc_ratio|default:"-" }}</p>
+                    <p><strong>Mácula:</strong> {{ fundus_exam.od_macula|default:"-" }}</p>
+                    <p><strong>Vasos:</strong> {{ fundus_exam.od_vessels|default:"-" }}</p>
+                    <p><strong>Periferia:</strong> {{ fundus_exam.od_periphery|default:"-" }}</p>
+                </div>
+                <div class="col-md-6">
+                    <h6>Ojo Izquierdo (OS)</h6>
+                    <p><strong>Disco Óptico:</strong> {{ fundus_exam.os_optic_disc|default:"-" }}</p>
+                    <p><strong>Relación C/D:</strong> {{ fundus_exam.os_cup_disc_ratio|default:"-" }}</p>
+                    <p><strong>Mácula:</strong> {{ fundus_exam.os_macula|default:"-" }}</p>
+                    <p><strong>Vasos:</strong> {{ fundus_exam.os_vessels|default:"-" }}</p>
+                    <p><strong>Periferia:</strong> {{ fundus_exam.os_periphery|default:"-" }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Diagnóstico -->
+    <div class="card mb-3">
+        <div class="card-header bg-success text-white">
+            <h5 class="mb-0">Diagnóstico</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                {% if consultation.diagnosis_right_eye %}
+                <div class="col-md-4">
+                    <h6>Ojo Derecho (OD)</h6>
+                    <p>{{ consultation.diagnosis_right_eye }}</p>
+                </div>
+                {% endif %}
+                {% if consultation.diagnosis_left_eye %}
+                <div class="col-md-4">
+                    <h6>Ojo Izquierdo (OS)</h6>
+                    <p>{{ consultation.diagnosis_left_eye }}</p>
+                </div>
+                {% endif %}
+                {% if consultation.diagnosis_both_eyes %}
+                <div class="col-md-4">
+                    <h6>Ambos Ojos (OU)</h6>
+                    <p>{{ consultation.diagnosis_both_eyes }}</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Plan de Tratamiento -->
+    {% if consultation.treatment_plan %}
+    <div class="card mb-3">
+        <div class="card-header bg-warning text-dark">
+            <h5 class="mb-0">Plan de Tratamiento</h5>
+        </div>
+        <div class="card-body">
+            <p>{{ consultation.treatment_plan }}</p>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Prescripciones de Lentes -->
+    <div class="card mb-3">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Prescripciones de Lentes</h5>
+            <a href="{% url 'ophthalmology:prescription_create_from_consultation' consultation.id %}" class="btn btn-sm btn-light">
+                <i class="bi bi-plus"></i> Nueva Prescripción
+            </a>
+        </div>
+        <div class="card-body">
+            {% if prescriptions %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Número</th>
+                            <th>Fecha</th>
+                            <th>Tipo de Lentes</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for prescription in prescriptions %}
+                        <tr>
+                            <td><strong>{{ prescription.prescription_number }}</strong></td>
+                            <td>{{ prescription.prescription_date|date:"d/m/Y" }}</td>
+                            <td>{{ prescription.get_lens_type_display }}</td>
+                            <td>
+                                {% if prescription.is_active %}
+                                    <span class="badge bg-success">Activa</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">Inactiva</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{% url 'ophthalmology:prescription_detail' prescription.id %}" class="btn btn-sm btn-outline-primary">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <p class="text-muted mb-0">No hay prescripciones de lentes para esta consulta</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Observaciones -->
+    {% if consultation.observations %}
+    <div class="card">
+        <div class="card-header bg-secondary text-white">
+            <h5 class="mb-0">Observaciones Generales</h5>
+        </div>
+        <div class="card-body">
+            <p class="mb-0">{{ consultation.observations }}</p>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

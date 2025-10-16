@@ -25,17 +25,50 @@ def require_company_access(view_func):
     Redirige al dashboard si no hay empresa seleccionada.
     """
     def wrapper(request, *args, **kwargs):
-        current_company = get_current_company(request)
-        
-        if not current_company:
+        # DEBUG: Imprimir toda la sesión
+        print("=" * 80)
+        print("DEBUG require_company_access:")
+        print(f"Usuario: {request.user}")
+        print(f"Sesión completa: {dict(request.session)}")
+        print(f"Path: {request.path}")
+
+        # Obtener empresa directamente de la sesión (más confiable que context_processor)
+        active_company_id = request.session.get('active_company') or request.session.get('selected_company_id')
+        print(f"active_company_id encontrado: {active_company_id}")
+
+        if not active_company_id:
+            print("ERROR: No hay active_company_id en sesión!")
+            print("=" * 80)
             messages.error(request, 'Debe seleccionar una empresa para acceder a este módulo.')
-            return redirect('/')
-        
+            return redirect('core:company_selector')
+
+        # Obtener la empresa de la base de datos
+        try:
+            current_company = Company.objects.get(id=active_company_id, is_active=True)
+            print(f"Empresa encontrada: {current_company.name}")
+
+            # Verificar acceso del usuario
+            if not request.user.can_access_company(current_company):
+                print(f"ERROR: Usuario no tiene acceso a {current_company.name}")
+                print("=" * 80)
+                messages.error(request, 'No tiene acceso a esta empresa.')
+                return redirect('core:company_selector')
+
+            print("SUCCESS: Todo OK, acceso permitido!")
+            print("=" * 80)
+        except Company.DoesNotExist:
+            print(f"ERROR: Empresa {active_company_id} no existe!")
+            print("=" * 80)
+            messages.error(request, 'Empresa no válida.')
+            request.session.pop('active_company', None)
+            request.session.pop('selected_company_id', None)
+            return redirect('core:company_selector')
+
         # Añadir la empresa al request para fácil acceso
         request.current_company = current_company
-        
+
         return view_func(request, *args, **kwargs)
-    
+
     return wrapper
 
 

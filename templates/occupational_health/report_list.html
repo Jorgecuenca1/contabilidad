@@ -1,0 +1,183 @@
+{% extends 'base.html' %}
+{% block title %}Reportes Empresariales{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-file-earmark-bar-graph"></i> Reportes Empresariales</h2>
+        <div>
+            <a href="{% url 'occupational_health:report_create' %}" class="btn btn-success">
+                <i class="bi bi-plus-circle"></i> Nuevo Reporte
+            </a>
+            <a href="{% url 'occupational_health:dashboard' %}" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Volver
+            </a>
+        </div>
+    </div>
+
+    <!-- Filtros -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-3">
+                    <label class="form-label">Buscar</label>
+                    <input type="text" name="search" class="form-control" placeholder="Número, título..." value="{{ request.GET.search }}">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Tipo de Reporte</label>
+                    <select name="report_type" class="form-select">
+                        <option value="">Todos</option>
+                        <option value="consolidado_examenes" {% if request.GET.report_type == 'consolidado_examenes' %}selected{% endif %}>Consolidado de Exámenes</option>
+                        <option value="ausentismo" {% if request.GET.report_type == 'ausentismo' %}selected{% endif %}>Ausentismo</option>
+                        <option value="accidentalidad" {% if request.GET.report_type == 'accidentalidad' %}selected{% endif %}>Accidentalidad</option>
+                        <option value="morbilidad" {% if request.GET.report_type == 'morbilidad' %}selected{% endif %}>Morbilidad</option>
+                        <option value="riesgos_identificados" {% if request.GET.report_type == 'riesgos_identificados' %}selected{% endif %}>Riesgos Identificados</option>
+                        <option value="aptitudes" {% if request.GET.report_type == 'aptitudes' %}selected{% endif %}>Aptitudes</option>
+                        <option value="seguimiento" {% if request.GET.report_type == 'seguimiento' %}selected{% endif %}>Seguimiento</option>
+                        <option value="estadistico" {% if request.GET.report_type == 'estadistico' %}selected{% endif %}>Estadístico</option>
+                        <option value="personalizado" {% if request.GET.report_type == 'personalizado' %}selected{% endif %}>Personalizado</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Estado</label>
+                    <select name="status" class="form-select">
+                        <option value="">Todos</option>
+                        <option value="borrador" {% if request.GET.status == 'borrador' %}selected{% endif %}>Borrador</option>
+                        <option value="generado" {% if request.GET.status == 'generado' %}selected{% endif %}>Generado</option>
+                        <option value="enviado" {% if request.GET.status == 'enviado' %}selected{% endif %}>Enviado</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Fecha Desde</label>
+                    <input type="date" name="date_from" class="form-control" value="{{ request.GET.date_from }}">
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Fecha Hasta</label>
+                    <input type="date" name="date_to" class="form-control" value="{{ request.GET.date_to }}">
+                </div>
+                <div class="col-md-12 d-flex justify-content-end">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-search"></i> Buscar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Tabla de Reportes -->
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Número</th>
+                            <th>Título</th>
+                            <th>Tipo</th>
+                            <th>Período</th>
+                            <th>Empresa Cliente</th>
+                            <th>Estado</th>
+                            <th>Fecha Generación</th>
+                            <th>Destinatario</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for report in reports %}
+                        <tr>
+                            <td><strong>{{ report.report_number }}</strong></td>
+                            <td>{{ report.report_title|truncatewords:6 }}</td>
+                            <td>
+                                {% if report.report_type == 'consolidado_examenes' %}
+                                <span class="badge bg-primary">Consolidado</span>
+                                {% elif report.report_type == 'ausentismo' %}
+                                <span class="badge bg-warning text-dark">Ausentismo</span>
+                                {% elif report.report_type == 'accidentalidad' %}
+                                <span class="badge bg-danger">Accidentalidad</span>
+                                {% elif report.report_type == 'morbilidad' %}
+                                <span class="badge bg-info">Morbilidad</span>
+                                {% elif report.report_type == 'riesgos_identificados' %}
+                                <span class="badge bg-warning">Riesgos</span>
+                                {% elif report.report_type == 'aptitudes' %}
+                                <span class="badge bg-success">Aptitudes</span>
+                                {% elif report.report_type == 'seguimiento' %}
+                                <span class="badge bg-secondary">Seguimiento</span>
+                                {% elif report.report_type == 'estadistico' %}
+                                <span class="badge bg-dark">Estadístico</span>
+                                {% else %}
+                                <span class="badge bg-secondary">Personalizado</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <small>
+                                    {{ report.period_start|date:"d/m/Y" }}<br>
+                                    {{ report.period_end|date:"d/m/Y" }}
+                                </small>
+                            </td>
+                            <td>
+                                {% if report.client_company %}
+                                {{ report.client_company|truncatewords:2 }}
+                                {% else %}
+                                <span class="text-muted">-</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if report.status == 'generado' %}
+                                <span class="badge bg-success">Generado</span>
+                                {% elif report.status == 'enviado' %}
+                                <span class="badge bg-info">Enviado</span>
+                                {% else %}
+                                <span class="badge bg-secondary">Borrador</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if report.generated_date %}
+                                {{ report.generated_date|date:"d/m/Y" }}
+                                {% else %}
+                                <span class="text-muted">-</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if report.recipient %}
+                                {{ report.recipient|truncatewords:2 }}
+                                {% else %}
+                                <span class="text-muted">-</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="8" class="text-center text-muted py-4">
+                                No hay reportes registrados. <a href="{% url 'occupational_health:report_create' %}">Crear primer reporte</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Paginación -->
+            {% if reports.has_other_pages %}
+            <nav class="mt-4">
+                <ul class="pagination justify-content-center">
+                    {% if reports.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ reports.previous_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.report_type %}&report_type={{ request.GET.report_type }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}">Anterior</a>
+                    </li>
+                    {% endif %}
+
+                    <li class="page-item active">
+                        <span class="page-link">Página {{ reports.number }} de {{ reports.paginator.num_pages }}</span>
+                    </li>
+
+                    {% if reports.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ reports.next_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.report_type %}&report_type={{ request.GET.report_type }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}">Siguiente</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

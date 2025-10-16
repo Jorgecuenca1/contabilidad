@@ -1,0 +1,177 @@
+{% extends 'base.html' %}
+{% block title %}Evaluación {{ assessment.assessment_number }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-file-earmark-text"></i> Evaluación {{ assessment.assessment_number }}</h2>
+        <div>
+            <a href="{% url 'psychology:assessment_list' %}" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Volver
+            </a>
+        </div>
+    </div>
+
+    <!-- Información Básica -->
+    <div class="card mb-3">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0"><i class="bi bi-info-circle"></i> Información de la Evaluación</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>Paciente:</strong> {{ assessment.patient.third_party.name }}</p>
+                    <p><strong>Documento:</strong> {{ assessment.patient.third_party.identification_number }}</p>
+                    <p><strong>Psicólogo:</strong> {{ assessment.psychologist.get_full_name }}</p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>Fecha de Evaluación:</strong> {{ assessment.assessment_date|date:"d/m/Y" }}</p>
+                    <p><strong>Tipo:</strong> <span class="badge bg-info">{{ assessment.get_assessment_type_display }}</span></p>
+                </div>
+            </div>
+            {% if assessment.consultation %}
+            <div class="row mt-2">
+                <div class="col-12">
+                    <p><strong>Consulta Relacionada:</strong>
+                        <a href="{% url 'psychology:consultation_detail' assessment.consultation.id %}">
+                            {{ assessment.consultation.consultation_number }} - {{ assessment.consultation.consultation_date|date:"d/m/Y" }}
+                        </a>
+                    </p>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Propósito -->
+    <div class="card mb-3">
+        <div class="card-header">
+            <h6 class="mb-0"><i class="bi bi-question-circle"></i> Propósito de la Evaluación</h6>
+        </div>
+        <div class="card-body">
+            <p>{{ assessment.purpose|linebreaks }}</p>
+        </div>
+    </div>
+
+    <!-- Resultados -->
+    <div class="card mb-3">
+        <div class="card-header bg-info text-white">
+            <h6 class="mb-0"><i class="bi bi-bar-chart"></i> Resultados</h6>
+        </div>
+        <div class="card-body">
+            <h6 class="text-muted">Resumen de Resultados</h6>
+            <p>{{ assessment.results_summary|linebreaks }}</p>
+
+            <hr>
+
+            <h6 class="text-muted mt-3">Interpretación</h6>
+            <p>{{ assessment.interpretations|linebreaks }}</p>
+        </div>
+    </div>
+
+    <!-- Conclusiones y Recomendaciones -->
+    <div class="card mb-3">
+        <div class="card-header bg-success text-white">
+            <h6 class="mb-0"><i class="bi bi-clipboard-check"></i> Conclusiones y Recomendaciones</h6>
+        </div>
+        <div class="card-body">
+            <h6 class="text-muted">Conclusiones</h6>
+            <p>{{ assessment.conclusions|linebreaks }}</p>
+
+            <hr>
+
+            <h6 class="text-muted mt-3">Recomendaciones</h6>
+            <p>{{ assessment.recommendations|linebreaks }}</p>
+        </div>
+    </div>
+
+    <!-- Observaciones -->
+    {% if assessment.observations %}
+    <div class="card mb-3">
+        <div class="card-header">
+            <h6 class="mb-0"><i class="bi bi-pencil-square"></i> Observaciones</h6>
+        </div>
+        <div class="card-body">
+            <p>{{ assessment.observations|linebreaks }}</p>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Pruebas Psicológicas -->
+    {% if psychological_tests %}
+    <div class="card mb-3">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h6 class="mb-0"><i class="bi bi-clipboard-data"></i> Pruebas Psicológicas Aplicadas</h6>
+            <span class="badge bg-primary">{{ psychological_tests|length }}</span>
+        </div>
+        <div class="card-body">
+            <div class="accordion" id="testsAccordion">
+                {% for test in psychological_tests %}
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="testHeading{{ forloop.counter }}">
+                        <button class="accordion-button {% if not forloop.first %}collapsed{% endif %}" type="button" data-bs-toggle="collapse" data-bs-target="#testCollapse{{ forloop.counter }}" aria-expanded="{% if forloop.first %}true{% else %}false{% endif %}" aria-controls="testCollapse{{ forloop.counter }}">
+                            <strong>{{ test.test_name }}</strong>
+                            {% if test.test_category %}
+                            <span class="ms-2 badge bg-secondary">{{ test.test_category }}</span>
+                            {% endif %}
+                        </button>
+                    </h2>
+                    <div id="testCollapse{{ forloop.counter }}" class="accordion-collapse collapse {% if forloop.first %}show{% endif %}" aria-labelledby="testHeading{{ forloop.counter }}" data-bs-parent="#testsAccordion">
+                        <div class="accordion-body">
+                            <div class="row">
+                                {% if test.raw_score %}
+                                <div class="col-md-4 mb-2">
+                                    <strong>Puntaje Bruto:</strong> {{ test.raw_score }}
+                                </div>
+                                {% endif %}
+                                {% if test.standardized_score %}
+                                <div class="col-md-4 mb-2">
+                                    <strong>Puntaje Estandarizado:</strong> {{ test.standardized_score }}
+                                </div>
+                                {% endif %}
+                                {% if test.percentile %}
+                                <div class="col-md-4 mb-2">
+                                    <strong>Percentil:</strong> {{ test.percentile }}
+                                </div>
+                                {% endif %}
+                            </div>
+                            <hr>
+                            <h6 class="text-muted mt-3">Interpretación</h6>
+                            <p>{{ test.interpretation|linebreaks }}</p>
+                            {% if test.observations %}
+                            <hr>
+                            <h6 class="text-muted">Observaciones</h6>
+                            <p>{{ test.observations|linebreaks }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="card mb-3">
+        <div class="card-header">
+            <h6 class="mb-0"><i class="bi bi-clipboard-data"></i> Pruebas Psicológicas Aplicadas</h6>
+        </div>
+        <div class="card-body">
+            <p class="text-muted text-center mb-0">No se han registrado pruebas psicológicas para esta evaluación</p>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Metadatos -->
+    <div class="card">
+        <div class="card-body">
+            <small class="text-muted">
+                <strong>Creado por:</strong> {{ assessment.created_by.get_full_name }} |
+                <strong>Fecha:</strong> {{ assessment.created_at|date:"d/m/Y H:i" }}
+                {% if assessment.updated_at != assessment.created_at %}
+                | <strong>Última actualización:</strong> {{ assessment.updated_at|date:"d/m/Y H:i" }}
+                {% endif %}
+            </small>
+        </div>
+    </div>
+</div>
+{% endblock %}

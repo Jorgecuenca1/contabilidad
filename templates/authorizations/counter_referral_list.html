@@ -1,0 +1,191 @@
+{% extends 'base.html' %}
+{% block title %}Contrarreferencias - Autorizaciones EPS{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'core:dashboard' %}">Dashboard</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'authorizations:index' %}">Autorizaciones EPS</a></li>
+            <li class="breadcrumb-item active">Contrarreferencias</li>
+        </ol>
+    </nav>
+
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-arrow-left-right"></i> Contrarreferencias</h2>
+        <div>
+            <a href="{% url 'authorizations:counter_referral_create' %}" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> Nueva Contrarreferencia
+            </a>
+            <a href="{% url 'authorizations:index' %}" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Volver
+            </a>
+        </div>
+    </div>
+
+    <!-- Filtros -->
+    <div class="card mb-4">
+        <div class="card-header bg-light">
+            <h5 class="mb-0"><i class="bi bi-funnel"></i> Filtros de Búsqueda</h5>
+        </div>
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-4">
+                    <label class="form-label">Buscar</label>
+                    <input type="text" name="search" class="form-control"
+                           placeholder="Número, paciente, diagnóstico..."
+                           value="{{ filters.search }}">
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label">Estado</label>
+                    <select name="status" class="form-select">
+                        <option value="">Todos</option>
+                        {% for value, label in status_choices %}
+                        <option value="{{ value }}" {% if filters.status == value %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label">EPS</label>
+                    <select name="eps" class="form-select">
+                        <option value="">Todas</option>
+                        {% for eps in eps_list %}
+                        <option value="{{ eps.id }}" {% if filters.eps == eps.id|stringformat:"s" %}selected{% endif %}>
+                            {{ eps.name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label">Fecha Desde</label>
+                    <input type="date" name="date_from" class="form-control" value="{{ filters.date_from }}">
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label">Fecha Hasta</label>
+                    <input type="date" name="date_to" class="form-control" value="{{ filters.date_to }}">
+                </div>
+
+                <div class="col-md-6 d-flex align-items-end gap-2">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-search"></i> Buscar
+                    </button>
+                    <a href="{% url 'authorizations:counter_referral_list' %}" class="btn btn-secondary">
+                        <i class="bi bi-x-circle"></i> Limpiar
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Tabla de Contrarreferencias -->
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Nº Contrarreferencia</th>
+                            <th>Paciente</th>
+                            <th>Nº Autorización</th>
+                            <th>EPS</th>
+                            <th>Fecha de Servicio</th>
+                            <th>Fecha de Envío</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for cr in counter_referrals %}
+                        <tr>
+                            <td><strong>{{ cr.counter_referral_number }}</strong></td>
+                            <td>
+                                {{ cr.patient.get_full_name }}
+                                <br><small class="text-muted">{{ cr.patient.document_number }}</small>
+                            </td>
+                            <td>
+                                <a href="{% url 'authorizations:authorization_detail' cr.authorization_request.id %}">
+                                    {{ cr.authorization_request.authorization_number }}
+                                </a>
+                            </td>
+                            <td>{{ cr.eps.name }}</td>
+                            <td>{{ cr.service_date|date:"d/m/Y" }}</td>
+                            <td>
+                                {% if cr.sent_date %}
+                                {{ cr.sent_date|date:"d/m/Y H:i" }}
+                                {% else %}
+                                <span class="text-muted">-</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if cr.status == 'pending' %}
+                                <span class="badge bg-warning">{{ cr.get_status_display }}</span>
+                                {% elif cr.status == 'sent' %}
+                                <span class="badge bg-primary">{{ cr.get_status_display }}</span>
+                                {% elif cr.status == 'received' %}
+                                <span class="badge bg-success">{{ cr.get_status_display }}</span>
+                                {% else %}
+                                <span class="badge bg-secondary">{{ cr.get_status_display }}</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{% url 'authorizations:counter_referral_detail' cr.id %}"
+                                   class="btn btn-sm btn-outline-primary"
+                                   title="Ver detalle">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="8" class="text-center text-muted py-4">
+                                <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+                                No se encontraron contrarreferencias con los filtros aplicados.
+                                <br>
+                                <a href="{% url 'authorizations:counter_referral_create' %}" class="btn btn-primary mt-2">
+                                    <i class="bi bi-plus-circle"></i> Crear primera contrarreferencia
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Paginación -->
+            {% if counter_referrals.has_other_pages %}
+            <nav class="mt-4">
+                <ul class="pagination justify-content-center">
+                    {% if counter_referrals.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ counter_referrals.previous_page_number }}{% if filters.search %}&search={{ filters.search }}{% endif %}{% if filters.status %}&status={{ filters.status }}{% endif %}{% if filters.eps %}&eps={{ filters.eps }}{% endif %}{% if filters.date_from %}&date_from={{ filters.date_from }}{% endif %}{% if filters.date_to %}&date_to={{ filters.date_to }}{% endif %}">
+                            <i class="bi bi-chevron-left"></i> Anterior
+                        </a>
+                    </li>
+                    {% endif %}
+
+                    <li class="page-item active">
+                        <span class="page-link">
+                            Página {{ counter_referrals.number }} de {{ counter_referrals.paginator.num_pages }}
+                        </span>
+                    </li>
+
+                    {% if counter_referrals.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ counter_referrals.next_page_number }}{% if filters.search %}&search={{ filters.search }}{% endif %}{% if filters.status %}&status={{ filters.status }}{% endif %}{% if filters.eps %}&eps={{ filters.eps }}{% endif %}{% if filters.date_from %}&date_from={{ filters.date_from }}{% endif %}{% if filters.date_to %}&date_to={{ filters.date_to }}{% endif %}">
+                            Siguiente <i class="bi bi-chevron-right"></i>
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

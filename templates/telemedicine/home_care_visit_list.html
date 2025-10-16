@@ -1,0 +1,149 @@
+{% extends 'base.html' %}
+{% block title %}Visitas Domiciliarias - Telemedicina{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-house-heart"></i> Visitas Domiciliarias</h2>
+        <div>
+            <a href="{% url 'telemedicine:home_care_visit_create' %}" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> Nueva Visita
+            </a>
+            <a href="{% url 'telemedicine:dashboard' %}" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Volver
+            </a>
+        </div>
+    </div>
+
+    <!-- Filtros -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-3">
+                    <label class="form-label">Buscar</label>
+                    <input type="text" name="search" class="form-control" placeholder="Número, paciente, profesional..." value="{{ request.GET.search }}">
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Tipo de Visita</label>
+                    <select name="visit_type" class="form-select">
+                        <option value="">Todos</option>
+                        <option value="nursing" {% if request.GET.visit_type == 'nursing' %}selected{% endif %}>Enfermería</option>
+                        <option value="medical" {% if request.GET.visit_type == 'medical' %}selected{% endif %}>Médica</option>
+                        <option value="therapy" {% if request.GET.visit_type == 'therapy' %}selected{% endif %}>Terapia</option>
+                        <option value="palliative" {% if request.GET.visit_type == 'palliative' %}selected{% endif %}>Cuidados Paliativos</option>
+                        <option value="post_surgical" {% if request.GET.visit_type == 'post_surgical' %}selected{% endif %}>Post-quirúrgica</option>
+                        <option value="wound_care" {% if request.GET.visit_type == 'wound_care' %}selected{% endif %}>Curaciones</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Profesional</label>
+                    <select name="professional" class="form-select">
+                        <option value="">Todos</option>
+                        {% for professional in professionals %}
+                        <option value="{{ professional.id }}" {% if request.GET.professional == professional.id|stringformat:"s" %}selected{% endif %}>
+                            {{ professional.third_party.name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Fecha Desde</label>
+                    <input type="date" name="date_from" class="form-control" value="{{ request.GET.date_from }}">
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Fecha Hasta</label>
+                    <input type="date" name="date_to" class="form-control" value="{{ request.GET.date_to }}">
+                </div>
+                <div class="col-md-1 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Tabla de Visitas -->
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Número</th>
+                            <th>Paciente</th>
+                            <th>Profesional</th>
+                            <th>Tipo de Visita</th>
+                            <th>Fecha y Hora</th>
+                            <th>Dirección</th>
+                            <th>Diagnóstico</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for visit in visits %}
+                        <tr>
+                            <td><strong>{{ visit.visit_number }}</strong></td>
+                            <td>{{ visit.patient.third_party.name }}</td>
+                            <td>{{ visit.professional.third_party.name }}</td>
+                            <td>
+                                {% if visit.visit_type == 'nursing' %}
+                                <span class="badge bg-primary">Enfermería</span>
+                                {% elif visit.visit_type == 'medical' %}
+                                <span class="badge bg-success">Médica</span>
+                                {% elif visit.visit_type == 'therapy' %}
+                                <span class="badge bg-info">Terapia</span>
+                                {% elif visit.visit_type == 'palliative' %}
+                                <span class="badge bg-warning text-dark">Paliativos</span>
+                                {% elif visit.visit_type == 'post_surgical' %}
+                                <span class="badge bg-danger">Post-quirúrgica</span>
+                                {% else %}
+                                <span class="badge bg-secondary">Curaciones</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ visit.visit_date|date:"d/m/Y H:i" }}</td>
+                            <td>{{ visit.city|truncatewords:2 }}</td>
+                            <td>{{ visit.diagnosis|truncatewords:5|default:"Pendiente" }}</td>
+                            <td>
+                                <a href="{% url 'telemedicine:home_care_visit_detail' visit.id %}" class="btn btn-sm btn-outline-primary" title="Ver detalle">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="8" class="text-center text-muted py-4">
+                                No hay visitas domiciliarias registradas. <a href="{% url 'telemedicine:home_care_visit_create' %}">Crear primera visita</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Paginación -->
+            {% if visits.has_other_pages %}
+            <nav class="mt-4">
+                <ul class="pagination justify-content-center">
+                    {% if visits.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ visits.previous_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.visit_type %}&visit_type={{ request.GET.visit_type }}{% endif %}">Anterior</a>
+                    </li>
+                    {% endif %}
+
+                    <li class="page-item active">
+                        <span class="page-link">Página {{ visits.number }} de {{ visits.paginator.num_pages }}</span>
+                    </li>
+
+                    {% if visits.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ visits.next_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.visit_type %}&visit_type={{ request.GET.visit_type }}{% endif %}">Siguiente</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

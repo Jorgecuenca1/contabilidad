@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% block title %}Quirófano {{ room.room_number }}{% endblock %}
+{% block content %}
+<div class="container-fluid">
+    <h2><i class="bi bi-door-closed"></i> Quirófano {{ room.room_number }}</h2>
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-primary text-white">Información</div>
+                <div class="card-body">
+                    <p><strong>Número:</strong> {{ room.room_number }}</p>
+                    <p><strong>Nombre:</strong> {{ room.room_name }}</p>
+                    <p><strong>Tipo:</strong> {{ room.get_room_type_display }}</p>
+                    <p><strong>Piso:</strong> {{ room.floor }}</p>
+                    <p><strong>Edificio:</strong> {{ room.building }}</p>
+                    <p><strong>Capacidad:</strong> {{ room.capacity }}</p>
+                    <p><strong>Flujo Laminar:</strong> {% if room.has_laminar_flow %}Sí{% else %}No{% endif %}</p>
+                    <p><strong>Estado:</strong>
+                        {% if room.status == 'available' %}
+                            <span class="badge bg-success">Disponible</span>
+                        {% elif room.status == 'in_use' %}
+                            <span class="badge bg-danger">En Uso</span>
+                        {% else %}
+                            <span class="badge bg-secondary">{{ room.get_status_display }}</span>
+                        {% endif %}
+                    </p>
+                    {% if room.equipment_description %}
+                    <p><strong>Equipamiento:</strong><br>{{ room.equipment_description }}</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-info text-white">Cirugías Programadas</div>
+                <div class="card-body">
+                    {% if scheduled_surgeries %}
+                    <ul class="list-group">
+                        {% for surgery in scheduled_surgeries %}
+                        <li class="list-group-item">
+                            <a href="{% url 'surgery:surgery_detail' surgery.id %}">
+                                {{ surgery.scheduled_date|date:"d/m/Y" }} {{ surgery.scheduled_time|time:"H:i" }} - {{ surgery.patient.nombre }}
+                            </a>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    {% else %}
+                    <p class="text-muted">No hay cirugías programadas</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="mt-3">
+        <a href="{% url 'surgery:operating_room_update' room.id %}" class="btn btn-warning">Editar</a>
+        <a href="{% url 'surgery:operating_room_list' %}" class="btn btn-secondary">Volver</a>
+    </div>
+</div>
+{% endblock %}

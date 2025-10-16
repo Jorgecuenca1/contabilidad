@@ -1,0 +1,309 @@
+{% extends 'base.html' %}
+{% block title %}Nuevo Ecocardiograma{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2><i class="bi bi-soundwave"></i> Nuevo Ecocardiograma</h2>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'cardiology:dashboard' %}">Cardiología</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'cardiology:echo_list' %}">Ecocardiogramas</a></li>
+                    <li class="breadcrumb-item active">Nuevo</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <i class="bi bi-soundwave"></i> Formulario de Ecocardiograma
+                </div>
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+
+                        <!-- INFORMACIÓN DEL PACIENTE -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h5 class="border-bottom pb-2"><i class="bi bi-person"></i> Información del Paciente</h5>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="patient_id" class="form-label">Paciente <span class="text-danger">*</span></label>
+                                <select name="patient_id" id="patient_id" class="form-select" required>
+                                    <option value="">Seleccione un paciente...</option>
+                                    {% for patient in patients %}
+                                    <option value="{{ patient.id }}">
+                                        {{ patient.third_party.first_name }} {{ patient.third_party.last_name }}
+                                        ({{ patient.third_party.document_number }})
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="consultation_id" class="form-label">Consulta Relacionada (opcional)</label>
+                                <select name="consultation_id" id="consultation_id" class="form-select">
+                                    <option value="">Ninguna</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- INFORMACIÓN DEL ESTUDIO -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h5 class="border-bottom pb-2"><i class="bi bi-calendar-event"></i> Información del Estudio</h5>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label for="echo_date" class="form-label">Fecha y Hora del Estudio <span class="text-danger">*</span></label>
+                                <input type="datetime-local" name="echo_date" id="echo_date" class="form-control"
+                                       value="{{ now|date:'Y-m-d\TH:i' }}" required>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label for="echo_type" class="form-label">Tipo de Ecocardiograma <span class="text-danger">*</span></label>
+                                <select name="echo_type" id="echo_type" class="form-select" required>
+                                    {% for value, label in echo_type_choices %}
+                                    <option value="{{ value }}" {% if value == 'transthoracic' %}selected{% endif %}>{{ label }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label for="performed_by_id" class="form-label">Realizado Por <span class="text-danger">*</span></label>
+                                <select name="performed_by_id" id="performed_by_id" class="form-select" required>
+                                    <option value="">Seleccione...</option>
+                                    {% for tech in technicians %}
+                                    <option value="{{ tech.id }}">{{ tech.first_name }} {{ tech.last_name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label for="interpreted_by_id" class="form-label">Interpretado Por <span class="text-danger">*</span></label>
+                                <select name="interpreted_by_id" id="interpreted_by_id" class="form-select" required>
+                                    <option value="">Seleccione...</option>
+                                    {% for tech in technicians %}
+                                    <option value="{{ tech.id }}">{{ tech.first_name }} {{ tech.last_name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- DATOS ANTROPOMÉTRICOS -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h5 class="border-bottom pb-2"><i class="bi bi-rulers"></i> Datos Antropométricos</h5>
+                            </div>
+
+                            <div class="col-md-3">
+                                <label for="height_cm" class="form-label">Altura (cm)</label>
+                                <input type="number" step="0.01" name="height_cm" id="height_cm" class="form-control" placeholder="170.5">
+                            </div>
+
+                            <div class="col-md-3">
+                                <label for="weight_kg" class="form-label">Peso (kg)</label>
+                                <input type="number" step="0.01" name="weight_kg" id="weight_kg" class="form-control" placeholder="70.0">
+                            </div>
+
+                            <div class="col-md-3">
+                                <label for="bsa_m2" class="form-label">Superficie Corporal (m²)</label>
+                                <input type="number" step="0.01" name="bsa_m2" id="bsa_m2" class="form-control" placeholder="1.8">
+                            </div>
+                        </div>
+
+                        <!-- SIGNOS VITALES -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h5 class="border-bottom pb-2"><i class="bi bi-heart-pulse"></i> Signos Vitales</h5>
+                            </div>
+
+                            <div class="col-md-3">
+                                <label for="blood_pressure_systolic" class="form-label">PA Sistólica (mmHg)</label>
+                                <input type="number" name="blood_pressure_systolic" id="blood_pressure_systolic"
+                                       class="form-control" placeholder="120">
+                            </div>
+
+                            <div class="col-md-3">
+                                <label for="blood_pressure_diastolic" class="form-label">PA Diastólica (mmHg)</label>
+                                <input type="number" name="blood_pressure_diastolic" id="blood_pressure_diastolic"
+                                       class="form-control" placeholder="80">
+                            </div>
+
+                            <div class="col-md-3">
+                                <label for="heart_rate" class="form-label">Frecuencia Cardíaca (lpm)</label>
+                                <input type="number" name="heart_rate" id="heart_rate" class="form-control" placeholder="70">
+                            </div>
+                        </div>
+
+                        <!-- FUNCIÓN VENTRICULAR IZQUIERDA -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h5 class="border-bottom pb-2"><i class="bi bi-activity"></i> Función Ventricular Izquierda</h5>
+                            </div>
+
+                            <div class="col-md-3">
+                                <label for="lv_end_diastolic_diameter" class="form-label">DDVI (mm)</label>
+                                <input type="number" step="0.01" name="lv_end_diastolic_diameter" id="lv_end_diastolic_diameter"
+                                       class="form-control" placeholder="50.0">
+                                <small class="text-muted">Diámetro diastólico VI</small>
+                            </div>
+
+                            <div class="col-md-3">
+                                <label for="lv_end_systolic_diameter" class="form-label">DSVI (mm)</label>
+                                <input type="number" step="0.01" name="lv_end_systolic_diameter" id="lv_end_systolic_diameter"
+                                       class="form-control" placeholder="32.0">
+                                <small class="text-muted">Diámetro sistólico VI</small>
+                            </div>
+
+                            <div class="col-md-3">
+                                <label for="ejection_fraction" class="form-label">FEVI (%)</label>
+                                <input type="number" step="0.01" name="ejection_fraction" id="ejection_fraction"
+                                       class="form-control" placeholder="60.0">
+                                <small class="text-muted">Fracción de eyección</small>
+                            </div>
+
+                            <div class="col-md-3">
+                                <label for="ivs_thickness" class="form-label">SIV (mm)</label>
+                                <input type="number" step="0.01" name="ivs_thickness" id="ivs_thickness"
+                                       class="form-control" placeholder="10.0">
+                                <small class="text-muted">Grosor tabique</small>
+                            </div>
+
+                            <div class="col-md-3">
+                                <label for="posterior_wall_thickness" class="form-label">PP (mm)</label>
+                                <input type="number" step="0.01" name="posterior_wall_thickness" id="posterior_wall_thickness"
+                                       class="form-control" placeholder="10.0">
+                                <small class="text-muted">Pared posterior</small>
+                            </div>
+                        </div>
+
+                        <!-- VÁLVULAS CARDÍACAS -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h5 class="border-bottom pb-2"><i class="bi bi-heart"></i> Válvulas Cardíacas</h5>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-header">Válvula Mitral</div>
+                                    <div class="card-body">
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input" type="checkbox" name="mitral_valve_normal"
+                                                   id="mitral_valve_normal" checked>
+                                            <label class="form-check-label" for="mitral_valve_normal">Normal</label>
+                                        </div>
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input" type="checkbox" name="mitral_stenosis" id="mitral_stenosis">
+                                            <label class="form-check-label" for="mitral_stenosis">Estenosis</label>
+                                        </div>
+                                        <label for="mitral_regurgitation" class="form-label">Regurgitación</label>
+                                        <select name="mitral_regurgitation" id="mitral_regurgitation" class="form-select form-select-sm">
+                                            <option value="">Ninguna</option>
+                                            <option value="leve">Leve</option>
+                                            <option value="moderada">Moderada</option>
+                                            <option value="severa">Severa</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-header">Válvula Aórtica</div>
+                                    <div class="card-body">
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input" type="checkbox" name="aortic_valve_normal"
+                                                   id="aortic_valve_normal" checked>
+                                            <label class="form-check-label" for="aortic_valve_normal">Normal</label>
+                                        </div>
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input" type="checkbox" name="aortic_stenosis" id="aortic_stenosis">
+                                            <label class="form-check-label" for="aortic_stenosis">Estenosis</label>
+                                        </div>
+                                        <label for="aortic_regurgitation" class="form-label">Regurgitación</label>
+                                        <select name="aortic_regurgitation" id="aortic_regurgitation" class="form-select form-select-sm">
+                                            <option value="">Ninguna</option>
+                                            <option value="leve">Leve</option>
+                                            <option value="moderada">Moderada</option>
+                                            <option value="severa">Severa</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- HALLAZGOS Y CONCLUSIÓN -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h5 class="border-bottom pb-2"><i class="bi bi-clipboard-data"></i> Hallazgos y Conclusión</h5>
+                            </div>
+
+                            <div class="col-md-12 mb-3">
+                                <label for="findings" class="form-label">Hallazgos Ecocardiográficos <span class="text-danger">*</span></label>
+                                <textarea name="findings" id="findings" class="form-control" rows="4" required
+                                          placeholder="Describa detalladamente los hallazgos del ecocardiograma..."></textarea>
+                            </div>
+
+                            <div class="col-md-12 mb-3">
+                                <label for="conclusion" class="form-label">Conclusión <span class="text-danger">*</span></label>
+                                <textarea name="conclusion" id="conclusion" class="form-control" rows="3" required
+                                          placeholder="Conclusión diagnóstica..."></textarea>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="result" class="form-label">Resultado <span class="text-danger">*</span></label>
+                                <select name="result" id="result" class="form-select" required>
+                                    {% for value, label in result_choices %}
+                                    <option value="{{ value }}">{{ label }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="col-md-12">
+                                <label for="recommendations" class="form-label">Recomendaciones</label>
+                                <textarea name="recommendations" id="recommendations" class="form-control" rows="2"
+                                          placeholder="Recomendaciones clínicas..."></textarea>
+                            </div>
+                        </div>
+
+                        <!-- BOTONES -->
+                        <div class="row">
+                            <div class="col-12">
+                                <hr>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-save"></i> Guardar Ecocardiograma
+                                </button>
+                                <a href="{% url 'cardiology:echo_list' %}" class="btn btn-secondary">
+                                    <i class="bi bi-x-circle"></i> Cancelar
+                                </a>
+                            </div>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Cargar consultas cuando se selecciona un paciente
+    document.getElementById('patient_id').addEventListener('change', function() {
+        const patientId = this.value;
+        const consultationSelect = document.getElementById('consultation_id');
+
+        if (patientId) {
+            // Aquí podrías hacer una llamada AJAX para cargar las consultas del paciente
+            // Por ahora dejamos solo la opción "Ninguna"
+        }
+    });
+});
+</script>
+{% endblock %}

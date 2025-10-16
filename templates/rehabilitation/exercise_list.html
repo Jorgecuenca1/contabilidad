@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+{% block title %}Ejercicios del Plan {{ plan.plan_number }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-clipboard-pulse"></i> Ejercicios del Plan {{ plan.plan_number }}</h2>
+        <div>
+            <a href="{% url 'rehabilitation:exercise_create' plan.id %}" class="btn btn-warning">
+                <i class="bi bi-plus-circle"></i> Agregar Ejercicio
+            </a>
+            <a href="{% url 'rehabilitation:plan_detail' plan.id %}" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Volver al Plan
+            </a>
+        </div>
+    </div>
+
+    <div class="alert alert-info mb-4">
+        <strong>Paciente:</strong> {{ plan.patient.third_party.name }} |
+        <strong>Diagnóstico:</strong> {{ plan.diagnosis|truncatewords:8 }}
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Ejercicio</th>
+                            <th>Tipo</th>
+                            <th>Descripción</th>
+                            <th>Series x Reps</th>
+                            <th>Duración</th>
+                            <th>Frecuencia</th>
+                            <th>Activo</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for exercise in exercises %}
+                        <tr>
+                            <td><strong>{{ exercise.exercise_name }}</strong></td>
+                            <td>
+                                {% if exercise.exercise_type == 'stretching' %}
+                                <span class="badge bg-info">Estiramiento</span>
+                                {% elif exercise.exercise_type == 'strengthening' %}
+                                <span class="badge bg-danger">Fortalecimiento</span>
+                                {% elif exercise.exercise_type == 'balance' %}
+                                <span class="badge bg-warning text-dark">Balance</span>
+                                {% elif exercise.exercise_type == 'cardio' %}
+                                <span class="badge bg-success">Cardio</span>
+                                {% elif exercise.exercise_type == 'functional' %}
+                                <span class="badge bg-primary">Funcional</span>
+                                {% elif exercise.exercise_type == 'proprioception' %}
+                                <span class="badge bg-secondary">Propiocepción</span>
+                                {% elif exercise.exercise_type == 'coordination' %}
+                                <span class="badge bg-dark">Coordinación</span>
+                                {% endif %}
+                            </td>
+                            <td><small>{{ exercise.description|truncatewords:8 }}</small></td>
+                            <td>{{ exercise.sets }} x {{ exercise.repetitions }}</td>
+                            <td>{{ exercise.duration_seconds }}s</td>
+                            <td>{{ exercise.frequency_per_day }}x/día, {{ exercise.days_per_week }} días/sem</td>
+                            <td>
+                                {% if exercise.is_active %}
+                                <span class="badge bg-success">Sí</span>
+                                {% else %}
+                                <span class="badge bg-secondary">No</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="7" class="text-center text-muted py-4">
+                                No hay ejercicios prescritos. <a href="{% url 'rehabilitation:exercise_create' plan.id %}">Agregar ejercicio</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

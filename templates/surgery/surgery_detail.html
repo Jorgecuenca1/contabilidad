@@ -1,0 +1,253 @@
+{% extends 'base.html' %}
+{% load surgery_filters %}
+{% block title %}Detalle Cirugía {{ surgery.surgery_number }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-clipboard2-pulse"></i> Cirugía {{ surgery.surgery_number }}</h2>
+        <div>
+            <a href="{% url 'surgery:surgery_update' surgery.id %}" class="btn btn-warning">
+                <i class="bi bi-pencil"></i> Editar
+            </a>
+            <a href="{% url 'surgery:surgery_list' %}" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Volver
+            </a>
+        </div>
+    </div>
+
+    <!-- Estado de la Cirugía -->
+    <div class="alert {% if surgery.status == 'completed' %}alert-success{% elif surgery.status == 'in_progress' %}alert-primary{% elif surgery.status == 'cancelled' %}alert-danger{% else %}alert-info{% endif %}">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h5 class="mb-0">
+                    <i class="bi bi-info-circle"></i> Estado: <strong>{{ surgery.get_status_display }}</strong>
+                </h5>
+            </div>
+            <div class="col-md-6 text-end">
+                {% if surgery.urgency == 'emergency' %}
+                    <span class="badge bg-danger fs-6">EMERGENCIA</span>
+                {% elif surgery.urgency == 'urgent' %}
+                    <span class="badge bg-warning fs-6">URGENTE</span>
+                {% else %}
+                    <span class="badge bg-info fs-6">ELECTIVA</span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Columna Izquierda -->
+        <div class="col-md-6">
+            <!-- Información del Paciente -->
+            <div class="card mb-3">
+                <div class="card-header bg-primary text-white">
+                    <i class="bi bi-person"></i> Información del Paciente
+                </div>
+                <div class="card-body">
+                    <p><strong>Nombre:</strong> {{ surgery.patient.nombre }}</p>
+                    <p><strong>Identificación:</strong> {{ surgery.patient.numero_identificacion }}</p>
+                    {% if surgery.allergies %}
+                    <p><strong>Alergias:</strong> <span class="text-danger">{{ surgery.allergies }}</span></p>
+                    {% endif %}
+                    <p>
+                        <i class="bi bi-{{ surgery.patient_consent_signed|yesno:'check-circle-fill,x-circle' }} text-{{ surgery.patient_consent_signed|yesno:'success,danger' }}"></i>
+                        Consentimiento Informado
+                        &nbsp;&nbsp;
+                        <i class="bi bi-{{ surgery.fasting_verified|yesno:'check-circle-fill,x-circle' }} text-{{ surgery.fasting_verified|yesno:'success,danger' }}"></i>
+                        Ayuno Verificado
+                    </p>
+                </div>
+            </div>
+
+            <!-- Procedimiento Quirúrgico -->
+            <div class="card mb-3">
+                <div class="card-header bg-warning text-white">
+                    <i class="bi bi-journal-medical"></i> Procedimiento Quirúrgico
+                </div>
+                <div class="card-body">
+                    <p><strong>Procedimiento:</strong> {{ surgery.surgical_procedure.name }}</p>
+                    <p><strong>Código CUPS:</strong> {{ surgery.surgical_procedure.code }}</p>
+                    <p><strong>Especialidad:</strong> {{ surgery.surgical_procedure.get_specialty_display }}</p>
+                    <p><strong>Complejidad:</strong>
+                        {% if surgery.surgical_procedure.complexity == 'low' %}
+                            <span class="badge bg-info">Baja</span>
+                        {% elif surgery.surgical_procedure.complexity == 'medium' %}
+                            <span class="badge bg-warning">Media</span>
+                        {% elif surgery.surgical_procedure.complexity == 'high' %}
+                            <span class="badge bg-danger">Alta</span>
+                        {% elif surgery.surgical_procedure.complexity == 'very_high' %}
+                            <span class="badge bg-dark">Muy Alta</span>
+                        {% endif %}
+                    </p>
+                    <p><strong>Duración Estimada:</strong> {{ surgery.surgical_procedure.estimated_duration_minutes }} minutos</p>
+                </div>
+            </div>
+
+            <!-- Diagnósticos -->
+            <div class="card mb-3">
+                <div class="card-header bg-info text-white">
+                    <i class="bi bi-file-medical"></i> Diagnósticos
+                </div>
+                <div class="card-body">
+                    <h6>Diagnóstico Preoperatorio:</h6>
+                    <p>{{ surgery.pre_operative_diagnosis }}</p>
+                    {% if surgery.pre_operative_diagnosis_code %}
+                    <p><small class="text-muted">Código CIE-10: {{ surgery.pre_operative_diagnosis_code }}</small></p>
+                    {% endif %}
+
+                    {% if surgery.post_operative_diagnosis %}
+                    <hr>
+                    <h6>Diagnóstico Postoperatorio:</h6>
+                    <p>{{ surgery.post_operative_diagnosis }}</p>
+                    {% if surgery.post_operative_diagnosis_code %}
+                    <p><small class="text-muted">Código CIE-10: {{ surgery.post_operative_diagnosis_code }}</small></p>
+                    {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+
+            {% if surgery.surgical_findings or surgery.surgical_technique %}
+            <!-- Información Transoperatoria -->
+            <div class="card mb-3">
+                <div class="card-header bg-danger text-white">
+                    <i class="bi bi-activity"></i> Información Transoperatoria
+                </div>
+                <div class="card-body">
+                    {% if surgery.surgical_findings %}
+                    <h6>Hallazgos Quirúrgicos:</h6>
+                    <p>{{ surgery.surgical_findings }}</p>
+                    {% endif %}
+
+                    {% if surgery.surgical_technique %}
+                    <h6>Técnica Quirúrgica:</h6>
+                    <p>{{ surgery.surgical_technique }}</p>
+                    {% endif %}
+
+                    {% if surgery.complications %}
+                    <h6 class="text-danger">Complicaciones:</h6>
+                    <p>{{ surgery.complications }}</p>
+                    {% endif %}
+
+                    {% if surgery.estimated_blood_loss %}
+                    <p><strong>Pérdida Sanguínea:</strong> {{ surgery.estimated_blood_loss }} ml</p>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Columna Derecha -->
+        <div class="col-md-6">
+            <!-- Programación -->
+            <div class="card mb-3">
+                <div class="card-header bg-success text-white">
+                    <i class="bi bi-calendar-event"></i> Programación
+                </div>
+                <div class="card-body">
+                    <p><strong>Fecha Programada:</strong> {{ surgery.scheduled_date|date:"d/m/Y" }}</p>
+                    <p><strong>Hora Programada:</strong> {{ surgery.scheduled_time|time:"H:i" }}</p>
+                    <p><strong>Quirófano:</strong> {{ surgery.operating_room.room_number }} - {{ surgery.operating_room.room_name }}</p>
+                    <p><strong>Piso:</strong> {{ surgery.operating_room.floor }} - {{ surgery.operating_room.building }}</p>
+
+                    {% if surgery.actual_start_time %}
+                    <hr>
+                    <p><strong>Hora Real de Inicio:</strong> {{ surgery.actual_start_time|date:"d/m/Y H:i" }}</p>
+                    {% endif %}
+
+                    {% if surgery.actual_end_time %}
+                    <p><strong>Hora Real de Fin:</strong> {{ surgery.actual_end_time|date:"d/m/Y H:i" }}</p>
+                    {% if surgery.actual_start_time %}
+                    <p><strong>Duración Real:</strong>
+                        {% widthratio surgery.actual_end_time.hour 1 60 %}
+                        minutos
+                    </p>
+                    {% endif %}
+                    {% endif %}
+
+                    {% if surgery.special_considerations %}
+                    <hr>
+                    <p><strong>Consideraciones Especiales:</strong></p>
+                    <p>{{ surgery.special_considerations }}</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Equipo Quirúrgico -->
+            <div class="card mb-3">
+                <div class="card-header bg-secondary text-white">
+                    <i class="bi bi-people"></i> Equipo Quirúrgico
+                </div>
+                <div class="card-body">
+                    <p><strong>Cirujano Principal:</strong> {{ surgery.surgeon|full_name }}</p>
+                    {% if surgery.assistant_surgeon %}
+                    <p><strong>Cirujano Asistente:</strong> {{ surgery.assistant_surgeon|full_name }}</p>
+                    {% endif %}
+                    <p><strong>Anestesiólogo:</strong> {{ surgery.anesthesiologist|full_name }}</p>
+                    {% if surgery.scrub_nurse %}
+                    <p><strong>Enfermera Instrumentista:</strong> {{ surgery.scrub_nurse|full_name }}</p>
+                    {% endif %}
+                    {% if surgery.circulating_nurse %}
+                    <p><strong>Enfermera Circulante:</strong> {{ surgery.circulating_nurse|full_name }}</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Notas Asociadas -->
+            <div class="card mb-3">
+                <div class="card-header bg-dark text-white">
+                    <i class="bi bi-file-earmark-text"></i> Notas y Documentos
+                </div>
+                <div class="card-body">
+                    <div class="list-group">
+                        {% if anesthesia_note %}
+                        <a href="{% url 'surgery:anesthesia_note_detail' surgery.id %}" class="list-group-item list-group-item-action">
+                            <i class="bi bi-heart-pulse text-danger"></i> Nota de Anestesia
+                            <span class="badge bg-success float-end">Completada</span>
+                        </a>
+                        {% else %}
+                        <a href="{% url 'surgery:anesthesia_note_create' surgery.id %}" class="list-group-item list-group-item-action">
+                            <i class="bi bi-plus-circle text-primary"></i> Crear Nota de Anestesia
+                            <span class="badge bg-warning float-end">Pendiente</span>
+                        </a>
+                        {% endif %}
+
+                        {% if postop_note %}
+                        <a href="{% url 'surgery:postop_note_detail' surgery.id %}" class="list-group-item list-group-item-action">
+                            <i class="bi bi-clipboard-check text-success"></i> Nota Postoperatoria
+                            <span class="badge bg-success float-end">Completada</span>
+                        </a>
+                        {% else %}
+                        <a href="{% url 'surgery:postop_note_create' surgery.id %}" class="list-group-item list-group-item-action">
+                            <i class="bi bi-plus-circle text-primary"></i> Crear Nota Postoperatoria
+                            <span class="badge bg-warning float-end">Pendiente</span>
+                        </a>
+                        {% endif %}
+
+                        <a href="{% url 'surgery:surgical_supply_list' surgery.id %}" class="list-group-item list-group-item-action">
+                            <i class="bi bi-box-seam text-info"></i> Insumos Quirúrgicos
+                            <span class="badge bg-info float-end">{{ surgical_supplies.count }}</span>
+                        </a>
+
+                        <a href="{% url 'surgery:surgical_supply_add' surgery.id %}" class="list-group-item list-group-item-action">
+                            <i class="bi bi-plus-circle text-primary"></i> Agregar Insumo
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Metadatos -->
+            <div class="card mb-3">
+                <div class="card-header">
+                    <i class="bi bi-info-circle"></i> Información del Registro
+                </div>
+                <div class="card-body">
+                    <p><small><strong>Creado por:</strong> {{ surgery.created_by.username }}</small></p>
+                    <p><small><strong>Fecha de Creación:</strong> {{ surgery.created_at|date:"d/m/Y H:i" }}</small></p>
+                    <p><small><strong>Última Actualización:</strong> {{ surgery.updated_at|date:"d/m/Y H:i" }}</small></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

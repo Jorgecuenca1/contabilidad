@@ -1,0 +1,181 @@
+{% extends 'base.html' %}
+{% block title %}Agudeza Visual - {{ consultation.consultation_number }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="mb-4">
+        <h2><i class="bi bi-eye-fill"></i> Agudeza Visual - {{ consultation.consultation_number }}</h2>
+        <p class="text-muted">Paciente: {{ consultation.patient.third_party.name }}</p>
+    </div>
+
+    <div class="card">
+        <div class="card-header bg-success text-white">
+            <h5 class="mb-0">Medición de Agudeza Visual</h5>
+        </div>
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+
+                <div class="alert alert-info">
+                    <strong>Nomenclatura:</strong>
+                    <ul class="mb-0">
+                        <li><strong>OD:</strong> Ojo Derecho (Oculus Dexter)</li>
+                        <li><strong>OS:</strong> Ojo Izquierdo (Oculus Sinister)</li>
+                        <li><strong>OU:</strong> Ambos Ojos (Oculus Uterque)</li>
+                        <li><strong>SC:</strong> Sin Corrección</li>
+                        <li><strong>CC:</strong> Con Corrección</li>
+                    </ul>
+                </div>
+
+                <!-- Ojo Derecho (OD) -->
+                <div class="card mb-3">
+                    <div class="card-header bg-primary text-white">
+                        <h6 class="mb-0">OD - Ojo Derecho (Oculus Dexter)</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-3 mb-3">
+                                <label class="form-label">Distancia SC</label>
+                                <input type="text" name="od_distance_sc" class="form-control"
+                                       value="{{ visual_acuity.od_distance_sc|default:'' }}"
+                                       placeholder="Ej: 20/20">
+                                <small class="text-muted">Sin corrección - lejos</small>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label class="form-label">Distancia CC</label>
+                                <input type="text" name="od_distance_cc" class="form-control"
+                                       value="{{ visual_acuity.od_distance_cc|default:'' }}"
+                                       placeholder="Ej: 20/20">
+                                <small class="text-muted">Con corrección - lejos</small>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label class="form-label">Cerca SC</label>
+                                <input type="text" name="od_near_sc" class="form-control"
+                                       value="{{ visual_acuity.od_near_sc|default:'' }}"
+                                       placeholder="Ej: J1">
+                                <small class="text-muted">Sin corrección - cerca</small>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label class="form-label">Cerca CC</label>
+                                <input type="text" name="od_near_cc" class="form-control"
+                                       value="{{ visual_acuity.od_near_cc|default:'' }}"
+                                       placeholder="Ej: J1">
+                                <small class="text-muted">Con corrección - cerca</small>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label class="form-label">Estenopeico</label>
+                                <input type="text" name="od_pinhole" class="form-control"
+                                       value="{{ visual_acuity.od_pinhole|default:'' }}"
+                                       placeholder="Ej: 20/20">
+                                <small class="text-muted">Prueba con pinhole</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Ojo Izquierdo (OS) -->
+                <div class="card mb-3">
+                    <div class="card-header bg-danger text-white">
+                        <h6 class="mb-0">OS - Ojo Izquierdo (Oculus Sinister)</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-3 mb-3">
+                                <label class="form-label">Distancia SC</label>
+                                <input type="text" name="os_distance_sc" class="form-control"
+                                       value="{{ visual_acuity.os_distance_sc|default:'' }}"
+                                       placeholder="Ej: 20/20">
+                                <small class="text-muted">Sin corrección - lejos</small>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label class="form-label">Distancia CC</label>
+                                <input type="text" name="os_distance_cc" class="form-control"
+                                       value="{{ visual_acuity.os_distance_cc|default:'' }}"
+                                       placeholder="Ej: 20/20">
+                                <small class="text-muted">Con corrección - lejos</small>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label class="form-label">Cerca SC</label>
+                                <input type="text" name="os_near_sc" class="form-control"
+                                       value="{{ visual_acuity.os_near_sc|default:'' }}"
+                                       placeholder="Ej: J1">
+                                <small class="text-muted">Sin corrección - cerca</small>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label class="form-label">Cerca CC</label>
+                                <input type="text" name="os_near_cc" class="form-control"
+                                       value="{{ visual_acuity.os_near_cc|default:'' }}"
+                                       placeholder="Ej: J1">
+                                <small class="text-muted">Con corrección - cerca</small>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label class="form-label">Estenopeico</label>
+                                <input type="text" name="os_pinhole" class="form-control"
+                                       value="{{ visual_acuity.os_pinhole|default:'' }}"
+                                       placeholder="Ej: 20/20">
+                                <small class="text-muted">Prueba con pinhole</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Ambos Ojos (OU) -->
+                <div class="card mb-3">
+                    <div class="card-header bg-warning text-dark">
+                        <h6 class="mb-0">OU - Ambos Ojos (Oculus Uterque)</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-3 mb-3">
+                                <label class="form-label">Distancia SC</label>
+                                <input type="text" name="ou_distance_sc" class="form-control"
+                                       value="{{ visual_acuity.ou_distance_sc|default:'' }}"
+                                       placeholder="Ej: 20/20">
+                                <small class="text-muted">Sin corrección - lejos</small>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label class="form-label">Distancia CC</label>
+                                <input type="text" name="ou_distance_cc" class="form-control"
+                                       value="{{ visual_acuity.ou_distance_cc|default:'' }}"
+                                       placeholder="Ej: 20/20">
+                                <small class="text-muted">Con corrección - lejos</small>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label class="form-label">Cerca SC</label>
+                                <input type="text" name="ou_near_sc" class="form-control"
+                                       value="{{ visual_acuity.ou_near_sc|default:'' }}"
+                                       placeholder="Ej: J1">
+                                <small class="text-muted">Sin corrección - cerca</small>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label class="form-label">Cerca CC</label>
+                                <input type="text" name="ou_near_cc" class="form-control"
+                                       value="{{ visual_acuity.ou_near_cc|default:'' }}"
+                                       placeholder="Ej: J1">
+                                <small class="text-muted">Con corrección - cerca</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Observaciones -->
+                <div class="mb-3">
+                    <label class="form-label">Observaciones</label>
+                    <textarea name="observations" class="form-control" rows="3"
+                              placeholder="Observaciones adicionales sobre la agudeza visual...">{{ visual_acuity.observations|default:'' }}</textarea>
+                </div>
+
+                <!-- Botones -->
+                <div class="d-flex justify-content-between">
+                    <a href="{% url 'ophthalmology:consultation_detail' consultation.id %}" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left"></i> Volver
+                    </a>
+                    <button type="submit" class="btn btn-success">
+                        <i class="bi bi-save"></i> Guardar Agudeza Visual
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

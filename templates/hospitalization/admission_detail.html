@@ -1,0 +1,286 @@
+{% extends 'base.html' %}
+{% block title %}Detalle de Admisión{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-file-medical"></i> Admisión {{ admission.admission_number }}</h2>
+        <div>
+            {% if admission.status == 'active' %}
+            <a href="{% url 'hospitalization:admission_discharge' admission.id %}" class="btn btn-success">
+                <i class="bi bi-box-arrow-right"></i> Dar de Alta
+            </a>
+            <a href="{% url 'hospitalization:evolution_create' admission.id %}" class="btn btn-primary">
+                <i class="bi bi-file-text"></i> Nueva Evolución
+            </a>
+            <a href="{% url 'hospitalization:order_create' admission.id %}" class="btn btn-warning">
+                <i class="bi bi-file-medical"></i> Nueva Orden
+            </a>
+            {% endif %}
+            <a href="{% url 'hospitalization:admission_list' %}" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Volver
+            </a>
+        </div>
+    </div>
+
+    <!-- Información General -->
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <i class="bi bi-person-fill"></i> Información del Paciente
+                </div>
+                <div class="card-body">
+                    <table class="table table-sm">
+                        <tr>
+                            <th width="40%">Paciente:</th>
+                            <td><strong>{{ admission.patient.third_party.name }}</strong></td>
+                        </tr>
+                        <tr>
+                            <th>Historia Clínica:</th>
+                            <td>{{ admission.patient.medical_record_number }}</td>
+                        </tr>
+                        <tr>
+                            <th>Documento:</th>
+                            <td>{{ admission.patient.third_party.get_identification_type_display }} {{ admission.patient.third_party.identification_number }}</td>
+                        </tr>
+                        <tr>
+                            <th>Edad:</th>
+                            <td>{{ admission.patient.get_age_display }}</td>
+                        </tr>
+                        <tr>
+                            <th>EPS:</th>
+                            <td>{{ admission.patient.eps.name }}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header bg-info text-white">
+                    <i class="bi bi-hospital"></i> Información de Admisión
+                </div>
+                <div class="card-body">
+                    <table class="table table-sm">
+                        <tr>
+                            <th width="40%">Número de Admisión:</th>
+                            <td><strong>{{ admission.admission_number }}</strong></td>
+                        </tr>
+                        <tr>
+                            <th>Fecha de Ingreso:</th>
+                            <td>{{ admission.admission_date|date:"d/m/Y H:i" }}</td>
+                        </tr>
+                        <tr>
+                            <th>Tipo de Admisión:</th>
+                            <td>{{ admission.get_admission_type_display }}</td>
+                        </tr>
+                        <tr>
+                            <th>Cama Asignada:</th>
+                            <td><strong>{{ admission.bed.code }}</strong> - {{ admission.bed.ward.name }}</td>
+                        </tr>
+                        <tr>
+                            <th>Médico Tratante:</th>
+                            <td>{{ admission.attending_physician.get_full_name|default:admission.attending_physician.username }}</td>
+                        </tr>
+                        <tr>
+                            <th>Estado:</th>
+                            <td>
+                                {% if admission.status == 'active' %}
+                                <span class="badge bg-success">Activa</span>
+                                {% elif admission.status == 'discharged' %}
+                                <span class="badge bg-primary">Egresado</span>
+                                {% else %}
+                                <span class="badge bg-secondary">{{ admission.get_status_display }}</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Diagnóstico y Estancia -->
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-header bg-warning">
+                    <i class="bi bi-clipboard-pulse"></i> Diagnóstico y Motivo
+                </div>
+                <div class="card-body">
+                    <h6>Diagnóstico de Ingreso:</h6>
+                    <p>{{ admission.admission_diagnosis }}</p>
+                    <h6>Motivo de Hospitalización:</h6>
+                    <p>{{ admission.admission_reason }}</p>
+                    {% if admission.discharge_diagnosis %}
+                    <h6>Diagnóstico de Egreso:</h6>
+                    <p>{{ admission.discharge_diagnosis }}</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-header bg-success text-white">
+                    <i class="bi bi-calendar-week"></i> Estancia y Costos
+                </div>
+                <div class="card-body">
+                    <table class="table table-sm">
+                        <tr>
+                            <th>Días de Estancia:</th>
+                            <td><strong>{{ stay_days }}</strong> día(s)</td>
+                        </tr>
+                        <tr>
+                            <th>Horas Totales:</th>
+                            <td>{{ stay_hours }} horas</td>
+                        </tr>
+                        <tr>
+                            <th>Costo de Cama:</th>
+                            <td>${{ bed_cost|floatformat:0 }}</td>
+                        </tr>
+                        <tr>
+                            <th>Servicios:</th>
+                            <td>${{ services_total|floatformat:0 }}</td>
+                        </tr>
+                        <tr>
+                            <th><strong>Total Estimado:</strong></th>
+                            <td><strong>${{ total_cost|floatformat:0 }}</strong></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Evoluciones Médicas -->
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="bi bi-file-medical-fill"></i> Evoluciones Médicas
+                </div>
+                <div class="card-body">
+                    {% if evolutions %}
+                    <div class="accordion" id="evolutionsAccordion">
+                        {% for evolution in evolutions %}
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button {% if not forloop.first %}collapsed{% endif %}" type="button" data-bs-toggle="collapse" data-bs-target="#evolution{{ forloop.counter }}">
+                                    {{ evolution.evolution_date|date:"d/m/Y H:i" }} - {{ evolution.get_evolution_type_display }} - Dr. {{ evolution.created_by.get_full_name|default:evolution.created_by.username }}
+                                </button>
+                            </h2>
+                            <div id="evolution{{ forloop.counter }}" class="accordion-collapse collapse {% if forloop.first %}show{% endif %}" data-bs-parent="#evolutionsAccordion">
+                                <div class="accordion-body">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <h6>Signos Vitales:</h6>
+                                            <ul>
+                                                {% if evolution.temperature %}<li>Temperatura: {{ evolution.temperature }}°C</li>{% endif %}
+                                                {% if evolution.heart_rate %}<li>FC: {{ evolution.heart_rate }} lpm</li>{% endif %}
+                                                {% if evolution.respiratory_rate %}<li>FR: {{ evolution.respiratory_rate }} rpm</li>{% endif %}
+                                                {% if evolution.get_blood_pressure %}<li>TA: {{ evolution.get_blood_pressure }} mmHg</li>{% endif %}
+                                                {% if evolution.oxygen_saturation %}<li>SpO2: {{ evolution.oxygen_saturation }}%</li>{% endif %}
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <h6>Subjetivo:</h6>
+                                    <p>{{ evolution.subjective }}</p>
+                                    <h6>Objetivo:</h6>
+                                    <p>{{ evolution.objective }}</p>
+                                    <h6>Análisis:</h6>
+                                    <p>{{ evolution.assessment }}</p>
+                                    <h6>Plan:</h6>
+                                    <p>{{ evolution.plan }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <p class="text-muted">No hay evoluciones médicas registradas</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Órdenes Médicas -->
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="bi bi-clipboard-check"></i> Órdenes Médicas
+                </div>
+                <div class="card-body">
+                    {% if orders %}
+                    <div class="table-responsive">
+                        <table class="table table-sm table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Tipo</th>
+                                    <th>Descripción</th>
+                                    <th>Prioridad</th>
+                                    <th>Estado</th>
+                                    <th>Ordenada Por</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for order in orders %}
+                                <tr>
+                                    <td>{{ order.order_date|date:"d/m/Y H:i" }}</td>
+                                    <td>{{ order.get_order_type_display }}</td>
+                                    <td>
+                                        {{ order.description|truncatewords:10 }}
+                                        {% if order.dosage %}<br><small>Dosis: {{ order.dosage }}</small>{% endif %}
+                                        {% if order.frequency %}<br><small>Frecuencia: {{ order.frequency }}</small>{% endif %}
+                                    </td>
+                                    <td>
+                                        {% if order.priority == 'stat' %}
+                                        <span class="badge bg-danger">STAT</span>
+                                        {% elif order.priority == 'urgent' %}
+                                        <span class="badge bg-warning">Urgente</span>
+                                        {% else %}
+                                        <span class="badge bg-info">Rutina</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if order.status == 'completed' %}
+                                        <span class="badge bg-success">Completada</span>
+                                        {% elif order.status == 'in_progress' %}
+                                        <span class="badge bg-primary">En Proceso</span>
+                                        {% elif order.status == 'pending' %}
+                                        <span class="badge bg-warning">Pendiente</span>
+                                        {% else %}
+                                        <span class="badge bg-secondary">{{ order.get_status_display }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td><small>{{ order.ordered_by.get_full_name|default:order.ordered_by.username }}</small></td>
+                                    <td>
+                                        {% if order.status == 'pending' %}
+                                        <form method="post" action="{% url 'hospitalization:order_execute' order.id %}" style="display:inline;">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-sm btn-success" title="Ejecutar">
+                                                <i class="bi bi-check-circle"></i>
+                                            </button>
+                                        </form>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <p class="text-muted">No hay órdenes médicas registradas</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

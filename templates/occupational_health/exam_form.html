@@ -1,0 +1,285 @@
+{% extends 'base.html' %}
+{% block title %}Crear Examen Ocupacional{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <h2 class="mb-4">
+        <i class="bi bi-clipboard-plus"></i> Nuevo Examen Ocupacional
+    </h2>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <!-- Información del Trabajador y Empresa -->
+        <div class="card mb-3">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="bi bi-person-badge"></i> Información del Trabajador</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Trabajador (Paciente) <span class="text-danger">*</span></label>
+                        <select name="patient" class="form-select" required>
+                            <option value="">Seleccionar...</option>
+                            {% for patient in patients %}
+                            <option value="{{ patient.id }}">{{ patient.third_party.name }} - {{ patient.third_party.identification_number }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Empresa Empleadora <span class="text-danger">*</span></label>
+                        <input type="text" name="company_name" class="form-control" required placeholder="Nombre de la empresa">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Cargo <span class="text-danger">*</span></label>
+                        <input type="text" name="job_position" class="form-control" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Área de Trabajo</label>
+                        <input type="text" name="work_area" class="form-control">
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">Años en el Cargo</label>
+                        <input type="number" name="years_in_position" class="form-control" step="0.1">
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">Horario Laboral</label>
+                        <input type="text" name="work_schedule" class="form-control" placeholder="Ej: 8am-5pm">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tipo y Fecha del Examen -->
+        <div class="card mb-3">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0"><i class="bi bi-calendar-check"></i> Información del Examen</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label">Tipo de Examen <span class="text-danger">*</span></label>
+                        <select name="exam_type" class="form-select" required>
+                            <option value="">Seleccionar...</option>
+                            <option value="ingreso">Examen de Ingreso</option>
+                            <option value="periodico">Examen Periódico</option>
+                            <option value="retiro">Examen de Retiro</option>
+                            <option value="reingreso">Examen de Reingreso</option>
+                            <option value="cambio_ocupacion">Cambio de Ocupación</option>
+                            <option value="post_incapacidad">Post-Incapacidad</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Fecha y Hora del Examen <span class="text-danger">*</span></label>
+                        <input type="datetime-local" name="exam_date" class="form-control" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Estado <span class="text-danger">*</span></label>
+                        <select name="status" class="form-select" required>
+                            <option value="programado">Programado</option>
+                            <option value="en_proceso">En Proceso</option>
+                            <option value="completado">Completado</option>
+                            <option value="cancelado">Cancelado</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Historia Ocupacional -->
+        <div class="card mb-3">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0"><i class="bi bi-briefcase"></i> Historia Ocupacional</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label">Trabajos Anteriores</label>
+                        <textarea name="previous_jobs" class="form-control" rows="3" placeholder="Descripción de trabajos anteriores"></textarea>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Exposiciones Ocupacionales</label>
+                        <textarea name="occupational_exposures" class="form-control" rows="3" placeholder="Físicas, químicas, biológicas, ergonómicas, psicosociales"></textarea>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Uso de EPP</label>
+                        <textarea name="use_of_ppe" class="form-control" rows="3" placeholder="Elementos de protección personal utilizados"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Antecedentes y Hábitos -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-heart-pulse"></i> Antecedentes Médicos y Hábitos</h6>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Antecedentes Médicos Personales</label>
+                        <textarea name="personal_medical_history" class="form-control" rows="2"></textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Antecedentes Médicos Familiares</label>
+                        <textarea name="family_medical_history" class="form-control" rows="2"></textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Medicación Actual</label>
+                        <textarea name="current_medications" class="form-control" rows="2"></textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Alergias</label>
+                        <textarea name="allergies" class="form-control" rows="2"></textarea>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Tabaquismo</label>
+                        <input type="text" name="smoking" class="form-control" placeholder="Sí/No, cantidad">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Consumo de Alcohol</label>
+                        <input type="text" name="alcohol" class="form-control">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Actividad Física</label>
+                        <input type="text" name="physical_activity" class="form-control">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Signos Vitales -->
+        <div class="card mb-3">
+            <div class="card-header bg-warning">
+                <h6 class="mb-0"><i class="bi bi-heart"></i> Signos Vitales y Antropometría</h6>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-2">
+                        <label class="form-label">Presión Arterial</label>
+                        <input type="text" name="blood_pressure" class="form-control" placeholder="120/80">
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">FC (lpm)</label>
+                        <input type="number" name="heart_rate" class="form-control" placeholder="72">
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">FR (rpm)</label>
+                        <input type="number" name="respiratory_rate" class="form-control" placeholder="16">
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">Temperatura (°C)</label>
+                        <input type="number" name="temperature" class="form-control" step="0.1" placeholder="36.5">
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">Peso (kg)</label>
+                        <input type="number" name="weight" class="form-control" step="0.01">
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">Talla (cm)</label>
+                        <input type="number" name="height" class="form-control" step="0.01">
+                    </div>
+                </div>
+                <small class="text-muted">El IMC se calculará automáticamente</small>
+            </div>
+        </div>
+
+        <!-- Examen Físico por Sistemas -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-clipboard2-pulse"></i> Examen Físico por Sistemas</h6>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Cabeza y Cuello</label>
+                        <textarea name="head_neck_exam" class="form-control" rows="2"></textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Cardiovascular</label>
+                        <textarea name="cardiovascular_exam" class="form-control" rows="2"></textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Respiratorio</label>
+                        <textarea name="respiratory_exam" class="form-control" rows="2"></textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Abdominal</label>
+                        <textarea name="abdominal_exam" class="form-control" rows="2"></textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Osteomuscular</label>
+                        <textarea name="musculoskeletal_exam" class="form-control" rows="2"></textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Neurológico</label>
+                        <textarea name="neurological_exam" class="form-control" rows="2"></textarea>
+                    </div>
+                    <div class="col-md-12">
+                        <label class="form-label">Piel y Anexos</label>
+                        <textarea name="dermatological_exam" class="form-control" rows="2"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Exámenes Complementarios -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-file-medical"></i> Exámenes Complementarios Solicitados</h6>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label">Laboratorios</label>
+                        <textarea name="laboratory_tests_ordered" class="form-control" rows="3" placeholder="Ej: Hemograma, glicemia, perfil lipídico"></textarea>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Imágenes</label>
+                        <textarea name="imaging_studies_ordered" class="form-control" rows="3" placeholder="Ej: Rx de tórax, Rx de columna"></textarea>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Otros Exámenes</label>
+                        <textarea name="other_tests_ordered" class="form-control" rows="3" placeholder="Ej: Espirometría, audiometría"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Diagnóstico y Hallazgos -->
+        <div class="card mb-3">
+            <div class="card-header bg-danger text-white">
+                <h6 class="mb-0"><i class="bi bi-clipboard-data"></i> Diagnóstico y Hallazgos</h6>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Diagnóstico</label>
+                        <textarea name="diagnosis" class="form-control" rows="3"></textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Hallazgos Relevantes</label>
+                        <textarea name="findings" class="form-control" rows="3"></textarea>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">Observaciones Generales</label>
+                        <textarea name="observations" class="form-control" rows="2"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Botones -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <button type="submit" class="btn btn-primary btn-lg">
+                    <i class="bi bi-save"></i> Guardar Examen
+                </button>
+                <a href="{% url 'occupational_health:exam_list' %}" class="btn btn-secondary btn-lg">
+                    <i class="bi bi-x-circle"></i> Cancelar
+                </a>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}

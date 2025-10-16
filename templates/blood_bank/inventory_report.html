@@ -1,0 +1,209 @@
+{% extends 'base.html' %}
+
+{% block title %}Reporte de Inventario - Banco de Sangre{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'core:dashboard' %}">Dashboard</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'blood_bank:index' %}">Banco de Sangre</a></li>
+            <li class="breadcrumb-item active">Reporte de Inventario</li>
+        </ol>
+    </nav>
+
+    <div class="row mb-3">
+        <div class="col-md-8">
+            <h2><i class="bi bi-file-earmark-bar-graph text-danger"></i> Reporte de Inventario de Hemocomponentes</h2>
+            <p class="text-muted">Inventario disponible al {{ "now"|date:"d/m/Y H:i" }}</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <button onclick="window.print()" class="btn btn-primary">
+                <i class="bi bi-printer"></i> Imprimir Reporte
+            </button>
+            <a href="{% url 'blood_bank:index' %}" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Volver
+            </a>
+        </div>
+    </div>
+
+    <!-- Inventario por Tipo y Grupo Sanguíneo -->
+    <div class="card mb-4">
+        <div class="card-header bg-danger text-white">
+            <h5 class="mb-0"><i class="bi bi-grid-3x3"></i> Inventario por Tipo de Componente y Grupo Sanguíneo</h5>
+        </div>
+        <div class="card-body">
+            {% if inventory %}
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Tipo de Componente</th>
+                            <th>Grupo Sanguíneo</th>
+                            <th class="text-center">Total Unidades</th>
+                            <th class="text-end">Volumen Total (ml)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% regroup inventory by component_type as component_groups %}
+                        {% for component_group in component_groups %}
+                            {% for item in component_group.list %}
+                            <tr>
+                                {% if forloop.first %}
+                                <td rowspan="{{ component_group.list|length }}" class="align-middle">
+                                    <strong>{{ item.component_type|upper }}</strong>
+                                </td>
+                                {% endif %}
+                                <td><span class="badge bg-danger fs-6">{{ item.blood_type }}</span></td>
+                                <td class="text-center"><strong>{{ item.total_units }}</strong></td>
+                                <td class="text-end">{{ item.total_volume|default:0|floatformat:0 }} ml</td>
+                            </tr>
+                            {% endfor %}
+                        {% endfor %}
+                    </tbody>
+                    <tfoot class="table-secondary">
+                        <tr>
+                            <td colspan="2" class="text-end"><strong>TOTAL GENERAL:</strong></td>
+                            <td class="text-center">
+                                <strong>
+                                    {% widthratio inventory|length 1 1 %}
+                                    {% with total=0 %}
+                                        {% for item in inventory %}
+                                            {% if forloop.first %}
+                                                {{ item.total_units }}
+                                            {% else %}
+                                                + {{ item.total_units }}
+                                            {% endif %}
+                                        {% endfor %}
+                                    {% endwith %}
+                                </strong>
+                            </td>
+                            <td class="text-end">
+                                <strong>
+                                    {% with total_vol=0 %}
+                                        {% for item in inventory %}
+                                            {% if forloop.first %}
+                                                {{ item.total_volume|default:0|floatformat:0 }}
+                                            {% endif %}
+                                        {% endfor %}
+                                    {% endwith %}
+                                    ml
+                                </strong>
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+
+            <!-- Gráfico Visual por Grupo Sanguíneo -->
+            <div class="row mt-4">
+                <div class="col-12">
+                    <h6 class="border-bottom pb-2 mb-3">Distribución por Grupo Sanguíneo</h6>
+                    <div class="row">
+                        {% regroup inventory by blood_type as blood_groups %}
+                        {% for blood_group in blood_groups %}
+                        <div class="col-md-3 mb-3">
+                            <div class="card text-center">
+                                <div class="card-body">
+                                    <h3 class="text-danger mb-1">{{ blood_group.grouper }}</h3>
+                                    <p class="mb-0">
+                                        <strong class="fs-4">
+                                            {% with total=0 %}
+                                                {% for item in blood_group.list %}
+                                                    {% if forloop.first %}{{ item.total_units }}{% endif %}
+                                                {% endfor %}
+                                            {% endwith %}
+                                        </strong> unidades
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div class="alert alert-warning">
+                <i class="bi bi-exclamation-triangle"></i> No hay componentes disponibles en el inventario.
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Componentes Próximos a Vencer -->
+    <div class="card">
+        <div class="card-header bg-warning text-dark">
+            <h5 class="mb-0"><i class="bi bi-clock-history"></i> Componentes Próximos a Vencer (7 días)</h5>
+        </div>
+        <div class="card-body">
+            {% if expiring %}
+            <div class="alert alert-danger">
+                <i class="bi bi-exclamation-triangle-fill"></i>
+                <strong>¡Atención!</strong> Hay {{ expiring|length }} componente(s) próximo(s) a vencer en los próximos 7 días.
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Código</th>
+                            <th>Tipo Componente</th>
+                            <th>Tipo Sangre</th>
+                            <th>Volumen</th>
+                            <th>Fecha Separación</th>
+                            <th>Fecha Vencimiento</th>
+                            <th>Días p/Vencer</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for component in expiring %}
+                        <tr>
+                            <td>
+                                <strong><a href="{% url 'blood_bank:component_detail' component.id %}">{{ component.component_code }}</a></strong>
+                            </td>
+                            <td><span class="badge bg-info">{{ component.get_component_type_display }}</span></td>
+                            <td><span class="badge bg-danger">{{ component.blood_type }}</span></td>
+                            <td>{{ component.volume_ml }} ml</td>
+                            <td>{{ component.separation_date|date:"d/m/Y"|default:"-" }}</td>
+                            <td><strong>{{ component.expiration_date|date:"d/m/Y" }}</strong></td>
+                            <td>
+                                {% with days=component.days_until_expiration %}
+                                    {% if days <= 0 %}
+                                        <span class="badge bg-danger">VENCIDO</span>
+                                    {% elif days <= 3 %}
+                                        <span class="badge bg-danger">{{ days }} día(s)</span>
+                                    {% elif days <= 7 %}
+                                        <span class="badge bg-warning text-dark">{{ days }} día(s)</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td>
+                                <a href="{% url 'blood_bank:component_detail' component.id %}" class="btn btn-sm btn-info">
+                                    <i class="bi bi-eye"></i> Ver
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="alert alert-success">
+                <i class="bi bi-check-circle"></i> No hay componentes próximos a vencer en los próximos 7 días.
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+@media print {
+    .no-print {
+        display: none !important;
+    }
+    .breadcrumb, .btn {
+        display: none !important;
+    }
+}
+</style>
+{% endblock %}

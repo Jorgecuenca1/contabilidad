@@ -96,140 +96,49 @@
     </div>
 </div>
 
-<!-- Módulos Especializados -->
-{% if is_healthcare_company %}
-<div class="row mb-4">
-    <div class="col-12">
-        <div class="alert alert-success">
-            <h5><i class="bi bi-heart-pulse"></i> Módulos del Sector Salud</h5>
-            <p class="mb-0">Módulos especializados disponibles para empresas del sector salud</p>
+<!-- Módulos de Salud Dinámicos -->
+{% if is_healthcare_company and active_modules_by_category %}
+    {% for category, modules_list in active_modules_by_category.items %}
+        {% if category == 'Módulos de Salud' %}
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="alert alert-success">
+                    <h5><i class="bi bi-heart-pulse"></i> Módulos del Sector Salud</h5>
+                    <p class="mb-0">Módulos especializados disponibles para empresas del sector salud ({{ modules_list|length }} activos)</p>
+                </div>
+            </div>
         </div>
-    </div>
-</div>
 
-<div class="row mb-4">
-    <!-- Módulo de Historia Clínica -->
-    <div class="col-md-4 mb-3">
-        <div class="card h-100 border-success shadow-sm">
-            <div class="card-header bg-success text-white">
-                <h5><i class="bi bi-clipboard-heart"></i> HISTORIA CLÍNICA</h5>
-            </div>
-            <div class="card-body">
-                <p class="card-text small">Gestión integral de historias clínicas digitales, consultas médicas y expedientes.</p>
-                <div class="d-grid gap-2">
-                    <a href="{% url 'medical_records:dashboard' %}" class="btn btn-success btn-sm">
-                        <i class="bi bi-clipboard-data"></i> Dashboard Historias
-                    </a>
-                    <a href="{% url 'medical_records:new_record' %}" class="btn btn-outline-success btn-sm">
-                        <i class="bi bi-file-medical"></i> Nueva Historia
-                    </a>
+        <div class="row mb-4">
+            {% for module_info in modules_list %}
+                {% with module=module_info.module %}
+                <div class="col-md-4 col-lg-3 mb-3">
+                    <div class="card h-100 border-success shadow-sm health-module-card">
+                        <div class="card-header bg-success text-white">
+                            <h6 class="mb-0">
+                                <i class="{{ module.icon_class }}"></i> {{ module.name|upper }}
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text small text-muted">{{ module.description|truncatewords:15 }}</p>
+                            <div class="d-grid gap-2">
+                                <a href="/{{ module.url_pattern }}/" class="btn btn-success btn-sm">
+                                    <i class="bi bi-arrow-right-circle"></i> Abrir Módulo
+                                </a>
+                            </div>
+                        </div>
+                        <div class="card-footer bg-light">
+                            <small class="text-muted">
+                                <i class="bi bi-check-circle-fill text-success"></i> Activo
+                            </small>
+                        </div>
+                    </div>
                 </div>
-            </div>
+                {% endwith %}
+            {% endfor %}
         </div>
-    </div>
-    
-    <!-- Módulo de Citas Médicas -->
-    <div class="col-md-4 mb-3">
-        <div class="card h-100 border-primary shadow-sm">
-            <div class="card-header bg-primary text-white">
-                <h5><i class="bi bi-calendar-plus"></i> CITAS MÉDICAS</h5>
-            </div>
-            <div class="card-body">
-                <p class="card-text small">Sistema de agendamiento médico con gestión de especialistas y horarios.</p>
-                <div class="d-grid gap-2">
-                    <a href="{% url 'medical_appointments:dashboard' %}" class="btn btn-primary btn-sm">
-                        <i class="bi bi-calendar-week"></i> Dashboard Citas
-                    </a>
-                    <a href="{% url 'medical_appointments:new_appointment' %}" class="btn btn-outline-primary btn-sm">
-                        <i class="bi bi-calendar-plus"></i> Nueva Cita
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Módulo de Laboratorio -->
-    <div class="col-md-4 mb-3">
-        <div class="card h-100 border-warning shadow-sm">
-            <div class="card-header bg-warning text-white">
-                <h5><i class="bi bi-thermometer-half"></i> LABORATORIO</h5>
-            </div>
-            <div class="card-body">
-                <p class="card-text small">Sistema LIS completo para gestión de órdenes, resultados y muestras de laboratorio.</p>
-                <div class="d-grid gap-2">
-                    <a href="{% url 'laboratory:dashboard' %}" class="btn btn-warning btn-sm">
-                        <i class="bi bi-clipboard-data"></i> Dashboard Lab
-                    </a>
-                    <a href="{% url 'laboratory:new_order' %}" class="btn btn-outline-warning btn-sm">
-                        <i class="bi bi-plus-circle"></i> Nueva Orden
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="row mb-4">
-    <!-- Módulo de Procedimientos Médicos -->
-    <div class="col-md-4 mb-3">
-        <div class="card h-100 border-danger shadow-sm">
-            <div class="card-header bg-danger text-white">
-                <h5><i class="bi bi-clipboard2-pulse"></i> PROCEDIMIENTOS</h5>
-            </div>
-            <div class="card-body">
-                <p class="card-text small">Gestión de procedimientos médicos con códigos CUPS y seguimiento completo.</p>
-                <div class="d-grid gap-2">
-                    <a href="{% url 'medical_procedures:dashboard' %}" class="btn btn-danger btn-sm">
-                        <i class="bi bi-clipboard-data"></i> Dashboard Proc.
-                    </a>
-                    <a href="{% url 'medical_procedures:new_procedure' %}" class="btn btn-outline-danger btn-sm">
-                        <i class="bi bi-plus-circle"></i> Nuevo Proc.
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Módulo de Ginecología -->
-    <div class="col-md-4 mb-3">
-        <div class="card h-100 border-info shadow-sm">
-            <div class="card-header bg-info text-white">
-                <h5><i class="bi bi-heart-pulse"></i> GINECOLOGÍA</h5>
-            </div>
-            <div class="card-body">
-                <p class="card-text small">Gestión completa de pacientes ginecológicos, citas, historias clínicas y procedimientos.</p>
-                <div class="d-grid gap-2">
-                    <a href="{% url 'gynecology:dashboard' %}" class="btn btn-info btn-sm">
-                        <i class="bi bi-clipboard-data"></i> Dashboard Ginecología
-                    </a>
-                    <a href="{% url 'gynecology:new_patient' %}" class="btn btn-outline-info btn-sm">
-                        <i class="bi bi-person-plus"></i> Nueva Paciente
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Módulo de Nómina (Especializado para Salud) -->
-    <div class="col-md-4 mb-3">
-        <div class="card h-100 border-secondary shadow-sm">
-            <div class="card-header bg-secondary text-white">
-                <h5><i class="bi bi-people"></i> NÓMINA SALUD</h5>
-            </div>
-            <div class="card-body">
-                <p class="card-text small">Gestión de empleados del sector salud con roles y especialidades médicas.</p>
-                <div class="d-grid gap-2">
-                    <a href="{% url 'payroll:new_employee' %}" class="btn btn-secondary btn-sm">
-                        <i class="bi bi-person-plus"></i> Nuevo Empleado Médico
-                    </a>
-                    <a href="{% url 'payroll:dashboard' %}" class="btn btn-outline-secondary btn-sm">
-                        <i class="bi bi-clipboard-data"></i> Ver Nómina
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+        {% endif %}
+    {% endfor %}
 {% endif %}
 
 <!-- Módulos Principales del Sistema -->
@@ -666,6 +575,33 @@
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+/* Módulos de salud */
+.health-module-card {
+    transition: all 0.3s ease;
+    border-radius: 8px;
+    border-width: 2px !important;
+}
+
+.health-module-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(25, 135, 84, 0.2);
+    border-color: #198754 !important;
+}
+
+.health-module-card .card-header {
+    font-size: 0.85rem;
+    padding: 0.75rem;
+}
+
+.health-module-card .card-body {
+    padding: 1rem;
+}
+
+.health-module-card .card-footer {
+    padding: 0.5rem;
+    font-size: 0.75rem;
 }
 </style>
 {% endblock %}

@@ -1,0 +1,176 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block title %}Cerrar Episodio {{ episode.episode_number }} - RIPS{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h2><i class="fas fa-door-closed"></i> Cerrar Episodio de Atención</h2>
+                    <p class="text-muted">Episodio {{ episode.episode_number }}</p>
+                </div>
+                <div>
+                    <a href="{% url 'rips:episode_detail' episode.id %}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Volver
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8 offset-lg-2">
+            <!-- Información del Episodio -->
+            <div class="card mb-3">
+                <div class="card-header bg-info text-white">
+                    <i class="fas fa-info-circle"></i> Información del Episodio
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-2">
+                            <strong>Paciente:</strong><br>
+                            {{ episode.patient.third_party.first_name }}
+                            {{ episode.patient.third_party.last_name }}
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <strong>Documento:</strong><br>
+                            {{ episode.patient.third_party.document_number }}
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <strong>Tipo de Episodio:</strong><br>
+                            {{ episode.get_episode_type_display }}
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <strong>Fecha de Ingreso:</strong><br>
+                            {{ episode.admission_date|date:"d/m/Y H:i" }}
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <strong>Diagnóstico de Ingreso:</strong><br>
+                            {% if episode.admission_diagnosis %}
+                            <span class="badge bg-info">{{ episode.admission_diagnosis }}</span>
+                            {% else %}
+                            <span class="text-muted">No registrado</span>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <strong>EPS:</strong><br>
+                            {{ episode.payer.name }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Resumen de Servicios -->
+            <div class="card mb-3">
+                <div class="card-header bg-secondary text-white">
+                    <i class="fas fa-list"></i> Resumen de Servicios
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="text-center">
+                                <i class="fas fa-clipboard-list fa-3x text-primary mb-2"></i>
+                                <h4 class="mb-0">{{ episode.services.count }}</h4>
+                                <p class="text-muted mb-0">Servicios Registrados</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="text-center">
+                                <i class="fas fa-dollar-sign fa-3x text-success mb-2"></i>
+                                <h4 class="mb-0">${{ episode.total_cost|intcomma }}</h4>
+                                <p class="text-muted mb-0">Costo Total</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Formulario de Cierre -->
+            <div class="card mb-3">
+                <div class="card-header bg-warning text-dark">
+                    <i class="fas fa-clipboard-check"></i> Información de Cierre
+                </div>
+                <div class="card-body">
+                    <form method="post" id="closeForm">
+                        {% csrf_token %}
+
+                        <div class="mb-3">
+                            <label for="discharge_diagnosis" class="form-label">
+                                <i class="fas fa-stethoscope"></i> Diagnóstico de Egreso (CIE-10) *
+                            </label>
+                            <input type="text" name="discharge_diagnosis" id="discharge_diagnosis"
+                                   class="form-control" maxlength="10" required
+                                   placeholder="Ej: J06.9"
+                                   value="{{ episode.admission_diagnosis }}">
+                            <small class="form-text text-muted">
+                                Código CIE-10 del diagnóstico principal al alta.
+                                Por defecto se muestra el diagnóstico de ingreso.
+                            </small>
+                        </div>
+
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle"></i> <strong>Información:</strong>
+                            <ul class="mb-0 mt-2">
+                                <li>El episodio se cerrará con fecha y hora actual</li>
+                                <li>Se calculará automáticamente el costo total de todos los servicios</li>
+                                <li>Después de cerrar, podrá generar la factura correspondiente</li>
+                                <li>No se podrán agregar más servicios una vez cerrado</li>
+                            </ul>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="{% url 'rips:episode_detail' episode.id %}" class="btn btn-secondary">
+                                <i class="fas fa-times"></i> Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-warning">
+                                <i class="fas fa-door-closed"></i> Cerrar Episodio
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Información Adicional -->
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <i class="fas fa-question-circle"></i> ¿Qué sucede al cerrar un episodio?
+                </div>
+                <div class="card-body">
+                    <ol class="mb-0">
+                        <li class="mb-2">
+                            <strong>El episodio cambia a estado "Cerrado"</strong> - No se pueden agregar más servicios
+                        </li>
+                        <li class="mb-2">
+                            <strong>Se registra la fecha y hora de egreso</strong> - Momento actual
+                        </li>
+                        <li class="mb-2">
+                            <strong>Se calcula el costo total</strong> - Suma de todos los servicios asociados
+                        </li>
+                        <li class="mb-2">
+                            <strong>Se registra el diagnóstico de egreso</strong> - Código CIE-10 definitivo
+                        </li>
+                        <li class="mb-0">
+                            <strong>Queda listo para facturación</strong> - Puede generar la factura y posteriormente el RIPS
+                        </li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Confirmación al cerrar
+    document.getElementById('closeForm').addEventListener('submit', function(e) {
+        if (!confirm('¿Está seguro de cerrar este episodio? Esta acción no se puede deshacer.')) {
+            e.preventDefault();
+            return false;
+        }
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+{% block title %}Nota de Anestesia{% endblock %}
+{% block content %}
+<div class="container-fluid">
+    <h2><i class="bi bi-heart-pulse"></i> Nota de Anestesia - Cirugía {{ surgery.surgery_number }}</h2>
+    <p class="text-muted">Paciente: {{ surgery.patient.nombre }}</p>
+
+    <form method="post" class="mt-4">
+        {% csrf_token %}
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card mb-3">
+                    <div class="card-header bg-danger text-white">Evaluación Preanestésica</div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="form-label">Clasificación ASA *</label>
+                            <select class="form-select" name="asa_classification" required>
+                                <option value="asa_1" {% if anesthesia_note and anesthesia_note.asa_classification == 'asa_1' %}selected{% endif %}>ASA I - Paciente Sano</option>
+                                <option value="asa_2" {% if anesthesia_note and anesthesia_note.asa_classification == 'asa_2' %}selected{% endif %}>ASA II - Enfermedad Sistémica Leve</option>
+                                <option value="asa_3" {% if anesthesia_note and anesthesia_note.asa_classification == 'asa_3' %}selected{% endif %}>ASA III - Enfermedad Sistémica Grave</option>
+                                <option value="asa_4" {% if anesthesia_note and anesthesia_note.asa_classification == 'asa_4' %}selected{% endif %}>ASA IV - Enfermedad Sistémica Grave con Riesgo Vital</option>
+                                <option value="asa_5" {% if anesthesia_note and anesthesia_note.asa_classification == 'asa_5' %}selected{% endif %}>ASA V - Moribundo</option>
+                                <option value="asa_e" {% if anesthesia_note and anesthesia_note.asa_classification == 'asa_e' %}selected{% endif %}>ASA E - Emergencia</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Tipo de Anestesia *</label>
+                            <select class="form-select" name="anesthesia_type" required>
+                                <option value="general">Anestesia General</option>
+                                <option value="regional">Anestesia Regional</option>
+                                <option value="spinal">Anestesia Espinal</option>
+                                <option value="epidural">Anestesia Epidural</option>
+                                <option value="combined">Anestesia Combinada</option>
+                                <option value="local">Anestesia Local</option>
+                                <option value="sedation">Sedación</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Horas de Ayuno *</label>
+                            <input type="number" class="form-control" name="fasting_hours" value="{% if anesthesia_note %}{{ anesthesia_note.fasting_hours }}{% endif %}" required min="0">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card mb-3">
+                    <div class="card-header bg-primary text-white">Signos Vitales Preoperatorios</div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">PA Sistólica (mmHg)</label>
+                                <input type="number" class="form-control" name="pre_blood_pressure_systolic" value="{% if anesthesia_note %}{{ anesthesia_note.pre_blood_pressure_systolic }}{% endif %}">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">PA Diastólica (mmHg)</label>
+                                <input type="number" class="form-control" name="pre_blood_pressure_diastolic" value="{% if anesthesia_note %}{{ anesthesia_note.pre_blood_pressure_diastolic }}{% endif %}">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Frecuencia Cardíaca (lpm)</label>
+                                <input type="number" class="form-control" name="pre_heart_rate" value="{% if anesthesia_note %}{{ anesthesia_note.pre_heart_rate }}{% endif %}">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Frecuencia Respiratoria (rpm)</label>
+                                <input type="number" class="form-control" name="pre_respiratory_rate" value="{% if anesthesia_note %}{{ anesthesia_note.pre_respiratory_rate }}{% endif %}">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Saturación O2 (%)</label>
+                                <input type="number" class="form-control" name="pre_oxygen_saturation" value="{% if anesthesia_note %}{{ anesthesia_note.pre_oxygen_saturation }}{% endif %}" min="0" max="100">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Temperatura (°C)</label>
+                                <input type="number" class="form-control" name="pre_temperature" value="{% if anesthesia_note %}{{ anesthesia_note.pre_temperature }}{% endif %}" step="0.1">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card mb-3">
+                    <div class="card-header bg-warning text-white">Medicamentos y Líquidos</div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="form-label">Medicamentos Administrados</label>
+                            <textarea class="form-control" name="medications_administered" rows="4">{% if anesthesia_note %}{{ anesthesia_note.medications_administered }}{% endif %}</textarea>
+                            <small class="text-muted">Detalle medicamentos, dosis y vía de administración</small>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Líquidos Administrados</label>
+                            <textarea class="form-control" name="fluids_administered" rows="4">{% if anesthesia_note %}{{ anesthesia_note.fluids_administered }}{% endif %}</textarea>
+                            <small class="text-muted">Detalle tipo de líquidos y volumen en ml</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card mb-3">
+                    <div class="card-header bg-info text-white">Observaciones y Complicaciones</div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="form-label">Complicaciones</label>
+                            <textarea class="form-control" name="complications" rows="3">{% if anesthesia_note %}{{ anesthesia_note.complications }}{% endif %}</textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Observaciones Generales</label>
+                            <textarea class="form-control" name="observations" rows="3">{% if anesthesia_note %}{{ anesthesia_note.observations }}{% endif %}</textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-lg"><i class="bi bi-save"></i> Guardar Nota</button>
+        <a href="{% url 'surgery:surgery_detail' surgery.id %}" class="btn btn-secondary btn-lg">Cancelar</a>
+    </form>
+</div>
+{% endblock %}

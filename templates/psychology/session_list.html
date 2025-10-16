@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+{% block title %}Sesiones Terapéuticas{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-chat-square-text"></i> Sesiones Terapéuticas</h2>
+        <a href="{% url 'psychology:session_create' %}" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> Nueva Sesión
+        </a>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-4">
+                    <input type="text" name="search" class="form-control" placeholder="Buscar por paciente, psicólogo o número..." value="{{ search }}">
+                </div>
+                <div class="col-md-2">
+                    <select name="status" class="form-select">
+                        <option value="">Todos los estados</option>
+                        <option value="scheduled" {% if status_filter == 'scheduled' %}selected{% endif %}>Programada</option>
+                        <option value="completed" {% if status_filter == 'completed' %}selected{% endif %}>Completada</option>
+                        <option value="cancelled" {% if status_filter == 'cancelled' %}selected{% endif %}>Cancelada</option>
+                        <option value="no_show" {% if status_filter == 'no_show' %}selected{% endif %}>No asistió</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <select name="session_type" class="form-select">
+                        <option value="">Todos los tipos</option>
+                        <option value="individual" {% if session_type_filter == 'individual' %}selected{% endif %}>Individual</option>
+                        <option value="couple" {% if session_type_filter == 'couple' %}selected{% endif %}>Pareja</option>
+                        <option value="family" {% if session_type_filter == 'family' %}selected{% endif %}>Familiar</option>
+                        <option value="group" {% if session_type_filter == 'group' %}selected{% endif %}>Grupal</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <input type="date" name="date_from" class="form-control" placeholder="Desde" value="{{ date_from }}">
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-search"></i> Buscar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Número</th>
+                            <th>Paciente</th>
+                            <th>Psicólogo</th>
+                            <th>Fecha</th>
+                            <th>Tipo</th>
+                            <th>Duración</th>
+                            <th>Modalidad</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for session in page_obj %}
+                        <tr>
+                            <td><strong>{{ session.session_number }}</strong></td>
+                            <td>{{ session.patient.third_party.name|truncatewords:3 }}</td>
+                            <td><small>{{ session.psychologist.get_full_name|truncatewords:2 }}</small></td>
+                            <td><small>{{ session.session_date|date:"d/m/Y H:i" }}</small></td>
+                            <td><small>{{ session.get_session_type_display }}</small></td>
+                            <td><small>{{ session.session_duration }} min</small></td>
+                            <td><small>{{ session.get_modality_display }}</small></td>
+                            <td>
+                                {% if session.status == 'completed' %}
+                                <span class="badge bg-success">Completada</span>
+                                {% elif session.status == 'scheduled' %}
+                                <span class="badge bg-warning text-dark">Programada</span>
+                                {% elif session.status == 'cancelled' %}
+                                <span class="badge bg-danger">Cancelada</span>
+                                {% elif session.status == 'no_show' %}
+                                <span class="badge bg-secondary">No asistió</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{% url 'psychology:session_detail' session.id %}" class="btn btn-sm btn-info" title="Ver detalle">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="9" class="text-center text-muted py-4">No se encontraron sesiones</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Paginación -->
+            {% if page_obj.has_other_pages %}
+            <nav aria-label="Paginación">
+                <ul class="pagination justify-content-center mt-3">
+                    {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page=1{% if search %}&search={{ search }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}{% if session_type_filter %}&session_type={{ session_type_filter }}{% endif %}{% if date_from %}&date_from={{ date_from }}{% endif %}">Primera</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if search %}&search={{ search }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}{% if session_type_filter %}&session_type={{ session_type_filter }}{% endif %}{% if date_from %}&date_from={{ date_from }}{% endif %}">Anterior</a>
+                    </li>
+                    {% endif %}
+
+                    <li class="page-item active">
+                        <span class="page-link">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+                    </li>
+
+                    {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if search %}&search={{ search }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}{% if session_type_filter %}&session_type={{ session_type_filter }}{% endif %}{% if date_from %}&date_from={{ date_from }}{% endif %}">Siguiente</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if search %}&search={{ search }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}{% if session_type_filter %}&session_type={{ session_type_filter }}{% endif %}{% if date_from %}&date_from={{ date_from }}{% endif %}">Última</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

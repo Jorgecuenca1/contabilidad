@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+{% block title %}Procedimientos - {{ attention.attention_number }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-tools"></i> Procedimientos</h2>
+        <div>
+            <a href="{% url 'emergency:procedure_create' attention.id %}" class="btn btn-success">
+                <i class="bi bi-plus-circle"></i> Registrar Procedimiento
+            </a>
+            <a href="{% url 'emergency:attention_detail' attention.id %}" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Volver
+            </a>
+        </div>
+    </div>
+
+    <!-- Información de Atención -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-4">
+                    <strong>Paciente:</strong> {{ attention.patient.third_party.name }}
+                </div>
+                <div class="col-md-4">
+                    <strong>Atención:</strong> {{ attention.attention_number }}
+                </div>
+                <div class="col-md-4">
+                    <strong>Admisión:</strong> {{ attention.admission.admission_number }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lista de Procedimientos -->
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0"><i class="bi bi-list-check"></i> Procedimientos Realizados</h5>
+        </div>
+        <div class="card-body">
+            {% if procedures %}
+            <div class="list-group">
+                {% for procedure in procedures %}
+                <div class="list-group-item">
+                    <div class="d-flex w-100 justify-content-between align-items-start">
+                        <div>
+                            <h5 class="mb-2">
+                                <i class="bi bi-chevron-right text-primary"></i> {{ procedure.procedure_name }}
+                            </h5>
+                            <p class="mb-1">
+                                <strong>Tipo:</strong>
+                                <span class="badge bg-info">{{ procedure.get_procedure_type_display }}</span>
+                            </p>
+                            <p class="mb-1">
+                                <strong>Fecha y Hora:</strong> {{ procedure.procedure_datetime|date:"d/m/Y H:i" }}
+                            </p>
+                            <p class="mb-1">
+                                <strong>Indicación:</strong> {{ procedure.indication|truncatewords:20 }}
+                            </p>
+                            <p class="mb-1">
+                                <strong>Realizado por:</strong> {{ procedure.performed_by.get_full_name }}
+                                {% if procedure.assisted_by %}
+                                | <strong>Asistido por:</strong> {{ procedure.assisted_by }}
+                                {% endif %}
+                            </p>
+                            {% if procedure.complications %}
+                            <p class="mb-1 text-danger">
+                                <i class="bi bi-exclamation-triangle-fill"></i> <strong>Complicaciones:</strong> {{ procedure.complications }}
+                            </p>
+                            {% endif %}
+                            {% if procedure.outcome %}
+                            <p class="mb-1">
+                                <strong>Resultado:</strong> {{ procedure.outcome|truncatewords:15 }}
+                            </p>
+                            {% endif %}
+                        </div>
+                        <div>
+                            <small class="text-muted">{{ procedure.created_at|date:"d/m/Y H:i" }}</small>
+                        </div>
+                    </div>
+
+                    <div class="mt-2">
+                        {% if procedure.procedure_description %}
+                        <button class="btn btn-sm btn-outline-primary" type="button" data-bs-toggle="collapse" data-bs-target="#detail-{{ procedure.id }}" aria-expanded="false">
+                            <i class="bi bi-eye"></i> Ver Detalles
+                        </button>
+                        {% endif %}
+                    </div>
+
+                    {% if procedure.procedure_description %}
+                    <div class="collapse mt-3" id="detail-{{ procedure.id }}">
+                        <div class="card card-body bg-light">
+                            <h6>Descripción del Procedimiento:</h6>
+                            <p>{{ procedure.procedure_description }}</p>
+                            {% if procedure.materials_used %}
+                            <h6>Materiales Utilizados:</h6>
+                            <p>{{ procedure.materials_used }}</p>
+                            {% endif %}
+                            {% if procedure.observations %}
+                            <h6>Observaciones:</h6>
+                            <p>{{ procedure.observations }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="text-center py-5">
+                <i class="bi bi-tools text-muted" style="font-size: 4rem;"></i>
+                <p class="text-muted mt-3">No hay procedimientos registrados para esta atención.</p>
+                <a href="{% url 'emergency:procedure_create' attention.id %}" class="btn btn-success">
+                    <i class="bi bi-plus-circle"></i> Registrar Primer Procedimiento
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

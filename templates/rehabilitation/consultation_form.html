@@ -1,0 +1,174 @@
+{% extends 'base.html' %}
+{% block title %}{% if consultation %}Editar{% else %}Nueva{% endif %} Consulta - Rehabilitación{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <h2 class="mb-4">
+        <i class="bi bi-plus-circle"></i>
+        {% if consultation %}Editar Consulta {{ consultation.consultation_number }}{% else %}Nueva Consulta de Rehabilitación{% endif %}
+    </h2>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <!-- Información del Paciente -->
+        <div class="card mb-3">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="bi bi-person"></i> Información del Paciente</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Paciente <span class="text-danger">*</span></label>
+                        <select name="patient" class="form-select" required {% if consultation %}disabled{% endif %}>
+                            <option value="">Seleccione un paciente...</option>
+                            {% for patient in patients %}
+                            <option value="{{ patient.id }}" {% if consultation and consultation.patient.id == patient.id %}selected{% endif %}>
+                                {{ patient.third_party.name }} - {{ patient.third_party.identification_number }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Fecha y Hora <span class="text-danger">*</span></label>
+                        <input type="datetime-local" name="consultation_date" class="form-control" required value="{{ consultation.consultation_date|date:'Y-m-d\TH:i'|default:'' }}">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Nivel de Dolor (0-10) <span class="text-danger">*</span></label>
+                        <input type="number" name="pain_level" class="form-control" min="0" max="10" required value="{{ consultation.pain_level|default:'0' }}">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Motivo de Consulta y Lesión -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-chat-left-text"></i> Motivo de Consulta</h6>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-12">
+                        <label class="form-label">Queja Principal <span class="text-danger">*</span></label>
+                        <textarea name="chief_complaint" class="form-control" rows="2" required placeholder="Motivo principal de la consulta...">{{ consultation.chief_complaint|default:'' }}</textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Mecanismo de Lesión</label>
+                        <textarea name="injury_mechanism" class="form-control" rows="2" placeholder="Cómo ocurrió la lesión...">{{ consultation.injury_mechanism|default:'' }}</textarea>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Fecha de Inicio</label>
+                        <input type="date" name="onset_date" class="form-control" value="{{ consultation.onset_date|date:'Y-m-d'|default:'' }}">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Localización del Dolor</label>
+                        <input type="text" name="pain_location" class="form-control" value="{{ consultation.pain_location|default:'' }}" placeholder="Ej: Rodilla izquierda">
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">Descripción del Dolor</label>
+                        <textarea name="pain_description" class="form-control" rows="2" placeholder="Tipo de dolor: agudo, sordo, punzante, irradiado...">{{ consultation.pain_description|default:'' }}</textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Historia Médica -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-clock-history"></i> Historia</h6>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Historia Médica</label>
+                        <textarea name="medical_history" class="form-control" rows="3" placeholder="Condiciones médicas relevantes...">{{ consultation.medical_history|default:'' }}</textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Historia Quirúrgica</label>
+                        <textarea name="surgical_history" class="form-control" rows="3" placeholder="Cirugías previas...">{{ consultation.surgical_history|default:'' }}</textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Medicación Actual</label>
+                        <textarea name="medications" class="form-control" rows="2" placeholder="Medicamentos que toma actualmente...">{{ consultation.medications|default:'' }}</textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Tratamientos Previos</label>
+                        <textarea name="previous_treatments" class="form-control" rows="2" placeholder="Fisioterapia u otros tratamientos previos...">{{ consultation.previous_treatments|default:'' }}</textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Limitaciones Funcionales -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-x-circle"></i> Limitaciones Funcionales</h6>
+            </div>
+            <div class="card-body">
+                <textarea name="functional_limitations" class="form-control" rows="3" placeholder="Actividades que el paciente no puede realizar o tiene dificultad...">{{ consultation.functional_limitations|default:'' }}</textarea>
+            </div>
+        </div>
+
+        <!-- Examen Físico -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-clipboard-heart"></i> Hallazgos del Examen Físico</h6>
+            </div>
+            <div class="card-body">
+                <textarea name="physical_exam_findings" class="form-control" rows="4" placeholder="Observaciones del examen físico, palpación, movilidad, fuerza muscular...">{{ consultation.physical_exam_findings|default:'' }}</textarea>
+            </div>
+        </div>
+
+        <!-- Diagnóstico y Plan -->
+        <div class="card mb-3">
+            <div class="card-header bg-info text-white">
+                <h6 class="mb-0"><i class="bi bi-file-medical"></i> Diagnóstico y Plan</h6>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-12">
+                        <label class="form-label">Diagnóstico Fisioterapéutico <span class="text-danger">*</span></label>
+                        <textarea name="diagnosis" class="form-control" rows="2" required placeholder="Diagnóstico principal...">{{ consultation.diagnosis|default:'' }}</textarea>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">Objetivos del Tratamiento <span class="text-danger">*</span></label>
+                        <textarea name="treatment_goals" class="form-control" rows="3" required placeholder="Objetivos a corto y largo plazo...">{{ consultation.treatment_goals|default:'' }}</textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Observaciones y Estado -->
+        <div class="card mb-3">
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-9">
+                        <label class="form-label">Observaciones Adicionales</label>
+                        <textarea name="observations" class="form-control" rows="2" placeholder="Notas adicionales...">{{ consultation.observations|default:'' }}</textarea>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Estado <span class="text-danger">*</span></label>
+                        <select name="status" class="form-select" required>
+                            <option value="scheduled" {% if not consultation or consultation.status == 'scheduled' %}selected{% endif %}>Programada</option>
+                            <option value="completed" {% if consultation and consultation.status == 'completed' %}selected{% endif %}>Completada</option>
+                            <option value="cancelled" {% if consultation and consultation.status == 'cancelled' %}selected{% endif %}>Cancelada</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Botones de Acción -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <button type="submit" class="btn btn-primary btn-lg">
+                    <i class="bi bi-save"></i> Guardar Consulta
+                </button>
+                <a href="{% url 'rehabilitation:consultation_list' %}" class="btn btn-secondary btn-lg">
+                    <i class="bi bi-x-circle"></i> Cancelar
+                </a>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}

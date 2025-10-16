@@ -95,7 +95,7 @@ class UserCompanyPermission(models.Model):
     company = models.ForeignKey(Company, on_delete=models.CASCADE)
     permission_level = models.CharField(max_length=10, choices=PERMISSION_CHOICES)
     
-    # Permisos específicos por módulo
+    # Permisos específicos por módulo - Contables
     can_access_accounting = models.BooleanField(default=False)
     can_access_receivables = models.BooleanField(default=False)
     can_access_payables = models.BooleanField(default=False)
@@ -106,6 +106,16 @@ class UserCompanyPermission(models.Model):
     can_access_taxes = models.BooleanField(default=False)
     can_access_reports = models.BooleanField(default=False)
     can_access_public_sector = models.BooleanField(default=False)
+
+    # Permisos módulos de salud
+    can_access_patients = models.BooleanField(default=False)
+    can_access_diagnostics = models.BooleanField(default=False)
+    can_access_medical_records = models.BooleanField(default=False)
+    can_access_emergency = models.BooleanField(default=False)
+    can_access_hospitalization = models.BooleanField(default=False)
+    can_access_surgery = models.BooleanField(default=False)
+    can_access_pharmacy = models.BooleanField(default=False)
+    can_access_billing_health = models.BooleanField(default=False)
     
     # Restricciones adicionales
     cost_centers = models.JSONField(default=list, help_text="Centros de costo permitidos")

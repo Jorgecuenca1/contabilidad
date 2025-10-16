@@ -1,0 +1,137 @@
+{% extends 'base.html' %}
+{% block title %}Listado de EPS{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-building"></i> Entidades Promotoras de Salud (EPS)</h2>
+        <a href="{% url 'patients:eps_create' %}" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> Nueva EPS
+        </a>
+    </div>
+
+    <!-- Filtros -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-4">
+                    <input type="text" name="search" class="form-control"
+                           placeholder="Buscar por nombre, NIT o código..."
+                           value="{{ search }}">
+                </div>
+
+                <div class="col-md-2">
+                    <select name="status" class="form-select">
+                        <option value="active" {% if status == 'active' %}selected{% endif %}>Activas</option>
+                        <option value="inactive" {% if status == 'inactive' %}selected{% endif %}>Inactivas</option>
+                        <option value="">Todas</option>
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-search"></i> Buscar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Tabla de EPS -->
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Código</th>
+                            <th>Nombre</th>
+                            <th>NIT</th>
+                            <th>Teléfono</th>
+                            <th>Email</th>
+                            <th>Ciudad</th>
+                            <th class="text-center">Pacientes</th>
+                            <th class="text-center">Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for eps in page_obj %}
+                        <tr>
+                            <td><strong>{{ eps.code }}</strong></td>
+                            <td>
+                                <strong>{{ eps.name }}</strong><br>
+                                {% if eps.short_name %}
+                                <small class="text-muted">{{ eps.short_name }}</small>
+                                {% endif %}
+                            </td>
+                            <td>{{ eps.nit }}</td>
+                            <td>{{ eps.phone|default:"-" }}</td>
+                            <td>{{ eps.email|default:"-" }}</td>
+                            <td>{{ eps.city|default:"-" }}</td>
+                            <td class="text-center">
+                                <span class="badge bg-primary">{{ eps.patient_set.count }}</span>
+                            </td>
+                            <td class="text-center">
+                                {% if eps.is_active %}
+                                <span class="badge bg-success">Activa</span>
+                                {% else %}
+                                <span class="badge bg-danger">Inactiva</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="#" class="btn btn-sm btn-info" title="Ver Detalle">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                <a href="#" class="btn btn-sm btn-warning" title="Editar">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="9" class="text-center text-muted">No se encontraron EPS</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Paginación -->
+            {% if page_obj.has_other_pages %}
+            <nav class="mt-4">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page=1{% if search %}&search={{ search }}{% endif %}{% if status %}&status={{ status }}{% endif %}">Primera</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if search %}&search={{ search }}{% endif %}{% if status %}&status={{ status }}{% endif %}">Anterior</a>
+                    </li>
+                    {% endif %}
+
+                    <li class="page-item active">
+                        <span class="page-link">
+                            Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
+                        </span>
+                    </li>
+
+                    {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if search %}&search={{ search }}{% endif %}{% if status %}&status={{ status }}{% endif %}">Siguiente</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if search %}&search={{ search }}{% endif %}{% if status %}&status={{ status }}{% endif %}">Última</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+
+            <div class="text-center text-muted mt-3">
+                <small>Total: {{ page_obj.paginator.count }} EPS</small>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

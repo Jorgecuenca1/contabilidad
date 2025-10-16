@@ -1,0 +1,166 @@
+{% extends 'base.html' %}
+
+{% block title %}Transfusiones - Banco de Sangre{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'core:dashboard' %}">Dashboard</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'blood_bank:index' %}">Banco de Sangre</a></li>
+            <li class="breadcrumb-item active">Transfusiones</li>
+        </ol>
+    </nav>
+
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <h2><i class="bi bi-activity text-danger"></i> Transfusiones</h2>
+        </div>
+    </div>
+
+    <!-- Filtros -->
+    <div class="card mb-3">
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label">Búsqueda</label>
+                    <input type="text" class="form-control" name="search" value="{{ search }}"
+                           placeholder="Número transfusión, nombre paciente...">
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Estado</label>
+                    <select class="form-select" name="status">
+                        <option value="">-- Todos --</option>
+                        <option value="pending" {% if status_filter == 'pending' %}selected{% endif %}>Pendiente</option>
+                        <option value="in_progress" {% if status_filter == 'in_progress' %}selected{% endif %}>En Progreso</option>
+                        <option value="completed" {% if status_filter == 'completed' %}selected{% endif %}>Completada</option>
+                        <option value="adverse_reaction" {% if status_filter == 'adverse_reaction' %}selected{% endif %}>Reacción Adversa</option>
+                        <option value="cancelled" {% if status_filter == 'cancelled' %}selected{% endif %}>Cancelada</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">&nbsp;</label>
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-search"></i> Filtrar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Tabla de transfusiones -->
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Número</th>
+                            <th>Paciente</th>
+                            <th>Componente</th>
+                            <th>Tipo Sangre</th>
+                            <th>Fecha/Hora Inicio</th>
+                            <th>Médico Ordena</th>
+                            <th>Enfermera</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for transfusion in page_obj %}
+                        <tr>
+                            <td>
+                                <strong><a href="{% url 'blood_bank:transfusion_detail' transfusion.id %}">{{ transfusion.transfusion_number }}</a></strong>
+                            </td>
+                            <td>
+                                {{ transfusion.patient.third_party.first_name }} {{ transfusion.patient.third_party.last_name }}<br>
+                                <small class="text-muted">HC: {{ transfusion.patient.medical_record_number }}</small>
+                            </td>
+                            <td>
+                                <a href="{% url 'blood_bank:component_detail' transfusion.blood_component.id %}">{{ transfusion.blood_component.component_code }}</a><br>
+                                <small><span class="badge bg-info">{{ transfusion.blood_component.get_component_type_display }}</span></small>
+                            </td>
+                            <td>
+                                <span class="badge bg-danger">{{ transfusion.blood_component.blood_type }}</span>
+                            </td>
+                            <td>
+                                {{ transfusion.start_datetime|date:"d/m/Y H:i" }}<br>
+                                <small class="text-muted">{{ transfusion.start_datetime|timesince }} atrás</small>
+                            </td>
+                            <td>
+                                {% if transfusion.ordering_physician %}
+                                    {{ transfusion.ordering_physician.third_party.first_name }} {{ transfusion.ordering_physician.third_party.last_name }}
+                                {% else %}
+                                    <span class="text-muted">-</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if transfusion.administering_nurse %}
+                                    {{ transfusion.administering_nurse.third_party.first_name }} {{ transfusion.administering_nurse.third_party.last_name }}
+                                {% else %}
+                                    <span class="text-muted">-</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if transfusion.status == 'pending' %}
+                                    <span class="badge bg-secondary">Pendiente</span>
+                                {% elif transfusion.status == 'in_progress' %}
+                                    <span class="badge bg-warning text-dark">En Progreso</span>
+                                {% elif transfusion.status == 'completed' %}
+                                    <span class="badge bg-success">Completada</span>
+                                {% elif transfusion.status == 'adverse_reaction' %}
+                                    <span class="badge bg-danger">Reacción Adversa</span>
+                                {% elif transfusion.status == 'cancelled' %}
+                                    <span class="badge bg-dark">Cancelada</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{% url 'blood_bank:transfusion_detail' transfusion.id %}" class="btn btn-sm btn-info" title="Ver Detalle">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="9" class="text-center text-muted">
+                                <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+                                No se encontraron transfusiones.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Paginación -->
+            {% if page_obj.has_other_pages %}
+            <nav aria-label="Paginación">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page=1{% if search %}&search={{ search }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}">Primera</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if search %}&search={{ search }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}">Anterior</a>
+                    </li>
+                    {% endif %}
+
+                    <li class="page-item active">
+                        <span class="page-link">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+                    </li>
+
+                    {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if search %}&search={{ search }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}">Siguiente</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if search %}&search={{ search }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}">Última</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

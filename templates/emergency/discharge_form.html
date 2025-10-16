@@ -1,0 +1,268 @@
+{% extends 'base.html' %}
+{% block title %}Registrar Alta de Urgencias{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <h2 class="mb-4">
+        <i class="bi bi-door-open"></i> Registrar Alta de Urgencias
+    </h2>
+
+    <!-- Información de Admisión -->
+    <div class="card mb-3">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-3">
+                    <strong>Paciente:</strong> {{ admission.patient.third_party.name }}
+                </div>
+                <div class="col-md-3">
+                    <strong>Admisión:</strong> {{ admission.admission_number }}
+                </div>
+                <div class="col-md-3">
+                    <strong>Triage:</strong> Nivel {{ admission.triage.triage_level }}
+                </div>
+                <div class="col-md-3">
+                    <strong>Fecha Ingreso:</strong> {{ admission.admission_datetime|date:"d/m/Y H:i" }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <form method="post" id="dischargeForm">
+        {% csrf_token %}
+
+        <!-- Información del Alta -->
+        <div class="card mb-3">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="bi bi-clock"></i> Información del Alta</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label">Fecha y Hora del Alta <span class="text-danger">*</span></label>
+                        <input type="datetime-local" name="discharge_datetime" id="dischargeDatetime" class="form-control" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Tipo de Alta <span class="text-danger">*</span></label>
+                        <select name="discharge_type" id="dischargeType" class="form-select" required>
+                            <option value="">Seleccionar tipo...</option>
+                            {% for value, label in discharge_type_choices %}
+                            <option value="{{ value }}">{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Condición al Alta <span class="text-danger">*</span></label>
+                        <select name="discharge_condition" class="form-select" required>
+                            {% for value, label in discharge_condition_choices %}
+                            <option value="{{ value }}">{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Diagnóstico Final -->
+        <div class="card mb-3">
+            <div class="card-header bg-warning text-dark">
+                <h5 class="mb-0"><i class="bi bi-clipboard2-pulse"></i> Diagnóstico Final</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-12">
+                        <label class="form-label">Diagnóstico Final <span class="text-danger">*</span></label>
+                        <textarea name="final_diagnosis" class="form-control" rows="3" required placeholder="Diagnóstico final con código CIE-10 si es posible"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tratamiento y Recomendaciones -->
+        <div class="card mb-3">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0"><i class="bi bi-prescription2"></i> Tratamiento y Recomendaciones</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-12">
+                        <label class="form-label">Tratamiento Recibido <span class="text-danger">*</span></label>
+                        <textarea name="treatment_received" class="form-control" rows="3" required placeholder="Resumen del tratamiento recibido en urgencias"></textarea>
+                    </div>
+                    <div class="col-md-12">
+                        <label class="form-label">Medicamentos al Alta</label>
+                        <textarea name="discharge_medications" class="form-control" rows="4" placeholder="Medicamentos prescritos al alta (nombre, dosis, vía, frecuencia, duración)"></textarea>
+                        <small class="text-muted">Un medicamento por línea</small>
+                    </div>
+                    <div class="col-md-12">
+                        <label class="form-label">Recomendaciones al Alta <span class="text-danger">*</span></label>
+                        <textarea name="recommendations" class="form-control" rows="4" required placeholder="Cuidados en casa, actividades a evitar, dieta, etc."></textarea>
+                    </div>
+                    <div class="col-md-12">
+                        <label class="form-label">Signos de Alarma</label>
+                        <textarea name="warning_signs" class="form-control" rows="3" placeholder="Síntomas por los cuales debe consultar inmediatamente"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Seguimiento -->
+        <div class="card mb-3">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0"><i class="bi bi-calendar-check"></i> Seguimiento</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-12">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="follow_up_required" id="followUpRequired">
+                            <label class="form-check-label" for="followUpRequired">
+                                <strong>Requiere Seguimiento</strong>
+                            </label>
+                        </div>
+                    </div>
+                    <div id="followUpFields" style="display: none;">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Especialidad de Seguimiento</label>
+                                <input type="text" name="follow_up_specialty" class="form-control" placeholder="Ej: Medicina Interna, Cirugía, Cardiología">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Control en X Días</label>
+                                <input type="number" name="follow_up_days" class="form-control" placeholder="7" min="1">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Incapacidad -->
+        <div class="card mb-3">
+            <div class="card-header bg-warning text-dark">
+                <h5 class="mb-0"><i class="bi bi-file-earmark-medical"></i> Incapacidad Laboral</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Días de Incapacidad</label>
+                        <input type="number" name="sick_leave_days" class="form-control" placeholder="0" min="0">
+                        <small class="text-muted">Dejar en 0 si no requiere incapacidad</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Hospitalización (si aplica) -->
+        <div class="card mb-3" id="hospitalizationCard" style="display: none;">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="bi bi-building"></i> Información de Hospitalización</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Servicio de Hospitalización</label>
+                        <input type="text" name="hospitalization_service" class="form-control" placeholder="Ej: Medicina Interna, Cirugía">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Cama Asignada</label>
+                        <input type="text" name="bed_assigned" class="form-control" placeholder="Ej: 301-A">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Traslado (si aplica) -->
+        <div class="card mb-3" id="transferCard" style="display: none;">
+            <div class="card-header bg-warning text-dark">
+                <h5 class="mb-0"><i class="bi bi-arrow-left-right"></i> Información de Traslado</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-12">
+                        <label class="form-label">Institución de Traslado</label>
+                        <input type="text" name="transfer_institution" class="form-control" placeholder="Nombre de la institución receptora">
+                    </div>
+                    <div class="col-md-12">
+                        <label class="form-label">Razón del Traslado</label>
+                        <textarea name="transfer_reason" class="form-control" rows="2" placeholder="Motivo por el cual se traslada al paciente"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Personal y Observaciones -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-journal-text"></i> Personal y Observaciones</h6>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Médico que da el Alta <span class="text-danger">*</span></label>
+                        <select name="discharge_physician" class="form-select" required>
+                            <option value="">Seleccionar médico...</option>
+                            {% for physician in physicians %}
+                            <option value="{{ physician.id }}">{{ physician.get_full_name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-12">
+                        <label class="form-label">Observaciones</label>
+                        <textarea name="observations" class="form-control" rows="3" placeholder="Observaciones adicionales"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Botones -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <button type="submit" class="btn btn-success btn-lg">
+                    <i class="bi bi-save"></i> Registrar Alta
+                </button>
+                <a href="{% url 'emergency:admission_detail' admission.id %}" class="btn btn-secondary btn-lg">
+                    <i class="bi bi-x-circle"></i> Cancelar
+                </a>
+            </div>
+        </div>
+    </form>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Set current datetime
+    const now = new Date();
+    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+    document.getElementById('dischargeDatetime').value = now.toISOString().slice(0, 16);
+
+    // Handle discharge type changes
+    const dischargeType = document.getElementById('dischargeType');
+    const hospitalizationCard = document.getElementById('hospitalizationCard');
+    const transferCard = document.getElementById('transferCard');
+
+    dischargeType.addEventListener('change', function() {
+        // Hide all conditional cards
+        hospitalizationCard.style.display = 'none';
+        transferCard.style.display = 'none';
+
+        // Show relevant cards based on discharge type
+        if (this.value === 'hospitalization') {
+            hospitalizationCard.style.display = 'block';
+        } else if (this.value === 'transfer') {
+            transferCard.style.display = 'block';
+        }
+    });
+
+    // Handle follow-up checkbox
+    const followUpRequired = document.getElementById('followUpRequired');
+    const followUpFields = document.getElementById('followUpFields');
+
+    followUpRequired.addEventListener('change', function() {
+        followUpFields.style.display = this.checked ? 'block' : 'none';
+    });
+});
+</script>
+{% endblock %}

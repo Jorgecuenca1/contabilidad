@@ -1,0 +1,335 @@
+{% extends 'base.html' %}
+{% load surgery_filters %}
+{% block title %}Cirugías y Quirófano{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-hospital"></i> Cirugías y Quirófano</h2>
+    </div>
+
+    <!-- Estadísticas -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-subtitle mb-2">Total Cirugías</h6>
+                            <h3 class="mb-0">{{ total_surgeries }}</h3>
+                        </div>
+                        <i class="bi bi-clipboard2-pulse fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-subtitle mb-2">Cirugías Hoy</h6>
+                            <h3 class="mb-0">{{ surgeries_today }}</h3>
+                        </div>
+                        <i class="bi bi-calendar-check fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-subtitle mb-2">Programadas</h6>
+                            <h3 class="mb-0">{{ surgeries_scheduled }}</h3>
+                        </div>
+                        <i class="bi bi-clock-history fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-subtitle mb-2">Quirófanos Disponibles</h6>
+                            <h3 class="mb-0">{{ available_rooms }}</h3>
+                        </div>
+                        <i class="bi bi-door-open fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Accesos Rápidos -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-dark text-white">
+                    <i class="bi bi-grid-3x3-gap"></i> Acceso Rápido
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-md-2 mb-3">
+                            <a href="{% url 'surgery:surgery_create' %}" class="btn btn-outline-primary w-100 py-3">
+                                <i class="bi bi-plus-circle fs-3 d-block mb-2"></i>
+                                Nueva Cirugía
+                            </a>
+                        </div>
+                        <div class="col-md-2 mb-3">
+                            <a href="{% url 'surgery:surgery_list' %}" class="btn btn-outline-info w-100 py-3">
+                                <i class="bi bi-list-ul fs-3 d-block mb-2"></i>
+                                Todas las Cirugías
+                            </a>
+                        </div>
+                        <div class="col-md-2 mb-3">
+                            <a href="{% url 'surgery:operating_room_list' %}" class="btn btn-outline-success w-100 py-3">
+                                <i class="bi bi-door-closed fs-3 d-block mb-2"></i>
+                                Quirófanos
+                            </a>
+                        </div>
+                        <div class="col-md-2 mb-3">
+                            <a href="{% url 'surgery:surgical_procedure_list' %}" class="btn btn-outline-warning w-100 py-3">
+                                <i class="bi bi-journal-medical fs-3 d-block mb-2"></i>
+                                Procedimientos
+                            </a>
+                        </div>
+                        <div class="col-md-2 mb-3">
+                            <a href="{% url 'surgery:operating_room_create' %}" class="btn btn-outline-secondary w-100 py-3">
+                                <i class="bi bi-building-add fs-3 d-block mb-2"></i>
+                                Nuevo Quirófano
+                            </a>
+                        </div>
+                        <div class="col-md-2 mb-3">
+                            <a href="{% url 'surgery:surgical_procedure_create' %}" class="btn btn-outline-danger w-100 py-3">
+                                <i class="bi bi-file-earmark-plus fs-3 d-block mb-2"></i>
+                                Nuevo Procedimiento
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cirugías de Hoy -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <i class="bi bi-calendar-event"></i> Cirugías Programadas Hoy
+                </div>
+                <div class="card-body">
+                    {% if today_surgeries %}
+                        <div class="table-responsive">
+                            <table class="table table-sm table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Hora</th>
+                                        <th>Paciente</th>
+                                        <th>Procedimiento</th>
+                                        <th>Quirófano</th>
+                                        <th>Estado</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for surgery in today_surgeries %}
+                                    <tr>
+                                        <td><strong>{{ surgery.scheduled_time|time:"H:i" }}</strong></td>
+                                        <td>
+                                            <a href="{% url 'surgery:surgery_detail' surgery.id %}">
+                                                {{ surgery.patient.nombre }}
+                                            </a>
+                                        </td>
+                                        <td><small>{{ surgery.surgical_procedure.name|truncatewords:5 }}</small></td>
+                                        <td><span class="badge bg-secondary">{{ surgery.operating_room.room_number }}</span></td>
+                                        <td>
+                                            {% if surgery.status == 'scheduled' %}
+                                                <span class="badge bg-warning">Programada</span>
+                                            {% elif surgery.status == 'in_progress' %}
+                                                <span class="badge bg-primary">En Curso</span>
+                                            {% elif surgery.status == 'completed' %}
+                                                <span class="badge bg-success">Completada</span>
+                                            {% else %}
+                                                <span class="badge bg-secondary">{{ surgery.get_status_display }}</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p class="text-muted mb-0">No hay cirugías programadas para hoy</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-warning text-white">
+                    <i class="bi bi-calendar-week"></i> Próximas Cirugías (7 días)
+                </div>
+                <div class="card-body">
+                    {% if upcoming_surgeries %}
+                        <div class="table-responsive">
+                            <table class="table table-sm table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Fecha</th>
+                                        <th>Paciente</th>
+                                        <th>Procedimiento</th>
+                                        <th>Cirujano</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for surgery in upcoming_surgeries %}
+                                    <tr>
+                                        <td><strong>{{ surgery.scheduled_date|date:"d/m" }}</strong></td>
+                                        <td>
+                                            <a href="{% url 'surgery:surgery_detail' surgery.id %}">
+                                                {{ surgery.patient.nombre|truncatewords:3 }}
+                                            </a>
+                                        </td>
+                                        <td><small>{{ surgery.surgical_procedure.name|truncatewords:4 }}</small></td>
+                                        <td><small>{{ surgery.surgeon|full_name|truncatewords:2 }}</small></td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p class="text-muted mb-0">No hay cirugías programadas próximamente</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Estado de Quirófanos -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <i class="bi bi-building"></i> Estado de Quirófanos
+                </div>
+                <div class="card-body">
+                    {% if operating_rooms %}
+                        <div class="row">
+                            {% for room in operating_rooms %}
+                            <div class="col-md-3 mb-3">
+                                <div class="card {% if room.status == 'available' %}border-success{% elif room.status == 'in_use' %}border-danger{% elif room.status == 'cleaning' %}border-warning{% else %}border-secondary{% endif %}">
+                                    <div class="card-body">
+                                        <h6 class="card-title">
+                                            <i class="bi bi-door-closed"></i> {{ room.room_number }}
+                                            {% if room.has_laminar_flow %}
+                                                <i class="bi bi-wind text-info" title="Flujo Laminar"></i>
+                                            {% endif %}
+                                        </h6>
+                                        <p class="card-text">
+                                            <small><strong>{{ room.room_name }}</strong></small><br>
+                                            <small class="text-muted">{{ room.get_room_type_display }}</small>
+                                        </p>
+                                        {% if room.status == 'available' %}
+                                            <span class="badge bg-success w-100">Disponible</span>
+                                        {% elif room.status == 'in_use' %}
+                                            <span class="badge bg-danger w-100">En Uso</span>
+                                        {% elif room.status == 'cleaning' %}
+                                            <span class="badge bg-warning w-100">En Limpieza</span>
+                                        {% elif room.status == 'maintenance' %}
+                                            <span class="badge bg-info w-100">Mantenimiento</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary w-100">{{ room.get_status_display }}</span>
+                                        {% endif %}
+                                        <a href="{% url 'surgery:operating_room_detail' room.id %}" class="btn btn-sm btn-outline-primary w-100 mt-2">
+                                            Ver Detalles
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-muted">No hay quirófanos registrados. <a href="{% url 'surgery:operating_room_create' %}">Crear uno ahora</a></p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Personal Disponible -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <i class="bi bi-person-badge"></i> Cirujanos Disponibles
+                </div>
+                <div class="card-body">
+                    {% if surgeons %}
+                        <ul class="list-group list-group-flush">
+                            {% for surgeon in surgeons %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <div>
+                                    <strong>{{ surgeon|full_name }}</strong><br>
+                                    <small class="text-muted">{{ surgeon.position }}</small>
+                                </div>
+                                <span class="badge bg-success rounded-pill">Activo</span>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p class="text-muted mb-0">No hay cirujanos registrados</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-danger text-white">
+                    <i class="bi bi-heart-pulse"></i> Anestesiólogos Disponibles
+                </div>
+                <div class="card-body">
+                    {% if anesthesiologists %}
+                        <ul class="list-group list-group-flush">
+                            {% for anesthesiologist in anesthesiologists %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <div>
+                                    <strong>{{ anesthesiologist|full_name }}</strong><br>
+                                    <small class="text-muted">{{ anesthesiologist.position }}</small>
+                                </div>
+                                <span class="badge bg-success rounded-pill">Activo</span>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p class="text-muted mb-0">No hay anestesiólogos registrados</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if surgeries_in_progress > 0 %}
+    <div class="alert alert-info">
+        <i class="bi bi-info-circle"></i>
+        <strong>Atención:</strong> Hay {{ surgeries_in_progress }} cirugía(s) en progreso en este momento.
+    </div>
+    {% endif %}
+</div>
+
+<style>
+    .card {
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        transition: transform 0.2s;
+    }
+    .card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    }
+</style>
+{% endblock %}

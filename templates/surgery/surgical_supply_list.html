@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% block title %}Insumos Quirúrgicos{% endblock %}
+{% block content %}
+<div class="container-fluid">
+    <h2><i class="bi bi-box-seam"></i> Insumos Quirúrgicos</h2>
+    <p class="text-muted">Cirugía: {{ surgery.surgery_number }} - Paciente: {{ surgery.patient.nombre }}</p>
+
+    <a href="{% url 'surgery:surgical_supply_add' surgery.id %}" class="btn btn-success my-3">
+        <i class="bi bi-plus-lg"></i> Agregar Insumo
+    </a>
+
+    <div class="card">
+        <div class="card-body">
+            {% if supplies %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Tipo</th>
+                            <th>Nombre</th>
+                            <th>Lote</th>
+                            <th>Serie</th>
+                            <th>Cantidad</th>
+                            <th>Costo Unit.</th>
+                            <th>Costo Total</th>
+                            <th>Vencimiento</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for supply in supplies %}
+                        <tr>
+                            <td>{{ supply.get_supply_type_display }}</td>
+                            <td>{{ supply.name }}</td>
+                            <td>{{ supply.lot_number }}</td>
+                            <td>{{ supply.serial_number|default:"-" }}</td>
+                            <td>{{ supply.quantity }} {{ supply.unit }}</td>
+                            <td>${{ supply.unit_cost|floatformat:2|default:"-" }}</td>
+                            <td><strong>${{ supply.total_cost|floatformat:2|default:"-" }}</strong></td>
+                            <td>
+                                {% if supply.expiration_date %}
+                                    {{ supply.expiration_date|date:"d/m/Y" }}
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="6" class="text-end"><strong>TOTAL:</strong></td>
+                            <td colspan="2"><strong>${{ total_cost|floatformat:2 }}</strong></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+            {% else %}
+            <p class="text-muted">No hay insumos registrados para esta cirugía</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="mt-3">
+        <a href="{% url 'surgery:surgery_detail' surgery.id %}" class="btn btn-secondary">Volver a Cirugía</a>
+    </div>
+</div>
+{% endblock %}

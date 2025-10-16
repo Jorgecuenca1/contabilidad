@@ -37,7 +37,7 @@ class Patient(models.Model):
     company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='gynecology_patients')
     
     # Relación con terceros (el paciente es un cliente en el sistema de terceros)
-    third_party = models.OneToOneField(ThirdParty, on_delete=models.CASCADE, related_name='patient_profile')
+    third_party = models.OneToOneField(ThirdParty, on_delete=models.CASCADE, related_name='gynecology_patient_profile')
     
     # Información médica específica
     medical_record_number = models.CharField(max_length=50, help_text="Número de historia clínica")

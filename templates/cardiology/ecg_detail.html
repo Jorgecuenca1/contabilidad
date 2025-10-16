@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block title %}Detalle ECG{% endblock %}
+{% block content %}
+<div class="container-fluid">
+    <h2><i class="bi bi-activity"></i> ECG {{ ecg.ecg_number }}</h2>
+    <div class="card mt-3">
+        <div class="card-body">
+            <p><strong>Paciente:</strong> {{ ecg.patient.nombre }}</p>
+            <p><strong>Fecha:</strong> {{ ecg.ecg_date|date:"d/m/Y" }}</p>
+            <p><strong>FC:</strong> {{ ecg.heart_rate }} lpm</p>
+            <p><strong>Ritmo:</strong> {{ ecg.get_rhythm_display }}</p>
+            <p><strong>Resultado:</strong> <span class="badge bg-{{ ecg.result }}">{{ ecg.get_result_display }}</span></p>
+        </div>
+    </div>
+    <a href="{% url 'cardiology:ecg_list' %}" class="btn btn-secondary mt-3">Volver</a>
+</div>
+{% endblock %}

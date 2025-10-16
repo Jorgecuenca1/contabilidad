@@ -1,0 +1,222 @@
+{% extends 'base.html' %}
+{% block title %}Orden {{ order.order_number }} - Imágenes Diagnósticas{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-file-medical"></i> Orden {{ order.order_number }}</h2>
+        <div>
+            {% if order.can_perform %}
+            <a href="{% url 'imaging:study_create' order.id %}" class="btn btn-success">
+                <i class="bi bi-camera-video"></i> Realizar Estudio
+            </a>
+            {% endif %}
+            <a href="{% url 'imaging:order_list' %}" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i> Volver
+            </a>
+        </div>
+    </div>
+
+    <div class="row g-3">
+        <!-- Información Principal -->
+        <div class="col-md-8">
+            <div class="card mb-3">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="bi bi-info-circle"></i> Información de la Orden</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Número de Orden:</strong> {{ order.order_number }}</p>
+                            <p><strong>Estado:</strong>
+                                {% if order.status == 'pending' %}
+                                <span class="badge bg-warning">Pendiente</span>
+                                {% elif order.status == 'scheduled' %}
+                                <span class="badge bg-info">Agendada</span>
+                                {% elif order.status == 'in_progress' %}
+                                <span class="badge bg-primary">En Proceso</span>
+                                {% elif order.status == 'completed' %}
+                                <span class="badge bg-success">Completada</span>
+                                {% elif order.status == 'cancelled' %}
+                                <span class="badge bg-danger">Cancelada</span>
+                                {% endif %}
+                            </p>
+                            <p><strong>Prioridad:</strong>
+                                {% if order.priority == 'urgent' %}
+                                <span class="badge bg-danger">Urgente</span>
+                                {% elif order.priority == 'stat' %}
+                                <span class="badge bg-danger"><i class="bi bi-exclamation-triangle"></i> STAT</span>
+                                {% else %}
+                                <span class="badge bg-secondary">Rutina</span>
+                                {% endif %}
+                            </p>
+                            <p><strong>Modalidad:</strong> {{ order.modality.name }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Fecha de Orden:</strong> {{ order.ordering_date|date:"d/m/Y H:i" }}</p>
+                            <p><strong>Médico Ordenante:</strong> {{ order.ordering_physician.get_full_name }}</p>
+                            {% if order.scheduled_date %}
+                            <p><strong>Fecha Agendada:</strong> {{ order.scheduled_date|date:"d/m/Y H:i" }}</p>
+                            {% endif %}
+                            <p><strong>Costo Total:</strong> ${{ order.total_cost|floatformat:2 }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Información del Paciente -->
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-person"></i> Información del Paciente</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Nombre:</strong> {{ order.patient.third_party.name }}</p>
+                            <p><strong>Documento:</strong> {{ order.patient.third_party.get_identification_type_display }} {{ order.patient.third_party.identification_number }}</p>
+                            <p><strong>Historia Clínica:</strong> {{ order.patient.medical_record_number }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            {% if order.patient.date_of_birth %}
+                            <p><strong>Fecha de Nacimiento:</strong> {{ order.patient.date_of_birth|date:"d/m/Y" }}</p>
+                            {% endif %}
+                            {% if order.patient.third_party.phone %}
+                            <p><strong>Teléfono:</strong> {{ order.patient.third_party.phone }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Información Clínica -->
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-clipboard-pulse"></i> Información Clínica</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Procedimiento:</strong> {{ order.procedure_description }}</p>
+                    <p><strong>Región Anatómica:</strong> {{ order.anatomical_region }}</p>
+                    <p><strong>Indicación Clínica:</strong><br>{{ order.clinical_indication }}</p>
+                    {% if order.clinical_history %}
+                    <p><strong>Historia Clínica Relevante:</strong><br>{{ order.clinical_history }}</p>
+                    {% endif %}
+                    {% if order.has_allergies %}
+                    <div class="alert alert-warning">
+                        <strong><i class="bi bi-exclamation-triangle"></i> Alergias:</strong><br>
+                        {{ order.allergies_description }}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Estudios Realizados -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-camera-video"></i> Estudios Realizados</h5>
+                </div>
+                <div class="card-body">
+                    {% if studies %}
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Número</th>
+                                    <th>Fecha</th>
+                                    <th>Equipo</th>
+                                    <th>Tecnólogo</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for study in studies %}
+                                <tr>
+                                    <td>{{ study.study_number }}</td>
+                                    <td>{{ study.study_date|date:"d/m/Y H:i" }}</td>
+                                    <td>{{ study.equipment_used.name }}</td>
+                                    <td>{{ study.performing_technologist.get_full_name|truncatewords:2 }}</td>
+                                    <td>
+                                        {% if study.status == 'completed' %}
+                                        <span class="badge bg-success">Completado</span>
+                                        {% elif study.status == 'in_progress' %}
+                                        <span class="badge bg-primary">En Proceso</span>
+                                        {% else %}
+                                        <span class="badge bg-secondary">{{ study.get_status_display }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <a href="{% url 'imaging:study_detail' study.id %}" class="btn btn-sm btn-info">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <p class="text-muted text-center">No se han realizado estudios para esta orden</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Panel Lateral -->
+        <div class="col-md-4">
+            <!-- Consentimiento -->
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h6 class="mb-0"><i class="bi bi-file-earmark-check"></i> Consentimiento</h6>
+                </div>
+                <div class="card-body">
+                    {% if order.informed_consent_signed %}
+                    <p class="text-success"><i class="bi bi-check-circle"></i> Consentimiento firmado</p>
+                    <small class="text-muted">Fecha: {{ order.consent_date|date:"d/m/Y H:i" }}</small>
+                    {% else %}
+                    <p class="text-warning"><i class="bi bi-exclamation-triangle"></i> Consentimiento pendiente</p>
+                    <small class="text-muted">Requerido antes de realizar el estudio</small>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Preparación del Paciente -->
+            {% if order.modality.requires_fasting or order.modality.requires_contrast or order.modality.requires_sedation %}
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h6 class="mb-0"><i class="bi bi-info-circle"></i> Preparación Requerida</h6>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled">
+                        {% if order.modality.requires_fasting %}
+                        <li><i class="bi bi-check2"></i> Ayuno requerido</li>
+                        {% endif %}
+                        {% if order.modality.requires_contrast %}
+                        <li><i class="bi bi-check2"></i> Se utilizará medio de contraste</li>
+                        {% endif %}
+                        {% if order.modality.requires_sedation %}
+                        <li><i class="bi bi-check2"></i> Puede requerir sedación</li>
+                        {% endif %}
+                    </ul>
+                    {% if order.modality.preparation_instructions %}
+                    <hr>
+                    <small>{{ order.modality.preparation_instructions }}</small>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Auditoría -->
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="mb-0"><i class="bi bi-clock-history"></i> Auditoría</h6>
+                </div>
+                <div class="card-body">
+                    <p><small><strong>Creado por:</strong> {{ order.created_by.get_full_name }}</small></p>
+                    <p><small><strong>Fecha creación:</strong> {{ order.created_at|date:"d/m/Y H:i" }}</small></p>
+                    <p><small><strong>Última actualización:</strong> {{ order.updated_at|date:"d/m/Y H:i" }}</small></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

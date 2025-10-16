@@ -1,0 +1,165 @@
+{% extends 'base.html' %}
+{% block title %}Nueva Consulta Oftalmológica{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="mb-4">
+        <h2><i class="bi bi-clipboard-plus"></i> Nueva Consulta Oftalmológica</h2>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+
+                <!-- Información del Paciente -->
+                <div class="card mb-3">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">Información del Paciente</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <label class="form-label">Paciente <span class="text-danger">*</span></label>
+                                <select name="patient" class="form-select" required>
+                                    <option value="">Seleccione un paciente...</option>
+                                    {% for patient in patients %}
+                                    <option value="{{ patient.id }}">
+                                        {{ patient.third_party.name }} - {{ patient.third_party.identification_number }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Motivo de Consulta -->
+                <div class="card mb-3">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0">Motivo de Consulta</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="form-label">Motivo Principal <span class="text-danger">*</span></label>
+                            <textarea name="chief_complaint" class="form-control" rows="3" required
+                                      placeholder="Describa el motivo principal de la consulta..."></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Síntomas</label>
+                            <textarea name="symptoms" class="form-control" rows="2"
+                                      placeholder="Describa los síntomas actuales..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Historia Clínica -->
+                <div class="card mb-3">
+                    <div class="card-header bg-secondary text-white">
+                        <h5 class="mb-0">Historia Clínica</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Historia Ocular</label>
+                                <textarea name="ocular_history" class="form-control" rows="3"
+                                          placeholder="Cirugías, enfermedades oculares previas..."></textarea>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Historia Ocular Familiar</label>
+                                <textarea name="family_ocular_history" class="form-control" rows="3"
+                                          placeholder="Antecedentes familiares de enfermedades oculares..."></textarea>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Historia Sistémica</label>
+                                <textarea name="systemic_history" class="form-control" rows="3"
+                                          placeholder="Enfermedades generales (diabetes, hipertensión, etc.)..."></textarea>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Medicamentos Actuales</label>
+                                <textarea name="current_medications" class="form-control" rows="3"
+                                          placeholder="Medicamentos que el paciente está tomando..."></textarea>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Alergias</label>
+                                <textarea name="allergies" class="form-control" rows="2"
+                                          placeholder="Alergias conocidas (medicamentos, materiales, etc.)..."></textarea>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Uso de Corrección Visual</label>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="uses_glasses" id="uses_glasses">
+                                    <label class="form-check-label" for="uses_glasses">
+                                        Usa Gafas
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="uses_contact_lenses" id="uses_contact_lenses">
+                                    <label class="form-check-label" for="uses_contact_lenses">
+                                        Usa Lentes de Contacto
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Diagnóstico -->
+                <div class="card mb-3">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0">Diagnóstico</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Ojo Derecho (OD)</label>
+                                <textarea name="diagnosis_right_eye" class="form-control" rows="3"
+                                          placeholder="Diagnóstico del ojo derecho..."></textarea>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Ojo Izquierdo (OS)</label>
+                                <textarea name="diagnosis_left_eye" class="form-control" rows="3"
+                                          placeholder="Diagnóstico del ojo izquierdo..."></textarea>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Ambos Ojos (OU)</label>
+                                <textarea name="diagnosis_both_eyes" class="form-control" rows="3"
+                                          placeholder="Diagnóstico que afecta ambos ojos..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Plan de Tratamiento -->
+                <div class="card mb-3">
+                    <div class="card-header bg-warning text-dark">
+                        <h5 class="mb-0">Plan de Tratamiento</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="form-label">Plan de Tratamiento</label>
+                            <textarea name="treatment_plan" class="form-control" rows="4"
+                                      placeholder="Describe el plan de tratamiento recomendado..."></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Observaciones</label>
+                            <textarea name="observations" class="form-control" rows="3"
+                                      placeholder="Observaciones adicionales..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Botones -->
+                <div class="d-flex justify-content-between">
+                    <a href="{% url 'ophthalmology:consultation_list' %}" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left"></i> Cancelar
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-save"></i> Guardar Consulta
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

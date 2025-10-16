@@ -1,0 +1,179 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard - Odontología{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-teeth"></i> Odontología - Dashboard</h2>
+        <a href="{% url 'dentistry:consultation_create' %}" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> Nueva Consulta
+        </a>
+    </div>
+
+    <!-- Estadísticas principales -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="card border-primary">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-1">Consultas Hoy</h6>
+                            <h3 class="mb-0">{{ total_consultations_today }}</h3>
+                        </div>
+                        <div class="text-primary">
+                            <i class="bi bi-calendar-check fs-1"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card border-info">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-1">Planes Activos</h6>
+                            <h3 class="mb-0">{{ active_treatment_plans }}</h3>
+                        </div>
+                        <div class="text-info">
+                            <i class="bi bi-clipboard-check fs-1"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card border-warning">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-1">Procedimientos Pendientes</h6>
+                            <h3 class="mb-0">{{ pending_procedures }}</h3>
+                        </div>
+                        <div class="text-warning">
+                            <i class="bi bi-clock-history fs-1"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card border-success">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-1">Procedimientos Hoy</h6>
+                            <h3 class="mb-0">{{ procedures_today }}</h3>
+                        </div>
+                        <div class="text-success">
+                            <i class="bi bi-check-circle fs-1"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-3">
+        <!-- Consultas Recientes -->
+        <div class="col-md-7">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="bi bi-list-ul"></i> Consultas Recientes</h5>
+                    <a href="{% url 'dentistry:consultation_list' %}" class="btn btn-sm btn-outline-primary">Ver Todas</a>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Consulta</th>
+                                    <th>Paciente</th>
+                                    <th>Odontólogo</th>
+                                    <th>Fecha</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for consultation in recent_consultations %}
+                                <tr>
+                                    <td><strong>{{ consultation.consultation_number }}</strong></td>
+                                    <td>{{ consultation.patient.third_party.name|truncatewords:3 }}</td>
+                                    <td><small>{{ consultation.dentist.get_full_name|truncatewords:2 }}</small></td>
+                                    <td><small>{{ consultation.consultation_date|date:"d/m/Y H:i" }}</small></td>
+                                    <td>
+                                        <a href="{% url 'dentistry:consultation_detail' consultation.id %}" class="btn btn-sm btn-outline-info">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="5" class="text-center text-muted">No hay consultas recientes</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Planes de Tratamiento Activos -->
+        <div class="col-md-5">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="bi bi-clipboard-pulse"></i> Planes Activos</h5>
+                    <a href="{% url 'dentistry:treatment_plan_list' %}" class="btn btn-sm btn-outline-primary">Ver Todos</a>
+                </div>
+                <div class="card-body">
+                    {% if active_plans %}
+                    <div class="list-group list-group-flush">
+                        {% for plan in active_plans %}
+                        <a href="{% url 'dentistry:treatment_plan_detail' plan.id %}" class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">{{ plan.plan_number }}</h6>
+                                <small>{{ plan.plan_date|date:"d/m/Y" }}</small>
+                            </div>
+                            <p class="mb-1"><small>{{ plan.patient.third_party.name|truncatewords:3 }}</small></p>
+                            <small class="text-muted">Dr. {{ plan.dentist.get_full_name|truncatewords:2 }}</small>
+                        </a>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <p class="text-muted text-center">No hay planes activos</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Procedimientos por Categoría -->
+    {% if procedures_by_category %}
+    <div class="row mt-3">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-pie-chart"></i> Procedimientos por Categoría (Últimos 30 días)</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        {% for item in procedures_by_category %}
+                        <div class="col-md-4 mb-2">
+                            <div class="d-flex justify-content-between">
+                                <span>{{ item.procedure__category }}</span>
+                                <span class="badge bg-primary">{{ item.total }}</span>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

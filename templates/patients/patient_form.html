@@ -1,0 +1,386 @@
+{% extends 'base.html' %}
+{% block title %}{% if patient %}Editar{% else %}Nuevo{% endif %} Paciente{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>
+            <i class="bi bi-person-{% if patient %}pencil{% else %}plus{% endif %}"></i>
+            {% if patient %}Editar{% else %}Registrar Nuevo{% endif %} Paciente
+        </h2>
+        <a href="{% if patient %}{% url 'patients:patient_detail' patient.id %}{% else %}{% url 'patients:patient_list' %}{% endif %}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> {% if patient %}Cancelar{% else %}Volver{% endif %}
+        </a>
+    </div>
+
+    <form method="post" id="patientForm">
+        {% csrf_token %}
+
+        <!-- Información Personal -->
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <i class="bi bi-person-fill"></i> Información Personal
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label">Historia Clínica <span class="text-danger">*</span></label>
+                        <input type="text" name="medical_record_number" class="form-control"
+                               value="{{ patient.medical_record_number|default:medical_record_number }}"
+                               {% if patient %}readonly{% endif %} required>
+                        <small class="text-muted">Se genera automáticamente</small>
+                    </div>
+
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label">Tipo de Documento <span class="text-danger">*</span></label>
+                        <select name="identification_type" class="form-select" required>
+                            <option value="">Seleccione...</option>
+                            <option value="CC" {% if third_party_form.identification_type.value == 'CC' %}selected{% endif %}>Cédula de Ciudadanía</option>
+                            <option value="TI" {% if third_party_form.identification_type.value == 'TI' %}selected{% endif %}>Tarjeta de Identidad</option>
+                            <option value="RC" {% if third_party_form.identification_type.value == 'RC' %}selected{% endif %}>Registro Civil</option>
+                            <option value="CE" {% if third_party_form.identification_type.value == 'CE' %}selected{% endif %}>Cédula de Extranjería</option>
+                            <option value="PA" {% if third_party_form.identification_type.value == 'PA' %}selected{% endif %}>Pasaporte</option>
+                            <option value="MS" {% if third_party_form.identification_type.value == 'MS' %}selected{% endif %}>Menor Sin Identificación</option>
+                            <option value="AS" {% if third_party_form.identification_type.value == 'AS' %}selected{% endif %}>Adulto Sin Identificación</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label">Número de Documento <span class="text-danger">*</span></label>
+                        <input type="text" name="identification_number" class="form-control"
+                               value="{{ third_party_form.identification_number.value|default:'' }}"
+                               id="identificationNumber" required>
+                        <div id="duplicateWarning" class="alert alert-warning mt-2" style="display: none;">
+                            <i class="bi bi-exclamation-triangle"></i> Este documento ya está registrado
+                        </div>
+                    </div>
+
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label">Nombre Completo <span class="text-danger">*</span></label>
+                        <input type="text" name="name" class="form-control"
+                               value="{{ third_party_form.name.value|default:'' }}"
+                               placeholder="Nombre completo del paciente" required>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label">Fecha de Nacimiento <span class="text-danger">*</span></label>
+                        <input type="date" name="birth_date" class="form-control"
+                               value="{{ third_party_form.birth_date.value|date:'Y-m-d'|default:'' }}" required>
+                    </div>
+
+                    <div class="col-md-2 mb-3">
+                        <label class="form-label">Género <span class="text-danger">*</span></label>
+                        <select name="gender" class="form-select" required>
+                            <option value="">Seleccione...</option>
+                            <option value="M" {% if third_party_form.gender.value == 'M' %}selected{% endif %}>Masculino</option>
+                            <option value="F" {% if third_party_form.gender.value == 'F' %}selected{% endif %}>Femenino</option>
+                            <option value="O" {% if third_party_form.gender.value == 'O' %}selected{% endif %}>Otro</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-2 mb-3">
+                        <label class="form-label">Tipo de Sangre <span class="text-danger">*</span></label>
+                        <select name="blood_type" class="form-select" required>
+                            <option value="">Seleccione...</option>
+                            <option value="A+" {% if patient_form.blood_type.value == 'A+' %}selected{% endif %}>A+</option>
+                            <option value="A-" {% if patient_form.blood_type.value == 'A-' %}selected{% endif %}>A-</option>
+                            <option value="B+" {% if patient_form.blood_type.value == 'B+' %}selected{% endif %}>B+</option>
+                            <option value="B-" {% if patient_form.blood_type.value == 'B-' %}selected{% endif %}>B-</option>
+                            <option value="AB+" {% if patient_form.blood_type.value == 'AB+' %}selected{% endif %}>AB+</option>
+                            <option value="AB-" {% if patient_form.blood_type.value == 'AB-' %}selected{% endif %}>AB-</option>
+                            <option value="O+" {% if patient_form.blood_type.value == 'O+' %}selected{% endif %}>O+</option>
+                            <option value="O-" {% if patient_form.blood_type.value == 'O-' %}selected{% endif %}>O-</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label">Estado Civil</label>
+                        <select name="marital_status" class="form-select">
+                            <option value="">Seleccione...</option>
+                            <option value="single" {% if patient_form.marital_status.value == 'single' %}selected{% endif %}>Soltero(a)</option>
+                            <option value="married" {% if patient_form.marital_status.value == 'married' %}selected{% endif %}>Casado(a)</option>
+                            <option value="divorced" {% if patient_form.marital_status.value == 'divorced' %}selected{% endif %}>Divorciado(a)</option>
+                            <option value="widowed" {% if patient_form.marital_status.value == 'widowed' %}selected{% endif %}>Viudo(a)</option>
+                            <option value="free_union" {% if patient_form.marital_status.value == 'free_union' %}selected{% endif %}>Unión Libre</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-2 mb-3">
+                        <label class="form-label">Etnia</label>
+                        <select name="ethnicity" class="form-select">
+                            <option value="">Seleccione...</option>
+                            <option value="mestizo" {% if patient_form.ethnicity.value == 'mestizo' %}selected{% endif %}>Mestizo</option>
+                            <option value="indigena" {% if patient_form.ethnicity.value == 'indigena' %}selected{% endif %}>Indígena</option>
+                            <option value="afrodescendiente" {% if patient_form.ethnicity.value == 'afrodescendiente' %}selected{% endif %}>Afrodescendiente</option>
+                            <option value="rom" {% if patient_form.ethnicity.value == 'rom' %}selected{% endif %}>ROM (Gitano)</option>
+                            <option value="raizal" {% if patient_form.ethnicity.value == 'raizal' %}selected{% endif %}>Raizal</option>
+                            <option value="palenquero" {% if patient_form.ethnicity.value == 'palenquero' %}selected{% endif %}>Palenquero</option>
+                            <option value="otro" {% if patient_form.ethnicity.value == 'otro' %}selected{% endif %}>Otro</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Información de Contacto -->
+        <div class="card mb-4">
+            <div class="card-header bg-success text-white">
+                <i class="bi bi-telephone-fill"></i> Información de Contacto
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label">Teléfono</label>
+                        <input type="text" name="phone" class="form-control"
+                               value="{{ third_party_form.phone.value|default:'' }}"
+                               placeholder="Teléfono fijo">
+                    </div>
+
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label">Celular</label>
+                        <input type="text" name="mobile" class="form-control"
+                               value="{{ third_party_form.mobile.value|default:'' }}"
+                               placeholder="Número de celular">
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Email</label>
+                        <input type="email" name="email" class="form-control"
+                               value="{{ third_party_form.email.value|default:'' }}"
+                               placeholder="correo@ejemplo.com">
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Dirección</label>
+                        <input type="text" name="address" class="form-control"
+                               value="{{ third_party_form.address.value|default:'' }}"
+                               placeholder="Dirección completa">
+                    </div>
+
+                    <div class="col-md-2 mb-3">
+                        <label class="form-label">Ciudad</label>
+                        <input type="text" name="city" class="form-control"
+                               value="{{ third_party_form.city.value|default:'' }}">
+                    </div>
+
+                    <div class="col-md-2 mb-3">
+                        <label class="form-label">Departamento</label>
+                        <input type="text" name="state" class="form-control"
+                               value="{{ third_party_form.state.value|default:'' }}">
+                    </div>
+
+                    <div class="col-md-2 mb-3">
+                        <label class="form-label">País</label>
+                        <input type="text" name="country" class="form-control"
+                               value="{{ third_party_form.country.value|default:'Colombia' }}">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Información de Aseguramiento -->
+        <div class="card mb-4">
+            <div class="card-header bg-info text-white">
+                <i class="bi bi-shield-fill-check"></i> Información de Aseguramiento
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">EPS <span class="text-danger">*</span></label>
+                        <select name="eps" class="form-select" required>
+                            <option value="">Seleccione...</option>
+                            {% for eps in eps_list %}
+                            <option value="{{ eps.id }}" {% if patient_form.eps.value == eps.id %}selected{% endif %}>
+                                {{ eps.name }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label">Régimen <span class="text-danger">*</span></label>
+                        <select name="regime_type" class="form-select" required>
+                            <option value="">Seleccione...</option>
+                            <option value="contributivo" {% if patient_form.regime_type.value == 'contributivo' %}selected{% endif %}>Contributivo</option>
+                            <option value="subsidiado" {% if patient_form.regime_type.value == 'subsidiado' %}selected{% endif %}>Subsidiado</option>
+                            <option value="especial" {% if patient_form.regime_type.value == 'especial' %}selected{% endif %}>Especial</option>
+                            <option value="particular" {% if patient_form.regime_type.value == 'particular' %}selected{% endif %}>Particular</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label">Número de Afiliación <span class="text-danger">*</span></label>
+                        <input type="text" name="insurance_number" class="form-control"
+                               value="{{ patient_form.insurance_number.value|default:'' }}" required>
+                    </div>
+
+                    <div class="col-md-2 mb-3">
+                        <label class="form-label">Tipo de Usuario <span class="text-danger">*</span></label>
+                        <select name="user_type" class="form-select" required>
+                            <option value="">Seleccione...</option>
+                            <option value="cotizante" {% if patient_form.user_type.value == 'cotizante' %}selected{% endif %}>Cotizante</option>
+                            <option value="beneficiario" {% if patient_form.user_type.value == 'beneficiario' %}selected{% endif %}>Beneficiario</option>
+                            <option value="adicional" {% if patient_form.user_type.value == 'adicional' %}selected{% endif %}>Adicional</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Nombre del Cotizante</label>
+                        <input type="text" name="cotizante_name" class="form-control"
+                               value="{{ patient_form.cotizante_name.value|default:'' }}"
+                               placeholder="Si es beneficiario o adicional">
+                    </div>
+
+                    <div class="col-md-2 mb-3">
+                        <label class="form-label">Nivel de Clasificación</label>
+                        <input type="text" name="classification_level" class="form-control"
+                               value="{{ patient_form.classification_level.value|default:'' }}"
+                               placeholder="Ej: 1, 2, 3...">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contacto de Emergencia -->
+        <div class="card mb-4">
+            <div class="card-header bg-danger text-white">
+                <i class="bi bi-exclamation-triangle-fill"></i> Contacto de Emergencia
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Nombre Completo</label>
+                        <input type="text" name="emergency_contact_name" class="form-control"
+                               value="{{ patient_form.emergency_contact_name.value|default:'' }}">
+                    </div>
+
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label">Parentesco</label>
+                        <input type="text" name="emergency_contact_relationship" class="form-control"
+                               value="{{ patient_form.emergency_contact_relationship.value|default:'' }}"
+                               placeholder="Ej: Madre, Padre, Hermano">
+                    </div>
+
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label">Teléfono</label>
+                        <input type="text" name="emergency_contact_phone" class="form-control"
+                               value="{{ patient_form.emergency_contact_phone.value|default:'' }}">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Información Médica -->
+        <div class="card mb-4">
+            <div class="card-header bg-warning">
+                <i class="bi bi-heart-pulse-fill"></i> Información Médica
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Alergias</label>
+                        <textarea name="allergies" class="form-control" rows="3"
+                                  placeholder="Describa las alergias del paciente">{{ patient_form.allergies.value|default:'' }}</textarea>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Enfermedades Crónicas</label>
+                        <textarea name="chronic_diseases" class="form-control" rows="3"
+                                  placeholder="Describa las enfermedades crónicas">{{ patient_form.chronic_diseases.value|default:'' }}</textarea>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12 mb-3">
+                        <label class="form-label">Observaciones Generales</label>
+                        <textarea name="observations" class="form-control" rows="3"
+                                  placeholder="Cualquier información adicional relevante">{{ patient_form.observations.value|default:'' }}</textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Consentimientos y Autorizaciones -->
+        <div class="card mb-4">
+            <div class="card-header bg-secondary text-white">
+                <i class="bi bi-file-text-fill"></i> Consentimientos y Autorizaciones
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" name="informed_consent_signed"
+                                   id="informedConsent" {% if patient_form.informed_consent_signed.value %}checked{% endif %}>
+                            <label class="form-check-label" for="informedConsent">
+                                Consentimiento Informado Firmado
+                            </label>
+                        </div>
+                        <input type="date" name="informed_consent_date" class="form-control mt-2"
+                               value="{{ patient_form.informed_consent_date.value|date:'Y-m-d'|default:'' }}">
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" name="data_treatment_authorized"
+                                   id="dataTreatment" {% if patient_form.data_treatment_authorized.value %}checked{% endif %}>
+                            <label class="form-check-label" for="dataTreatment">
+                                Autorización Tratamiento de Datos
+                            </label>
+                        </div>
+                        <input type="date" name="data_treatment_date" class="form-control mt-2"
+                               value="{{ patient_form.data_treatment_date.value|date:'Y-m-d'|default:'' }}">
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" name="photo_authorization"
+                                   id="photoAuth" {% if patient_form.photo_authorization.value %}checked{% endif %}>
+                            <label class="form-check-label" for="photoAuth">
+                                Autorización de Fotografías
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Botones de Acción -->
+        <div class="d-flex justify-content-between mb-4">
+            <a href="{% if patient %}{% url 'patients:patient_detail' patient.id %}{% else %}{% url 'patients:patient_list' %}{% endif %}"
+               class="btn btn-secondary">
+                <i class="bi bi-x-circle"></i> Cancelar
+            </a>
+            <button type="submit" class="btn btn-primary btn-lg">
+                <i class="bi bi-save"></i> {% if patient %}Actualizar{% else %}Registrar{% endif %} Paciente
+            </button>
+        </div>
+    </form>
+</div>
+
+<script>
+// Detección de duplicados en tiempo real
+{% if not patient %}
+document.getElementById('identificationNumber').addEventListener('blur', function() {
+    const idNumber = this.value;
+    if (idNumber) {
+        fetch("{% url 'patients:check_duplicate_patient' %}?identification_number=" + idNumber)
+            .then(response => response.json())
+            .then(data => {
+                const warning = document.getElementById('duplicateWarning');
+                if (data.exists) {
+                    warning.style.display = 'block';
+                } else {
+                    warning.style.display = 'none';
+                }
+            });
+    }
+});
+{% endif %}
+</script>
+{% endblock %}

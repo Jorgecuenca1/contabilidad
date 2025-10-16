@@ -1,0 +1,275 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ component.component_code }} - Hemocomponente{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'core:dashboard' %}">Dashboard</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'blood_bank:index' %}">Banco de Sangre</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'blood_bank:component_list' %}">Hemocomponentes</a></li>
+            <li class="breadcrumb-item active">{{ component.component_code }}</li>
+        </ol>
+    </nav>
+
+    <div class="row mb-3">
+        <div class="col-md-8">
+            <h2><i class="bi bi-droplet-half text-danger"></i> {{ component.component_code }}</h2>
+            <p class="text-muted">{{ component.get_component_type_display }}</p>
+        </div>
+        <div class="col-md-4 text-end">
+            {% if days_to_expiration < 0 %}
+                <span class="badge bg-danger fs-5">VENCIDO</span>
+            {% elif days_to_expiration <= 3 %}
+                <span class="badge bg-danger fs-5">VENCE EN {{ days_to_expiration }} DÍAS</span>
+            {% elif days_to_expiration <= 7 %}
+                <span class="badge bg-warning text-dark fs-5">VENCE EN {{ days_to_expiration }} DÍAS</span>
+            {% endif %}
+            <br>
+            <a href="{% url 'blood_bank:component_list' %}" class="btn btn-secondary mt-2">
+                <i class="bi bi-arrow-left"></i> Volver
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Información del Componente -->
+        <div class="col-md-4">
+            <div class="card mb-3">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="mb-0"><i class="bi bi-info-circle"></i> Información del Componente</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-sm">
+                        <tr>
+                            <th width="45%">Código:</th>
+                            <td><strong>{{ component.component_code }}</strong></td>
+                        </tr>
+                        <tr>
+                            <th>Tipo:</th>
+                            <td><span class="badge bg-info">{{ component.get_component_type_display }}</span></td>
+                        </tr>
+                        <tr>
+                            <th>Tipo Sangre:</th>
+                            <td><span class="badge bg-danger fs-6">{{ component.blood_type }}</span></td>
+                        </tr>
+                        <tr>
+                            <th>Volumen:</th>
+                            <td><strong>{{ component.volume_ml }} ml</strong></td>
+                        </tr>
+                        <tr>
+                            <th>Estado:</th>
+                            <td>
+                                {% if component.status == 'available' %}
+                                    <span class="badge bg-success">Disponible</span>
+                                {% elif component.status == 'used' %}
+                                    <span class="badge bg-secondary">Usado</span>
+                                {% elif component.status == 'expired' %}
+                                    <span class="badge bg-danger">Vencido</span>
+                                {% elif component.status == 'discarded' %}
+                                    <span class="badge bg-dark">Descartado</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card mb-3">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="bi bi-calendar"></i> Fechas</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-sm">
+                        <tr>
+                            <th width="45%">Fecha Separación:</th>
+                            <td>{{ component.separation_date|date:"d/m/Y"|default:"-" }}</td>
+                        </tr>
+                        <tr>
+                            <th>Fecha Vencimiento:</th>
+                            <td><strong>{{ component.expiration_date|date:"d/m/Y" }}</strong></td>
+                        </tr>
+                        <tr>
+                            <th>Días p/Vencer:</th>
+                            <td>
+                                {% if days_to_expiration < 0 %}
+                                    <span class="badge bg-danger">Vencido hace {{ days_to_expiration|abs }} días</span>
+                                {% elif days_to_expiration <= 3 %}
+                                    <span class="badge bg-danger">{{ days_to_expiration }} días</span>
+                                {% elif days_to_expiration <= 7 %}
+                                    <span class="badge bg-warning text-dark">{{ days_to_expiration }} días</span>
+                                {% else %}
+                                    <span class="badge bg-success">{{ days_to_expiration }} días</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="bi bi-thermometer-half"></i> Almacenamiento</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-sm">
+                        <tr>
+                            <th width="45%">Temp. Almacén:</th>
+                            <td>{{ component.storage_temperature|default:"-" }} °C</td>
+                        </tr>
+                        <tr>
+                            <th>Ubicación:</th>
+                            <td>{{ component.storage_location|default:"-" }}</td>
+                        </tr>
+                        <tr>
+                            <th>Notas:</th>
+                            <td>{{ component.notes|default:"-" }}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Información de la Donación Origen -->
+        <div class="col-md-8">
+            <div class="card mb-3">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="bi bi-droplet-fill"></i> Donación de Origen</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-sm">
+                        <tr>
+                            <th width="25%">Número Donación:</th>
+                            <td><a href="{% url 'blood_bank:donation_detail' component.donation.id %}"><strong>{{ component.donation.donation_number }}</strong></a></td>
+                        </tr>
+                        <tr>
+                            <th>Donante:</th>
+                            <td>
+                                <a href="{% url 'blood_bank:donor_detail' component.donation.donor.id %}">
+                                    {{ component.donation.donor.first_name }} {{ component.donation.donor.last_name }}
+                                </a>
+                                ({{ component.donation.donor.donor_code }})
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Fecha Donación:</th>
+                            <td>{{ component.donation.donation_date|date:"d/m/Y H:i" }}</td>
+                        </tr>
+                        <tr>
+                            <th>Tipo Donación:</th>
+                            <td><span class="badge bg-info">{{ component.donation.get_donation_type_display }}</span></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Pruebas de Compatibilidad -->
+            <div class="card mb-3">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0"><i class="bi bi-prescription2"></i> Pruebas de Compatibilidad</h5>
+                </div>
+                <div class="card-body">
+                    {% if compatibility_tests %}
+                    <div class="table-responsive">
+                        <table class="table table-sm table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Fecha Prueba</th>
+                                    <th>Tipo Prueba</th>
+                                    <th>Paciente</th>
+                                    <th>Resultado</th>
+                                    <th>Compatible</th>
+                                    <th>Realizada por</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for test in compatibility_tests %}
+                                <tr>
+                                    <td>{{ test.test_date|date:"d/m/Y H:i" }}</td>
+                                    <td><strong>{{ test.get_test_type_display }}</strong></td>
+                                    <td>{{ test.recipient.third_party.get_full_name }}</td>
+                                    <td>{{ test.get_result_display }}</td>
+                                    <td>
+                                        {% if test.is_compatible %}
+                                            <span class="badge bg-success">Compatible</span>
+                                        {% else %}
+                                            <span class="badge bg-danger">Incompatible</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ test.performed_by.third_party.get_full_name|default:"-" }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle"></i> No se han registrado pruebas de compatibilidad para este componente.
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Historial de Transfusiones -->
+            <div class="card">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="mb-0"><i class="bi bi-activity"></i> Historial de Transfusiones</h5>
+                </div>
+                <div class="card-body">
+                    {% if transfusions %}
+                    <div class="table-responsive">
+                        <table class="table table-sm table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Número</th>
+                                    <th>Paciente</th>
+                                    <th>Fecha Inicio</th>
+                                    <th>Médico Ordena</th>
+                                    <th>Enfermera Admin.</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for trans in transfusions %}
+                                <tr>
+                                    <td><a href="{% url 'blood_bank:transfusion_detail' trans.id %}"><strong>{{ trans.transfusion_number }}</strong></a></td>
+                                    <td>{{ trans.patient.third_party.get_full_name }}</td>
+                                    <td>{{ trans.start_datetime|date:"d/m/Y H:i" }}</td>
+                                    <td>{{ trans.ordering_physician.third_party.get_full_name|default:"-" }}</td>
+                                    <td>{{ trans.administering_nurse.third_party.get_full_name|default:"-" }}</td>
+                                    <td>
+                                        {% if trans.status == 'pending' %}
+                                            <span class="badge bg-secondary">Pendiente</span>
+                                        {% elif trans.status == 'in_progress' %}
+                                            <span class="badge bg-warning text-dark">En Progreso</span>
+                                        {% elif trans.status == 'completed' %}
+                                            <span class="badge bg-success">Completada</span>
+                                        {% elif trans.status == 'adverse_reaction' %}
+                                            <span class="badge bg-danger">Reacción Adversa</span>
+                                        {% elif trans.status == 'cancelled' %}
+                                            <span class="badge bg-dark">Cancelada</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <a href="{% url 'blood_bank:transfusion_detail' trans.id %}" class="btn btn-sm btn-info">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle"></i> Este componente no ha sido utilizado en ninguna transfusión aún.
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

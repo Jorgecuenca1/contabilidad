@@ -1,0 +1,180 @@
+{% extends 'base.html' %}
+{% block title %}Salud Ocupacional - Dashboard{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-hospital"></i> Salud Ocupacional</h2>
+        <div>
+            <a href="{% url 'occupational_health:exam_create' %}" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> Nuevo Examen
+            </a>
+            <a href="{% url 'occupational_health:report_create' %}" class="btn btn-success">
+                <i class="bi bi-file-earmark-bar-graph"></i> Nuevo Reporte
+            </a>
+        </div>
+    </div>
+
+    <!-- Estadísticas Generales -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="card border-primary">
+                <div class="card-body text-center">
+                    <i class="bi bi-clipboard-check fs-1 text-primary"></i>
+                    <h3 class="mt-2">{{ stats.total_exams }}</h3>
+                    <p class="text-muted mb-0">Total Exámenes</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-success">
+                <div class="card-body text-center">
+                    <i class="bi bi-check-circle fs-1 text-success"></i>
+                    <h3 class="mt-2">{{ stats.completed_exams }}</h3>
+                    <p class="text-muted mb-0">Completados</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-warning">
+                <div class="card-body text-center">
+                    <i class="bi bi-clock-history fs-1 text-warning"></i>
+                    <h3 class="mt-2">{{ stats.pending_exams }}</h3>
+                    <p class="text-muted mb-0">Pendientes</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-info">
+                <div class="card-body text-center">
+                    <i class="bi bi-award fs-1 text-info"></i>
+                    <h3 class="mt-2">{{ stats.total_aptitudes }}</h3>
+                    <p class="text-muted mb-0">Aptitudes Emitidas</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Estadísticas por Tipo de Examen -->
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0"><i class="bi bi-bar-chart"></i> Exámenes por Tipo</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="p-3 border rounded mb-2">
+                        <strong>Ingreso:</strong> <span class="badge bg-primary">{{ stats.ingreso_exams }}</span>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="p-3 border rounded mb-2">
+                        <strong>Periódico:</strong> <span class="badge bg-info">{{ stats.periodico_exams }}</span>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="p-3 border rounded mb-2">
+                        <strong>Retiro:</strong> <span class="badge bg-secondary">{{ stats.retiro_exams }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Accesos Rápidos -->
+    <div class="card mb-4">
+        <div class="card-header bg-success text-white">
+            <h5 class="mb-0"><i class="bi bi-lightning"></i> Accesos Rápidos</h5>
+        </div>
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <a href="{% url 'occupational_health:exam_list' %}" class="btn btn-outline-primary w-100 py-3">
+                        <i class="bi bi-list-ul fs-3"></i>
+                        <div class="mt-2">Ver Todos los Exámenes</div>
+                    </a>
+                </div>
+                <div class="col-md-4">
+                    <a href="{% url 'occupational_health:aptitude_list' %}" class="btn btn-outline-success w-100 py-3">
+                        <i class="bi bi-award fs-3"></i>
+                        <div class="mt-2">Ver Aptitudes Laborales</div>
+                    </a>
+                </div>
+                <div class="col-md-4">
+                    <a href="{% url 'occupational_health:report_list' %}" class="btn btn-outline-info w-100 py-3">
+                        <i class="bi bi-file-earmark-bar-graph fs-3"></i>
+                        <div class="mt-2">Ver Reportes Empresariales</div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Exámenes Recientes -->
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0"><i class="bi bi-clock-history"></i> Exámenes Recientes</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Número</th>
+                            <th>Trabajador</th>
+                            <th>Empresa</th>
+                            <th>Tipo</th>
+                            <th>Fecha</th>
+                            <th>Estado</th>
+                            <th>Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for exam in recent_exams %}
+                        <tr>
+                            <td><strong>{{ exam.exam_number }}</strong></td>
+                            <td>{{ exam.patient.third_party.name }}</td>
+                            <td>{{ exam.company_name|truncatewords:3 }}</td>
+                            <td>
+                                {% if exam.exam_type == 'ingreso' %}
+                                <span class="badge bg-primary">Ingreso</span>
+                                {% elif exam.exam_type == 'periodico' %}
+                                <span class="badge bg-info">Periódico</span>
+                                {% elif exam.exam_type == 'retiro' %}
+                                <span class="badge bg-secondary">Retiro</span>
+                                {% else %}
+                                <span class="badge bg-dark">{{ exam.get_exam_type_display }}</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ exam.exam_date|date:"d/m/Y" }}</td>
+                            <td>
+                                {% if exam.status == 'completado' %}
+                                <span class="badge bg-success">Completado</span>
+                                {% elif exam.status == 'en_proceso' %}
+                                <span class="badge bg-warning text-dark">En Proceso</span>
+                                {% elif exam.status == 'programado' %}
+                                <span class="badge bg-info">Programado</span>
+                                {% else %}
+                                <span class="badge bg-danger">Cancelado</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{% url 'occupational_health:exam_detail' exam.id %}" class="btn btn-sm btn-outline-primary">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="7" class="text-center text-muted py-4">
+                                No hay exámenes recientes. <a href="{% url 'occupational_health:exam_create' %}">Crear primer examen</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

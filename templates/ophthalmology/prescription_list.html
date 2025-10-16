@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+{% block title %}Prescripciones de Lentes{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-eyeglasses"></i> Prescripciones de Lentes</h2>
+        <a href="{% url 'ophthalmology:prescription_create' %}" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> Nueva Prescripción
+        </a>
+    </div>
+
+    <!-- Filtros -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-10">
+                    <label class="form-label">Buscar</label>
+                    <input type="text" name="search" class="form-control" value="{{ search }}"
+                           placeholder="Número de prescripción, paciente, identificación...">
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-search"></i> Buscar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Tabla de Prescripciones -->
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Número</th>
+                            <th>Paciente</th>
+                            <th>Identificación</th>
+                            <th>Oftalmólogo</th>
+                            <th>Fecha</th>
+                            <th>Tipo de Lentes</th>
+                            <th>Válida Hasta</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for prescription in page_obj %}
+                        <tr>
+                            <td><strong>{{ prescription.prescription_number }}</strong></td>
+                            <td>{{ prescription.patient.third_party.name }}</td>
+                            <td>{{ prescription.patient.third_party.identification_number }}</td>
+                            <td>{{ prescription.ophthalmologist.get_full_name }}</td>
+                            <td>{{ prescription.prescription_date|date:"d/m/Y" }}</td>
+                            <td>{{ prescription.get_lens_type_display }}</td>
+                            <td>
+                                {% if prescription.valid_until %}
+                                    {{ prescription.valid_until|date:"d/m/Y" }}
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if prescription.is_active %}
+                                    <span class="badge bg-success">Activa</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">Inactiva</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{% url 'ophthalmology:prescription_detail' prescription.id %}"
+                                   class="btn btn-sm btn-outline-primary" title="Ver Detalle">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="9" class="text-center text-muted py-4">
+                                No se encontraron prescripciones
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Paginación -->
+            {% if page_obj.has_other_pages %}
+            <nav aria-label="Navegación de páginas">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}&search={{ search }}">Anterior</a>
+                    </li>
+                    {% endif %}
+
+                    {% for num in page_obj.paginator.page_range %}
+                    {% if page_obj.number == num %}
+                    <li class="page-item active">
+                        <span class="page-link">{{ num }}</span>
+                    </li>
+                    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ num }}&search={{ search }}">{{ num }}</a>
+                    </li>
+                    {% endif %}
+                    {% endfor %}
+
+                    {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}&search={{ search }}">Siguiente</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

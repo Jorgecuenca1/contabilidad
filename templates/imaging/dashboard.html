@@ -1,0 +1,198 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard - Imágenes Diagnósticas{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-x-ray"></i> Imágenes Diagnósticas - Dashboard</h2>
+        <a href="{% url 'imaging:order_create' %}" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> Nueva Orden
+        </a>
+    </div>
+
+    <!-- Estadísticas principales -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="card border-primary">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-1">Órdenes Hoy</h6>
+                            <h3 class="mb-0">{{ total_orders_today }}</h3>
+                        </div>
+                        <div class="text-primary">
+                            <i class="bi bi-file-medical fs-1"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card border-warning">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-1">Órdenes Pendientes</h6>
+                            <h3 class="mb-0">{{ pending_orders }}</h3>
+                        </div>
+                        <div class="text-warning">
+                            <i class="bi bi-clock-history fs-1"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card border-info">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-1">Agendadas Hoy</h6>
+                            <h3 class="mb-0">{{ scheduled_today }}</h3>
+                        </div>
+                        <div class="text-info">
+                            <i class="bi bi-calendar-check fs-1"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card border-danger">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-1">Sin Informe</h6>
+                            <h3 class="mb-0">{{ studies_pending_report }}</h3>
+                        </div>
+                        <div class="text-danger">
+                            <i class="bi bi-file-earmark-text fs-1"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Estadísticas secundarias -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-4">
+            <div class="card border-success">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-1">Estudios Hoy</h6>
+                            <h3 class="mb-0">{{ studies_today }}</h3>
+                        </div>
+                        <div class="text-success">
+                            <i class="bi bi-camera-video fs-1"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card border-primary">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-1">Equipos Operacionales</h6>
+                            <h3 class="mb-0">{{ operational_equipment }}</h3>
+                        </div>
+                        <div class="text-primary">
+                            <i class="bi bi-gear-wide-connected fs-1"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-3">
+        <!-- Órdenes Recientes -->
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="bi bi-list-ul"></i> Órdenes Recientes</h5>
+                    <a href="{% url 'imaging:order_list' %}" class="btn btn-sm btn-outline-primary">Ver Todas</a>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Orden</th>
+                                    <th>Paciente</th>
+                                    <th>Modalidad</th>
+                                    <th>Estado</th>
+                                    <th>Fecha</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for order in recent_orders %}
+                                <tr>
+                                    <td><strong>{{ order.order_number }}</strong></td>
+                                    <td>{{ order.patient.third_party.name|truncatewords:3 }}</td>
+                                    <td><small>{{ order.modality.name|truncatewords:2 }}</small></td>
+                                    <td>
+                                        {% if order.status == 'pending' %}
+                                        <span class="badge bg-warning">Pendiente</span>
+                                        {% elif order.status == 'scheduled' %}
+                                        <span class="badge bg-info">Agendada</span>
+                                        {% elif order.status == 'in_progress' %}
+                                        <span class="badge bg-primary">En Proceso</span>
+                                        {% elif order.status == 'completed' %}
+                                        <span class="badge bg-success">Completada</span>
+                                        {% elif order.status == 'cancelled' %}
+                                        <span class="badge bg-danger">Cancelada</span>
+                                        {% endif %}
+                                    </td>
+                                    <td><small>{{ order.ordering_date|date:"d/m/Y H:i" }}</small></td>
+                                    <td>
+                                        <a href="{% url 'imaging:order_detail' order.id %}" class="btn btn-sm btn-outline-info">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="6" class="text-center text-muted">No hay órdenes recientes</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Órdenes por Modalidad -->
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-pie-chart"></i> Órdenes por Modalidad (30 días)</h5>
+                </div>
+                <div class="card-body">
+                    {% if orders_by_modality %}
+                    <ul class="list-group list-group-flush">
+                        {% for item in orders_by_modality %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                            <small>{{ item.modality__name|truncatewords:3 }}</small>
+                            <span class="badge bg-primary rounded-pill">{{ item.total }}</span>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    {% else %}
+                    <p class="text-muted text-center">No hay datos disponibles</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

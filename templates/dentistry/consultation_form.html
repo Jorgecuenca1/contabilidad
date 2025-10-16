@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+{% block title %}Nueva Consulta - Odontología{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <h2 class="mb-4"><i class="bi bi-plus-circle"></i> Nueva Consulta Odontológica</h2>
+
+    <div class="card">
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Paciente <span class="text-danger">*</span></label>
+                        <select name="patient" class="form-select" required>
+                            <option value="">Seleccione...</option>
+                            {% for patient in patients %}
+                            <option value="{{ patient.id }}">{{ patient.third_party.name }} - {{ patient.third_party.identification_number }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="col-12">
+                        <label class="form-label">Motivo de Consulta <span class="text-danger">*</span></label>
+                        <textarea name="chief_complaint" class="form-control" rows="2" required></textarea>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">Enfermedad Actual</label>
+                        <textarea name="current_illness" class="form-control" rows="3"></textarea>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">Antecedentes Odontológicos</label>
+                        <textarea name="dental_history" class="form-control" rows="3"></textarea>
+                    </div>
+
+                    <div class="col-12">
+                        <label class="form-label">Antecedentes Médicos</label>
+                        <textarea name="medical_history" class="form-control" rows="2"></textarea>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">Examen Extraoral</label>
+                        <textarea name="extraoral_examination" class="form-control" rows="3"></textarea>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">Examen Intraoral</label>
+                        <textarea name="intraoral_examination" class="form-control" rows="3"></textarea>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">Higiene Oral</label>
+                        <select name="oral_hygiene" class="form-select">
+                            <option value="">No evaluada</option>
+                            <option value="excellent">Excelente</option>
+                            <option value="good">Buena</option>
+                            <option value="fair">Regular</option>
+                            <option value="poor">Mala</option>
+                        </select>
+                    </div>
+
+                    <div class="col-12">
+                        <label class="form-label">Diagnóstico <span class="text-danger">*</span></label>
+                        <textarea name="diagnosis" class="form-control" rows="3" required></textarea>
+                    </div>
+
+                    <div class="col-12">
+                        <label class="form-label">Observaciones</label>
+                        <textarea name="observations" class="form-control" rows="2"></textarea>
+                    </div>
+
+                    <div class="col-12 mt-4">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-save"></i> Guardar Consulta
+                        </button>
+                        <a href="{% url 'dentistry:consultation_list' %}" class="btn btn-secondary">Cancelar</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

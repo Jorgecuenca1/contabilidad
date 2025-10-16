@@ -1,0 +1,119 @@
+{% extends 'base.html' %}
+{% block title %}Agregar Examen de Laboratorio{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <h2 class="mb-4">
+        <i class="bi bi-file-medical"></i> Agregar Examen de Laboratorio - {{ exam.exam_number }}
+    </h2>
+
+    <div class="alert alert-info">
+        <strong>Trabajador:</strong> {{ exam.patient.third_party.name }} |
+        <strong>Empresa:</strong> {{ exam.company_name }}
+    </div>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <div class="card mb-3">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="bi bi-file-medical"></i> Información del Examen</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label">Tipo de Examen <span class="text-danger">*</span></label>
+                        <select name="test_type" class="form-select" required>
+                            <option value="">Seleccionar...</option>
+                            <option value="hematologia">Hematología Completa</option>
+                            <option value="glicemia">Glicemia</option>
+                            <option value="perfil_lipidico">Perfil Lipídico</option>
+                            <option value="creatinina">Creatinina</option>
+                            <option value="parcial_orina">Parcial de Orina</option>
+                            <option value="colinesterasa">Colinesterasa</option>
+                            <option value="espirometria">Espirometría</option>
+                            <option value="audiometria">Audiometría</option>
+                            <option value="visiometria">Visiometría</option>
+                            <option value="rayos_x">Rayos X</option>
+                            <option value="electrocardiograma">Electrocardiograma</option>
+                            <option value="otro">Otro</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Nombre del Examen <span class="text-danger">*</span></label>
+                        <input type="text" name="test_name" class="form-control" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Fecha de Realización <span class="text-danger">*</span></label>
+                        <input type="date" name="test_date" class="form-control" required>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mb-3">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0"><i class="bi bi-clipboard-data"></i> Resultados</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Resultado</label>
+                        <textarea name="result_value" class="form-control" rows="4" placeholder="Resultado del examen"></textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Valores de Referencia</label>
+                        <textarea name="reference_values" class="form-control" rows="4" placeholder="Rangos normales"></textarea>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Estado del Resultado <span class="text-danger">*</span></label>
+                        <select name="result_status" class="form-select" required>
+                            <option value="pendiente">Pendiente</option>
+                            <option value="normal">Normal</option>
+                            <option value="alterado">Alterado</option>
+                            <option value="critico">Crítico</option>
+                        </select>
+                    </div>
+                    <div class="col-md-8">
+                        <label class="form-label">Interpretación</label>
+                        <textarea name="interpretation" class="form-control" rows="2" placeholder="Interpretación del resultado"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mb-3">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-building"></i> Información del Laboratorio</h6>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Nombre del Laboratorio</label>
+                        <input type="text" name="laboratory_name" class="form-control">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Realizado por</label>
+                        <input type="text" name="performed_by" class="form-control" placeholder="Nombre del profesional">
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">Observaciones</label>
+                        <textarea name="observations" class="form-control" rows="2"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-body">
+                <button type="submit" class="btn btn-primary btn-lg">
+                    <i class="bi bi-save"></i> Guardar Examen
+                </button>
+                <a href="{% url 'occupational_health:exam_detail' exam.id %}" class="btn btn-secondary btn-lg">
+                    <i class="bi bi-x-circle"></i> Cancelar
+                </a>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}

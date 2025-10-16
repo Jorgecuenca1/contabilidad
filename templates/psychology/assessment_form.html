@@ -1,0 +1,132 @@
+{% extends 'base.html' %}
+{% block title %}{% if assessment %}Editar{% else %}Nueva{% endif %} Evaluación - Psicología{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <h2 class="mb-4">
+        <i class="bi bi-file-earmark-text"></i>
+        {% if assessment %}Editar Evaluación {{ assessment.assessment_number }}{% else %}Nueva Evaluación Psicológica{% endif %}
+    </h2>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <!-- Información Básica -->
+        <div class="card mb-3">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="bi bi-info-circle"></i> Información Básica</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Paciente <span class="text-danger">*</span></label>
+                        <select name="patient" class="form-select" required {% if assessment %}disabled{% endif %}>
+                            <option value="">Seleccione un paciente...</option>
+                            {% for patient in patients %}
+                            <option value="{{ patient.id }}" {% if assessment and assessment.patient.id == patient.id %}selected{% elif consultation and consultation.patient.id == patient.id %}selected{% endif %}>
+                                {{ patient.third_party.name }} - {{ patient.third_party.identification_number }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Consulta Relacionada</label>
+                        <select name="consultation" class="form-select">
+                            <option value="">Ninguna</option>
+                            {% for cons in consultations %}
+                            <option value="{{ cons.id }}" {% if assessment and assessment.consultation and assessment.consultation.id == cons.id %}selected{% elif consultation and consultation.id == cons.id %}selected{% endif %}>
+                                {{ cons.consultation_number }} - {{ cons.consultation_date|date:"d/m/Y" }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Fecha de Evaluación <span class="text-danger">*</span></label>
+                        <input type="date" name="assessment_date" class="form-control" required value="{{ assessment.assessment_date|date:'Y-m-d'|default:'' }}">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Tipo de Evaluación <span class="text-danger">*</span></label>
+                        <select name="assessment_type" class="form-select" required>
+                            <option value="">Seleccione un tipo...</option>
+                            <option value="cognitive" {% if assessment and assessment.assessment_type == 'cognitive' %}selected{% endif %}>Evaluación Cognitiva</option>
+                            <option value="personality" {% if assessment and assessment.assessment_type == 'personality' %}selected{% endif %}>Evaluación de Personalidad</option>
+                            <option value="neuropsychological" {% if assessment and assessment.assessment_type == 'neuropsychological' %}selected{% endif %}>Evaluación Neuropsicológica</option>
+                            <option value="vocational" {% if assessment and assessment.assessment_type == 'vocational' %}selected{% endif %}>Evaluación Vocacional</option>
+                            <option value="forensic" {% if assessment and assessment.assessment_type == 'forensic' %}selected{% endif %}>Evaluación Forense</option>
+                            <option value="clinical" {% if assessment and assessment.assessment_type == 'clinical' %}selected{% endif %}>Evaluación Clínica</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Propósito -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-question-circle"></i> Propósito de la Evaluación</h6>
+            </div>
+            <div class="card-body">
+                <textarea name="purpose" class="form-control" rows="3" required placeholder="Razón o propósito de la evaluación psicológica...">{{ assessment.purpose|default:'' }}</textarea>
+            </div>
+        </div>
+
+        <!-- Resultados -->
+        <div class="card mb-3">
+            <div class="card-header bg-info text-white">
+                <h6 class="mb-0"><i class="bi bi-bar-chart"></i> Resultados</h6>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-12">
+                        <label class="form-label">Resumen de Resultados <span class="text-danger">*</span></label>
+                        <textarea name="results_summary" class="form-control" rows="4" required placeholder="Resultados generales de la evaluación...">{{ assessment.results_summary|default:'' }}</textarea>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">Interpretación <span class="text-danger">*</span></label>
+                        <textarea name="interpretations" class="form-control" rows="4" required placeholder="Análisis e interpretación de los resultados obtenidos...">{{ assessment.interpretations|default:'' }}</textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Conclusiones y Recomendaciones -->
+        <div class="card mb-3">
+            <div class="card-header bg-success text-white">
+                <h6 class="mb-0"><i class="bi bi-clipboard-check"></i> Conclusiones y Recomendaciones</h6>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-12">
+                        <label class="form-label">Conclusiones <span class="text-danger">*</span></label>
+                        <textarea name="conclusions" class="form-control" rows="3" required placeholder="Conclusiones principales de la evaluación...">{{ assessment.conclusions|default:'' }}</textarea>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">Recomendaciones <span class="text-danger">*</span></label>
+                        <textarea name="recommendations" class="form-control" rows="3" required placeholder="Recomendaciones basadas en los resultados...">{{ assessment.recommendations|default:'' }}</textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Observaciones -->
+        <div class="card mb-3">
+            <div class="card-body">
+                <label class="form-label">Observaciones Adicionales</label>
+                <textarea name="observations" class="form-control" rows="2" placeholder="Notas adicionales...">{{ assessment.observations|default:'' }}</textarea>
+            </div>
+        </div>
+
+        <!-- Botones de Acción -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <button type="submit" class="btn btn-primary btn-lg">
+                    <i class="bi bi-save"></i> Guardar Evaluación
+                </button>
+                <a href="{% url 'psychology:assessment_list' %}" class="btn btn-secondary btn-lg">
+                    <i class="bi bi-x-circle"></i> Cancelar
+                </a>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}

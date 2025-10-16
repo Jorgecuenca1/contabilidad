@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+{% block title %}Nueva Admisión{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-person-plus"></i> Nueva Admisión Hospitalaria</h2>
+        <a href="{% url 'hospitalization:admission_list' %}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Cancelar
+        </a>
+    </div>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <!-- Selección de Paciente -->
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <i class="bi bi-person-fill"></i> Información del Paciente
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-12 mb-3">
+                        <label class="form-label">Paciente <span class="text-danger">*</span></label>
+                        <select name="patient" class="form-select" required>
+                            <option value="">Seleccione un paciente...</option>
+                            {% for patient in patients %}
+                            <option value="{{ patient.id }}">
+                                {{ patient.third_party.name }} - {{ patient.third_party.identification_number }} - HC: {{ patient.medical_record_number }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                        <small class="text-muted">Seleccione el paciente a hospitalizar</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Información de Admisión -->
+        <div class="card mb-4">
+            <div class="card-header bg-info text-white">
+                <i class="bi bi-hospital"></i> Información de Admisión
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Tipo de Admisión <span class="text-danger">*</span></label>
+                        <select name="admission_type" class="form-select" required>
+                            <option value="">Seleccione...</option>
+                            <option value="emergency">Urgencias</option>
+                            <option value="programmed">Programada</option>
+                            <option value="referral">Remitido</option>
+                            <option value="newborn">Recién Nacido</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-8 mb-3">
+                        <label class="form-label">Cama Asignada <span class="text-danger">*</span></label>
+                        <select name="bed" class="form-select" required>
+                            <option value="">Seleccione una cama disponible...</option>
+                            {% for bed in available_beds %}
+                            <option value="{{ bed.id }}">
+                                {{ bed.code }} - {{ bed.ward.name }} - Hab. {{ bed.room_number }} - {{ bed.get_bed_type_display }}
+                                {% if bed.has_monitor %} [Monitor]{% endif %}
+                                {% if bed.has_oxygen %} [O2]{% endif %}
+                            </option>
+                            {% endfor %}
+                        </select>
+                        <small class="text-muted">Seleccione la cama donde se hospitalizará el paciente</small>
+                    </div>
+
+                    <div class="col-md-12 mb-3">
+                        <label class="form-label">Médico Tratante <span class="text-danger">*</span></label>
+                        <select name="attending_physician" class="form-select" required>
+                            <option value="">Seleccione el médico responsable...</option>
+                            {% for physician in physicians %}
+                            <option value="{{ physician.id }}">
+                                Dr(a). {{ physician.get_full_name|default:physician.username }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Diagnóstico y Motivo -->
+        <div class="card mb-4">
+            <div class="card-header bg-warning">
+                <i class="bi bi-clipboard-pulse"></i> Diagnóstico y Motivo de Hospitalización
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-12 mb-3">
+                        <label class="form-label">Diagnóstico de Ingreso <span class="text-danger">*</span></label>
+                        <textarea name="admission_diagnosis" class="form-control" rows="3" required
+                                  placeholder="Ingrese el diagnóstico médico de ingreso"></textarea>
+                    </div>
+
+                    <div class="col-md-12 mb-3">
+                        <label class="form-label">Motivo de Hospitalización <span class="text-danger">*</span></label>
+                        <textarea name="admission_reason" class="form-control" rows="3" required
+                                  placeholder="Describa el motivo por el cual el paciente requiere hospitalización"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Botones de Acción -->
+        <div class="d-flex justify-content-between mb-4">
+            <a href="{% url 'hospitalization:admission_list' %}" class="btn btn-secondary">
+                <i class="bi bi-x-circle"></i> Cancelar
+            </a>
+            <button type="submit" class="btn btn-primary btn-lg">
+                <i class="bi bi-save"></i> Registrar Admisión
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}

@@ -11,7 +11,7 @@ from django.db.models import Q
 from django.utils import timezone
 
 from core.decorators import company_required, module_permission_required
-from .models import LabOrder, TestResult, LabTest, LabSection, Specimen
+from .models import LabOrder, TestResult, LabTest, LabSection, Specimen, TestCategory
 
 
 @login_required
@@ -157,16 +157,16 @@ def lab_results_list(request):
     
     # Filtros
     status = request.GET.get('status')
-    section = request.GET.get('section')
+    category = request.GET.get('category')
     date_from = request.GET.get('date_from')
     date_to = request.GET.get('date_to')
     search = request.GET.get('search')
-    
+
     if status:
         results = results.filter(status=status)
-    
-    if section:
-        results = results.filter(order_item__lab_test__section_id=section)
+
+    if category:
+        results = results.filter(order_item__lab_test__category_id=category)
     
     if date_from:
         results = results.filter(created_at__date__gte=date_from)
@@ -185,16 +185,16 @@ def lab_results_list(request):
     paginator = Paginator(results.order_by('-created_at'), 20)
     page = request.GET.get('page')
     results = paginator.get_page(page)
-    
-    sections = LabSection.objects.filter(company=company, is_active=True)
-    
+
+    categories = TestCategory.objects.filter(company=company, is_active=True)
+
     context = {
         'results': results,
         'status_choices': TestResult.STATUS_CHOICES,
-        'sections': sections,
+        'categories': categories,
         'filters': {
             'status': status,
-            'section': section,
+            'category': category,
             'date_from': date_from,
             'date_to': date_to,
             'search': search,
@@ -230,11 +230,11 @@ def lab_tests_catalog(request):
     tests = LabTest.objects.filter(company=company)
     
     # Filtros
-    section = request.GET.get('section')
+    category = request.GET.get('category')
     search = request.GET.get('search')
-    
-    if section:
-        tests = tests.filter(section_id=section)
+
+    if category:
+        tests = tests.filter(category_id=category)
     
     if search:
         tests = tests.filter(
@@ -244,17 +244,17 @@ def lab_tests_catalog(request):
         )
     
     # Paginación
-    paginator = Paginator(tests.order_by('section__name', 'name'), 20)
+    paginator = Paginator(tests.order_by('category__name', 'name'), 20)
     page = request.GET.get('page')
     tests = paginator.get_page(page)
-    
-    sections = LabSection.objects.filter(company=company, is_active=True)
-    
+
+    categories = TestCategory.objects.filter(company=company, is_active=True)
+
     context = {
         'tests': tests,
-        'sections': sections,
+        'categories': categories,
         'filters': {
-            'section': section,
+            'category': category,
             'search': search,
         }
     }

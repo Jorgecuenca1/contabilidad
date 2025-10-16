@@ -1,0 +1,337 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block title %}Episodio {{ episode.episode_number }} - RIPS{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h2><i class="fas fa-file-medical"></i> Episodio {{ episode.episode_number }}</h2>
+                    <p class="text-muted">Detalle del episodio de atención</p>
+                </div>
+                <div>
+                    {% if episode.status == 'active' %}
+                    <a href="{% url 'rips:episode_close' episode.id %}" class="btn btn-warning">
+                        <i class="fas fa-door-closed"></i> Cerrar Episodio
+                    </a>
+                    {% elif episode.status == 'closed' and not episode.is_billed %}
+                    <a href="{% url 'rips:episode_generate_invoice' episode.id %}" class="btn btn-success"
+                       onclick="return confirm('¿Generar factura para este episodio?')">
+                        <i class="fas fa-file-invoice-dollar"></i> Generar Factura
+                    </a>
+                    {% endif %}
+                    <a href="{% url 'rips:episode_list' %}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Volver
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Información del Episodio -->
+        <div class="col-md-8">
+            <!-- Estado y Fechas -->
+            <div class="card mb-3">
+                <div class="card-header bg-primary text-white">
+                    <i class="fas fa-info-circle"></i> Información General
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <strong><i class="fas fa-hashtag"></i> Número de Episodio:</strong><br>
+                            <span class="fs-5">{{ episode.episode_number }}</span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <strong><i class="fas fa-flag"></i> Estado:</strong><br>
+                            {% if episode.status == 'active' %}
+                            <span class="badge bg-primary fs-6">Activo</span>
+                            {% elif episode.status == 'closed' %}
+                            <span class="badge bg-warning text-dark fs-6">Cerrado</span>
+                            {% elif episode.status == 'billed' %}
+                            <span class="badge bg-success fs-6">Facturado</span>
+                            {% elif episode.status == 'cancelled' %}
+                            <span class="badge bg-danger fs-6">Cancelado</span>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <strong><i class="fas fa-clipboard-list"></i> Tipo de Episodio:</strong><br>
+                            {{ episode.get_episode_type_display }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <strong><i class="fas fa-sign-in-alt"></i> Fecha de Ingreso:</strong><br>
+                            {{ episode.admission_date|date:"d/m/Y H:i" }}
+                        </div>
+                        {% if episode.discharge_date %}
+                        <div class="col-md-6 mb-3">
+                            <strong><i class="fas fa-sign-out-alt"></i> Fecha de Egreso:</strong><br>
+                            {{ episode.discharge_date|date:"d/m/Y H:i" }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <strong><i class="fas fa-clock"></i> Duración:</strong><br>
+                            {{ episode.get_duration_days }} días
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Información del Paciente -->
+            <div class="card mb-3">
+                <div class="card-header bg-info text-white">
+                    <i class="fas fa-user-injured"></i> Paciente
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-2">
+                            <strong>Nombre:</strong><br>
+                            {{ episode.patient.third_party.first_name }}
+                            {{ episode.patient.third_party.last_name }}
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <strong>Documento:</strong><br>
+                            {{ episode.patient.third_party.get_document_type_display }}
+                            {{ episode.patient.third_party.document_number }}
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <strong>Historia Clínica:</strong><br>
+                            {{ episode.patient.medical_record_number }}
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <strong>Fecha de Nacimiento:</strong><br>
+                            {{ episode.patient.birth_date|date:"d/m/Y" }}
+                            ({{ episode.patient.age }} años)
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Información del Pagador -->
+            <div class="card mb-3">
+                <div class="card-header bg-success text-white">
+                    <i class="fas fa-hospital"></i> Pagador (EPS)
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-2">
+                            <strong>Nombre:</strong><br>
+                            {{ episode.payer.name }}
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <strong>NIT:</strong><br>
+                            {{ episode.payer.document_number }}
+                        </div>
+                        {% if episode.authorization_number %}
+                        <div class="col-md-12 mb-2">
+                            <strong>Número de Autorización:</strong><br>
+                            {{ episode.authorization_number }}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Diagnósticos -->
+            <div class="card mb-3">
+                <div class="card-header bg-warning text-dark">
+                    <i class="fas fa-stethoscope"></i> Diagnósticos
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        {% if episode.admission_diagnosis %}
+                        <div class="col-md-6 mb-2">
+                            <strong>Diagnóstico de Ingreso:</strong><br>
+                            <span class="badge bg-info">{{ episode.admission_diagnosis }}</span>
+                        </div>
+                        {% endif %}
+                        {% if episode.discharge_diagnosis %}
+                        <div class="col-md-6 mb-2">
+                            <strong>Diagnóstico de Egreso:</strong><br>
+                            <span class="badge bg-success">{{ episode.discharge_diagnosis }}</span>
+                        </div>
+                        {% endif %}
+                        {% if not episode.admission_diagnosis and not episode.discharge_diagnosis %}
+                        <div class="col-12">
+                            <p class="text-muted mb-0">No se han registrado diagnósticos</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Servicios Asociados -->
+            <div class="card mb-3">
+                <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
+                    <span><i class="fas fa-list"></i> Servicios Asociados</span>
+                    <span class="badge bg-light text-dark">{{ total_services }} servicios</span>
+                </div>
+                <div class="card-body p-0">
+                    {% if services %}
+                    <div class="table-responsive">
+                        <table class="table table-sm table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Tipo de Servicio</th>
+                                    <th>Descripción</th>
+                                    <th>Costo</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for service in services %}
+                                <tr>
+                                    <td>{{ service.added_at|date:"d/m/Y H:i" }}</td>
+                                    <td>
+                                        <span class="badge bg-secondary">
+                                            {{ service.get_service_type_display }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        {% if service.service_object %}
+                                        {{ service.service_object }}
+                                        {% else %}
+                                        <span class="text-muted">Sin descripción</span>
+                                        {% endif %}
+                                    </td>
+                                    <td><strong>${{ service.service_cost|intcomma }}</strong></td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-4 text-muted">
+                        <i class="fas fa-inbox fa-3x mb-3"></i>
+                        <p>No hay servicios asociados a este episodio</p>
+                        <small>Los servicios se agregarán automáticamente desde los módulos correspondientes</small>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Panel Lateral -->
+        <div class="col-md-4">
+            <!-- Resumen Financiero -->
+            <div class="card mb-3">
+                <div class="card-header bg-dark text-white">
+                    <i class="fas fa-dollar-sign"></i> Resumen Financiero
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <strong>Costo Total de Servicios:</strong><br>
+                        <h3 class="text-success mb-0">${{ episode.total_cost|intcomma }}</h3>
+                    </div>
+                    <hr>
+                    <div class="mb-2">
+                        <small><strong>Servicios:</strong> {{ total_services }}</small>
+                    </div>
+                    {% if episode.is_billed %}
+                    <hr>
+                    <div class="alert alert-success mb-0">
+                        <i class="fas fa-check-circle"></i> Episodio facturado
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Factura Asociada -->
+            {% if episode.invoice %}
+            <div class="card mb-3">
+                <div class="card-header bg-success text-white">
+                    <i class="fas fa-file-invoice-dollar"></i> Factura
+                </div>
+                <div class="card-body">
+                    <p class="mb-2">
+                        <strong>Número:</strong><br>
+                        {{ episode.invoice.invoice_number }}
+                    </p>
+                    <p class="mb-2">
+                        <strong>Fecha:</strong><br>
+                        {{ episode.invoice.invoice_date|date:"d/m/Y" }}
+                    </p>
+                    <p class="mb-2">
+                        <strong>Total:</strong><br>
+                        <span class="fs-5 text-success">${{ episode.invoice.total_amount|intcomma }}</span>
+                    </p>
+                    <a href="{% url 'billing_health:invoice_detail' episode.invoice.id %}" class="btn btn-sm btn-success w-100">
+                        <i class="fas fa-eye"></i> Ver Factura
+                    </a>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Información de Auditoría -->
+            <div class="card mb-3">
+                <div class="card-header bg-light">
+                    <i class="fas fa-info"></i> Auditoría
+                </div>
+                <div class="card-body">
+                    <small>
+                        <p class="mb-2">
+                            <strong>Creado por:</strong><br>
+                            {{ episode.created_by.get_full_name }}
+                        </p>
+                        <p class="mb-2">
+                            <strong>Fecha de creación:</strong><br>
+                            {{ episode.created_at|date:"d/m/Y H:i" }}
+                        </p>
+                        {% if episode.closed_by %}
+                        <p class="mb-2">
+                            <strong>Cerrado por:</strong><br>
+                            {{ episode.closed_by.get_full_name }}
+                        </p>
+                        {% endif %}
+                        {% if episode.billed_by %}
+                        <p class="mb-0">
+                            <strong>Facturado por:</strong><br>
+                            {{ episode.billed_by.get_full_name }}
+                        </p>
+                        {% endif %}
+                    </small>
+                </div>
+            </div>
+
+            <!-- Acciones -->
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <i class="fas fa-tasks"></i> Acciones
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        {% if episode.status == 'active' %}
+                        <a href="{% url 'rips:episode_close' episode.id %}" class="btn btn-warning">
+                            <i class="fas fa-door-closed"></i> Cerrar Episodio
+                        </a>
+                        {% elif episode.status == 'closed' and not episode.is_billed %}
+                        <a href="{% url 'rips:episode_generate_invoice' episode.id %}" class="btn btn-success"
+                           onclick="return confirm('¿Generar factura para este episodio?')">
+                            <i class="fas fa-file-invoice-dollar"></i> Generar Factura
+                        </a>
+                        {% elif episode.is_billed and episode.invoice %}
+                        <a href="{% url 'billing_health:invoice_detail' episode.invoice.id %}" class="btn btn-success">
+                            <i class="fas fa-file-invoice"></i> Ver Factura
+                        </a>
+                        {% if episode.invoice.rips_generated %}
+                        <a href="{% url 'rips:rips_download' episode.invoice.id %}" class="btn btn-info">
+                            <i class="fas fa-download"></i> Descargar RIPS
+                        </a>
+                        {% else %}
+                        <a href="{% url 'rips:rips_generate' %}?invoice_id={{ episode.invoice.id }}" class="btn btn-info">
+                            <i class="fas fa-file-export"></i> Generar RIPS
+                        </a>
+                        {% endif %}
+                        {% endif %}
+                        <a href="{% url 'rips:episode_list' %}" class="btn btn-secondary">
+                            <i class="fas fa-list"></i> Lista de Episodios
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

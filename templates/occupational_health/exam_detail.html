@@ -1,0 +1,327 @@
+{% extends 'base.html' %}
+{% block title %}Examen {{ exam.exam_number }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-clipboard-check"></i> Examen {{ exam.exam_number }}</h2>
+        <div>
+            {% if not exam.work_aptitude %}
+            <a href="{% url 'occupational_health:aptitude_create' exam.id %}" class="btn btn-warning">
+                <i class="bi bi-award"></i> Emitir Aptitud Laboral
+            </a>
+            {% endif %}
+            <a href="{% url 'occupational_health:lab_test_create' exam.id %}" class="btn btn-info">
+                <i class="bi bi-file-medical"></i> Agregar Laboratorio
+            </a>
+            <a href="{% url 'occupational_health:exam_list' %}" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Volver
+            </a>
+        </div>
+    </div>
+
+    <!-- Información General -->
+    <div class="card mb-3">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0"><i class="bi bi-info-circle"></i> Información General</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>Trabajador:</strong> {{ exam.patient.third_party.name }}</p>
+                    <p><strong>Documento:</strong> {{ exam.patient.third_party.identification_number }}</p>
+                    <p><strong>Empresa:</strong> {{ exam.company_name }}</p>
+                    <p><strong>Cargo:</strong> {{ exam.job_position }}</p>
+                    {% if exam.work_area %}
+                    <p><strong>Área:</strong> {{ exam.work_area }}</p>
+                    {% endif %}
+                </div>
+                <div class="col-md-6">
+                    <p><strong>Tipo de Examen:</strong>
+                        {% if exam.exam_type == 'ingreso' %}
+                        <span class="badge bg-primary">Ingreso</span>
+                        {% elif exam.exam_type == 'periodico' %}
+                        <span class="badge bg-info">Periódico</span>
+                        {% elif exam.exam_type == 'retiro' %}
+                        <span class="badge bg-secondary">Retiro</span>
+                        {% else %}
+                        <span class="badge bg-dark">{{ exam.get_exam_type_display }}</span>
+                        {% endif %}
+                    </p>
+                    <p><strong>Fecha del Examen:</strong> {{ exam.exam_date|date:"d/m/Y H:i" }}</p>
+                    <p><strong>Médico Examinador:</strong> {{ exam.examiner.get_full_name }}</p>
+                    <p><strong>Estado:</strong>
+                        {% if exam.status == 'completado' %}
+                        <span class="badge bg-success">Completado</span>
+                        {% elif exam.status == 'en_proceso' %}
+                        <span class="badge bg-warning text-dark">En Proceso</span>
+                        {% elif exam.status == 'programado' %}
+                        <span class="badge bg-info">Programado</span>
+                        {% else %}
+                        <span class="badge bg-danger">Cancelado</span>
+                        {% endif %}
+                    </p>
+                    {% if exam.years_in_position %}
+                    <p><strong>Años en el cargo:</strong> {{ exam.years_in_position }}</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Historia Ocupacional -->
+    {% if exam.previous_jobs or exam.occupational_exposures or exam.use_of_ppe %}
+    <div class="card mb-3">
+        <div class="card-header bg-info text-white">
+            <h6 class="mb-0"><i class="bi bi-briefcase"></i> Historia Ocupacional</h6>
+        </div>
+        <div class="card-body">
+            {% if exam.previous_jobs %}
+            <p><strong>Trabajos Anteriores:</strong><br>{{ exam.previous_jobs|linebreaks }}</p>
+            {% endif %}
+            {% if exam.occupational_exposures %}
+            <p><strong>Exposiciones Ocupacionales:</strong><br>{{ exam.occupational_exposures|linebreaks }}</p>
+            {% endif %}
+            {% if exam.use_of_ppe %}
+            <p><strong>Uso de EPP:</strong><br>{{ exam.use_of_ppe|linebreaks }}</p>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Antecedentes -->
+    {% if exam.personal_medical_history or exam.family_medical_history or exam.current_medications or exam.allergies %}
+    <div class="card mb-3">
+        <div class="card-header">
+            <h6 class="mb-0"><i class="bi bi-heart-pulse"></i> Antecedentes Médicos</h6>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                {% if exam.personal_medical_history %}
+                <div class="col-md-6">
+                    <p><strong>Personales:</strong><br>{{ exam.personal_medical_history|linebreaks }}</p>
+                </div>
+                {% endif %}
+                {% if exam.family_medical_history %}
+                <div class="col-md-6">
+                    <p><strong>Familiares:</strong><br>{{ exam.family_medical_history|linebreaks }}</p>
+                </div>
+                {% endif %}
+                {% if exam.current_medications %}
+                <div class="col-md-6">
+                    <p><strong>Medicación Actual:</strong><br>{{ exam.current_medications|linebreaks }}</p>
+                </div>
+                {% endif %}
+                {% if exam.allergies %}
+                <div class="col-md-6">
+                    <p><strong>Alergias:</strong><br>{{ exam.allergies|linebreaks }}</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Hábitos -->
+    {% if exam.smoking or exam.alcohol or exam.physical_activity %}
+    <div class="card mb-3">
+        <div class="card-header">
+            <h6 class="mb-0"><i class="bi bi-activity"></i> Hábitos</h6>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                {% if exam.smoking %}
+                <div class="col-md-4"><p><strong>Tabaquismo:</strong> {{ exam.smoking }}</p></div>
+                {% endif %}
+                {% if exam.alcohol %}
+                <div class="col-md-4"><p><strong>Alcohol:</strong> {{ exam.alcohol }}</p></div>
+                {% endif %}
+                {% if exam.physical_activity %}
+                <div class="col-md-4"><p><strong>Actividad Física:</strong> {{ exam.physical_activity }}</p></div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Signos Vitales -->
+    <div class="card mb-3">
+        <div class="card-header bg-warning">
+            <h6 class="mb-0"><i class="bi bi-heart"></i> Signos Vitales y Antropometría</h6>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                {% if exam.blood_pressure %}
+                <div class="col-md-2"><p><strong>PA:</strong> {{ exam.blood_pressure }}</p></div>
+                {% endif %}
+                {% if exam.heart_rate %}
+                <div class="col-md-2"><p><strong>FC:</strong> {{ exam.heart_rate }} lpm</p></div>
+                {% endif %}
+                {% if exam.respiratory_rate %}
+                <div class="col-md-2"><p><strong>FR:</strong> {{ exam.respiratory_rate }} rpm</p></div>
+                {% endif %}
+                {% if exam.temperature %}
+                <div class="col-md-2"><p><strong>T:</strong> {{ exam.temperature }} °C</p></div>
+                {% endif %}
+                {% if exam.weight %}
+                <div class="col-md-2"><p><strong>Peso:</strong> {{ exam.weight }} kg</p></div>
+                {% endif %}
+                {% if exam.height %}
+                <div class="col-md-2"><p><strong>Talla:</strong> {{ exam.height }} cm</p></div>
+                {% endif %}
+                {% if exam.bmi %}
+                <div class="col-md-2"><p><strong>IMC:</strong> {{ exam.bmi|floatformat:1 }}</p></div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Examen Físico por Sistemas -->
+    <div class="card mb-3">
+        <div class="card-header">
+            <h6 class="mb-0"><i class="bi bi-clipboard2-pulse"></i> Examen Físico por Sistemas</h6>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                {% if exam.head_neck_exam %}
+                <div class="col-md-6 mb-2"><strong>Cabeza y Cuello:</strong> {{ exam.head_neck_exam|linebreaks }}</div>
+                {% endif %}
+                {% if exam.cardiovascular_exam %}
+                <div class="col-md-6 mb-2"><strong>Cardiovascular:</strong> {{ exam.cardiovascular_exam|linebreaks }}</div>
+                {% endif %}
+                {% if exam.respiratory_exam %}
+                <div class="col-md-6 mb-2"><strong>Respiratorio:</strong> {{ exam.respiratory_exam|linebreaks }}</div>
+                {% endif %}
+                {% if exam.abdominal_exam %}
+                <div class="col-md-6 mb-2"><strong>Abdominal:</strong> {{ exam.abdominal_exam|linebreaks }}</div>
+                {% endif %}
+                {% if exam.musculoskeletal_exam %}
+                <div class="col-md-6 mb-2"><strong>Osteomuscular:</strong> {{ exam.musculoskeletal_exam|linebreaks }}</div>
+                {% endif %}
+                {% if exam.neurological_exam %}
+                <div class="col-md-6 mb-2"><strong>Neurológico:</strong> {{ exam.neurological_exam|linebreaks }}</div>
+                {% endif %}
+                {% if exam.dermatological_exam %}
+                <div class="col-md-12 mb-2"><strong>Piel y Anexos:</strong> {{ exam.dermatological_exam|linebreaks }}</div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Exámenes de Laboratorio -->
+    {% if exam.laboratory_tests.exists %}
+    <div class="card mb-3">
+        <div class="card-header bg-success text-white">
+            <h6 class="mb-0"><i class="bi bi-file-medical"></i> Exámenes de Laboratorio Realizados</h6>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-sm">
+                    <thead>
+                        <tr>
+                            <th>Tipo</th>
+                            <th>Nombre</th>
+                            <th>Fecha</th>
+                            <th>Resultado</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for test in exam.laboratory_tests.all %}
+                        <tr>
+                            <td>{{ test.get_test_type_display }}</td>
+                            <td>{{ test.test_name }}</td>
+                            <td>{{ test.test_date|date:"d/m/Y" }}</td>
+                            <td>{{ test.result_value|truncatewords:5 }}</td>
+                            <td>
+                                {% if test.result_status == 'normal' %}
+                                <span class="badge bg-success">Normal</span>
+                                {% elif test.result_status == 'alterado' %}
+                                <span class="badge bg-warning text-dark">Alterado</span>
+                                {% elif test.result_status == 'critico' %}
+                                <span class="badge bg-danger">Crítico</span>
+                                {% else %}
+                                <span class="badge bg-secondary">Pendiente</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Diagnóstico y Hallazgos -->
+    {% if exam.diagnosis or exam.findings %}
+    <div class="card mb-3">
+        <div class="card-header bg-danger text-white">
+            <h6 class="mb-0"><i class="bi bi-clipboard-data"></i> Diagnóstico y Hallazgos</h6>
+        </div>
+        <div class="card-body">
+            {% if exam.diagnosis %}
+            <p><strong>Diagnóstico:</strong><br>{{ exam.diagnosis|linebreaks }}</p>
+            {% endif %}
+            {% if exam.findings %}
+            <p><strong>Hallazgos Relevantes:</strong><br>{{ exam.findings|linebreaks }}</p>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Aptitud Laboral -->
+    {% if exam.work_aptitude %}
+    <div class="card mb-3">
+        <div class="card-header bg-success text-white">
+            <h6 class="mb-0"><i class="bi bi-award"></i> Aptitud Laboral</h6>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>Número:</strong> {{ exam.work_aptitude.aptitude_number }}</p>
+                    <p><strong>Aptitud:</strong> <span class="badge bg-primary">{{ exam.work_aptitude.get_aptitude_display }}</span></p>
+                    <p><strong>Fecha de Emisión:</strong> {{ exam.work_aptitude.issue_date|date:"d/m/Y" }}</p>
+                    {% if exam.work_aptitude.valid_until %}
+                    <p><strong>Vigencia Hasta:</strong> {{ exam.work_aptitude.valid_until|date:"d/m/Y" }}</p>
+                    {% endif %}
+                </div>
+                <div class="col-md-6">
+                    {% if exam.work_aptitude.restrictions %}
+                    <p><strong>Restricciones:</strong><br>{{ exam.work_aptitude.restrictions|linebreaks }}</p>
+                    {% endif %}
+                    {% if exam.work_aptitude.recommendations %}
+                    <p><strong>Recomendaciones:</strong><br>{{ exam.work_aptitude.recommendations|linebreaks }}</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Observaciones -->
+    {% if exam.observations %}
+    <div class="card mb-3">
+        <div class="card-header">
+            <h6 class="mb-0"><i class="bi bi-pencil-square"></i> Observaciones</h6>
+        </div>
+        <div class="card-body">
+            <p>{{ exam.observations|linebreaks }}</p>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Metadatos -->
+    <div class="card">
+        <div class="card-body">
+            <small class="text-muted">
+                <strong>Creado por:</strong> {{ exam.created_by.get_full_name }} |
+                <strong>Fecha:</strong> {{ exam.created_at|date:"d/m/Y H:i" }}
+                {% if exam.updated_at != exam.created_at %}
+                | <strong>Última actualización:</strong> {{ exam.updated_at|date:"d/m/Y H:i" }}
+                {% endif %}
+            </small>
+        </div>
+    </div>
+</div>
+{% endblock %}

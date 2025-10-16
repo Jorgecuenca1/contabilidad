@@ -1,0 +1,335 @@
+{% extends 'base.html' %}
+
+{% block title %}Catálogos CUPS/CUMS - Dashboard{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'core:dashboard' %}">Dashboard</a></li>
+                    <li class="breadcrumb-item active">Catálogos CUPS/CUMS</li>
+                </ol>
+            </nav>
+
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h2 class="text-info">
+                        <i class="bi bi-journal-medical"></i> Catálogos CUPS/CUMS
+                    </h2>
+                    <p class="text-muted">Sistema unificado de procedimientos y medicamentos - Estándares colombianos de salud</p>
+                </div>
+                <div>
+                    <button class="btn btn-success me-2" data-bs-toggle="modal" data-bs-target="#newCUPSModal">
+                        <i class="bi bi-plus-circle"></i> Agregar CUPS
+                    </button>
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newCUMSModal">
+                        <i class="bi bi-capsule"></i> Agregar CUMS
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Estadísticas principales -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h3 class="mb-0">1,247</h3>
+                            <p class="mb-0">CUPS Activos</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="bi bi-clipboard-check fs-1 opacity-75"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h3 class="mb-0">3,856</h3>
+                            <p class="mb-0">CUMS Activos</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="bi bi-capsule-pill fs-1 opacity-75"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card bg-warning text-dark">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h3 class="mb-0">234</h3>
+                            <p class="mb-0">Requieren Autorización</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="bi bi-shield-check fs-1 opacity-75"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h3 class="mb-0">89</h3>
+                            <p class="mb-0">Actualizaciones Recientes</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="bi bi-arrow-clockwise fs-1 opacity-75"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Búsqueda rápida -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0"><i class="bi bi-search"></i> Búsqueda Rápida</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-5">
+                            <label class="form-label">Buscar CUPS</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-search"></i></span>
+                                <input type="text" class="form-control" placeholder="Código o descripción del procedimiento...">
+                                <button class="btn btn-primary">Buscar</button>
+                            </div>
+                        </div>
+                        <div class="col-md-5">
+                            <label class="form-label">Buscar CUMS</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-search"></i></span>
+                                <input type="text" class="form-control" placeholder="Código, nombre genérico o comercial...">
+                                <button class="btn btn-primary">Buscar</button>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">Filtros</label>
+                            <button class="btn btn-outline-secondary w-100" data-bs-toggle="modal" data-bs-target="#advancedFiltersModal">
+                                <i class="bi bi-funnel"></i> Avanzados
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Categorías CUPS y CUMS -->
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="bi bi-clipboard-check"></i> Categorías CUPS</h5>
+                </div>
+                <div class="card-body">
+                    <div class="list-group">
+                        <a href="#" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>Consultas Médicas</strong>
+                                <small class="text-muted d-block">Atención ambulatoria general y especializada</small>
+                            </div>
+                            <span class="badge bg-primary rounded-pill">328</span>
+                        </a>
+                        <a href="#" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>Procedimientos Quirúrgicos</strong>
+                                <small class="text-muted d-block">Cirugías mayores y menores</small>
+                            </div>
+                            <span class="badge bg-primary rounded-pill">456</span>
+                        </a>
+                        <a href="#" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>Imagenología</strong>
+                                <small class="text-muted d-block">Rayos X, TAC, Resonancia, Ecografías</small>
+                            </div>
+                            <span class="badge bg-primary rounded-pill">189</span>
+                        </a>
+                        <a href="#" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>Laboratorio Clínico</strong>
+                                <small class="text-muted d-block">Hematología, química, microbiología</small>
+                            </div>
+                            <span class="badge bg-primary rounded-pill">245</span>
+                        </a>
+                        <a href="#" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>Terapias</strong>
+                                <small class="text-muted d-block">Física, respiratoria, ocupacional</small>
+                            </div>
+                            <span class="badge bg-primary rounded-pill">123</span>
+                        </a>
+                        <a href="#" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>Otros Procedimientos</strong>
+                                <small class="text-muted d-block">Diversos procedimientos diagnósticos y terapéuticos</small>
+                            </div>
+                            <span class="badge bg-primary rounded-pill">206</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="bi bi-capsule-pill"></i> Categorías CUMS</h5>
+                </div>
+                <div class="card-body">
+                    <div class="list-group">
+                        <a href="#" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>Antibióticos</strong>
+                                <small class="text-muted d-block">Penicilinas, cefalosporinas, macrólidos</small>
+                            </div>
+                            <span class="badge bg-success rounded-pill">567</span>
+                        </a>
+                        <a href="#" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>Analgésicos y Antiinflamatorios</strong>
+                                <small class="text-muted d-block">AINEs, opioides, acetaminofén</small>
+                            </div>
+                            <span class="badge bg-success rounded-pill">423</span>
+                        </a>
+                        <a href="#" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>Cardiovasculares</strong>
+                                <small class="text-muted d-block">Antihipertensivos, antiarrítmicos, diuréticos</small>
+                            </div>
+                            <span class="badge bg-success rounded-pill">612</span>
+                        </a>
+                        <a href="#" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>Endocrinos</strong>
+                                <small class="text-muted d-block">Insulinas, antitiroideos, corticosteroides</small>
+                            </div>
+                            <span class="badge bg-success rounded-pill">389</span>
+                        </a>
+                        <a href="#" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>Oncológicos</strong>
+                                <small class="text-muted d-block">Quimioterapia, terapia dirigida</small>
+                            </div>
+                            <span class="badge bg-success rounded-pill">234</span>
+                        </a>
+                        <a href="#" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>Otros Medicamentos</strong>
+                                <small class="text-muted d-block">Diversas categorías terapéuticas</small>
+                            </div>
+                            <span class="badge bg-success rounded-pill">1,631</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Información adicional -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="alert alert-info">
+                <h5><i class="bi bi-info-circle"></i> Información sobre los Catálogos</h5>
+                <hr>
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6><strong>CUPS - Clasificación Única de Procedimientos en Salud</strong></h6>
+                        <p class="mb-2">Sistema oficial colombiano para codificar procedimientos, intervenciones y consultas médicas. Establecido por el Ministerio de Salud y Protección Social.</p>
+                        <ul class="small">
+                            <li>Actualizado según Resolución 3100 de 2019</li>
+                            <li>Compatible con RIPS (Registro Individual de Prestación de Servicios)</li>
+                            <li>Obligatorio para facturación EPS</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6><strong>CUMS - Código Único de Medicamentos</strong></h6>
+                        <p class="mb-2">Catálogo oficial de medicamentos y dispositivos médicos del Sistema General de Seguridad Social en Salud de Colombia.</p>
+                        <ul class="small">
+                            <li>Actualizado por el INVIMA periódicamente</li>
+                            <li>Incluye nombre genérico y comercial</li>
+                            <li>Indica vía de administración y presentación</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Nuevo CUPS -->
+<div class="modal fade" id="newCUPSModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title"><i class="bi bi-plus-circle"></i> Agregar Procedimiento CUPS</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p class="text-muted">Funcionalidad en desarrollo - Formulario completo próximamente</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Nuevo CUMS -->
+<div class="modal fade" id="newCUMSModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title"><i class="bi bi-capsule"></i> Agregar Medicamento CUMS</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p class="text-muted">Funcionalidad en desarrollo - Formulario completo próximamente</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Filtros Avanzados -->
+<div class="modal fade" id="advancedFiltersModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-secondary text-white">
+                <h5 class="modal-title"><i class="bi bi-funnel"></i> Filtros Avanzados</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p class="text-muted">Funcionalidad en desarrollo - Filtros avanzados próximamente</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

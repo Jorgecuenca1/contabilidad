@@ -1,0 +1,209 @@
+{% extends 'base.html' %}
+{% block title %}Prescripción {{ prescription.prescription_number }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-eyeglasses"></i> Prescripción {{ prescription.prescription_number }}</h2>
+        <div>
+            <a href="{% url 'ophthalmology:prescription_list' %}" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Volver
+            </a>
+            <button onclick="window.print()" class="btn btn-primary">
+                <i class="bi bi-printer"></i> Imprimir
+            </button>
+        </div>
+    </div>
+
+    <!-- Información del Paciente -->
+    <div class="card mb-3">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">Información del Paciente</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-4">
+                    <p><strong>Paciente:</strong> {{ prescription.patient.third_party.name }}</p>
+                    <p><strong>Identificación:</strong> {{ prescription.patient.third_party.identification_number }}</p>
+                </div>
+                <div class="col-md-4">
+                    <p><strong>Oftalmólogo:</strong> {{ prescription.ophthalmologist.get_full_name }}</p>
+                    <p><strong>Fecha de Prescripción:</strong> {{ prescription.prescription_date|date:"d/m/Y" }}</p>
+                </div>
+                <div class="col-md-4">
+                    <p><strong>Estado:</strong>
+                        {% if prescription.is_active %}
+                            <span class="badge bg-success">Activa</span>
+                        {% else %}
+                            <span class="badge bg-secondary">Inactiva</span>
+                        {% endif %}
+                    </p>
+                    {% if prescription.valid_until %}
+                    <p><strong>Válida Hasta:</strong> {{ prescription.valid_until|date:"d/m/Y" }}</p>
+                    {% endif %}
+                    {% if prescription.consultation %}
+                    <p><strong>Consulta:</strong>
+                        <a href="{% url 'ophthalmology:consultation_detail' prescription.consultation.id %}">
+                            {{ prescription.consultation.consultation_number }}
+                        </a>
+                    </p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tipo de Lentes -->
+    <div class="card mb-3">
+        <div class="card-header bg-info text-white">
+            <h5 class="mb-0">Tipo de Lentes</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>Tipo:</strong> {{ prescription.get_lens_type_display }}</p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>Uso Recomendado:</strong> {{ prescription.get_recommended_usage_display }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Prescripción Óptica -->
+    <div class="card mb-3">
+        <div class="card-header bg-success text-white">
+            <h5 class="mb-0">Prescripción Óptica</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Ojo</th>
+                            <th>Esfera (SPH)</th>
+                            <th>Cilindro (CYL)</th>
+                            <th>Eje (AXIS)</th>
+                            <th>Adición (ADD)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong class="text-primary">OD (Derecho)</strong></td>
+                            <td>{{ prescription.od_sphere }}</td>
+                            <td>{{ prescription.od_cylinder|default:"-" }}</td>
+                            <td>
+                                {% if prescription.od_axis %}
+                                    {{ prescription.od_axis }}°
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                            <td>{{ prescription.od_add|default:"-" }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong class="text-danger">OS (Izquierdo)</strong></td>
+                            <td>{{ prescription.os_sphere }}</td>
+                            <td>{{ prescription.os_cylinder|default:"-" }}</td>
+                            <td>
+                                {% if prescription.os_axis %}
+                                    {{ prescription.os_axis }}°
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                            <td>{{ prescription.os_add|default:"-" }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="row mt-3">
+                <div class="col-md-6">
+                    <p><strong>Distancia Pupilar (Distancia):</strong> {{ prescription.pd_distance }} mm</p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>Distancia Pupilar (Cerca):</strong>
+                        {% if prescription.pd_near %}
+                            {{ prescription.pd_near }} mm
+                        {% else %}
+                            -
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Características de los Lentes -->
+    <div class="card mb-3">
+        <div class="card-header bg-warning text-dark">
+            <h5 class="mb-0">Características de los Lentes</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-3">
+                    <p><strong>Antirreflejo:</strong>
+                        {% if prescription.anti_reflective %}
+                            <span class="badge bg-success">Sí</span>
+                        {% else %}
+                            <span class="badge bg-secondary">No</span>
+                        {% endif %}
+                    </p>
+                </div>
+                <div class="col-md-3">
+                    <p><strong>Fotocromático:</strong>
+                        {% if prescription.photochromic %}
+                            <span class="badge bg-success">Sí</span>
+                        {% else %}
+                            <span class="badge bg-secondary">No</span>
+                        {% endif %}
+                    </p>
+                </div>
+                <div class="col-md-3">
+                    <p><strong>Filtro Luz Azul:</strong>
+                        {% if prescription.blue_filter %}
+                            <span class="badge bg-success">Sí</span>
+                        {% else %}
+                            <span class="badge bg-secondary">No</span>
+                        {% endif %}
+                    </p>
+                </div>
+                <div class="col-md-3">
+                    <p><strong>Polarizado:</strong>
+                        {% if prescription.polarized %}
+                            <span class="badge bg-success">Sí</span>
+                        {% else %}
+                            <span class="badge bg-secondary">No</span>
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+            {% if prescription.recommended_material %}
+            <div class="row mt-2">
+                <div class="col-md-12">
+                    <p><strong>Material Recomendado:</strong> {{ prescription.recommended_material }}</p>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Observaciones -->
+    {% if prescription.observations %}
+    <div class="card">
+        <div class="card-header bg-secondary text-white">
+            <h5 class="mb-0">Observaciones</h5>
+        </div>
+        <div class="card-body">
+            <p class="mb-0">{{ prescription.observations }}</p>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<style media="print">
+    .btn, .navbar, .sidebar { display: none !important; }
+    .card { border: 1px solid #000 !important; }
+</style>
+{% endblock %}

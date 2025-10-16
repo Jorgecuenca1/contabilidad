@@ -1,0 +1,296 @@
+{% extends 'base.html' %}
+
+{% block title %}Autorizaciones EPS - Dashboard{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'core:dashboard' %}">Dashboard</a></li>
+                    <li class="breadcrumb-item active">Autorizaciones EPS</li>
+                </ol>
+            </nav>
+
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h2 class="text-primary">
+                        <i class="bi bi-check-circle"></i> Autorizaciones EPS
+                    </h2>
+                    <p class="text-muted">Gestión de solicitudes, aprobaciones y contrarreferencias con aseguradoras</p>
+                </div>
+                <div>
+                    <a href="{% url 'authorizations:authorization_create' %}" class="btn btn-success me-2">
+                        <i class="bi bi-plus-circle"></i> Nueva Autorización
+                    </a>
+                    <a href="{% url 'authorizations:counter_referral_create' %}" class="btn btn-primary">
+                        <i class="bi bi-arrow-left-right"></i> Nueva Contrarreferencia
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Estadísticas principales -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-warning text-dark">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h3 class="mb-0">{{ pending_count }}</h3>
+                            <p class="mb-0">Pendientes</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="bi bi-clock-history fs-1 opacity-75"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h3 class="mb-0">{{ approved_count }}</h3>
+                            <p class="mb-0">Aprobadas</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="bi bi-check-circle fs-1 opacity-75"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card bg-danger text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h3 class="mb-0">{{ denied_count }}</h3>
+                            <p class="mb-0">Negadas</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="bi bi-x-circle fs-1 opacity-75"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h3 class="mb-0">{{ expiring_soon }}</h3>
+                            <p class="mb-0">Por Vencer</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="bi bi-exclamation-triangle fs-1 opacity-75"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Accesos rápidos -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0"><i class="bi bi-grid"></i> Accesos Rápidos</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-md-2 mb-3">
+                            <div class="d-grid">
+                                <a href="{% url 'authorizations:authorization_create' %}" class="btn btn-outline-success p-3">
+                                    <i class="bi bi-file-earmark-plus fs-2 d-block mb-2"></i>
+                                    <span>Nueva Solicitud</span>
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="col-md-2 mb-3">
+                            <div class="d-grid">
+                                <a href="{% url 'authorizations:authorization_list' %}?status=submitted" class="btn btn-outline-primary p-3">
+                                    <i class="bi bi-list-check fs-2 d-block mb-2"></i>
+                                    <span>Pendientes</span>
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="col-md-2 mb-3">
+                            <div class="d-grid">
+                                <a href="{% url 'authorizations:authorization_list' %}?status=under_review" class="btn btn-outline-warning p-3">
+                                    <i class="bi bi-hourglass-split fs-2 d-block mb-2"></i>
+                                    <span>En Revisión</span>
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="col-md-2 mb-3">
+                            <div class="d-grid">
+                                <a href="{% url 'authorizations:counter_referral_list' %}" class="btn btn-outline-info p-3">
+                                    <i class="bi bi-arrow-left-right fs-2 d-block mb-2"></i>
+                                    <span>Contrarreferencias</span>
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="col-md-2 mb-3">
+                            <div class="d-grid">
+                                <a href="{% url 'authorizations:authorization_list' %}" class="btn btn-outline-secondary p-3">
+                                    <i class="bi bi-building fs-2 d-block mb-2"></i>
+                                    <span>Por EPS</span>
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="col-md-2 mb-3">
+                            <div class="d-grid">
+                                <a href="{% url 'authorizations:reports' %}" class="btn btn-outline-dark p-3">
+                                    <i class="bi bi-bar-chart fs-2 d-block mb-2"></i>
+                                    <span>Reportes</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Solicitudes recientes y estadísticas por EPS -->
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="bi bi-file-earmark-text"></i> Solicitudes Recientes</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Nº Autorización</th>
+                                    <th>Paciente</th>
+                                    <th>EPS</th>
+                                    <th>Servicio</th>
+                                    <th>Fecha</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for request in recent_requests %}
+                                <tr>
+                                    <td><strong>{{ request.authorization_number }}</strong></td>
+                                    <td>
+                                        {{ request.patient.get_full_name }}
+                                        <br><small class="text-muted">{{ request.patient.document_number }}</small>
+                                    </td>
+                                    <td>{{ request.eps.name }}</td>
+                                    <td>
+                                        {% if request.service_type == 'consultation' %}
+                                        <span class="badge bg-primary">Consulta</span>
+                                        {% elif request.service_type == 'procedure' %}
+                                        <span class="badge bg-secondary">Procedimiento</span>
+                                        {% elif request.service_type == 'surgery' %}
+                                        <span class="badge bg-danger">Cirugía</span>
+                                        {% elif request.service_type == 'imaging' %}
+                                        <span class="badge bg-info">Imagenología</span>
+                                        {% elif request.service_type == 'laboratory' %}
+                                        <span class="badge bg-success">Laboratorio</span>
+                                        {% else %}
+                                        <span class="badge bg-dark">{{ request.get_service_type_display }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ request.request_date|date:"d/m/Y" }}</td>
+                                    <td>
+                                        {% if request.status == 'approved' or request.status == 'partial_approved' %}
+                                        <span class="badge bg-success">{{ request.get_status_display }}</span>
+                                        {% elif request.status == 'under_review' %}
+                                        <span class="badge bg-warning">{{ request.get_status_display }}</span>
+                                        {% elif request.status == 'submitted' %}
+                                        <span class="badge bg-info">{{ request.get_status_display }}</span>
+                                        {% elif request.status == 'denied' %}
+                                        <span class="badge bg-danger">{{ request.get_status_display }}</span>
+                                        {% elif request.status == 'cancelled' %}
+                                        <span class="badge bg-secondary">{{ request.get_status_display }}</span>
+                                        {% else %}
+                                        <span class="badge bg-secondary">{{ request.get_status_display }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <a href="{% url 'authorizations:authorization_detail' request.id %}" class="btn btn-sm btn-outline-primary" title="Ver detalle">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="7" class="text-center text-muted py-4">
+                                        No hay solicitudes registradas. <a href="{% url 'authorizations:authorization_create' %}">Crear primera solicitud</a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="text-center">
+                        <a href="{% url 'authorizations:authorization_list' %}" class="btn btn-outline-primary">
+                            Ver todas las solicitudes <i class="bi bi-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="bi bi-building"></i> Estadísticas por EPS</h5>
+                </div>
+                <div class="card-body">
+                    {% for stat in eps_stats %}
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span><strong>{{ stat.eps.name }}</strong></span>
+                            <span class="badge bg-primary">{{ stat.total }} autorizaciones</span>
+                        </div>
+                        <div class="progress" style="height: 20px;">
+                            <div class="progress-bar bg-success" role="progressbar" style="width: {{ stat.approval_rate }}%">{{ stat.approval_rate }}% aprobadas</div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <p class="text-muted text-center py-3">No hay estadísticas disponibles</p>
+                    {% endfor %}
+
+                    <hr>
+
+                    <div class="alert alert-info mb-0">
+                        <strong><i class="bi bi-info-circle"></i> Tiempo promedio de respuesta:</strong><br>
+                        <span class="fs-4">{{ avg_response_days }} días</span>
+                    </div>
+
+                    {% if pending_counter_referrals > 0 %}
+                    <div class="alert alert-warning mt-3 mb-0">
+                        <strong><i class="bi bi-exclamation-triangle"></i> Contrarreferencias pendientes:</strong><br>
+                        <span class="fs-4">{{ pending_counter_referrals }}</span>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

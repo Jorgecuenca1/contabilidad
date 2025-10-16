@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block title %}Perfil Cardiológico - {{ patient.nombre }}{% endblock %}
+{% block content %}
+<div class="container-fluid">
+    <h2><i class="bi bi-person-heart"></i> Perfil Cardiológico - {{ patient.nombre }}</h2>
+    <div class="card mt-3">
+        <div class="card-body">
+            <h5>Historial Completo del Paciente</h5>
+            <p><strong>Consultas:</strong> {{ consultations.count }}</p>
+            <p><strong>ECGs:</strong> {{ ecgs.count }}</p>
+            <p><strong>Ecocardiogramas:</strong> {{ echos.count }}</p>
+            <p><strong>Pruebas de Esfuerzo:</strong> {{ stress_tests.count }}</p>
+            <p><strong>Holters:</strong> {{ holters.count }}</p>
+            <p><strong>Evaluaciones de Riesgo:</strong> {{ risk_assessments.count }}</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

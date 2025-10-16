@@ -1,0 +1,198 @@
+{% extends 'base.html' %}
+{% block title %}{% if session %}Editar{% else %}Nueva{% endif %} Sesión - Psicología{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <h2 class="mb-4">
+        <i class="bi bi-chat-square-text"></i>
+        {% if session %}Editar Sesión {{ session.session_number }}{% else %}Nueva Sesión Terapéutica{% endif %}
+    </h2>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <!-- Información Básica -->
+        <div class="card mb-3">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="bi bi-info-circle"></i> Información Básica</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Paciente <span class="text-danger">*</span></label>
+                        <select name="patient" class="form-select" required {% if session %}disabled{% endif %}>
+                            <option value="">Seleccione un paciente...</option>
+                            {% for patient in patients %}
+                            <option value="{{ patient.id }}" {% if session and session.patient.id == patient.id %}selected{% elif consultation and consultation.patient.id == patient.id %}selected{% endif %}>
+                                {{ patient.third_party.name }} - {{ patient.third_party.identification_number }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Consulta Relacionada</label>
+                        <select name="consultation" class="form-select">
+                            <option value="">Ninguna</option>
+                            {% for cons in consultations %}
+                            <option value="{{ cons.id }}" {% if session and session.consultation and session.consultation.id == cons.id %}selected{% elif consultation and consultation.id == cons.id %}selected{% endif %}>
+                                {{ cons.consultation_number }} - {{ cons.consultation_date|date:"d/m/Y" }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Fecha de Sesión <span class="text-danger">*</span></label>
+                        <input type="datetime-local" name="session_date" class="form-control" required value="{{ session.session_date|date:'Y-m-d\TH:i'|default:'' }}">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Duración (minutos) <span class="text-danger">*</span></label>
+                        <input type="number" name="session_duration" class="form-control" required value="{{ session.session_duration|default:'60' }}" min="15" max="240">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Estado <span class="text-danger">*</span></label>
+                        <select name="status" class="form-select" required>
+                            <option value="scheduled" {% if not session or session.status == 'scheduled' %}selected{% endif %}>Programada</option>
+                            <option value="completed" {% if session and session.status == 'completed' %}selected{% endif %}>Completada</option>
+                            <option value="cancelled" {% if session and session.status == 'cancelled' %}selected{% endif %}>Cancelada</option>
+                            <option value="no_show" {% if session and session.status == 'no_show' %}selected{% endif %}>No asistió</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tipo y Modalidad -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-gear"></i> Tipo y Modalidad</h6>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Tipo de Sesión <span class="text-danger">*</span></label>
+                        <select name="session_type" class="form-select" required>
+                            <option value="individual" {% if not session or session.session_type == 'individual' %}selected{% endif %}>Individual</option>
+                            <option value="couple" {% if session and session.session_type == 'couple' %}selected{% endif %}>Pareja</option>
+                            <option value="family" {% if session and session.session_type == 'family' %}selected{% endif %}>Familiar</option>
+                            <option value="group" {% if session and session.session_type == 'group' %}selected{% endif %}>Grupal</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Modalidad <span class="text-danger">*</span></label>
+                        <select name="modality" class="form-select" required>
+                            <option value="in_person" {% if not session or session.modality == 'in_person' %}selected{% endif %}>Presencial</option>
+                            <option value="virtual" {% if session and session.modality == 'virtual' %}selected{% endif %}>Virtual</option>
+                            <option value="phone" {% if session and session.modality == 'phone' %}selected{% endif %}>Telefónica</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contenido de la Sesión -->
+        <div class="card mb-3">
+            <div class="card-header bg-info text-white">
+                <h6 class="mb-0"><i class="bi bi-chat-dots"></i> Contenido de la Sesión</h6>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-12">
+                        <label class="form-label">Temas Presentados <span class="text-danger">*</span></label>
+                        <textarea name="presenting_issues" class="form-control" rows="3" required placeholder="Temas, problemas o situaciones que el paciente presenta...">{{ session.presenting_issues|default:'' }}</textarea>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">Intervenciones Realizadas <span class="text-danger">*</span></label>
+                        <textarea name="interventions" class="form-control" rows="4" required placeholder="Técnicas, estrategias y abordajes utilizados durante la sesión...">{{ session.interventions|default:'' }}</textarea>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">Respuesta del Paciente</label>
+                        <textarea name="patient_response" class="form-control" rows="3" placeholder="Reacciones, insights, cambios observados...">{{ session.patient_response|default:'' }}</textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Progreso -->
+        <div class="card mb-3">
+            <div class="card-header bg-success text-white">
+                <h6 class="mb-0"><i class="bi bi-graph-up"></i> Progreso</h6>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-12">
+                        <label class="form-label">Resumen de Progreso</label>
+                        <textarea name="progress_summary" class="form-control" rows="3" placeholder="Evaluación general del progreso del paciente...">{{ session.progress_summary|default:'' }}</textarea>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">Objetivos Abordados</label>
+                        <textarea name="goals_addressed" class="form-control" rows="2" placeholder="Objetivos específicos trabajados en esta sesión...">{{ session.goals_addressed|default:'' }}</textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tareas -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-clipboard-check"></i> Tareas</h6>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-10">
+                        <label class="form-label">Tareas Asignadas</label>
+                        <textarea name="homework_assigned" class="form-control" rows="3" placeholder="Tareas, ejercicios o actividades para realizar antes de la próxima sesión...">{{ session.homework_assigned|default:'' }}</textarea>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">Tareas previas completadas</label>
+                        <div class="form-check form-switch mt-2">
+                            <input class="form-check-input" type="checkbox" name="homework_completed" id="homeworkCompleted" {% if session and session.homework_completed %}checked{% endif %}>
+                            <label class="form-check-label" for="homeworkCompleted">
+                                Sí
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Siguiente Sesión -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-calendar-plus"></i> Siguiente Sesión</h6>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Fecha de Próxima Sesión</label>
+                        <input type="date" name="next_session_date" class="form-control" value="{{ session.next_session_date|date:'Y-m-d'|default:'' }}">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Objetivos para Próxima Sesión</label>
+                        <textarea name="next_session_goals" class="form-control" rows="2" placeholder="Temas u objetivos a abordar en la siguiente sesión...">{{ session.next_session_goals|default:'' }}</textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Observaciones -->
+        <div class="card mb-3">
+            <div class="card-body">
+                <label class="form-label">Observaciones Adicionales</label>
+                <textarea name="observations" class="form-control" rows="2" placeholder="Notas adicionales...">{{ session.observations|default:'' }}</textarea>
+            </div>
+        </div>
+
+        <!-- Botones de Acción -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <button type="submit" class="btn btn-primary btn-lg">
+                    <i class="bi bi-save"></i> Guardar Sesión
+                </button>
+                <a href="{% url 'psychology:session_list' %}" class="btn btn-secondary btn-lg">
+                    <i class="bi bi-x-circle"></i> Cancelar
+                </a>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}

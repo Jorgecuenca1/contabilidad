@@ -1,0 +1,177 @@
+{% extends 'base.html' %}
+{% block title %}Refracción - {{ consultation.consultation_number }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="mb-4">
+        <h2><i class="bi bi-eyeglasses"></i> Refracción - {{ consultation.consultation_number }}</h2>
+        <p class="text-muted">Paciente: {{ consultation.patient.third_party.name }}</p>
+    </div>
+
+    <div class="card">
+        <div class="card-header bg-warning text-dark">
+            <h5 class="mb-0">Medición de Refracción</h5>
+        </div>
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+
+                <div class="alert alert-info">
+                    <strong>Nomenclatura:</strong>
+                    <ul class="mb-0">
+                        <li><strong>Esfera (SPH):</strong> Poder dióptrico para corregir miopía (-) o hipermetropía (+)</li>
+                        <li><strong>Cilindro (CYL):</strong> Poder dióptrico para corregir astigmatismo</li>
+                        <li><strong>Eje (AXIS):</strong> Orientación del cilindro (0-180°)</li>
+                        <li><strong>Adición (ADD):</strong> Poder adicional para visión cercana (presbicia)</li>
+                        <li><strong>DP:</strong> Distancia Pupilar en milímetros</li>
+                    </ul>
+                </div>
+
+                <!-- Tipo de Refracción -->
+                <div class="mb-4">
+                    <label class="form-label">Tipo de Refracción</label>
+                    <select name="refraction_type" class="form-select">
+                        <option value="subjective" {% if refraction.refraction_type == 'subjective' %}selected{% endif %}>Subjetiva</option>
+                        <option value="objective" {% if refraction.refraction_type == 'objective' %}selected{% endif %}>Objetiva (Autorefractómetro)</option>
+                        <option value="cycloplegic" {% if refraction.refraction_type == 'cycloplegic' %}selected{% endif %}>Ciclopléjica</option>
+                    </select>
+                </div>
+
+                <!-- Ojo Derecho (OD) -->
+                <div class="card mb-3">
+                    <div class="card-header bg-primary text-white">
+                        <h6 class="mb-0">OD - Ojo Derecho (Oculus Dexter)</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-2 mb-3">
+                                <label class="form-label">Esfera (SPH)</label>
+                                <input type="number" step="0.25" name="od_sphere" class="form-control"
+                                       value="{{ refraction.od_sphere|default:'' }}"
+                                       placeholder="Ej: -2.00">
+                                <small class="text-muted">Dioptrías</small>
+                            </div>
+                            <div class="col-md-2 mb-3">
+                                <label class="form-label">Cilindro (CYL)</label>
+                                <input type="number" step="0.25" name="od_cylinder" class="form-control"
+                                       value="{{ refraction.od_cylinder|default:'' }}"
+                                       placeholder="Ej: -0.75">
+                                <small class="text-muted">Dioptrías</small>
+                            </div>
+                            <div class="col-md-2 mb-3">
+                                <label class="form-label">Eje (AXIS)</label>
+                                <input type="number" min="0" max="180" name="od_axis" class="form-control"
+                                       value="{{ refraction.od_axis|default:'' }}"
+                                       placeholder="Ej: 90">
+                                <small class="text-muted">0-180 grados</small>
+                            </div>
+                            <div class="col-md-2 mb-3">
+                                <label class="form-label">Adición (ADD)</label>
+                                <input type="number" step="0.25" name="od_add" class="form-control"
+                                       value="{{ refraction.od_add|default:'' }}"
+                                       placeholder="Ej: +2.00">
+                                <small class="text-muted">Dioptrías</small>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Prisma</label>
+                                <input type="text" name="od_prism" class="form-control"
+                                       value="{{ refraction.od_prism|default:'' }}"
+                                       placeholder="Ej: 2Δ BI">
+                                <small class="text-muted">Prisma y dirección</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Ojo Izquierdo (OS) -->
+                <div class="card mb-3">
+                    <div class="card-header bg-danger text-white">
+                        <h6 class="mb-0">OS - Ojo Izquierdo (Oculus Sinister)</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-2 mb-3">
+                                <label class="form-label">Esfera (SPH)</label>
+                                <input type="number" step="0.25" name="os_sphere" class="form-control"
+                                       value="{{ refraction.os_sphere|default:'' }}"
+                                       placeholder="Ej: -2.00">
+                                <small class="text-muted">Dioptrías</small>
+                            </div>
+                            <div class="col-md-2 mb-3">
+                                <label class="form-label">Cilindro (CYL)</label>
+                                <input type="number" step="0.25" name="os_cylinder" class="form-control"
+                                       value="{{ refraction.os_cylinder|default:'' }}"
+                                       placeholder="Ej: -0.75">
+                                <small class="text-muted">Dioptrías</small>
+                            </div>
+                            <div class="col-md-2 mb-3">
+                                <label class="form-label">Eje (AXIS)</label>
+                                <input type="number" min="0" max="180" name="os_axis" class="form-control"
+                                       value="{{ refraction.os_axis|default:'' }}"
+                                       placeholder="Ej: 90">
+                                <small class="text-muted">0-180 grados</small>
+                            </div>
+                            <div class="col-md-2 mb-3">
+                                <label class="form-label">Adición (ADD)</label>
+                                <input type="number" step="0.25" name="os_add" class="form-control"
+                                       value="{{ refraction.os_add|default:'' }}"
+                                       placeholder="Ej: +2.00">
+                                <small class="text-muted">Dioptrías</small>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Prisma</label>
+                                <input type="text" name="os_prism" class="form-control"
+                                       value="{{ refraction.os_prism|default:'' }}"
+                                       placeholder="Ej: 2Δ BI">
+                                <small class="text-muted">Prisma y dirección</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Distancia Pupilar -->
+                <div class="card mb-3">
+                    <div class="card-header bg-success text-white">
+                        <h6 class="mb-0">Distancia Pupilar (DP)</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">DP Distancia</label>
+                                <input type="number" step="0.5" name="pd_distance" class="form-control"
+                                       value="{{ refraction.pd_distance|default:'' }}"
+                                       placeholder="Ej: 63.0">
+                                <small class="text-muted">Milímetros (mm)</small>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">DP Cerca</label>
+                                <input type="number" step="0.5" name="pd_near" class="form-control"
+                                       value="{{ refraction.pd_near|default:'' }}"
+                                       placeholder="Ej: 60.0">
+                                <small class="text-muted">Milímetros (mm)</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Observaciones -->
+                <div class="mb-3">
+                    <label class="form-label">Observaciones</label>
+                    <textarea name="observations" class="form-control" rows="3"
+                              placeholder="Observaciones adicionales sobre la refracción...">{{ refraction.observations|default:'' }}</textarea>
+                </div>
+
+                <!-- Botones -->
+                <div class="d-flex justify-content-between">
+                    <a href="{% url 'ophthalmology:consultation_detail' consultation.id %}" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left"></i> Volver
+                    </a>
+                    <button type="submit" class="btn btn-warning">
+                        <i class="bi bi-save"></i> Guardar Refracción
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

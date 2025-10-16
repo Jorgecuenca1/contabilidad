@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% block title %}Procedimientos Quirúrgicos{% endblock %}
+{% block content %}
+<div class="container-fluid">
+    <h2><i class="bi bi-journal-medical"></i> Procedimientos Quirúrgicos</h2>
+    <a href="{% url 'surgery:surgical_procedure_create' %}" class="btn btn-success my-3">
+        <i class="bi bi-plus-lg"></i> Nuevo Procedimiento
+    </a>
+
+    <div class="card">
+        <div class="card-body">
+            {% if page_obj %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Código</th>
+                            <th>Nombre</th>
+                            <th>Especialidad</th>
+                            <th>Complejidad</th>
+                            <th>Duración</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for procedure in page_obj %}
+                        <tr>
+                            <td><strong>{{ procedure.code }}</strong></td>
+                            <td>{{ procedure.name }}</td>
+                            <td>{{ procedure.get_specialty_display }}</td>
+                            <td>
+                                {% if procedure.complexity == 'low' %}
+                                    <span class="badge bg-info">Baja</span>
+                                {% elif procedure.complexity == 'medium' %}
+                                    <span class="badge bg-warning">Media</span>
+                                {% elif procedure.complexity == 'high' %}
+                                    <span class="badge bg-danger">Alta</span>
+                                {% else %}
+                                    <span class="badge bg-dark">Muy Alta</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ procedure.estimated_duration_minutes }} min</td>
+                            <td>
+                                <a href="{% url 'surgery:surgical_procedure_detail' procedure.id %}" class="btn btn-sm btn-info">Ver</a>
+                                <a href="{% url 'surgery:surgical_procedure_update' procedure.id %}" class="btn btn-sm btn-warning">Editar</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <p class="text-muted">No hay procedimientos registrados</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

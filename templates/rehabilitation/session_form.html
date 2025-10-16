@@ -1,0 +1,198 @@
+{% extends 'base.html' %}
+{% block title %}{% if session %}Editar{% else %}Nueva{% endif %} Sesión - Rehabilitación{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <h2 class="mb-4">
+        <i class="bi bi-heart-pulse"></i>
+        {% if session %}Editar Sesión {{ session.session_number }}{% else %}Nueva Sesión de Rehabilitación{% endif %}
+    </h2>
+
+    {% if plan %}
+    <div class="alert alert-info">
+        <strong>Paciente:</strong> {{ plan.patient.third_party.name }} |
+        <strong>Plan:</strong> {{ plan.plan_number }} |
+        <strong>Frecuencia:</strong> {{ plan.frequency_per_week }}x/semana
+    </div>
+    {% endif %}
+
+    <form method="post">
+        {% csrf_token %}
+
+        <!-- Información del Paciente y Plan -->
+        <div class="card mb-3">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="bi bi-person"></i> Información de la Sesión</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Paciente <span class="text-danger">*</span></label>
+                        <select name="patient" class="form-select" required {% if session or plan %}disabled{% endif %}>
+                            <option value="">Seleccione un paciente...</option>
+                            {% for patient in patients %}
+                            <option value="{{ patient.id }}"
+                                {% if session and session.patient.id == patient.id %}selected
+                                {% elif plan and plan.patient.id == patient.id %}selected{% endif %}>
+                                {{ patient.third_party.name }} - {{ patient.third_party.identification_number }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Plan de Rehabilitación <span class="text-danger">*</span></label>
+                        <select name="plan" class="form-select" required {% if session or plan %}disabled{% endif %}>
+                            <option value="">Seleccione un plan...</option>
+                            {% for rehabilitation_plan in rehabilitation_plans %}
+                            <option value="{{ rehabilitation_plan.id }}"
+                                {% if session and session.plan.id == rehabilitation_plan.id %}selected
+                                {% elif plan and plan.id == rehabilitation_plan.id %}selected{% endif %}>
+                                {{ rehabilitation_plan.plan_number }} - {{ rehabilitation_plan.diagnosis|truncatewords:5 }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Fecha y Hora de Sesión <span class="text-danger">*</span></label>
+                        <input type="datetime-local" name="session_date" class="form-control" required value="{{ session.session_date|date:'Y-m-d\TH:i'|default:'' }}">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Duración (minutos) <span class="text-danger">*</span></label>
+                        <input type="number" name="session_duration" class="form-control" min="15" required value="{{ session.session_duration|default:'45' }}">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Estado <span class="text-danger">*</span></label>
+                        <select name="status" class="form-select" required>
+                            <option value="scheduled" {% if not session or session.status == 'scheduled' %}selected{% endif %}>Programada</option>
+                            <option value="completed" {% if session and session.status == 'completed' %}selected{% endif %}>Completada</option>
+                            <option value="cancelled" {% if session and session.status == 'cancelled' %}selected{% endif %}>Cancelada</option>
+                            <option value="no_show" {% if session and session.status == 'no_show' %}selected{% endif %}>No asistió</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Evaluación de Dolor -->
+        <div class="card mb-3">
+            <div class="card-header bg-warning">
+                <h5 class="mb-0"><i class="bi bi-exclamation-circle"></i> Evaluación de Dolor</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Nivel de Dolor Pre-Sesión (0-10)</label>
+                        <input type="number" name="pain_level_pre" class="form-control" min="0" max="10" value="{{ session.pain_level_pre|default:'' }}">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Nivel de Dolor Post-Sesión (0-10)</label>
+                        <input type="number" name="pain_level_post" class="form-control" min="0" max="10" value="{{ session.pain_level_post|default:'' }}">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modalidades Aplicadas -->
+        <div class="card mb-3">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0"><i class="bi bi-activity"></i> Modalidades Aplicadas</h5>
+            </div>
+            <div class="card-body">
+                <textarea name="modalities_applied" class="form-control" rows="3" placeholder="Calor, frío, ultrasonido, TENS, láser, etc. Especificar parámetros y duración...">{{ session.modalities_applied|default:'' }}</textarea>
+            </div>
+        </div>
+
+        <!-- Terapia Manual -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-hand-index"></i> Terapia Manual Realizada</h6>
+            </div>
+            <div class="card-body">
+                <textarea name="manual_therapy_performed" class="form-control" rows="3" placeholder="Masaje, movilización articular, estiramiento, manipulación...">{{ session.manual_therapy_performed|default:'' }}</textarea>
+            </div>
+        </div>
+
+        <!-- Ejercicios Realizados -->
+        <div class="card mb-3">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0"><i class="bi bi-clipboard-pulse"></i> Ejercicios Realizados</h5>
+            </div>
+            <div class="card-body">
+                <textarea name="exercises_performed" class="form-control" rows="4" placeholder="Descripción de ejercicios realizados, series, repeticiones, resistencia utilizada...">{{ session.exercises_performed|default:'' }}</textarea>
+            </div>
+        </div>
+
+        <!-- Tolerancia y Respuesta del Paciente -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-person-check"></i> Tolerancia y Respuesta</h6>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Tolerancia del Paciente</label>
+                        <textarea name="patient_tolerance" class="form-control" rows="3" placeholder="Cómo toleró el paciente las intervenciones...">{{ session.patient_tolerance|default:'' }}</textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Respuesta del Paciente</label>
+                        <textarea name="patient_response" class="form-control" rows="3" placeholder="Respuesta inmediata al tratamiento...">{{ session.patient_response|default:'' }}</textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Resumen de Progreso -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-graph-up"></i> Resumen de Progreso</h6>
+            </div>
+            <div class="card-body">
+                <textarea name="progress_summary" class="form-control" rows="3" placeholder="Progreso observado desde la última sesión...">{{ session.progress_summary|default:'' }}</textarea>
+            </div>
+        </div>
+
+        <!-- Plan para la Próxima Sesión -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-calendar-plus"></i> Plan para la Próxima Sesión</h6>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Tareas para Casa</label>
+                        <textarea name="homework_assigned" class="form-control" rows="3" placeholder="Ejercicios o actividades para realizar en casa...">{{ session.homework_assigned|default:'' }}</textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Objetivos para Próxima Sesión</label>
+                        <textarea name="next_session_goals" class="form-control" rows="3" placeholder="Qué se trabajará en la próxima sesión...">{{ session.next_session_goals|default:'' }}</textarea>
+                    </div>
+                    <div class="col-md-12">
+                        <label class="form-label">Fecha Próxima Sesión</label>
+                        <input type="date" name="next_session_date" class="form-control" value="{{ session.next_session_date|date:'Y-m-d'|default:'' }}">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Observaciones -->
+        <div class="card mb-3">
+            <div class="card-body">
+                <label class="form-label">Observaciones Adicionales</label>
+                <textarea name="observations" class="form-control" rows="2" placeholder="Cualquier observación adicional...">{{ session.observations|default:'' }}</textarea>
+            </div>
+        </div>
+
+        <!-- Botones de Acción -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <button type="submit" class="btn btn-primary btn-lg">
+                    <i class="bi bi-save"></i> Guardar Sesión
+                </button>
+                <a href="{% url 'rehabilitation:session_list' %}" class="btn btn-secondary btn-lg">
+                    <i class="bi bi-x-circle"></i> Cancelar
+                </a>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}

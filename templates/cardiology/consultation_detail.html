@@ -1,0 +1,219 @@
+{% extends 'base.html' %}
+
+{% block title %}Detalle Consulta {{ consultation.consultation_number }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'core:dashboard' %}">Dashboard</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'cardiology:dashboard' %}">Cardiología</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'cardiology:consultation_list' %}">Consultas</a></li>
+            <li class="breadcrumb-item active">{{ consultation.consultation_number }}</li>
+        </ol>
+    </nav>
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-clipboard2-pulse"></i> Consulta {{ consultation.consultation_number }}</h2>
+        <div>
+            <a href="{% url 'cardiology:consultation_update' consultation.id %}" class="btn btn-warning">
+                <i class="bi bi-pencil"></i> Editar
+            </a>
+            <a href="{% url 'cardiology:consultation_list' %}" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Volver
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Información del Paciente -->
+        <div class="col-md-6 mb-3">
+            <div class="card">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="mb-0"><i class="bi bi-person"></i> Información del Paciente</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-sm">
+                        <tr>
+                            <th width="40%">Nombre:</th>
+                            <td>{{ consultation.patient.nombre }}</td>
+                        </tr>
+                        <tr>
+                            <th>Documento:</th>
+                            <td>{{ consultation.patient.document_type }} {{ consultation.patient.document_number }}</td>
+                        </tr>
+                        <tr>
+                            <th>Género:</th>
+                            <td>{{ consultation.patient.get_gender_display|default:"N/A" }}</td>
+                        </tr>
+                        <tr>
+                            <th>Fecha Nacimiento:</th>
+                            <td>{{ consultation.patient.birth_date|date:"d/m/Y"|default:"N/A" }}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Información de la Consulta -->
+        <div class="col-md-6 mb-3">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="bi bi-info-circle"></i> Información de la Consulta</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-sm">
+                        <tr>
+                            <th width="40%">Tipo:</th>
+                            <td>{{ consultation.get_consultation_type_display }}</td>
+                        </tr>
+                        <tr>
+                            <th>Cardiólogo:</th>
+                            <td>{{ consultation.cardiologist.full_name }}</td>
+                        </tr>
+                        <tr>
+                            <th>Fecha:</th>
+                            <td>{{ consultation.consultation_date|date:"d/m/Y H:i" }}</td>
+                        </tr>
+                        <tr>
+                            <th>Estado:</th>
+                            <td>
+                                {% if consultation.status == 'completed' %}
+                                    <span class="badge bg-success">Completada</span>
+                                {% elif consultation.status == 'in_progress' %}
+                                    <span class="badge bg-warning">En Curso</span>
+                                {% elif consultation.status == 'scheduled' %}
+                                    <span class="badge bg-info">Programada</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">{{ consultation.get_status_display }}</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Motivo y Antecedentes -->
+    <div class="card mb-3">
+        <div class="card-header bg-warning">
+            <h5 class="mb-0"><i class="bi bi-file-text"></i> Motivo de Consulta y Antecedentes</h5>
+        </div>
+        <div class="card-body">
+            <h6>Motivo de Consulta:</h6>
+            <p>{{ consultation.chief_complaint|default:"No especificado" }}</p>
+
+            {% if consultation.cardiovascular_history %}
+            <h6 class="mt-3">Antecedentes Cardiovasculares:</h6>
+            <p>{{ consultation.cardiovascular_history }}</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Factores de Riesgo -->
+    <div class="card mb-3">
+        <div class="card-header bg-danger text-white">
+            <h5 class="mb-0"><i class="bi bi-exclamation-triangle"></i> Factores de Riesgo Cardiovascular</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-3">
+                    {% if consultation.has_hypertension %}
+                        <span class="badge bg-danger"><i class="bi bi-check"></i> Hipertensión</span>
+                    {% else %}
+                        <span class="badge bg-secondary"><i class="bi bi-x"></i> Hipertensión</span>
+                    {% endif %}
+                </div>
+                <div class="col-md-3">
+                    {% if consultation.has_diabetes %}
+                        <span class="badge bg-danger"><i class="bi bi-check"></i> Diabetes</span>
+                    {% else %}
+                        <span class="badge bg-secondary"><i class="bi bi-x"></i> Diabetes</span>
+                    {% endif %}
+                </div>
+                <div class="col-md-3">
+                    {% if consultation.has_dyslipidemia %}
+                        <span class="badge bg-danger"><i class="bi bi-check"></i> Dislipidemia</span>
+                    {% else %}
+                        <span class="badge bg-secondary"><i class="bi bi-x"></i> Dislipidemia</span>
+                    {% endif %}
+                </div>
+                <div class="col-md-3">
+                    {% if consultation.is_smoker %}
+                        <span class="badge bg-danger"><i class="bi bi-check"></i> Fumador</span>
+                    {% else %}
+                        <span class="badge bg-secondary"><i class="bi bi-x"></i> Fumador</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Signos Vitales -->
+    {% if consultation.blood_pressure_systolic or consultation.heart_rate %}
+    <div class="card mb-3">
+        <div class="card-header bg-info text-white">
+            <h5 class="mb-0"><i class="bi bi-activity"></i> Signos Vitales</h5>
+        </div>
+        <div class="card-body">
+            <div class="row text-center">
+                {% if consultation.blood_pressure_systolic %}
+                <div class="col-md-3">
+                    <h4 class="text-primary">{{ consultation.blood_pressure_systolic }}/{{ consultation.blood_pressure_diastolic }}</h4>
+                    <small class="text-muted">Presión Arterial (mmHg)</small>
+                </div>
+                {% endif %}
+                {% if consultation.heart_rate %}
+                <div class="col-md-3">
+                    <h4 class="text-danger">{{ consultation.heart_rate }}</h4>
+                    <small class="text-muted">Frecuencia Cardíaca (lpm)</small>
+                </div>
+                {% endif %}
+                {% if consultation.oxygen_saturation %}
+                <div class="col-md-3">
+                    <h4 class="text-success">{{ consultation.oxygen_saturation }}%</h4>
+                    <small class="text-muted">Saturación O2</small>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Estudios Relacionados -->
+    <div class="card mb-3">
+        <div class="card-header bg-success text-white">
+            <h5 class="mb-0"><i class="bi bi-file-earmark-medical"></i> Estudios Relacionados</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <h6>Electrocardiogramas ({{ ecgs.count }})</h6>
+                    {% if ecgs %}
+                        <ul>
+                            {% for ecg in ecgs %}
+                                <li><a href="{% url 'cardiology:ecg_detail' ecg.id %}">{{ ecg.ecg_number }}</a> - {{ ecg.ecg_date|date:"d/m/Y" }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p class="text-muted">No hay ECGs registrados</p>
+                    {% endif %}
+                </div>
+                <div class="col-md-6">
+                    <h6>Ecocardiogramas ({{ echos.count }})</h6>
+                    {% if echos %}
+                        <ul>
+                            {% for echo in echos %}
+                                <li><a href="{% url 'cardiology:echo_detail' echo.id %}">{{ echo.echo_number }}</a> - {{ echo.echo_date|date:"d/m/Y" }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p class="text-muted">No hay ecocardiogramas registrados</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

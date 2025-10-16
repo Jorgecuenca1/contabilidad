@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+{% block title %}Medición de Progreso - Plan {{ plan.plan_number }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <h2 class="mb-4">
+        <i class="bi bi-graph-up"></i> Medición de Progreso - Plan {{ plan.plan_number }}
+    </h2>
+
+    <div class="alert alert-info">
+        <strong>Paciente:</strong> {{ plan.patient.third_party.name }} |
+        <strong>Diagnóstico:</strong> {{ plan.diagnosis|truncatewords:10 }} |
+        <strong>Inicio:</strong> {{ plan.start_date|date:"d/m/Y" }}
+    </div>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <!-- Fecha y Evaluador -->
+        <div class="card mb-3">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="bi bi-calendar-check"></i> Información de la Medición</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Fecha de Medición <span class="text-danger">*</span></label>
+                        <input type="date" name="measurement_date" class="form-control" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Nivel de Dolor Actual (0-10) <span class="text-danger">*</span></label>
+                        <input type="number" name="pain_level" class="form-control" min="0" max="10" required>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mediciones de Rango de Movimiento -->
+        <div class="card mb-3">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0"><i class="bi bi-arrows-move"></i> Mediciones de Rango de Movimiento (ROM)</h5>
+            </div>
+            <div class="card-body">
+                <label class="form-label">Mediciones Goniométricas</label>
+                <textarea name="rom_measurements" class="form-control" rows="4" placeholder="Articulación - Movimiento - Grados&#10;Ej: Rodilla derecha - Flexión: 120°, Extensión: 0°&#10;    Hombro izquierdo - Abducción: 150°"></textarea>
+                <small class="text-muted">Especifique las mediciones de rango de movimiento realizadas con goniometría</small>
+            </div>
+        </div>
+
+        <!-- Mediciones de Fuerza -->
+        <div class="card mb-3">
+            <div class="card-header bg-warning">
+                <h5 class="mb-0"><i class="bi bi-award"></i> Mediciones de Fuerza Muscular</h5>
+            </div>
+            <div class="card-body">
+                <label class="form-label">Evaluación Manual de Fuerza (0-5)</label>
+                <textarea name="strength_measurements" class="form-control" rows="4" placeholder="Grupo muscular - Grado de fuerza (0-5)&#10;Ej: Cuádriceps derecho: 4/5&#10;    Isquiotibiales derecho: 4/5"></textarea>
+                <small class="text-muted">Especifique las mediciones de fuerza muscular según escala de 0 a 5</small>
+            </div>
+        </div>
+
+        <!-- Pruebas Funcionales -->
+        <div class="card mb-3">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0"><i class="bi bi-activity"></i> Resultados de Pruebas Funcionales</h5>
+            </div>
+            <div class="card-body">
+                <label class="form-label">Resultados de Tests Funcionales</label>
+                <textarea name="functional_tests_results" class="form-control" rows="4" placeholder="Ej: Test de equilibrio unipodal: 25 segundos&#10;Alcance funcional: 28 cm&#10;Tiempo levantarse y caminar: 12 segundos&#10;Test de sentarse y pararse: 10 repeticiones en 30 segundos"></textarea>
+                <small class="text-muted">Incluya resultados de pruebas funcionales realizadas</small>
+            </div>
+        </div>
+
+        <!-- Mejoría Reportada por el Paciente -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-person-check"></i> Evaluación del Paciente</h6>
+            </div>
+            <div class="card-body">
+                <label class="form-label">Mejoría Reportada por el Paciente (0-100%) <span class="text-danger">*</span></label>
+                <input type="number" name="patient_reported_improvement" class="form-control" min="0" max="100" required placeholder="0 = Sin mejoría, 100 = Recuperación completa">
+                <small class="text-muted">Pregúntele al paciente qué porcentaje de mejoría siente desde el inicio del tratamiento</small>
+            </div>
+        </div>
+
+        <!-- Evaluación del Terapeuta -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-clipboard-check"></i> Evaluación del Fisioterapeuta</h6>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-12">
+                        <label class="form-label">Evaluación Clínica del Terapeuta <span class="text-danger">*</span></label>
+                        <textarea name="therapist_assessment" class="form-control" rows="4" required placeholder="Impresión clínica del progreso del paciente..."></textarea>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">Notas de Progreso Objetivas</label>
+                        <textarea name="objective_progress_notes" class="form-control" rows="4" placeholder="Cambios objetivos observados desde la última medición..."></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recomendaciones -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-lightbulb"></i> Recomendaciones</h6>
+            </div>
+            <div class="card-body">
+                <textarea name="recommendations" class="form-control" rows="3" placeholder="Recomendaciones basadas en esta evaluación (ajustes al plan, objetivos actualizados, etc.)"></textarea>
+            </div>
+        </div>
+
+        <!-- Botones de Acción -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <button type="submit" class="btn btn-primary btn-lg">
+                    <i class="bi bi-save"></i> Guardar Medición
+                </button>
+                <a href="{% url 'rehabilitation:plan_detail' plan.id %}" class="btn btn-secondary btn-lg">
+                    <i class="bi bi-x-circle"></i> Cancelar
+                </a>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}

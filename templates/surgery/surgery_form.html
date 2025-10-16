@@ -1,0 +1,330 @@
+{% extends 'base.html' %}
+{% load surgery_filters %}
+{% block title %}{% if surgery %}Editar{% else %}Nueva{% endif %} Cirugía{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-clipboard2-plus"></i> {% if surgery %}Editar{% else %}Nueva{% endif %} Cirugía</h2>
+        <a href="{% url 'surgery:surgery_list' %}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Volver
+        </a>
+    </div>
+
+    <form method="post" class="needs-validation" novalidate>
+        {% csrf_token %}
+
+        <div class="row">
+            <!-- Columna Izquierda -->
+            <div class="col-md-6">
+                <!-- Información del Paciente -->
+                <div class="card mb-3">
+                    <div class="card-header bg-primary text-white">
+                        <i class="bi bi-person"></i> Información del Paciente
+                    </div>
+                    <div class="card-body">
+                        {% if not surgery %}
+                        <div class="mb-3">
+                            <label for="patient_id" class="form-label">Paciente *</label>
+                            <select class="form-select" id="patient_id" name="patient_id" required>
+                                <option value="">Seleccione un paciente</option>
+                                {% for patient in patients %}
+                                <option value="{{ patient.id }}">{{ patient.nombre }} - {{ patient.numero_identificacion }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        {% else %}
+                        <p><strong>Paciente:</strong> {{ surgery.patient.nombre }}</p>
+                        <p><strong>Identificación:</strong> {{ surgery.patient.numero_identificacion }}</p>
+                        {% endif %}
+
+                        <div class="mb-3">
+                            <label for="allergies" class="form-label">Alergias</label>
+                            <textarea class="form-control" id="allergies" name="allergies" rows="2">{% if surgery %}{{ surgery.allergies }}{% endif %}</textarea>
+                        </div>
+
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" id="patient_consent_signed" name="patient_consent_signed" {% if surgery and surgery.patient_consent_signed %}checked{% endif %}>
+                            <label class="form-check-label" for="patient_consent_signed">
+                                Consentimiento Informado Firmado
+                            </label>
+                        </div>
+
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="fasting_verified" name="fasting_verified" {% if surgery and surgery.fasting_verified %}checked{% endif %}>
+                            <label class="form-check-label" for="fasting_verified">
+                                Ayuno Verificado
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Procedimiento Quirúrgico -->
+                <div class="card mb-3">
+                    <div class="card-header bg-warning text-white">
+                        <i class="bi bi-journal-medical"></i> Procedimiento Quirúrgico
+                    </div>
+                    <div class="card-body">
+                        {% if not surgery %}
+                        <div class="mb-3">
+                            <label for="surgical_procedure_id" class="form-label">Procedimiento *</label>
+                            <select class="form-select" id="surgical_procedure_id" name="surgical_procedure_id" required>
+                                <option value="">Seleccione un procedimiento</option>
+                                {% for procedure in surgical_procedures %}
+                                <option value="{{ procedure.id }}">{{ procedure.code }} - {{ procedure.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        {% else %}
+                        <p><strong>Procedimiento:</strong> {{ surgery.surgical_procedure.name }}</p>
+                        <p><strong>Código:</strong> {{ surgery.surgical_procedure.code }}</p>
+                        <p><strong>Especialidad:</strong> {{ surgery.surgical_procedure.get_specialty_display }}</p>
+                        {% endif %}
+
+                        <div class="mb-3">
+                            <label for="pre_operative_diagnosis" class="form-label">Diagnóstico Preoperatorio *</label>
+                            <input type="text" class="form-control" id="pre_operative_diagnosis" name="pre_operative_diagnosis" value="{% if surgery %}{{ surgery.pre_operative_diagnosis }}{% endif %}" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="pre_operative_diagnosis_code" class="form-label">Código CIE-10</label>
+                            <input type="text" class="form-control" id="pre_operative_diagnosis_code" name="pre_operative_diagnosis_code" value="{% if surgery %}{{ surgery.pre_operative_diagnosis_code }}{% endif %}" placeholder="Ej: K35.8">
+                        </div>
+
+                        {% if surgery %}
+                        <div class="mb-3">
+                            <label for="post_operative_diagnosis" class="form-label">Diagnóstico Postoperatorio</label>
+                            <input type="text" class="form-control" id="post_operative_diagnosis" name="post_operative_diagnosis" value="{{ surgery.post_operative_diagnosis }}">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="post_operative_diagnosis_code" class="form-label">Código CIE-10 Post</label>
+                            <input type="text" class="form-control" id="post_operative_diagnosis_code" name="post_operative_diagnosis_code" value="{{ surgery.post_operative_diagnosis_code }}">
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Columna Derecha -->
+            <div class="col-md-6">
+                <!-- Programación -->
+                <div class="card mb-3">
+                    <div class="card-header bg-info text-white">
+                        <i class="bi bi-calendar-event"></i> Programación
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="scheduled_date" class="form-label">Fecha *</label>
+                                <input type="date" class="form-control" id="scheduled_date" name="scheduled_date" value="{% if surgery %}{{ surgery.scheduled_date|date:'Y-m-d' }}{% endif %}" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="scheduled_time" class="form-label">Hora *</label>
+                                <input type="time" class="form-control" id="scheduled_time" name="scheduled_time" value="{% if surgery %}{{ surgery.scheduled_time|time:'H:i' }}{% endif %}" required>
+                            </div>
+                        </div>
+
+                        {% if not surgery %}
+                        <div class="mb-3">
+                            <label for="operating_room_id" class="form-label">Quirófano *</label>
+                            <select class="form-select" id="operating_room_id" name="operating_room_id" required>
+                                <option value="">Seleccione un quirófano</option>
+                                {% for room in operating_rooms %}
+                                <option value="{{ room.id }}">{{ room.room_number }} - {{ room.room_name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        {% else %}
+                        <div class="mb-3">
+                            <label for="operating_room_id" class="form-label">Quirófano *</label>
+                            <select class="form-select" id="operating_room_id" name="operating_room_id" required>
+                                {% for room in operating_rooms %}
+                                <option value="{{ room.id }}" {% if room.id == surgery.operating_room.id %}selected{% endif %}>{{ room.room_number }} - {{ room.room_name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        {% endif %}
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="urgency" class="form-label">Urgencia *</label>
+                                <select class="form-select" id="urgency" name="urgency" required>
+                                    <option value="elective" {% if surgery and surgery.urgency == 'elective' %}selected{% endif %}>Electiva</option>
+                                    <option value="urgent" {% if surgery and surgery.urgency == 'urgent' %}selected{% endif %}>Urgente</option>
+                                    <option value="emergency" {% if surgery and surgery.urgency == 'emergency' %}selected{% endif %}>Emergencia</option>
+                                </select>
+                            </div>
+                            {% if surgery %}
+                            <div class="col-md-6 mb-3">
+                                <label for="status" class="form-label">Estado *</label>
+                                <select class="form-select" id="status" name="status" required>
+                                    <option value="scheduled" {% if surgery.status == 'scheduled' %}selected{% endif %}>Programada</option>
+                                    <option value="confirmed" {% if surgery.status == 'confirmed' %}selected{% endif %}>Confirmada</option>
+                                    <option value="in_progress" {% if surgery.status == 'in_progress' %}selected{% endif %}>En Curso</option>
+                                    <option value="completed" {% if surgery.status == 'completed' %}selected{% endif %}>Completada</option>
+                                    <option value="cancelled" {% if surgery.status == 'cancelled' %}selected{% endif %}>Cancelada</option>
+                                    <option value="postponed" {% if surgery.status == 'postponed' %}selected{% endif %}>Pospuesta</option>
+                                </select>
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="special_considerations" class="form-label">Consideraciones Especiales</label>
+                            <textarea class="form-control" id="special_considerations" name="special_considerations" rows="3">{% if surgery %}{{ surgery.special_considerations }}{% endif %}</textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Equipo Quirúrgico -->
+                <div class="card mb-3">
+                    <div class="card-header bg-success text-white">
+                        <i class="bi bi-people"></i> Equipo Quirúrgico
+                    </div>
+                    <div class="card-body">
+                        {% if not surgery %}
+                        <div class="mb-3">
+                            <label for="surgeon_id" class="form-label">Cirujano Principal *</label>
+                            <select class="form-select" id="surgeon_id" name="surgeon_id" required>
+                                <option value="">Seleccione un cirujano</option>
+                                {% for surgeon in surgeons %}
+                                <option value="{{ surgeon.id }}">{{ surgeon|full_name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="assistant_surgeon_id" class="form-label">Cirujano Asistente</label>
+                            <select class="form-select" id="assistant_surgeon_id" name="assistant_surgeon_id">
+                                <option value="">Ninguno</option>
+                                {% for surgeon in surgeons %}
+                                <option value="{{ surgeon.id }}">{{ surgeon|full_name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="anesthesiologist_id" class="form-label">Anestesiólogo *</label>
+                            <select class="form-select" id="anesthesiologist_id" name="anesthesiologist_id" required>
+                                <option value="">Seleccione un anestesiólogo</option>
+                                {% for anesthesiologist in anesthesiologists %}
+                                <option value="{{ anesthesiologist.id }}">{{ anesthesiologist|full_name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="scrub_nurse_id" class="form-label">Enfermera Instrumentista</label>
+                            <select class="form-select" id="scrub_nurse_id" name="scrub_nurse_id">
+                                <option value="">Ninguno</option>
+                                {% for nurse in nurses %}
+                                <option value="{{ nurse.id }}">{{ nurse.nombre }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="circulating_nurse_id" class="form-label">Enfermera Circulante</label>
+                            <select class="form-select" id="circulating_nurse_id" name="circulating_nurse_id">
+                                <option value="">Ninguno</option>
+                                {% for nurse in nurses %}
+                                <option value="{{ nurse.id }}">{{ nurse.nombre }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        {% else %}
+                        <div class="mb-3">
+                            <label for="surgeon_id" class="form-label">Cirujano Principal *</label>
+                            <select class="form-select" id="surgeon_id" name="surgeon_id" required>
+                                {% for surgeon in surgeons %}
+                                <option value="{{ surgeon.id }}" {% if surgeon.id == surgery.surgeon.id %}selected{% endif %}>{{ surgeon|full_name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="anesthesiologist_id" class="form-label">Anestesiólogo *</label>
+                            <select class="form-select" id="anesthesiologist_id" name="anesthesiologist_id" required>
+                                {% for anesthesiologist in anesthesiologists %}
+                                <option value="{{ anesthesiologist.id }}" {% if anesthesiologist.id == surgery.anesthesiologist.id %}selected{% endif %}>{{ anesthesiologist|full_name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                {% if surgery %}
+                <!-- Información Transoperatoria -->
+                <div class="card mb-3">
+                    <div class="card-header bg-danger text-white">
+                        <i class="bi bi-activity"></i> Información Transoperatoria
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="actual_start_time" class="form-label">Hora Real de Inicio</label>
+                                <input type="datetime-local" class="form-control" id="actual_start_time" name="actual_start_time" value="{% if surgery.actual_start_time %}{{ surgery.actual_start_time|date:'Y-m-d\TH:i' }}{% endif %}">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="actual_end_time" class="form-label">Hora Real de Fin</label>
+                                <input type="datetime-local" class="form-control" id="actual_end_time" name="actual_end_time" value="{% if surgery.actual_end_time %}{{ surgery.actual_end_time|date:'Y-m-d\TH:i' }}{% endif %}">
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="surgical_findings" class="form-label">Hallazgos Quirúrgicos</label>
+                            <textarea class="form-control" id="surgical_findings" name="surgical_findings" rows="3">{{ surgery.surgical_findings }}</textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="surgical_technique" class="form-label">Técnica Quirúrgica</label>
+                            <textarea class="form-control" id="surgical_technique" name="surgical_technique" rows="3">{{ surgery.surgical_technique }}</textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="complications" class="form-label">Complicaciones</label>
+                            <textarea class="form-control" id="complications" name="complications" rows="2">{{ surgery.complications }}</textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="estimated_blood_loss" class="form-label">Pérdida Sanguínea Estimada (ml)</label>
+                            <input type="number" class="form-control" id="estimated_blood_loss" name="estimated_blood_loss" value="{{ surgery.estimated_blood_loss }}" min="0">
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12">
+                <button type="submit" class="btn btn-primary btn-lg">
+                    <i class="bi bi-save"></i> Guardar Cirugía
+                </button>
+                <a href="{% url 'surgery:surgery_list' %}" class="btn btn-secondary btn-lg">
+                    <i class="bi bi-x-circle"></i> Cancelar
+                </a>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script>
+// Form validation
+(function() {
+    'use strict';
+    var forms = document.querySelectorAll('.needs-validation');
+    Array.prototype.slice.call(forms).forEach(function(form) {
+        form.addEventListener('submit', function(event) {
+            if (!form.checkValidity()) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+            form.classList.add('was-validated');
+        }, false);
+    });
+})();
+</script>
+{% endblock %}

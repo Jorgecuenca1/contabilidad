@@ -1,0 +1,227 @@
+{% extends 'base.html' %}
+{% block title %}Listado de Pacientes{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-people"></i> Listado de Pacientes</h2>
+        <a href="{% url 'patients:patient_create' %}" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> Nuevo Paciente
+        </a>
+    </div>
+
+    <!-- Filtros Avanzados -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="bi bi-funnel"></i> Filtros de Búsqueda
+        </div>
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-4">
+                    <label class="form-label">Buscar</label>
+                    <input type="text" name="search" class="form-control"
+                           placeholder="Nombre, documento, HC, teléfono, email..."
+                           value="{{ search }}">
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label">EPS</label>
+                    <select name="eps" class="form-select">
+                        <option value="">Todas</option>
+                        {% for eps in eps_list %}
+                        <option value="{{ eps.id }}" {% if eps_filter == eps.id|stringformat:"s" %}selected{% endif %}>
+                            {{ eps.name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label">Régimen</label>
+                    <select name="regime" class="form-select">
+                        <option value="">Todos</option>
+                        <option value="contributivo" {% if regime_filter == 'contributivo' %}selected{% endif %}>Contributivo</option>
+                        <option value="subsidiado" {% if regime_filter == 'subsidiado' %}selected{% endif %}>Subsidiado</option>
+                        <option value="especial" {% if regime_filter == 'especial' %}selected{% endif %}>Especial</option>
+                        <option value="particular" {% if regime_filter == 'particular' %}selected{% endif %}>Particular</option>
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label">Tipo de Sangre</label>
+                    <select name="blood_type" class="form-select">
+                        <option value="">Todos</option>
+                        <option value="A+" {% if blood_type_filter == 'A+' %}selected{% endif %}>A+</option>
+                        <option value="A-" {% if blood_type_filter == 'A-' %}selected{% endif %}>A-</option>
+                        <option value="B+" {% if blood_type_filter == 'B+' %}selected{% endif %}>B+</option>
+                        <option value="B-" {% if blood_type_filter == 'B-' %}selected{% endif %}>B-</option>
+                        <option value="AB+" {% if blood_type_filter == 'AB+' %}selected{% endif %}>AB+</option>
+                        <option value="AB-" {% if blood_type_filter == 'AB-' %}selected{% endif %}>AB-</option>
+                        <option value="O+" {% if blood_type_filter == 'O+' %}selected{% endif %}>O+</option>
+                        <option value="O-" {% if blood_type_filter == 'O-' %}selected{% endif %}>O-</option>
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label">Edad</label>
+                    <select name="age_range" class="form-select">
+                        <option value="">Todas</option>
+                        <option value="0-1" {% if age_range_filter == '0-1' %}selected{% endif %}>0-1 año</option>
+                        <option value="1-12" {% if age_range_filter == '1-12' %}selected{% endif %}>1-12 años</option>
+                        <option value="13-17" {% if age_range_filter == '13-17' %}selected{% endif %}>13-17 años</option>
+                        <option value="18-59" {% if age_range_filter == '18-59' %}selected{% endif %}>18-59 años</option>
+                        <option value="60+" {% if age_range_filter == '60+' %}selected{% endif %}>60+ años</option>
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label">Género</label>
+                    <select name="gender" class="form-select">
+                        <option value="">Todos</option>
+                        <option value="M" {% if gender_filter == 'M' %}selected{% endif %}>Masculino</option>
+                        <option value="F" {% if gender_filter == 'F' %}selected{% endif %}>Femenino</option>
+                        <option value="O" {% if gender_filter == 'O' %}selected{% endif %}>Otro</option>
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label">Estado</label>
+                    <select name="status" class="form-select">
+                        <option value="active" {% if status_filter == 'active' %}selected{% endif %}>Activos</option>
+                        <option value="inactive" {% if status_filter == 'inactive' %}selected{% endif %}>Inactivos</option>
+                        <option value="">Todos</option>
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100" style="margin-top: 32px;">
+                        <i class="bi bi-search"></i> Buscar
+                    </button>
+                </div>
+
+                <div class="col-md-2">
+                    <a href="{% url 'patients:patient_list' %}" class="btn btn-secondary w-100" style="margin-top: 32px;">
+                        <i class="bi bi-x-circle"></i> Limpiar
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Tabla de Pacientes -->
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>HC</th>
+                            <th>Documento</th>
+                            <th>Nombre Completo</th>
+                            <th>Edad</th>
+                            <th>Género</th>
+                            <th>Sangre</th>
+                            <th>EPS</th>
+                            <th>Régimen</th>
+                            <th>Teléfono</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for patient in page_obj %}
+                        <tr>
+                            <td><strong>{{ patient.medical_record_number }}</strong></td>
+                            <td>
+                                {{ patient.third_party.get_identification_type_display }}<br>
+                                <small>{{ patient.third_party.identification_number }}</small>
+                            </td>
+                            <td>
+                                <strong>{{ patient.third_party.name }}</strong>
+                                {% if patient.is_minor %}
+                                <span class="badge bg-info ms-1">Menor</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ patient.get_age_display }}</td>
+                            <td>
+                                {% if patient.third_party.gender == 'M' %}
+                                <i class="bi bi-gender-male text-primary"></i> M
+                                {% elif patient.third_party.gender == 'F' %}
+                                <i class="bi bi-gender-female text-danger"></i> F
+                                {% else %}
+                                <i class="bi bi-gender-ambiguous"></i> Otro
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="badge bg-danger">{{ patient.blood_type }}</span>
+                            </td>
+                            <td>
+                                <small>{{ patient.eps.name }}</small>
+                            </td>
+                            <td>
+                                {% if patient.regime_type == 'contributivo' %}
+                                <span class="badge bg-success">Contributivo</span>
+                                {% elif patient.regime_type == 'subsidiado' %}
+                                <span class="badge bg-warning">Subsidiado</span>
+                                {% elif patient.regime_type == 'especial' %}
+                                <span class="badge bg-info">Especial</span>
+                                {% else %}
+                                <span class="badge bg-secondary">Particular</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ patient.third_party.phone|default:"-" }}</td>
+                            <td>
+                                <a href="{% url 'patients:patient_detail' patient.id %}" class="btn btn-sm btn-info" title="Ver Detalle">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                <a href="{% url 'patients:patient_edit' patient.id %}" class="btn btn-sm btn-warning" title="Editar">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="10" class="text-center text-muted">No se encontraron pacientes</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Paginación -->
+            {% if page_obj.has_other_pages %}
+            <nav class="mt-4">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page=1{% if search %}&search={{ search }}{% endif %}{% if eps_filter %}&eps={{ eps_filter }}{% endif %}{% if regime_filter %}&regime={{ regime_filter }}{% endif %}{% if blood_type_filter %}&blood_type={{ blood_type_filter }}{% endif %}{% if age_range_filter %}&age_range={{ age_range_filter }}{% endif %}{% if gender_filter %}&gender={{ gender_filter }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}">Primera</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if search %}&search={{ search }}{% endif %}{% if eps_filter %}&eps={{ eps_filter }}{% endif %}{% if regime_filter %}&regime={{ regime_filter }}{% endif %}{% if blood_type_filter %}&blood_type={{ blood_type_filter }}{% endif %}{% if age_range_filter %}&age_range={{ age_range_filter }}{% endif %}{% if gender_filter %}&gender={{ gender_filter }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}">Anterior</a>
+                    </li>
+                    {% endif %}
+
+                    <li class="page-item active">
+                        <span class="page-link">
+                            Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
+                        </span>
+                    </li>
+
+                    {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if search %}&search={{ search }}{% endif %}{% if eps_filter %}&eps={{ eps_filter }}{% endif %}{% if regime_filter %}&regime={{ regime_filter }}{% endif %}{% if blood_type_filter %}&blood_type={{ blood_type_filter }}{% endif %}{% if age_range_filter %}&age_range={{ age_range_filter }}{% endif %}{% if gender_filter %}&gender={{ gender_filter }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}">Siguiente</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if search %}&search={{ search }}{% endif %}{% if eps_filter %}&eps={{ eps_filter }}{% endif %}{% if regime_filter %}&regime={{ regime_filter }}{% endif %}{% if blood_type_filter %}&blood_type={{ blood_type_filter }}{% endif %}{% if age_range_filter %}&age_range={{ age_range_filter }}{% endif %}{% if gender_filter %}&gender={{ gender_filter }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}">Última</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+
+            <div class="text-center text-muted mt-3">
+                <small>Total: {{ page_obj.paginator.count }} paciente(s)</small>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

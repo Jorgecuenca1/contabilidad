@@ -1,0 +1,255 @@
+{% extends 'base.html' %}
+{% block title %}{% if consultation %}Editar{% else %}Nueva{% endif %} Consulta - Psicología{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <h2 class="mb-4">
+        <i class="bi bi-plus-circle"></i>
+        {% if consultation %}Editar Consulta {{ consultation.consultation_number }}{% else %}Nueva Consulta Psicológica{% endif %}
+    </h2>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <!-- Información del Paciente -->
+        <div class="card mb-3">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="bi bi-person"></i> Información del Paciente</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Paciente <span class="text-danger">*</span></label>
+                        <select name="patient" class="form-select" required {% if consultation %}disabled{% endif %}>
+                            <option value="">Seleccione un paciente...</option>
+                            {% for patient in patients %}
+                            <option value="{{ patient.id }}" {% if consultation and consultation.patient.id == patient.id %}selected{% endif %}>
+                                {{ patient.third_party.name }} - {{ patient.third_party.identification_number }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Referido por</label>
+                        <input type="text" name="referred_by" class="form-control" value="{{ consultation.referred_by|default:'' }}" placeholder="Médico, institución, familiar, etc.">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Motivo de Consulta -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-chat-left-text"></i> Motivo de Consulta</h6>
+            </div>
+            <div class="card-body">
+                <textarea name="chief_complaint" class="form-control" rows="3" required placeholder="Motivo principal de la consulta...">{{ consultation.chief_complaint|default:'' }}</textarea>
+            </div>
+        </div>
+
+        <!-- Historia -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-clock-history"></i> Historia</h6>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Historia Personal</label>
+                        <textarea name="personal_history" class="form-control" rows="3" placeholder="Desarrollo, educación, relaciones, trabajo...">{{ consultation.personal_history|default:'' }}</textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Historia Familiar</label>
+                        <textarea name="family_history" class="form-control" rows="3" placeholder="Dinámica familiar, antecedentes relevantes...">{{ consultation.family_history|default:'' }}</textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Historia Médica</label>
+                        <textarea name="medical_history" class="form-control" rows="3" placeholder="Condiciones médicas, cirugías, hospitalizaciones...">{{ consultation.medical_history|default:'' }}</textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Antecedentes Psiquiátricos</label>
+                        <textarea name="psychiatric_history" class="form-control" rows="3" placeholder="Diagnósticos previos, tratamientos, hospitalizaciones...">{{ consultation.psychiatric_history|default:'' }}</textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Medicación y Sustancias -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-capsule"></i> Medicación y Sustancias</h6>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Medicación Actual</label>
+                        <textarea name="current_medications" class="form-control" rows="3" placeholder="Medicamentos, dosis, frecuencia...">{{ consultation.current_medications|default:'' }}</textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Uso de Sustancias</label>
+                        <textarea name="substance_use" class="form-control" rows="3" placeholder="Alcohol, tabaco, drogas...">{{ consultation.substance_use|default:'' }}</textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Examen Mental -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-clipboard-heart"></i> Examen del Estado Mental</h6>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label">Apariencia General</label>
+                        <textarea name="appearance" class="form-control" rows="2" placeholder="Vestimenta, higiene, contacto visual...">{{ consultation.appearance|default:'' }}</textarea>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Conducta</label>
+                        <textarea name="behavior" class="form-control" rows="2" placeholder="Nivel de actividad, cooperación...">{{ consultation.behavior|default:'' }}</textarea>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Lenguaje</label>
+                        <textarea name="speech" class="form-control" rows="2" placeholder="Velocidad, volumen, coherencia...">{{ consultation.speech|default:'' }}</textarea>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Estado de Ánimo</label>
+                        <input type="text" name="mood" class="form-control" value="{{ consultation.mood|default:'' }}" placeholder="Ej: Deprimido, ansioso, eutímico...">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Afecto</label>
+                        <input type="text" name="affect" class="form-control" value="{{ consultation.affect|default:'' }}" placeholder="Ej: Congruente, plano, lábil...">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Insight</label>
+                        <input type="text" name="insight" class="form-control" value="{{ consultation.insight|default:'' }}" placeholder="Ej: Bueno, limitado, ausente...">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Proceso de Pensamiento</label>
+                        <textarea name="thought_process" class="form-control" rows="2" placeholder="Organización, lógica, velocidad...">{{ consultation.thought_process|default:'' }}</textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Contenido del Pensamiento</label>
+                        <textarea name="thought_content" class="form-control" rows="2" placeholder="Ideas, obsesiones, fobias, delirios...">{{ consultation.thought_content|default:'' }}</textarea>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Percepción</label>
+                        <textarea name="perception" class="form-control" rows="2" placeholder="Alucinaciones, ilusiones...">{{ consultation.perception|default:'' }}</textarea>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Cognición</label>
+                        <textarea name="cognition" class="form-control" rows="2" placeholder="Orientación, memoria, atención...">{{ consultation.cognition|default:'' }}</textarea>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Juicio</label>
+                        <input type="text" name="judgment" class="form-control" value="{{ consultation.judgment|default:'' }}" placeholder="Ej: Bueno, limitado, pobre...">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Evaluación de Riesgo -->
+        <div class="card mb-3">
+            <div class="card-header bg-warning">
+                <h6 class="mb-0"><i class="bi bi-exclamation-triangle"></i> Evaluación de Riesgo</h6>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Riesgo Suicida <span class="text-danger">*</span></label>
+                        <select name="suicide_risk" class="form-select" required>
+                            <option value="none" {% if not consultation or consultation.suicide_risk == 'none' %}selected{% endif %}>Sin riesgo</option>
+                            <option value="low" {% if consultation and consultation.suicide_risk == 'low' %}selected{% endif %}>Bajo</option>
+                            <option value="medium" {% if consultation and consultation.suicide_risk == 'medium' %}selected{% endif %}>Medio</option>
+                            <option value="high" {% if consultation and consultation.suicide_risk == 'high' %}selected{% endif %}>Alto</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Riesgo Homicida <span class="text-danger">*</span></label>
+                        <select name="homicide_risk" class="form-select" required>
+                            <option value="none" {% if not consultation or consultation.homicide_risk == 'none' %}selected{% endif %}>Sin riesgo</option>
+                            <option value="low" {% if consultation and consultation.homicide_risk == 'low' %}selected{% endif %}>Bajo</option>
+                            <option value="medium" {% if consultation and consultation.homicide_risk == 'medium' %}selected{% endif %}>Medio</option>
+                            <option value="high" {% if consultation and consultation.homicide_risk == 'high' %}selected{% endif %}>Alto</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Diagnóstico -->
+        <div class="card mb-3">
+            <div class="card-header bg-info text-white">
+                <h6 class="mb-0"><i class="bi bi-file-medical"></i> Diagnóstico</h6>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-9">
+                        <label class="form-label">Diagnóstico/Impresión Clínica <span class="text-danger">*</span></label>
+                        <textarea name="diagnosis" class="form-control" rows="3" required placeholder="Diagnóstico principal y secundarios...">{{ consultation.diagnosis|default:'' }}</textarea>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Código DSM-5</label>
+                        <input type="text" name="dsm_code" class="form-control" value="{{ consultation.dsm_code|default:'' }}" placeholder="Ej: F41.1">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Plan de Tratamiento -->
+        <div class="card mb-3">
+            <div class="card-header bg-success text-white">
+                <h6 class="mb-0"><i class="bi bi-clipboard-check"></i> Plan de Tratamiento</h6>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-12">
+                        <label class="form-label">Recomendaciones de Tratamiento <span class="text-danger">*</span></label>
+                        <textarea name="treatment_recommendations" class="form-control" rows="3" required placeholder="Recomendaciones específicas...">{{ consultation.treatment_recommendations|default:'' }}</textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Tipo de Terapia Recomendada</label>
+                        <input type="text" name="therapy_type" class="form-control" value="{{ consultation.therapy_type|default:'' }}" placeholder="Ej: Cognitivo-conductual, psicodinámica...">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Frecuencia Recomendada</label>
+                        <input type="text" name="frequency" class="form-control" value="{{ consultation.frequency|default:'' }}" placeholder="Ej: Semanal, quincenal...">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Observaciones y Estado -->
+        <div class="card mb-3">
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-9">
+                        <label class="form-label">Observaciones Adicionales</label>
+                        <textarea name="observations" class="form-control" rows="2" placeholder="Notas adicionales...">{{ consultation.observations|default:'' }}</textarea>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Estado <span class="text-danger">*</span></label>
+                        <select name="status" class="form-select" required>
+                            <option value="scheduled" {% if not consultation or consultation.status == 'scheduled' %}selected{% endif %}>Programada</option>
+                            <option value="completed" {% if consultation and consultation.status == 'completed' %}selected{% endif %}>Completada</option>
+                            <option value="cancelled" {% if consultation and consultation.status == 'cancelled' %}selected{% endif %}>Cancelada</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Botones de Acción -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <button type="submit" class="btn btn-primary btn-lg">
+                    <i class="bi bi-save"></i> Guardar Consulta
+                </button>
+                <a href="{% url 'psychology:consultation_list' %}" class="btn btn-secondary btn-lg">
+                    <i class="bi bi-x-circle"></i> Cancelar
+                </a>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}

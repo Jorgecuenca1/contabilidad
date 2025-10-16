@@ -1,0 +1,251 @@
+{% extends 'base.html' %}
+{% block title %}{% if is_update %}Actualizar{% else %}Registrar{% endif %} Atención de Urgencias{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <h2 class="mb-4">
+        <i class="bi bi-heart-pulse"></i> {% if is_update %}Actualizar Atención: {{ attention.attention_number }}{% else %}Registrar Atención de Urgencias{% endif %}
+    </h2>
+
+    <!-- Información de Admisión -->
+    {% if not is_update %}
+    <div class="card mb-3">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-4">
+                    <strong>Paciente:</strong> {{ admission.patient.third_party.name }}
+                </div>
+                <div class="col-md-4">
+                    <strong>Admisión:</strong> {{ admission.admission_number }}
+                </div>
+                <div class="col-md-4">
+                    <strong>Triage:</strong> {{ admission.triage.triage_number }} - Nivel {{ admission.triage.triage_level }}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <form method="post" id="attentionForm">
+        {% csrf_token %}
+
+        <!-- Información Básica -->
+        {% if not is_update %}
+        <div class="card mb-3">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="bi bi-person-badge"></i> Información Básica</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Médico <span class="text-danger">*</span></label>
+                        <select name="physician" class="form-select" required>
+                            <option value="">Seleccionar médico...</option>
+                            {% for physician in physicians %}
+                            <option value="{{ physician.id }}">{{ physician.get_full_name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Fecha de Atención <span class="text-danger">*</span></label>
+                        <input type="datetime-local" name="attention_date" id="attentionDate" class="form-control" required>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Anamnesis -->
+        <div class="card mb-3">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0"><i class="bi bi-journal-medical"></i> Anamnesis</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-12">
+                        <label class="form-label">Enfermedad Actual <span class="text-danger">*</span></label>
+                        <textarea name="current_illness" class="form-control" rows="4" required placeholder="Describa la enfermedad actual, síntomas, evolución...">{% if is_update %}{{ attention.current_illness }}{% endif %}</textarea>
+                    </div>
+                    <div class="col-md-12">
+                        <label class="form-label">Revisión por Sistemas</label>
+                        <textarea name="review_of_systems" class="form-control" rows="3" placeholder="Revisión de sistemas corporales">{% if is_update %}{{ attention.review_of_systems }}{% endif %}</textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Antecedentes Personales</label>
+                        <textarea name="personal_history" class="form-control" rows="3" placeholder="Enfermedades previas, cirugías, hospitalizaciones...">{% if is_update %}{{ attention.personal_history }}{% endif %}</textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Antecedentes Familiares</label>
+                        <textarea name="family_history" class="form-control" rows="3" placeholder="Enfermedades en la familia">{% if is_update %}{{ attention.family_history }}{% endif %}</textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Alergias</label>
+                        <textarea name="allergies" class="form-control" rows="2" placeholder="Alergias conocidas a medicamentos, alimentos, etc.">{% if is_update %}{{ attention.allergies }}{% endif %}</textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Medicamentos Actuales</label>
+                        <textarea name="current_medications" class="form-control" rows="2" placeholder="Medicamentos que toma actualmente">{% if is_update %}{{ attention.current_medications }}{% endif %}</textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Examen Físico -->
+        <div class="card mb-3">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0"><i class="bi bi-stethoscope"></i> Examen Físico</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-12">
+                        <label class="form-label">Apariencia General</label>
+                        <textarea name="general_appearance" class="form-control" rows="2" placeholder="Estado general, constitución, actitud, facies...">{% if is_update %}{{ attention.general_appearance }}{% endif %}</textarea>
+                    </div>
+                    <div class="col-md-12">
+                        <label class="form-label">Examen Físico General <span class="text-danger">*</span></label>
+                        <textarea name="physical_examination" class="form-control" rows="4" required placeholder="Examen físico completo por sistemas">{% if is_update %}{{ attention.physical_examination }}{% endif %}</textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Examen Cardiovascular</label>
+                        <textarea name="cardiovascular_exam" class="form-control" rows="3" placeholder="Inspección, palpación, auscultación cardíaca, pulsos...">{% if is_update %}{{ attention.cardiovascular_exam }}{% endif %}</textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Examen Respiratorio</label>
+                        <textarea name="respiratory_exam" class="form-control" rows="3" placeholder="Inspección, palpación, percusión, auscultación pulmonar...">{% if is_update %}{{ attention.respiratory_exam }}{% endif %}</textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Examen Abdominal</label>
+                        <textarea name="abdominal_exam" class="form-control" rows="3" placeholder="Inspección, auscultación, percusión, palpación abdominal...">{% if is_update %}{{ attention.abdominal_exam }}{% endif %}</textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Examen Neurológico</label>
+                        <textarea name="neurological_exam" class="form-control" rows="3" placeholder="Estado mental, pares craneales, motor, sensitivo, reflejos...">{% if is_update %}{{ attention.neurological_exam }}{% endif %}</textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Diagnóstico -->
+        <div class="card mb-3">
+            <div class="card-header bg-warning text-dark">
+                <h5 class="mb-0"><i class="bi bi-clipboard2-check"></i> Diagnóstico</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-12">
+                        <label class="form-label">Diagnóstico Principal <span class="text-danger">*</span></label>
+                        <textarea name="diagnosis" class="form-control" rows="3" required placeholder="Diagnóstico principal con código CIE-10 si es posible">{% if is_update %}{{ attention.diagnosis }}{% endif %}</textarea>
+                    </div>
+                    <div class="col-md-12">
+                        <label class="form-label">Diagnóstico Diferencial</label>
+                        <textarea name="differential_diagnosis" class="form-control" rows="2" placeholder="Diagnósticos diferenciales a considerar">{% if is_update %}{{ attention.differential_diagnosis }}{% endif %}</textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Plan de Tratamiento -->
+        <div class="card mb-3">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="bi bi-prescription2"></i> Plan de Tratamiento</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-12">
+                        <label class="form-label">Plan de Tratamiento <span class="text-danger">*</span></label>
+                        <textarea name="treatment_plan" class="form-control" rows="4" required placeholder="Plan terapéutico general, medidas no farmacológicas, indicaciones...">{% if is_update %}{{ attention.treatment_plan }}{% endif %}</textarea>
+                    </div>
+                    <div class="col-md-12">
+                        <label class="form-label">Medicamentos Prescritos</label>
+                        <textarea name="medications_prescribed" class="form-control" rows="4" placeholder="Nombre del medicamento, dosis, vía, frecuencia, duración (un medicamento por línea)">{% if is_update %}{{ attention.medications_prescribed }}{% endif %}</textarea>
+                        <small class="text-muted">Ejemplo: Acetaminofén 500mg VO cada 6 horas por 3 días</small>
+                    </div>
+                    <div class="col-md-12">
+                        <label class="form-label">Procedimientos Indicados</label>
+                        <textarea name="procedures_indicated" class="form-control" rows="2" placeholder="Procedimientos a realizar">{% if is_update %}{{ attention.procedures_indicated }}{% endif %}</textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Estudios Solicitados -->
+        <div class="card mb-3">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0"><i class="bi bi-microscope"></i> Estudios Solicitados</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Laboratorios Solicitados</label>
+                        <textarea name="lab_tests_ordered" class="form-control" rows="4" placeholder="Hemograma, química sanguínea, pruebas específicas...">{% if is_update %}{{ attention.lab_tests_ordered }}{% endif %}</textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Estudios de Imagen Solicitados</label>
+                        <textarea name="imaging_studies_ordered" class="form-control" rows="4" placeholder="Radiografías, ecografías, TAC, resonancias...">{% if is_update %}{{ attention.imaging_studies_ordered }}{% endif %}</textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Evolución y Pronóstico -->
+        <div class="card mb-3">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0"><i class="bi bi-graph-up-arrow"></i> Evolución y Pronóstico</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-12">
+                        <label class="form-label">Evolución Clínica</label>
+                        <textarea name="clinical_evolution" class="form-control" rows="3" placeholder="Respuesta al tratamiento, cambios en el estado del paciente...">{% if is_update %}{{ attention.clinical_evolution }}{% endif %}</textarea>
+                    </div>
+                    <div class="col-md-12">
+                        <label class="form-label">Pronóstico</label>
+                        <textarea name="prognosis" class="form-control" rows="2" placeholder="Pronóstico y expectativas">{% if is_update %}{{ attention.prognosis }}{% endif %}</textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Observaciones -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-journal-text"></i> Observaciones Adicionales</h6>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-12">
+                        <label class="form-label">Observaciones</label>
+                        <textarea name="observations" class="form-control" rows="3" placeholder="Notas adicionales, consideraciones especiales...">{% if is_update %}{{ attention.observations }}{% endif %}</textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Botones -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <button type="submit" class="btn btn-primary btn-lg">
+                    <i class="bi bi-save"></i> {% if is_update %}Actualizar{% else %}Guardar{% endif %} Atención
+                </button>
+                <a href="{% if is_update %}{% url 'emergency:attention_detail' attention.id %}{% else %}{% url 'emergency:admission_detail' admission.id %}{% endif %}" class="btn btn-secondary btn-lg">
+                    <i class="bi bi-x-circle"></i> Cancelar
+                </a>
+            </div>
+        </div>
+    </form>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    {% if not is_update %}
+    // Set current datetime for attention date
+    const now = new Date();
+    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+    document.getElementById('attentionDate').value = now.toISOString().slice(0, 16);
+    {% endif %}
+});
+</script>
+{% endblock %}

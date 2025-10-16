@@ -112,6 +112,7 @@ class ThirdParty(models.Model):
     is_shareholder = models.BooleanField(default=False)
     is_bank = models.BooleanField(default=False)
     is_government = models.BooleanField(default=False)
+    is_payer = models.BooleanField(default=False)  # EPS, Aseguradora, Pagador de Salud
     
     # Información tributaria
     tax_regime = models.CharField(max_length=20, choices=TAX_REGIME_CHOICES, default='COMUN')

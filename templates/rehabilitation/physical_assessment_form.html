@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+{% block title %}Evaluación Física - Rehabilitación{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <h2 class="mb-4">
+        <i class="bi bi-clipboard-data"></i> Evaluación Física Detallada
+    </h2>
+
+    <div class="alert alert-info">
+        <strong>Paciente:</strong> {{ consultation.patient.third_party.name }} |
+        <strong>Consulta:</strong> {{ consultation.consultation_number }} |
+        <strong>Fecha:</strong> {{ consultation.consultation_date|date:"d/m/Y" }}
+    </div>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <!-- Análisis Postural y de Marcha -->
+        <div class="card mb-3">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="bi bi-person-standing"></i> Postura y Marcha</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Análisis Postural</label>
+                        <textarea name="posture_analysis" class="form-control" rows="4" placeholder="Observaciones de postura: alineación, asimetrías, desviaciones...">{{ physical_assessment.posture_analysis|default:'' }}</textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Análisis de Marcha</label>
+                        <textarea name="gait_analysis" class="form-control" rows="4" placeholder="Patrón de marcha, longitud de paso, cadencia, simetría...">{{ physical_assessment.gait_analysis|default:'' }}</textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ROM y Fuerza -->
+        <div class="card mb-3">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0"><i class="bi bi-arrows-move"></i> Rango de Movimiento y Fuerza</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Hallazgos de Rango de Movimiento (ROM)</label>
+                        <textarea name="range_of_motion_findings" class="form-control" rows="5" placeholder="Goniometría: flexión, extensión, abducción, aducción, rotación... Especificar articulaciones y grados">{{ physical_assessment.range_of_motion_findings|default:'' }}</textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Hallazgos de Fuerza Muscular</label>
+                        <textarea name="muscle_strength_findings" class="form-control" rows="5" placeholder="Manual muscle testing (0-5): especificar grupos musculares evaluados">{{ physical_assessment.muscle_strength_findings|default:'' }}</textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Flexibilidad, Balance y Coordinación -->
+        <div class="card mb-3">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0"><i class="bi bi-activity"></i> Flexibilidad, Balance y Coordinación</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label">Evaluación de Flexibilidad</label>
+                        <textarea name="flexibility_assessment" class="form-control" rows="4" placeholder="Tests de flexibilidad: sit and reach, Thomas test, etc.">{{ physical_assessment.flexibility_assessment|default:'' }}</textarea>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Evaluación de Balance</label>
+                        <textarea name="balance_assessment" class="form-control" rows="4" placeholder="Tests de balance: apoyo unipodal, Romberg, alcance funcional...">{{ physical_assessment.balance_assessment|default:'' }}</textarea>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Evaluación de Coordinación</label>
+                        <textarea name="coordination_assessment" class="form-control" rows="4" placeholder="Tests de coordinación: dedo-nariz, talón-rodilla...">{{ physical_assessment.coordination_assessment|default:'' }}</textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Palpación y Pruebas Especiales -->
+        <div class="card mb-3">
+            <div class="card-header bg-warning">
+                <h5 class="mb-0"><i class="bi bi-hand-index"></i> Palpación y Pruebas Especiales</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Hallazgos de Palpación</label>
+                        <textarea name="palpation_findings" class="form-control" rows="4" placeholder="Puntos sensibles, espasmos musculares, temperatura, textura...">{{ physical_assessment.palpation_findings|default:'' }}</textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Pruebas Especiales Realizadas</label>
+                        <textarea name="special_tests_performed" class="form-control" rows="4" placeholder="Tests ortopédicos específicos y resultados (Lachman, McMurray, impingement tests, etc.)">{{ physical_assessment.special_tests_performed|default:'' }}</textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Observaciones -->
+        <div class="card mb-3">
+            <div class="card-body">
+                <label class="form-label">Observaciones Adicionales</label>
+                <textarea name="observations" class="form-control" rows="3" placeholder="Cualquier otra observación relevante...">{{ physical_assessment.observations|default:'' }}</textarea>
+            </div>
+        </div>
+
+        <!-- Botones de Acción -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <button type="submit" class="btn btn-primary btn-lg">
+                    <i class="bi bi-save"></i> Guardar Evaluación Física
+                </button>
+                <a href="{% url 'rehabilitation:consultation_detail' consultation.id %}" class="btn btn-secondary btn-lg">
+                    <i class="bi bi-x-circle"></i> Cancelar
+                </a>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,174 @@
+{% extends 'base.html' %}
+{% block title %}Equipos - Imágenes Diagnósticas{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-gear-wide-connected"></i> Equipos de Imágenes Diagnósticas</h2>
+    </div>
+
+    <!-- Tabla de Equipos -->
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Código</th>
+                            <th>Nombre</th>
+                            <th>Modalidad</th>
+                            <th>Marca/Modelo</th>
+                            <th>Ubicación</th>
+                            <th>Estado</th>
+                            <th>DICOM</th>
+                            <th>Último Mantenimiento</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for equipment in equipment_list %}
+                        <tr>
+                            <td><strong>{{ equipment.code }}</strong></td>
+                            <td>{{ equipment.name }}</td>
+                            <td><small>{{ equipment.modality.name|truncatewords:2 }}</small></td>
+                            <td>
+                                <small>
+                                    {% if equipment.manufacturer %}{{ equipment.manufacturer }}{% endif %}
+                                    {% if equipment.model %}<br>{{ equipment.model }}{% endif %}
+                                </small>
+                            </td>
+                            <td><small>{{ equipment.room_location|default:"-" }}</small></td>
+                            <td>
+                                {% if equipment.status == 'operational' %}
+                                <span class="badge bg-success">Operacional</span>
+                                {% elif equipment.status == 'maintenance' %}
+                                <span class="badge bg-warning">Mantenimiento</span>
+                                {% elif equipment.status == 'out_of_service' %}
+                                <span class="badge bg-danger">Fuera de Servicio</span>
+                                {% elif equipment.status == 'calibration' %}
+                                <span class="badge bg-info">Calibración</span>
+                                {% else %}
+                                <span class="badge bg-secondary">{{ equipment.get_status_display }}</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if equipment.dicom_ae_title %}
+                                <span class="badge bg-primary" title="AE: {{ equipment.dicom_ae_title }}, IP: {{ equipment.dicom_ip_address }}, Puerto: {{ equipment.dicom_port }}">
+                                    <i class="bi bi-hdd-network"></i> DICOM
+                                </span>
+                                {% else %}
+                                -
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if equipment.last_maintenance_date %}
+                                <small>{{ equipment.last_maintenance_date|date:"d/m/Y" }}</small>
+                                {% else %}
+                                <small class="text-muted">-</small>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <button class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#equipmentModal{{ equipment.id }}">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                            </td>
+                        </tr>
+
+                        <!-- Modal Detalle Equipo -->
+                        <div class="modal fade" id="equipmentModal{{ equipment.id }}" tabindex="-1">
+                            <div class="modal-dialog modal-lg">
+                                <div class="modal-content">
+                                    <div class="modal-header bg-primary text-white">
+                                        <h5 class="modal-title">{{ equipment.name }}</h5>
+                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <h6>Información General</h6>
+                                                <p><strong>Código:</strong> {{ equipment.code }}</p>
+                                                <p><strong>Modalidad:</strong> {{ equipment.modality.name }}</p>
+                                                <p><strong>Estado:</strong> {{ equipment.get_status_display }}</p>
+                                                <p><strong>Ubicación:</strong> {{ equipment.room_location|default:"No especificada" }}</p>
+                                                {% if equipment.description %}
+                                                <p><strong>Descripción:</strong><br>{{ equipment.description }}</p>
+                                                {% endif %}
+                                            </div>
+                                            <div class="col-md-6">
+                                                <h6>Especificaciones Técnicas</h6>
+                                                {% if equipment.manufacturer %}
+                                                <p><strong>Fabricante:</strong> {{ equipment.manufacturer }}</p>
+                                                {% endif %}
+                                                {% if equipment.model %}
+                                                <p><strong>Modelo:</strong> {{ equipment.model }}</p>
+                                                {% endif %}
+                                                {% if equipment.serial_number %}
+                                                <p><strong>Serie:</strong> {{ equipment.serial_number }}</p>
+                                                {% endif %}
+                                                {% if equipment.installation_date %}
+                                                <p><strong>Instalación:</strong> {{ equipment.installation_date|date:"d/m/Y" }}</p>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+
+                                        {% if equipment.dicom_ae_title %}
+                                        <hr>
+                                        <div class="row">
+                                            <div class="col-12">
+                                                <h6>Configuración DICOM</h6>
+                                                <p><strong>AE Title:</strong> <code>{{ equipment.dicom_ae_title }}</code></p>
+                                                <p><strong>Dirección IP:</strong> <code>{{ equipment.dicom_ip_address }}</code></p>
+                                                <p><strong>Puerto:</strong> <code>{{ equipment.dicom_port }}</code></p>
+                                            </div>
+                                        </div>
+                                        {% endif %}
+
+                                        <hr>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <h6>Mantenimiento</h6>
+                                                {% if equipment.last_maintenance_date %}
+                                                <p><strong>Último Mantenimiento:</strong><br>{{ equipment.last_maintenance_date|date:"d/m/Y" }}</p>
+                                                {% else %}
+                                                <p class="text-muted">Sin registro de mantenimiento</p>
+                                                {% endif %}
+                                            </div>
+                                            <div class="col-md-6">
+                                                <h6>Auditoría</h6>
+                                                <p><small><strong>Creado:</strong> {{ equipment.created_at|date:"d/m/Y" }}</small></p>
+                                                <p><small><strong>Actualizado:</strong> {{ equipment.updated_at|date:"d/m/Y" }}</small></p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <tr>
+                            <td colspan="9" class="text-center text-muted">No se encontraron equipos</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Resumen por Estado -->
+    <div class="row g-3 mt-3">
+        <div class="col-md-3">
+            <div class="card border-success">
+                <div class="card-body text-center">
+                    <h6 class="text-muted">Operacionales</h6>
+                    <h3 class="text-success">
+                        {{ equipment_list|length }}
+                    </h3>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

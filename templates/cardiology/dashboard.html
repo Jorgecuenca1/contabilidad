@@ -1,0 +1,373 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Cardiología - Dashboard{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'core:dashboard' %}">Dashboard</a></li>
+            <li class="breadcrumb-item active">Cardiología</li>
+        </ol>
+    </nav>
+
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h2 class="text-danger mb-1">
+                        <i class="bi bi-heart-pulse-fill"></i> Módulo de Cardiología
+                    </h2>
+                    <p class="text-muted mb-0">Centro Especializado de Atención Cardiovascular - Nivel 4</p>
+                </div>
+                <div>
+                    <div class="btn-group" role="group">
+                        <a href="{% url 'cardiology:consultation_create' %}" class="btn btn-danger">
+                            <i class="bi bi-plus-lg"></i> Nueva Consulta
+                        </a>
+                        <button type="button" class="btn btn-outline-danger dropdown-toggle dropdown-toggle-split"
+                                data-bs-toggle="dropdown">
+                            <span class="visually-hidden">Toggle Dropdown</span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="{% url 'cardiology:ecg_create' %}">
+                                <i class="bi bi-activity"></i> Nuevo ECG
+                            </a></li>
+                            <li><a class="dropdown-item" href="{% url 'cardiology:echo_create' %}">
+                                <i class="bi bi-soundwave"></i> Nuevo Ecocardiograma
+                            </a></li>
+                            <li><a class="dropdown-item" href="{% url 'cardiology:stress_test_create' %}">
+                                <i class="bi bi-graph-up-arrow"></i> Nueva Prueba de Esfuerzo
+                            </a></li>
+                            <li><a class="dropdown-item" href="{% url 'cardiology:holter_create' %}">
+                                <i class="bi bi-reception-4"></i> Nuevo Holter
+                            </a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tarjetas de Estadísticas -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card border-left-danger shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
+                                Total Consultas
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ total_consultations }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="bi bi-heart-pulse fs-2 text-danger"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                Consultas Hoy
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ today_consultations }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="bi bi-calendar-check fs-2 text-warning"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                ECGs Anormales Pendientes
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ pending_ecgs }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="bi bi-activity fs-2 text-info"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card border-left-danger shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
+                                Pacientes Alto Riesgo
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ high_risk_patients }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="bi bi-exclamation-triangle fs-2 text-danger"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Menú de Accesos Rápidos -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="mb-0"><i class="bi bi-grid-3x3-gap-fill"></i> Accesos Rápidos</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-md-2 col-sm-4 mb-3">
+                            <a href="{% url 'cardiology:consultation_list' %}" class="text-decoration-none">
+                                <div class="p-3 border rounded hover-shadow">
+                                    <i class="bi bi-clipboard2-pulse fs-1 text-danger"></i>
+                                    <p class="mt-2 mb-0 small">Consultas</p>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-md-2 col-sm-4 mb-3">
+                            <a href="{% url 'cardiology:ecg_list' %}" class="text-decoration-none">
+                                <div class="p-3 border rounded hover-shadow">
+                                    <i class="bi bi-activity fs-1 text-primary"></i>
+                                    <p class="mt-2 mb-0 small">Electrocardiogramas</p>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-md-2 col-sm-4 mb-3">
+                            <a href="{% url 'cardiology:echo_list' %}" class="text-decoration-none">
+                                <div class="p-3 border rounded hover-shadow">
+                                    <i class="bi bi-soundwave fs-1 text-info"></i>
+                                    <p class="mt-2 mb-0 small">Ecocardiogramas</p>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-md-2 col-sm-4 mb-3">
+                            <a href="{% url 'cardiology:stress_test_list' %}" class="text-decoration-none">
+                                <div class="p-3 border rounded hover-shadow">
+                                    <i class="bi bi-graph-up-arrow fs-1 text-success"></i>
+                                    <p class="mt-2 mb-0 small">Pruebas de Esfuerzo</p>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-md-2 col-sm-4 mb-3">
+                            <a href="{% url 'cardiology:holter_list' %}" class="text-decoration-none">
+                                <div class="p-3 border rounded hover-shadow">
+                                    <i class="bi bi-reception-4 fs-1 text-warning"></i>
+                                    <p class="mt-2 mb-0 small">Holter 24-72h</p>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-md-2 col-sm-4 mb-3">
+                            <a href="{% url 'cardiology:risk_assessment_list' %}" class="text-decoration-none">
+                                <div class="p-3 border rounded hover-shadow">
+                                    <i class="bi bi-speedometer2 fs-1 text-danger"></i>
+                                    <p class="mt-2 mb-0 small">Riesgo Cardiovascular</p>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Consultas Recientes -->
+        <div class="col-lg-8 mb-4">
+            <div class="card shadow h-100">
+                <div class="card-header bg-danger text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="bi bi-clock-history"></i> Consultas Recientes</h5>
+                    <a href="{% url 'cardiology:consultation_list' %}" class="btn btn-sm btn-light">
+                        Ver todas
+                    </a>
+                </div>
+                <div class="card-body">
+                    {% if recent_consultations %}
+                        <div class="table-responsive">
+                            <table class="table table-sm table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Número</th>
+                                        <th>Paciente</th>
+                                        <th>Tipo</th>
+                                        <th>Fecha</th>
+                                        <th>Estado</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for consultation in recent_consultations %}
+                                    <tr>
+                                        <td><span class="badge bg-danger">{{ consultation.consultation_number }}</span></td>
+                                        <td>{{ consultation.patient.nombre }}</td>
+                                        <td>{{ consultation.get_consultation_type_display }}</td>
+                                        <td>{{ consultation.consultation_date|date:"d/m/Y H:i" }}</td>
+                                        <td>
+                                            {% if consultation.status == 'completed' %}
+                                                <span class="badge bg-success">Completada</span>
+                                            {% elif consultation.status == 'in_progress' %}
+                                                <span class="badge bg-warning">En Curso</span>
+                                            {% elif consultation.status == 'scheduled' %}
+                                                <span class="badge bg-info">Programada</span>
+                                            {% else %}
+                                                <span class="badge bg-secondary">{{ consultation.get_status_display }}</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <a href="{% url 'cardiology:consultation_detail' consultation.id %}"
+                                               class="btn btn-sm btn-outline-primary">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p class="text-muted text-center py-4">
+                            <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+                            No hay consultas registradas
+                        </p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Estudios Recientes -->
+        <div class="col-lg-4 mb-4">
+            <div class="card shadow h-100">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="bi bi-file-earmark-medical"></i> Estudios Recientes</h5>
+                </div>
+                <div class="card-body">
+                    <!-- ECGs -->
+                    <h6 class="text-primary"><i class="bi bi-activity"></i> Electrocardiogramas</h6>
+                    {% if recent_ecgs %}
+                        <ul class="list-unstyled">
+                            {% for ecg in recent_ecgs %}
+                            <li class="mb-2">
+                                <a href="{% url 'cardiology:ecg_detail' ecg.id %}" class="text-decoration-none">
+                                    <small>
+                                        <strong>{{ ecg.ecg_number }}</strong> - {{ ecg.patient.nombre|truncatewords:3 }}
+                                        <br>
+                                        <span class="text-muted">{{ ecg.ecg_date|date:"d/m/Y" }}</span>
+                                        {% if ecg.result == 'abnormal' %}
+                                            <span class="badge bg-danger">Anormal</span>
+                                        {% elif ecg.result == 'normal' %}
+                                            <span class="badge bg-success">Normal</span>
+                                        {% endif %}
+                                    </small>
+                                </a>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p class="text-muted small">No hay ECGs registrados</p>
+                    {% endif %}
+
+                    <hr>
+
+                    <!-- Ecocardiogramas -->
+                    <h6 class="text-info"><i class="bi bi-soundwave"></i> Ecocardiogramas</h6>
+                    {% if recent_echos %}
+                        <ul class="list-unstyled">
+                            {% for echo in recent_echos %}
+                            <li class="mb-2">
+                                <a href="{% url 'cardiology:echo_detail' echo.id %}" class="text-decoration-none">
+                                    <small>
+                                        <strong>{{ echo.echo_number }}</strong> - {{ echo.patient.nombre|truncatewords:3 }}
+                                        <br>
+                                        <span class="text-muted">{{ echo.echo_date|date:"d/m/Y" }}</span>
+                                        {% if echo.ejection_fraction %}
+                                            <span class="badge bg-info">FEVI: {{ echo.ejection_fraction }}%</span>
+                                        {% endif %}
+                                    </small>
+                                </a>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p class="text-muted small">No hay ecocardiogramas registrados</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cardiólogos Disponibles -->
+    {% if cardiologists %}
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="mb-0"><i class="bi bi-person-badge"></i> Cardiólogos Disponibles</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        {% for cardiologist in cardiologists %}
+                        <div class="col-md-4 mb-3">
+                            <div class="d-flex align-items-center p-2 border rounded">
+                                <div class="avatar-circle bg-danger text-white me-3">
+                                    {{ cardiologist.first_name|first }}{{ cardiologist.last_name|first }}
+                                </div>
+                                <div>
+                                    <strong>{{ cardiologist.full_name }}</strong><br>
+                                    <small class="text-muted">{{ cardiologist.position }}</small>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+.border-left-danger {
+    border-left: 4px solid #dc3545;
+}
+.border-left-warning {
+    border-left: 4px solid #ffc107;
+}
+.border-left-info {
+    border-left: 4px solid #0dcaf0;
+}
+.hover-shadow:hover {
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+    transform: translateY(-2px);
+    transition: all 0.2s;
+}
+.avatar-circle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+}
+</style>
+{% endblock %}

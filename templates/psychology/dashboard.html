@@ -1,0 +1,223 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard - Psicología{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-brain"></i> Psicología - Dashboard</h2>
+        <a href="{% url 'psychology:consultation_create' %}" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> Nueva Consulta
+        </a>
+    </div>
+
+    <!-- Estadísticas principales -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="card border-primary">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-1">Consultas Hoy</h6>
+                            <h3 class="mb-0">{{ consultations_today }}</h3>
+                        </div>
+                        <div class="text-primary">
+                            <i class="bi bi-calendar-check fs-1"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card border-success">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-1">Sesiones Hoy</h6>
+                            <h3 class="mb-0">{{ sessions_today }}</h3>
+                        </div>
+                        <div class="text-success">
+                            <i class="bi bi-chat-dots fs-1"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card border-info">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-1">Planes Activos</h6>
+                            <h3 class="mb-0">{{ active_treatment_plans }}</h3>
+                        </div>
+                        <div class="text-info">
+                            <i class="bi bi-clipboard-check fs-1"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card border-warning">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-1">Total Pacientes</h6>
+                            <h3 class="mb-0">{{ total_patients }}</h3>
+                        </div>
+                        <div class="text-warning">
+                            <i class="bi bi-people fs-1"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-3">
+        <!-- Consultas Recientes -->
+        <div class="col-md-7">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="bi bi-list-ul"></i> Consultas Recientes</h5>
+                    <a href="{% url 'psychology:consultation_list' %}" class="btn btn-sm btn-outline-primary">Ver Todas</a>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Consulta</th>
+                                    <th>Paciente</th>
+                                    <th>Psicólogo</th>
+                                    <th>Fecha</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for consultation in recent_consultations %}
+                                <tr>
+                                    <td><strong>{{ consultation.consultation_number }}</strong></td>
+                                    <td>{{ consultation.patient.third_party.name|truncatewords:3 }}</td>
+                                    <td><small>{{ consultation.psychologist.get_full_name|truncatewords:2 }}</small></td>
+                                    <td><small>{{ consultation.consultation_date|date:"d/m/Y H:i" }}</small></td>
+                                    <td>
+                                        {% if consultation.status == 'completed' %}
+                                        <span class="badge bg-success">Completada</span>
+                                        {% elif consultation.status == 'scheduled' %}
+                                        <span class="badge bg-warning">Programada</span>
+                                        {% elif consultation.status == 'cancelled' %}
+                                        <span class="badge bg-danger">Cancelada</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <a href="{% url 'psychology:consultation_detail' consultation.id %}" class="btn btn-sm btn-outline-info">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="6" class="text-center text-muted">No hay consultas recientes</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sesiones Recientes -->
+        <div class="col-md-5">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="bi bi-chat-square-text"></i> Sesiones Recientes</h5>
+                    <a href="{% url 'psychology:session_list' %}" class="btn btn-sm btn-outline-primary">Ver Todas</a>
+                </div>
+                <div class="card-body">
+                    {% if recent_sessions %}
+                    <div class="list-group list-group-flush">
+                        {% for session in recent_sessions %}
+                        <a href="{% url 'psychology:session_detail' session.id %}" class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">{{ session.session_number }}</h6>
+                                <small>{{ session.session_date|date:"d/m/Y" }}</small>
+                            </div>
+                            <p class="mb-1"><small>{{ session.patient.third_party.name|truncatewords:3 }}</small></p>
+                            <div class="d-flex justify-content-between">
+                                <small class="text-muted">{{ session.session_type }}</small>
+                                {% if session.status == 'completed' %}
+                                <span class="badge bg-success">Completada</span>
+                                {% elif session.status == 'scheduled' %}
+                                <span class="badge bg-warning">Programada</span>
+                                {% elif session.status == 'cancelled' %}
+                                <span class="badge bg-danger">Cancelada</span>
+                                {% elif session.status == 'no_show' %}
+                                <span class="badge bg-secondary">No asistió</span>
+                                {% endif %}
+                            </div>
+                        </a>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <p class="text-muted text-center">No hay sesiones recientes</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Planes de Tratamiento Activos -->
+    <div class="row mt-3">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="bi bi-clipboard-pulse"></i> Planes de Tratamiento Activos</h5>
+                    <a href="{% url 'psychology:treatment_plan_list' %}" class="btn btn-sm btn-outline-primary">Ver Todos</a>
+                </div>
+                <div class="card-body">
+                    {% if active_plans %}
+                    <div class="table-responsive">
+                        <table class="table table-hover table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Plan</th>
+                                    <th>Paciente</th>
+                                    <th>Psicólogo</th>
+                                    <th>Inicio</th>
+                                    <th>Enfoque</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for plan in active_plans %}
+                                <tr>
+                                    <td><strong>{{ plan.plan_number }}</strong></td>
+                                    <td>{{ plan.patient.third_party.name|truncatewords:3 }}</td>
+                                    <td><small>{{ plan.psychologist.get_full_name|truncatewords:2 }}</small></td>
+                                    <td><small>{{ plan.start_date|date:"d/m/Y" }}</small></td>
+                                    <td><small>{{ plan.therapeutic_approach|truncatewords:3 }}</small></td>
+                                    <td>
+                                        <a href="{% url 'psychology:treatment_plan_detail' plan.id %}" class="btn btn-sm btn-outline-info">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <p class="text-muted text-center">No hay planes de tratamiento activos</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

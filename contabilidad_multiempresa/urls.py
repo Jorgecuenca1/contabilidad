@@ -38,13 +38,35 @@ urlpatterns = [
     path('fixed-assets/', include('fixed_assets.urls')),
     path('budget/', include('budget.urls')),
     path('third-parties/', include('third_parties.urls')),
+
+    # Health modules - existing
     path('gynecology/', include('gynecology.urls')),
     path('laboratory/', include('laboratory.urls')),
-    
-    # Nuevos módulos de salud
     path('medical-records/', include('medical_records.urls')),
     path('medical-appointments/', include('medical_appointments.urls')),
     path('medical-procedures/', include('medical_procedures.urls')),
+    path('cardiology/', include('cardiology.urls')),
+
+    # Health modules - new (IPS comprehensive system)
+    path('patients/', include('patients.urls')),
+    path('diagnostics/', include('diagnostics.urls')),
+    path('catalogs/', include('catalogs.urls')),
+    path('rips/', include('rips.urls')),
+    path('emergency/', include('emergency.urls')),
+    path('hospitalization/', include('hospitalization.urls')),
+    path('surgery/', include('surgery.urls')),
+    path('blood-bank/', include('blood_bank.urls')),
+    path('occupational-health/', include('occupational_health.urls')),
+    path('imaging/', include('imaging.urls')),
+    path('ophthalmology/', include('ophthalmology.urls')),
+    path('dentistry/', include('dentistry.urls')),
+    path('psychology/', include('psychology.urls')),
+    path('rehabilitation/', include('rehabilitation.urls')),
+    path('authorizations/', include('authorizations.urls')),
+    path('pharmacy/', include('pharmacy.urls')),
+    path('billing-health/', include('billing_health.urls')),
+    path('health-reports/', include('health_reports.urls')),
+    path('telemedicine/', include('telemedicine.urls')),
 ]
 
 # Servir archivos estáticos en desarrollo

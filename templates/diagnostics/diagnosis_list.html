@@ -1,0 +1,210 @@
+{% extends 'base.html' %}
+{% block title %}Lista de Diagnósticos CIE-10{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-file-medical"></i> Catálogo CIE-10</h2>
+        <div>
+            <a href="{% url 'diagnostics:dashboard' %}" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Volver
+            </a>
+        </div>
+    </div>
+
+    <!-- Filtros de Búsqueda -->
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <i class="bi bi-funnel"></i> Filtros de Búsqueda
+        </div>
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-4">
+                    <label class="form-label">Buscar</label>
+                    <input type="text" class="form-control" name="search" value="{{ search }}"
+                           placeholder="Código o nombre del diagnóstico">
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label">Capítulo</label>
+                    <select class="form-select" name="chapter">
+                        <option value="">Todos los capítulos</option>
+                        {% for chapter in chapters %}
+                        <option value="{{ chapter.id }}" {% if chapter_filter == chapter.id|stringformat:"s" %}selected{% endif %}>
+                            Cap. {{ chapter.code }} - {{ chapter.name|truncatewords:5 }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label">Sexo</label>
+                    <select class="form-select" name="gender">
+                        <option value="">Todos</option>
+                        <option value="A" {% if gender_filter == 'A' %}selected{% endif %}>Ambos</option>
+                        <option value="M" {% if gender_filter == 'M' %}selected{% endif %}>Masculino</option>
+                        <option value="F" {% if gender_filter == 'F' %}selected{% endif %}>Femenino</option>
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label">Ordenar por</label>
+                    <select class="form-select" name="sort">
+                        <option value="code" {% if sort_by == 'code' %}selected{% endif %}>Código</option>
+                        <option value="name" {% if sort_by == 'name' %}selected{% endif %}>Nombre</option>
+                        <option value="most_used" {% if sort_by == 'most_used' %}selected{% endif %}>Más usados</option>
+                        <option value="recent" {% if sort_by == 'recent' %}selected{% endif %}>Recientes</option>
+                    </select>
+                </div>
+
+                <div class="col-md-12">
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" name="high_cost" value="true"
+                               id="high_cost" {% if high_cost_filter == 'true' %}checked{% endif %}>
+                        <label class="form-check-label" for="high_cost">
+                            <span class="badge bg-danger">Alto Costo</span>
+                        </label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" name="mandatory_notification" value="true"
+                               id="mandatory_notification" {% if mandatory_notification_filter == 'true' %}checked{% endif %}>
+                        <label class="form-check-label" for="mandatory_notification">
+                            <span class="badge bg-warning">Notificación Obligatoria</span>
+                        </label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" name="rare_disease" value="true"
+                               id="rare_disease" {% if rare_disease_filter == 'true' %}checked{% endif %}>
+                        <label class="form-check-label" for="rare_disease">
+                            <span class="badge bg-info">Enfermedad Rara</span>
+                        </label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" name="show_inactive" value="true"
+                               id="show_inactive" {% if show_inactive %}checked{% endif %}>
+                        <label class="form-check-label" for="show_inactive">
+                            Mostrar inactivos
+                        </label>
+                    </div>
+                </div>
+
+                <div class="col-12">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-search"></i> Buscar
+                    </button>
+                    <a href="{% url 'diagnostics:diagnosis_list' %}" class="btn btn-secondary">
+                        <i class="bi bi-x-circle"></i> Limpiar
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Resultados -->
+    <div class="card">
+        <div class="card-header bg-secondary text-white">
+            <i class="bi bi-list-ul"></i> Resultados ({{ total_results }} diagnósticos encontrados)
+        </div>
+        <div class="card-body">
+            {% if page_obj %}
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped">
+                        <thead>
+                            <tr>
+                                <th>Código</th>
+                                <th>Nombre</th>
+                                <th>Capítulo</th>
+                                <th>Sexo</th>
+                                <th>Características</th>
+                                <th>Veces Usado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for diagnosis in page_obj %}
+                            <tr>
+                                <td><strong>{{ diagnosis.code }}</strong></td>
+                                <td>{{ diagnosis.name|truncatewords:10 }}</td>
+                                <td>
+                                    {% if diagnosis.chapter %}
+                                        <small>{{ diagnosis.chapter.code }}</small>
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if diagnosis.applicable_gender == 'M' %}
+                                        <span class="badge bg-primary">M</span>
+                                    {% elif diagnosis.applicable_gender == 'F' %}
+                                        <span class="badge bg-danger">F</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">A</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if diagnosis.high_cost %}
+                                        <span class="badge bg-danger" title="Alto Costo">💰</span>
+                                    {% endif %}
+                                    {% if diagnosis.mandatory_notification %}
+                                        <span class="badge bg-warning" title="Notificación Obligatoria">⚠️</span>
+                                    {% endif %}
+                                    {% if diagnosis.rare_disease %}
+                                        <span class="badge bg-info" title="Enfermedad Rara">🔬</span>
+                                    {% endif %}
+                                    {% if diagnosis.chronic_disease %}
+                                        <span class="badge bg-secondary" title="Enfermedad Crónica">⏱️</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <span class="badge bg-success">{{ diagnosis.use_count }}</span>
+                                </td>
+                                <td>
+                                    <a href="{% url 'diagnostics:diagnosis_detail' diagnosis.id %}"
+                                       class="btn btn-sm btn-info" title="Ver Detalle">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Paginación -->
+                {% if page_obj.has_other_pages %}
+                <nav aria-label="Paginación">
+                    <ul class="pagination justify-content-center">
+                        {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page=1{% if search %}&search={{ search }}{% endif %}">Primera</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if search %}&search={{ search }}{% endif %}">Anterior</a>
+                        </li>
+                        {% endif %}
+
+                        <li class="page-item active">
+                            <span class="page-link">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+                        </li>
+
+                        {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if search %}&search={{ search }}{% endif %}">Siguiente</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.paginator.num_pages %}{% if search %}&search={{ search }}{% endif %}">Última</a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+                {% endif %}
+            {% else %}
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle"></i>
+                    No se encontraron diagnósticos con los criterios de búsqueda especificados.
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

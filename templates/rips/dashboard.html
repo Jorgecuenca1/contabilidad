@@ -1,0 +1,273 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block title %}Dashboard RIPS{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2><i class="fas fa-file-medical"></i> Sistema RIPS</h2>
+            <p class="text-muted">Registros Individuales de Prestación de Servicios de Salud</p>
+        </div>
+    </div>
+
+    <!-- Estadísticas -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card border-primary">
+                <div class="card-body text-center">
+                    <i class="fas fa-folder-open fa-3x text-primary mb-3"></i>
+                    <h3 class="mb-0">{{ active_episodes }}</h3>
+                    <p class="text-muted mb-0">Episodios Activos</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-warning">
+                <div class="card-body text-center">
+                    <i class="fas fa-folder-minus fa-3x text-warning mb-3"></i>
+                    <h3 class="mb-0">{{ closed_episodes }}</h3>
+                    <p class="text-muted mb-0">Cerrados (Sin Facturar)</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-success">
+                <div class="card-body text-center">
+                    <i class="fas fa-check-circle fa-3x text-success mb-3"></i>
+                    <h3 class="mb-0">{{ billed_episodes }}</h3>
+                    <p class="text-muted mb-0">Facturados</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-info">
+                <div class="card-body text-center">
+                    <i class="fas fa-folder fa-3x text-info mb-3"></i>
+                    <h3 class="mb-0">{{ total_episodes }}</h3>
+                    <p class="text-muted mb-0">Total Episodios</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Acciones Rápidas -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <i class="fas fa-bolt"></i> Acciones Rápidas
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2 d-md-flex">
+                        <a href="{% url 'rips:episode_create' %}" class="btn btn-success">
+                            <i class="fas fa-plus"></i> Crear Episodio de Atención
+                        </a>
+                        <a href="{% url 'rips:episode_list' %}?status=closed" class="btn btn-warning">
+                            <i class="fas fa-file-invoice"></i> Episodios Pendientes de Facturar
+                        </a>
+                        <a href="{% url 'rips:rips_generate' %}" class="btn btn-info">
+                            <i class="fas fa-file-export"></i> Generar RIPS
+                        </a>
+                        <a href="{% url 'rips:rips_list' %}" class="btn btn-secondary">
+                            <i class="fas fa-archive"></i> Archivos RIPS
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Episodios Activos -->
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <i class="fas fa-hospital-user"></i> Episodios Activos (En Atención)
+                </div>
+                <div class="card-body p-0">
+                    {% if episodes_active %}
+                    <div class="table-responsive">
+                        <table class="table table-sm table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Episodio</th>
+                                    <th>Paciente</th>
+                                    <th>Tipo</th>
+                                    <th>Fecha</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for episode in episodes_active %}
+                                <tr>
+                                    <td>
+                                        <a href="{% url 'rips:episode_detail' episode.id %}">
+                                            {{ episode.episode_number }}
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <small>
+                                            {{ episode.patient.third_party.first_name }}
+                                            {{ episode.patient.third_party.last_name }}
+                                        </small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-info">{{ episode.get_episode_type_display }}</span>
+                                    </td>
+                                    <td><small>{{ episode.admission_date|date:"d/m/Y H:i" }}</small></td>
+                                    <td>
+                                        <a href="{% url 'rips:episode_detail' episode.id %}"
+                                           class="btn btn-sm btn-outline-primary" title="Ver detalle">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-4 text-muted">
+                        <i class="fas fa-inbox fa-3x mb-3"></i>
+                        <p>No hay episodios activos</p>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="card-footer text-center">
+                    <a href="{% url 'rips:episode_list' %}?status=active" class="btn btn-sm btn-primary">
+                        Ver Todos los Episodios Activos
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Episodios Pendientes de Facturar -->
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header bg-warning text-dark">
+                    <i class="fas fa-file-invoice"></i> Pendientes de Facturar
+                </div>
+                <div class="card-body p-0">
+                    {% if episodes_pending %}
+                    <div class="table-responsive">
+                        <table class="table table-sm table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Episodio</th>
+                                    <th>Paciente</th>
+                                    <th>Costo</th>
+                                    <th>Fecha Cierre</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for episode in episodes_pending %}
+                                <tr>
+                                    <td>
+                                        <a href="{% url 'rips:episode_detail' episode.id %}">
+                                            {{ episode.episode_number }}
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <small>
+                                            {{ episode.patient.third_party.first_name }}
+                                            {{ episode.patient.third_party.last_name }}
+                                        </small>
+                                    </td>
+                                    <td><strong>${{ episode.total_cost|intcomma }}</strong></td>
+                                    <td><small>{{ episode.discharge_date|date:"d/m/Y H:i" }}</small></td>
+                                    <td>
+                                        <a href="{% url 'rips:episode_generate_invoice' episode.id %}"
+                                           class="btn btn-sm btn-success"
+                                           onclick="return confirm('¿Generar factura para este episodio?')"
+                                           title="Generar factura">
+                                            <i class="fas fa-file-invoice-dollar"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-4 text-muted">
+                        <i class="fas fa-check-circle fa-3x mb-3"></i>
+                        <p>No hay episodios pendientes de facturar</p>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="card-footer text-center">
+                    <a href="{% url 'rips:episode_list' %}?status=closed" class="btn btn-sm btn-warning">
+                        Ver Todos los Pendientes
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Archivos RIPS Recientes -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <i class="fas fa-file-archive"></i> Archivos RIPS Recientes
+                </div>
+                <div class="card-body p-0">
+                    {% if rips_files %}
+                    <div class="table-responsive">
+                        <table class="table table-sm table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Número</th>
+                                    <th>Periodo</th>
+                                    <th>Estado</th>
+                                    <th>Facturas</th>
+                                    <th>Monto Total</th>
+                                    <th>Fecha Generación</th>
+                                    <th>Formato</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for rips in rips_files %}
+                                <tr>
+                                    <td><strong>{{ rips.file_number }}</strong></td>
+                                    <td>{{ rips.period_start|date:"d/m/Y" }} - {{ rips.period_end|date:"d/m/Y" }}</td>
+                                    <td>
+                                        {% if rips.status == 'generated' %}
+                                        <span class="badge bg-success">Generado</span>
+                                        {% elif rips.status == 'sent' %}
+                                        <span class="badge bg-info">Enviado</span>
+                                        {% elif rips.status == 'accepted' %}
+                                        <span class="badge bg-primary">Aceptado</span>
+                                        {% else %}
+                                        <span class="badge bg-secondary">{{ rips.get_status_display }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ rips.total_invoices }}</td>
+                                    <td>${{ rips.total_amount|intcomma }}</td>
+                                    <td>{{ rips.generated_at|date:"d/m/Y H:i" }}</td>
+                                    <td><span class="badge bg-dark">{{ rips.get_file_format_display }}</span></td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-4 text-muted">
+                        <i class="fas fa-folder-open fa-3x mb-3"></i>
+                        <p>No hay archivos RIPS generados</p>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="card-footer text-center">
+                    <a href="{% url 'rips:rips_list' %}" class="btn btn-sm btn-success">
+                        Ver Todos los Archivos RIPS
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

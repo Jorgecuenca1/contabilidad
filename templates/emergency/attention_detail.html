@@ -1,0 +1,280 @@
+{% extends 'base.html' %}
+{% block title %}Atención Médica - {{ attention.attention_number }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-heart-pulse"></i> Atención: {{ attention.attention_number }}</h2>
+        <div>
+            <a href="{% url 'emergency:attention_update' attention.id %}" class="btn btn-warning">
+                <i class="bi bi-pencil"></i> Editar
+            </a>
+            <a href="{% url 'emergency:admission_detail' attention.admission.id %}" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Volver a Admisión
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <!-- Información del Paciente y Admisión -->
+            <div class="card mb-3">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="bi bi-person-badge"></i> Información del Paciente</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-2">
+                            <strong>Paciente:</strong> {{ attention.patient.third_party.name }}
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <strong>Historia Clínica:</strong> {{ attention.patient.medical_record_number }}
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <strong>Admisión:</strong> {{ attention.admission.admission_number }}
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <strong>Fecha de Atención:</strong> {{ attention.attention_date|date:"d/m/Y H:i" }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Anamnesis -->
+            <div class="card mb-3">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="bi bi-journal-medical"></i> Anamnesis</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <h6 class="text-primary">Enfermedad Actual</h6>
+                        <p>{{ attention.current_illness }}</p>
+                    </div>
+                    {% if attention.review_of_systems %}
+                    <div class="mb-3">
+                        <h6 class="text-primary">Revisión por Sistemas</h6>
+                        <p>{{ attention.review_of_systems }}</p>
+                    </div>
+                    {% endif %}
+                    {% if attention.personal_history %}
+                    <div class="mb-3">
+                        <h6 class="text-primary">Antecedentes Personales</h6>
+                        <p>{{ attention.personal_history }}</p>
+                    </div>
+                    {% endif %}
+                    {% if attention.family_history %}
+                    <div class="mb-3">
+                        <h6 class="text-primary">Antecedentes Familiares</h6>
+                        <p>{{ attention.family_history }}</p>
+                    </div>
+                    {% endif %}
+                    {% if attention.allergies %}
+                    <div class="mb-3">
+                        <h6 class="text-danger">Alergias</h6>
+                        <div class="alert alert-danger">{{ attention.allergies }}</div>
+                    </div>
+                    {% endif %}
+                    {% if attention.current_medications %}
+                    <div class="mb-3">
+                        <h6 class="text-primary">Medicamentos Actuales</h6>
+                        <p>{{ attention.current_medications }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Examen Físico -->
+            <div class="card mb-3">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="bi bi-stethoscope"></i> Examen Físico</h5>
+                </div>
+                <div class="card-body">
+                    {% if attention.general_appearance %}
+                    <div class="mb-3">
+                        <h6 class="text-primary">Apariencia General</h6>
+                        <p>{{ attention.general_appearance }}</p>
+                    </div>
+                    {% endif %}
+                    <div class="mb-3">
+                        <h6 class="text-primary">Examen Físico General</h6>
+                        <p>{{ attention.physical_examination }}</p>
+                    </div>
+                    {% if attention.cardiovascular_exam %}
+                    <div class="mb-3">
+                        <h6 class="text-primary">Examen Cardiovascular</h6>
+                        <p>{{ attention.cardiovascular_exam }}</p>
+                    </div>
+                    {% endif %}
+                    {% if attention.respiratory_exam %}
+                    <div class="mb-3">
+                        <h6 class="text-primary">Examen Respiratorio</h6>
+                        <p>{{ attention.respiratory_exam }}</p>
+                    </div>
+                    {% endif %}
+                    {% if attention.abdominal_exam %}
+                    <div class="mb-3">
+                        <h6 class="text-primary">Examen Abdominal</h6>
+                        <p>{{ attention.abdominal_exam }}</p>
+                    </div>
+                    {% endif %}
+                    {% if attention.neurological_exam %}
+                    <div class="mb-3">
+                        <h6 class="text-primary">Examen Neurológico</h6>
+                        <p>{{ attention.neurological_exam }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Diagnóstico -->
+            <div class="card mb-3">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0"><i class="bi bi-clipboard2-check"></i> Diagnóstico</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <h6 class="text-primary">Diagnóstico Principal</h6>
+                        <p><strong>{{ attention.diagnosis }}</strong></p>
+                    </div>
+                    {% if attention.differential_diagnosis %}
+                    <div class="mb-3">
+                        <h6 class="text-primary">Diagnóstico Diferencial</h6>
+                        <p>{{ attention.differential_diagnosis }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Plan de Tratamiento -->
+            <div class="card mb-3">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="bi bi-prescription2"></i> Plan de Tratamiento</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <h6 class="text-primary">Plan de Tratamiento</h6>
+                        <p>{{ attention.treatment_plan }}</p>
+                    </div>
+                    {% if attention.medications_prescribed %}
+                    <div class="mb-3">
+                        <h6 class="text-primary">Medicamentos Prescritos</h6>
+                        <pre class="bg-light p-3 rounded">{{ attention.medications_prescribed }}</pre>
+                    </div>
+                    {% endif %}
+                    {% if attention.procedures_indicated %}
+                    <div class="mb-3">
+                        <h6 class="text-primary">Procedimientos Indicados</h6>
+                        <p>{{ attention.procedures_indicated }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Estudios Solicitados -->
+            {% if attention.lab_tests_ordered or attention.imaging_studies_ordered %}
+            <div class="card mb-3">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="bi bi-microscope"></i> Estudios Solicitados</h5>
+                </div>
+                <div class="card-body">
+                    {% if attention.lab_tests_ordered %}
+                    <div class="mb-3">
+                        <h6 class="text-primary">Laboratorios Solicitados</h6>
+                        <p>{{ attention.lab_tests_ordered }}</p>
+                    </div>
+                    {% endif %}
+                    {% if attention.imaging_studies_ordered %}
+                    <div class="mb-3">
+                        <h6 class="text-primary">Estudios de Imagen Solicitados</h6>
+                        <p>{{ attention.imaging_studies_ordered }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Evolución y Pronóstico -->
+            {% if attention.clinical_evolution or attention.prognosis %}
+            <div class="card mb-3">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="bi bi-graph-up-arrow"></i> Evolución y Pronóstico</h5>
+                </div>
+                <div class="card-body">
+                    {% if attention.clinical_evolution %}
+                    <div class="mb-3">
+                        <h6 class="text-primary">Evolución Clínica</h6>
+                        <p>{{ attention.clinical_evolution }}</p>
+                    </div>
+                    {% endif %}
+                    {% if attention.prognosis %}
+                    <div class="mb-3">
+                        <h6 class="text-primary">Pronóstico</h6>
+                        <p>{{ attention.prognosis }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Observaciones -->
+            {% if attention.observations %}
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h6 class="mb-0"><i class="bi bi-journal-text"></i> Observaciones</h6>
+                </div>
+                <div class="card-body">
+                    <p>{{ attention.observations }}</p>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Panel Lateral -->
+        <div class="col-md-4">
+            <!-- Médico -->
+            <div class="card mb-3">
+                <div class="card-header bg-primary text-white">
+                    <h6 class="mb-0"><i class="bi bi-person-badge"></i> Médico</h6>
+                </div>
+                <div class="card-body">
+                    <p class="mb-0"><strong>{{ attention.physician.get_full_name }}</strong></p>
+                </div>
+            </div>
+
+            <!-- Acciones -->
+            <div class="card mb-3">
+                <div class="card-header bg-warning text-dark">
+                    <h6 class="mb-0"><i class="bi bi-gear"></i> Acciones</h6>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'emergency:attention_update' attention.id %}" class="btn btn-warning">
+                            <i class="bi bi-pencil"></i> Editar Atención
+                        </a>
+                        <a href="{% url 'emergency:procedure_create' attention.id %}" class="btn btn-info">
+                            <i class="bi bi-tools"></i> Registrar Procedimiento
+                        </a>
+                        <a href="{% url 'emergency:admission_detail' attention.admission.id %}" class="btn btn-primary">
+                            <i class="bi bi-clipboard2-pulse"></i> Ver Admisión
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Información del Sistema -->
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="mb-0"><i class="bi bi-info-circle"></i> Información del Sistema</h6>
+                </div>
+                <div class="card-body">
+                    <small class="text-muted">
+                        <p class="mb-2"><strong>Creado:</strong><br>{{ attention.created_at|date:"d/m/Y H:i" }}</p>
+                        <p class="mb-2"><strong>Creado por:</strong><br>{{ attention.created_by.get_full_name }}</p>
+                        <p class="mb-0"><strong>Última modificación:</strong><br>{{ attention.updated_at|date:"d/m/Y H:i" }}</p>
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

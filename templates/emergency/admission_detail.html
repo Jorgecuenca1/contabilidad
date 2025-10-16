@@ -1,0 +1,377 @@
+{% extends 'base.html' %}
+{% block title %}Detalle de Admisión - {{ admission.admission_number }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-clipboard2-pulse"></i> Admisión: {{ admission.admission_number }}</h2>
+        <div>
+            <a href="{% url 'emergency:admission_list' %}" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Volver
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <!-- Información del Paciente y Triage -->
+            <div class="card mb-3">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="bi bi-person-badge"></i> Información del Paciente</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <strong>Paciente:</strong>
+                            <p class="mb-0">{{ admission.patient.third_party.name }}</p>
+                            <small class="text-muted">{{ admission.patient.third_party.identification_number }}</small>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <strong>Historia Clínica:</strong>
+                            <p class="mb-0">{{ admission.patient.medical_record_number }}</p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <strong>Nivel de Triage:</strong>
+                            <p class="mb-0">
+                                {% if admission.triage.triage_level == 'I' %}
+                                <span class="badge bg-danger fs-6">Nivel I - Rojo</span>
+                                {% elif admission.triage.triage_level == 'II' %}
+                                <span class="badge bg-warning text-dark fs-6">Nivel II - Naranja</span>
+                                {% elif admission.triage.triage_level == 'III' %}
+                                <span class="badge bg-info fs-6">Nivel III - Amarillo</span>
+                                {% elif admission.triage.triage_level == 'IV' %}
+                                <span class="badge bg-success fs-6">Nivel IV - Verde</span>
+                                {% else %}
+                                <span class="badge bg-primary fs-6">Nivel V - Azul</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <strong>Motivo de Consulta:</strong>
+                            <p class="mb-0">{{ admission.triage.chief_complaint|truncatewords:15 }}</p>
+                        </div>
+                        <div class="col-md-12">
+                            <a href="{% url 'emergency:triage_detail' admission.triage.id %}" class="btn btn-sm btn-outline-info">
+                                <i class="bi bi-eye"></i> Ver Triage Completo
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Estado y Tiempos -->
+            <div class="card mb-3">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="bi bi-clock-history"></i> Estado y Tiempos</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <strong>Estado Actual:</strong>
+                            <p class="mb-0">
+                                {% if admission.status == 'waiting' %}
+                                <span class="badge bg-info fs-6">En Espera</span>
+                                {% elif admission.status == 'in_attention' %}
+                                <span class="badge bg-warning text-dark fs-6">En Atención</span>
+                                {% elif admission.status == 'observation' %}
+                                <span class="badge bg-primary fs-6">En Observación</span>
+                                {% elif admission.status == 'discharged' %}
+                                <span class="badge bg-success fs-6">Alta</span>
+                                {% elif admission.status == 'hospitalized' %}
+                                <span class="badge bg-secondary fs-6">Hospitalizado</span>
+                                {% elif admission.status == 'transferred' %}
+                                <span class="badge bg-dark fs-6">Trasladado</span>
+                                {% elif admission.status == 'deceased' %}
+                                <span class="badge bg-dark fs-6">Fallecido</span>
+                                {% else %}
+                                <span class="badge bg-danger fs-6">Salió sin Atención</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <strong>Fecha/Hora Admisión:</strong>
+                            <p class="mb-0">{{ admission.admission_datetime|date:"d/m/Y H:i" }}</p>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <strong>Inicio de Atención:</strong>
+                            <p class="mb-0">{% if admission.attention_start_datetime %}{{ admission.attention_start_datetime|date:"d/m/Y H:i" }}{% else %}<span class="text-muted">Pendiente</span>{% endif %}</p>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <strong>Fin de Atención:</strong>
+                            <p class="mb-0">{% if admission.attention_end_datetime %}{{ admission.attention_end_datetime|date:"d/m/Y H:i" }}{% else %}<span class="text-muted">En curso</span>{% endif %}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ubicación y Personal -->
+            <div class="card mb-3">
+                <div class="card-header bg-info text-white">
+                    <h6 class="mb-0"><i class="bi bi-geo-alt"></i> Ubicación y Personal Asignado</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-2">
+                            <strong>Área de Urgencias:</strong>
+                            <p class="mb-0">{{ admission.emergency_area|default:"No especificada" }}</p>
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <strong>Número de Cama/Camilla:</strong>
+                            <p class="mb-0">{{ admission.bed_number|default:"No asignada" }}</p>
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <strong>Médico Tratante:</strong>
+                            <p class="mb-0">{{ admission.attending_physician.get_full_name }}</p>
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <strong>Enfermera Asignada:</strong>
+                            <p class="mb-0">{% if admission.assigned_nurse %}{{ admission.assigned_nurse.get_full_name }}{% else %}<span class="text-muted">No asignada</span>{% endif %}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Información de Seguro -->
+            {% if admission.insurance_company %}
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h6 class="mb-0"><i class="bi bi-shield-check"></i> Información de Seguro</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-2">
+                            <strong>Aseguradora/EPS:</strong>
+                            <p class="mb-0">{{ admission.insurance_company }}</p>
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <strong>Número de Autorización:</strong>
+                            <p class="mb-0">{{ admission.authorization_number|default:"No disponible" }}</p>
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <strong>Requiere Autorización:</strong>
+                            <p class="mb-0">{% if admission.requires_authorization %}<span class="badge bg-warning text-dark">Sí</span>{% else %}<span class="badge bg-success">No</span>{% endif %}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Notas de Admisión -->
+            {% if admission.admission_notes %}
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h6 class="mb-0"><i class="bi bi-journal-text"></i> Notas de Admisión</h6>
+                </div>
+                <div class="card-body">
+                    <p class="mb-0">{{ admission.admission_notes }}</p>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Signos Vitales -->
+            <div class="card mb-3">
+                <div class="card-header bg-warning text-dark">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h6 class="mb-0"><i class="bi bi-activity"></i> Signos Vitales</h6>
+                        <div>
+                            <a href="{% url 'emergency:vital_signs_chart' admission.id %}" class="btn btn-sm btn-outline-dark">
+                                <i class="bi bi-graph-up"></i> Gráfica
+                            </a>
+                            <a href="{% url 'emergency:vital_signs_create' admission.id %}" class="btn btn-sm btn-warning">
+                                <i class="bi bi-plus-circle"></i> Registrar
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    {% if vital_signs %}
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Fecha/Hora</th>
+                                    <th>PA</th>
+                                    <th>FC</th>
+                                    <th>FR</th>
+                                    <th>Temp</th>
+                                    <th>O2</th>
+                                    <th>Dolor</th>
+                                    <th>Registrado por</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for vs in vital_signs|slice:":5" %}
+                                <tr>
+                                    <td>{{ vs.recorded_datetime|date:"d/m H:i" }}</td>
+                                    <td>{% if vs.blood_pressure_systolic %}{{ vs.blood_pressure_systolic }}/{{ vs.blood_pressure_diastolic }}{% else %}-{% endif %}</td>
+                                    <td>{% if vs.heart_rate %}{{ vs.heart_rate }}{% else %}-{% endif %}</td>
+                                    <td>{% if vs.respiratory_rate %}{{ vs.respiratory_rate }}{% else %}-{% endif %}</td>
+                                    <td>{% if vs.temperature %}{{ vs.temperature }}°C{% else %}-{% endif %}</td>
+                                    <td>{% if vs.oxygen_saturation %}{{ vs.oxygen_saturation }}%{% else %}-{% endif %}</td>
+                                    <td>{% if vs.pain_scale %}{{ vs.pain_scale }}/10{% else %}-{% endif %}</td>
+                                    <td><small>{{ vs.recorded_by.get_full_name }}</small></td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <a href="{% url 'emergency:vital_signs_list' admission.id %}" class="btn btn-sm btn-outline-primary">
+                        <i class="bi bi-list"></i> Ver Todos los Registros
+                    </a>
+                    {% else %}
+                    <p class="text-muted text-center py-3">No hay signos vitales registrados.</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Atención Médica -->
+            <div class="card mb-3">
+                <div class="card-header bg-primary text-white">
+                    <h6 class="mb-0"><i class="bi bi-heart-pulse"></i> Atención Médica</h6>
+                </div>
+                <div class="card-body">
+                    {% if has_attention %}
+                    <p class="text-success"><i class="bi bi-check-circle-fill"></i> Atención médica registrada</p>
+                    <a href="{% url 'emergency:attention_detail' admission.attention.id %}" class="btn btn-primary">
+                        <i class="bi bi-eye"></i> Ver Atención Completa
+                    </a>
+                    <a href="{% url 'emergency:attention_update' admission.attention.id %}" class="btn btn-warning">
+                        <i class="bi bi-pencil"></i> Editar Atención
+                    </a>
+                    {% else %}
+                    <p class="text-muted">No hay atención médica registrada.</p>
+                    <a href="{% url 'emergency:attention_create' admission.id %}" class="btn btn-success">
+                        <i class="bi bi-plus-circle"></i> Registrar Atención
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Procedimientos -->
+            <div class="card mb-3">
+                <div class="card-header bg-info text-white">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h6 class="mb-0"><i class="bi bi-tools"></i> Procedimientos Realizados</h6>
+                        {% if has_attention %}
+                        <a href="{% url 'emergency:procedure_create' admission.attention.id %}" class="btn btn-sm btn-light">
+                            <i class="bi bi-plus-circle"></i> Registrar
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="card-body">
+                    {% if procedures %}
+                    <div class="list-group">
+                        {% for procedure in procedures %}
+                        <div class="list-group-item">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">{{ procedure.procedure_name }}</h6>
+                                <small>{{ procedure.procedure_datetime|date:"d/m/Y H:i" }}</small>
+                            </div>
+                            <p class="mb-1"><strong>Tipo:</strong> {{ procedure.get_procedure_type_display }}</p>
+                            <small><strong>Realizado por:</strong> {{ procedure.performed_by.get_full_name }}</small>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <p class="text-muted text-center py-3">No hay procedimientos registrados.</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Alta/Egreso -->
+            <div class="card mb-3">
+                <div class="card-header bg-success text-white">
+                    <h6 class="mb-0"><i class="bi bi-door-open"></i> Alta/Egreso</h6>
+                </div>
+                <div class="card-body">
+                    {% if has_discharge %}
+                    <p class="text-success"><i class="bi bi-check-circle-fill"></i> Alta registrada</p>
+                    <a href="{% url 'emergency:discharge_detail' admission.discharge.id %}" class="btn btn-success">
+                        <i class="bi bi-eye"></i> Ver Alta Completa
+                    </a>
+                    {% else %}
+                    <p class="text-muted">El paciente aún no ha sido dado de alta.</p>
+                    {% if admission.status not in 'discharged,hospitalized,transferred,deceased,left_without_attention' %}
+                    <a href="{% url 'emergency:discharge_create' admission.id %}" class="btn btn-primary">
+                        <i class="bi bi-plus-circle"></i> Registrar Alta
+                    </a>
+                    {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Panel Lateral -->
+        <div class="col-md-4">
+            <!-- Acciones Rápidas -->
+            <div class="card mb-3">
+                <div class="card-header bg-warning text-dark">
+                    <h6 class="mb-0"><i class="bi bi-lightning"></i> Acciones Rápidas</h6>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'emergency:vital_signs_create' admission.id %}" class="btn btn-warning">
+                            <i class="bi bi-activity"></i> Registrar Signos Vitales
+                        </a>
+                        {% if not has_attention %}
+                        <a href="{% url 'emergency:attention_create' admission.id %}" class="btn btn-primary">
+                            <i class="bi bi-heart-pulse"></i> Registrar Atención
+                        </a>
+                        {% endif %}
+                        {% if has_attention and not has_discharge %}
+                        <a href="{% url 'emergency:procedure_create' admission.attention.id %}" class="btn btn-info">
+                            <i class="bi bi-tools"></i> Registrar Procedimiento
+                        </a>
+                        {% endif %}
+                        {% if not has_discharge and admission.status not in 'discharged,hospitalized,transferred,deceased,left_without_attention' %}
+                        <a href="{% url 'emergency:discharge_create' admission.id %}" class="btn btn-success">
+                            <i class="bi bi-door-open"></i> Dar de Alta
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cambiar Estado -->
+            {% if admission.status not in 'discharged,hospitalized,transferred,deceased,left_without_attention' %}
+            <div class="card mb-3">
+                <div class="card-header bg-secondary text-white">
+                    <h6 class="mb-0"><i class="bi bi-arrow-repeat"></i> Cambiar Estado</h6>
+                </div>
+                <div class="card-body">
+                    <form method="post" action="{% url 'emergency:admission_update_status' admission.id %}">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label class="form-label">Nuevo Estado</label>
+                            <select name="status" class="form-select" required>
+                                <option value="waiting" {% if admission.status == 'waiting' %}selected{% endif %}>En Espera</option>
+                                <option value="in_attention" {% if admission.status == 'in_attention' %}selected{% endif %}>En Atención</option>
+                                <option value="observation" {% if admission.status == 'observation' %}selected{% endif %}>En Observación</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="bi bi-check-circle"></i> Actualizar Estado
+                        </button>
+                    </form>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Información del Sistema -->
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="mb-0"><i class="bi bi-info-circle"></i> Información del Sistema</h6>
+                </div>
+                <div class="card-body">
+                    <small class="text-muted">
+                        <p class="mb-2"><strong>Creado:</strong><br>{{ admission.created_at|date:"d/m/Y H:i" }}</p>
+                        <p class="mb-2"><strong>Creado por:</strong><br>{{ admission.created_by.get_full_name }}</p>
+                        <p class="mb-0"><strong>Última modificación:</strong><br>{{ admission.updated_at|date:"d/m/Y H:i" }}</p>
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

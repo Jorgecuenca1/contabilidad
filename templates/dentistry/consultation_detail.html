@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% block title %}Consulta {{ consultation.consultation_number }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <h2 class="mb-4"><i class="bi bi-clipboard-pulse"></i> Consulta {{ consultation.consultation_number }}</h2>
+
+    <div class="card mb-3">
+        <div class="card-header bg-info text-white">
+            <h5 class="mb-0">Información del Paciente</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>Paciente:</strong> {{ consultation.patient.third_party.name }}</p>
+                    <p><strong>Documento:</strong> {{ consultation.patient.third_party.identification_number }}</p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>Odontólogo:</strong> {{ consultation.dentist.get_full_name }}</p>
+                    <p><strong>Fecha:</strong> {{ consultation.consultation_date|date:"d/m/Y H:i" }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mb-3">
+        <div class="card-header">
+            <h6 class="mb-0">Motivo de Consulta</h6>
+        </div>
+        <div class="card-body">
+            <p>{{ consultation.chief_complaint }}</p>
+        </div>
+    </div>
+
+    <div class="card mb-3">
+        <div class="card-header">
+            <h6 class="mb-0">Diagnóstico</h6>
+        </div>
+        <div class="card-body">
+            <p>{{ consultation.diagnosis }}</p>
+        </div>
+    </div>
+
+    {% if odontograms %}
+    <div class="card mb-3">
+        <div class="card-header">
+            <h6 class="mb-0">Odontogramas</h6>
+        </div>
+        <div class="card-body">
+            {% for odontogram in odontograms %}
+            <a href="{% url 'dentistry:odontogram_detail' odontogram.id %}" class="btn btn-sm btn-outline-primary mb-2">
+                Odontograma {{ odontogram.odontogram_date|date:"d/m/Y" }}
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

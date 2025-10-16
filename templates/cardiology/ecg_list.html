@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+
+{% block title %}Electrocardiogramas{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'core:dashboard' %}">Dashboard</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'cardiology:dashboard' %}">Cardiología</a></li>
+            <li class="breadcrumb-item active">ECGs</li>
+        </ol>
+    </nav>
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-activity"></i> Electrocardiogramas (ECG)</h2>
+        <a href="{% url 'cardiology:ecg_create' %}" class="btn btn-primary">
+            <i class="bi bi-plus-lg"></i> Nuevo ECG
+        </a>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            {% if page_obj %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Número</th>
+                                <th>Paciente</th>
+                                <th>Tipo</th>
+                                <th>FC (lpm)</th>
+                                <th>Ritmo</th>
+                                <th>Resultado</th>
+                                <th>Fecha</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for ecg in page_obj %}
+                            <tr>
+                                <td><span class="badge bg-primary">{{ ecg.ecg_number }}</span></td>
+                                <td>{{ ecg.patient.nombre }}</td>
+                                <td>{{ ecg.get_ecg_type_display }}</td>
+                                <td>{{ ecg.heart_rate }}</td>
+                                <td>{{ ecg.get_rhythm_display }}</td>
+                                <td>
+                                    {% if ecg.result == 'normal' %}
+                                        <span class="badge bg-success">Normal</span>
+                                    {% elif ecg.result == 'abnormal' %}
+                                        <span class="badge bg-danger">Anormal</span>
+                                    {% else %}
+                                        <span class="badge bg-warning">{{ ecg.get_result_display }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ ecg.ecg_date|date:"d/m/Y" }}</td>
+                                <td>
+                                    <a href="{% url 'cardiology:ecg_detail' ecg.id %}" class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                {% if page_obj.has_other_pages %}
+                <nav>
+                    <ul class="pagination justify-content-center">
+                        {% if page_obj.has_previous %}
+                            <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">Anterior</a></li>
+                        {% endif %}
+                        <li class="page-item active"><span class="page-link">{{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span></li>
+                        {% if page_obj.has_next %}
+                            <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">Siguiente</a></li>
+                        {% endif %}
+                    </ul>
+                </nav>
+                {% endif %}
+            {% else %}
+                <p class="text-muted text-center py-5">
+                    <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+                    No hay electrocardiogramas registrados
+                </p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,111 @@
+{% extends 'base.html' %}
+{% block title %}Listado de Medicamentos{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-capsule"></i> Medicamentos</h2>
+        <a href="{% url 'pharmacy:medicine_create' %}" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> Nuevo Medicamento
+        </a>
+    </div>
+
+    <!-- Filtros -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-4">
+                    <input type="text" name="search" class="form-control" placeholder="Buscar..." value="{{ search }}">
+                </div>
+                <div class="col-md-2">
+                    <select name="category" class="form-select">
+                        <option value="">Todas las Categorías</option>
+                        {% for cat in categories %}
+                        <option value="{{ cat.id }}" {% if category_id == cat.id|stringformat:"s" %}selected{% endif %}>{{ cat.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <select name="status" class="form-select">
+                        <option value="active" {% if status == 'active' %}selected{% endif %}>Activos</option>
+                        <option value="inactive" {% if status == 'inactive' %}selected{% endif %}>Inactivos</option>
+                        <option value="">Todos</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-search"></i> Buscar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Tabla de Medicamentos -->
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Código</th>
+                            <th>Nombre Genérico</th>
+                            <th>Presentación</th>
+                            <th>Categoría</th>
+                            <th class="text-end">Stock</th>
+                            <th class="text-end">Precio</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for medicine in page_obj %}
+                        <tr>
+                            <td><strong>{{ medicine.code }}</strong></td>
+                            <td>{{ medicine.generic_name }}</td>
+                            <td><small>{{ medicine.presentation }}</small></td>
+                            <td><span class="badge bg-info">{{ medicine.category.name }}</span></td>
+                            <td class="text-end">
+                                {% if medicine.current_stock %}
+                                    <span class="{% if medicine.current_stock < medicine.minimum_stock %}text-danger{% else %}text-success{% endif %}">
+                                        {{ medicine.current_stock|floatformat:0 }}
+                                    </span>
+                                {% else %}
+                                    <span class="text-danger">0</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-end">${{ medicine.sale_price|floatformat:0 }}</td>
+                            <td>
+                                <a href="{% url 'pharmacy:medicine_detail' medicine.id %}" class="btn btn-sm btn-info">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="7" class="text-center text-muted">No se encontraron medicamentos</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Paginación -->
+            {% if page_obj.has_other_pages %}
+            <nav>
+                <ul class="pagination">
+                    {% if page_obj.has_previous %}
+                    <li class="page-item"><a class="page-link" href="?page=1">Primera</a></li>
+                    <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">Anterior</a></li>
+                    {% endif %}
+                    <li class="page-item active"><span class="page-link">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span></li>
+                    {% if page_obj.has_next %}
+                    <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">Siguiente</a></li>
+                    <li class="page-item"><a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Última</a></li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

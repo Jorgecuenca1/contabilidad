@@ -1,0 +1,258 @@
+{% extends 'base.html' %}
+{% block title %}Solicitudes de Autorización - Autorizaciones EPS{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header y Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'core:dashboard' %}">Dashboard</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'authorizations:index' %}">Autorizaciones EPS</a></li>
+            <li class="breadcrumb-item active">Solicitudes</li>
+        </ol>
+    </nav>
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-file-earmark-check"></i> Solicitudes de Autorización</h2>
+        <div>
+            <a href="{% url 'authorizations:authorization_create' %}" class="btn btn-success">
+                <i class="bi bi-plus-circle"></i> Nueva Autorización
+            </a>
+            <a href="{% url 'authorizations:index' %}" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Volver
+            </a>
+        </div>
+    </div>
+
+    <!-- Filtros -->
+    <div class="card mb-4">
+        <div class="card-header bg-light">
+            <h5 class="mb-0"><i class="bi bi-funnel"></i> Filtros de Búsqueda</h5>
+        </div>
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-3">
+                    <label class="form-label">Buscar</label>
+                    <input type="text" name="search" class="form-control"
+                           placeholder="Número, paciente, diagnóstico..."
+                           value="{{ filters.search }}">
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label">Estado</label>
+                    <select name="status" class="form-select">
+                        <option value="">Todos</option>
+                        {% for value, label in status_choices %}
+                        <option value="{{ value }}" {% if filters.status == value %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label">EPS</label>
+                    <select name="eps" class="form-select">
+                        <option value="">Todas</option>
+                        {% for eps in eps_list %}
+                        <option value="{{ eps.id }}" {% if filters.eps == eps.id|stringformat:"s" %}selected{% endif %}>
+                            {{ eps.name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label">Médico</label>
+                    <select name="physician" class="form-select">
+                        <option value="">Todos</option>
+                        {% for physician in physicians %}
+                        <option value="{{ physician.id }}" {% if filters.physician == physician.id|stringformat:"s" %}selected{% endif %}>
+                            {{ physician.get_full_name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label">Prioridad</label>
+                    <select name="priority" class="form-select">
+                        <option value="">Todas</option>
+                        {% for value, label in priority_choices %}
+                        <option value="{{ value }}" {% if filters.priority == value %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label">Tipo de Servicio</label>
+                    <select name="service_type" class="form-select">
+                        <option value="">Todos</option>
+                        {% for value, label in service_type_choices %}
+                        <option value="{{ value }}" {% if filters.service_type == value %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label">Fecha Desde</label>
+                    <input type="date" name="date_from" class="form-control" value="{{ filters.date_from }}">
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label">Fecha Hasta</label>
+                    <input type="date" name="date_to" class="form-control" value="{{ filters.date_to }}">
+                </div>
+
+                <div class="col-md-2 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-search"></i> Buscar
+                    </button>
+                </div>
+
+                <div class="col-md-2 d-flex align-items-end">
+                    <a href="{% url 'authorizations:authorization_list' %}" class="btn btn-secondary w-100">
+                        <i class="bi bi-x-circle"></i> Limpiar
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Tabla de Autorizaciones -->
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Nº Autorización</th>
+                            <th>Paciente</th>
+                            <th>EPS</th>
+                            <th>Tipo de Servicio</th>
+                            <th>Diagnóstico</th>
+                            <th>Fecha Solicitud</th>
+                            <th>Estado</th>
+                            <th>Prioridad</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for auth in authorizations %}
+                        <tr>
+                            <td>
+                                <strong>{{ auth.authorization_number }}</strong>
+                            </td>
+                            <td>
+                                {{ auth.patient.get_full_name }}
+                                <br><small class="text-muted">{{ auth.patient.document_number }}</small>
+                            </td>
+                            <td>{{ auth.eps.name }}</td>
+                            <td>
+                                {% if auth.service_type == 'consultation' %}
+                                <span class="badge bg-primary">Consulta</span>
+                                {% elif auth.service_type == 'procedure' %}
+                                <span class="badge bg-secondary">Procedimiento</span>
+                                {% elif auth.service_type == 'surgery' %}
+                                <span class="badge bg-danger">Cirugía</span>
+                                {% elif auth.service_type == 'hospitalization' %}
+                                <span class="badge bg-warning text-dark">Hospitalización</span>
+                                {% elif auth.service_type == 'imaging' %}
+                                <span class="badge bg-info">Imagenología</span>
+                                {% elif auth.service_type == 'laboratory' %}
+                                <span class="badge bg-success">Laboratorio</span>
+                                {% elif auth.service_type == 'medication' %}
+                                <span class="badge bg-purple text-white">Medicamentos</span>
+                                {% elif auth.service_type == 'therapy' %}
+                                <span class="badge bg-teal text-white">Terapia</span>
+                                {% else %}
+                                <span class="badge bg-dark">Otro</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <small><strong>{{ auth.diagnosis_code }}</strong></small>
+                                <br><small class="text-muted">{{ auth.diagnosis_description|truncatewords:5 }}</small>
+                            </td>
+                            <td>{{ auth.request_date|date:"d/m/Y H:i" }}</td>
+                            <td>
+                                {% if auth.status == 'draft' %}
+                                <span class="badge bg-secondary">{{ auth.get_status_display }}</span>
+                                {% elif auth.status == 'submitted' %}
+                                <span class="badge bg-primary">{{ auth.get_status_display }}</span>
+                                {% elif auth.status == 'under_review' %}
+                                <span class="badge bg-warning">{{ auth.get_status_display }}</span>
+                                {% elif auth.status == 'approved' %}
+                                <span class="badge bg-success">{{ auth.get_status_display }}</span>
+                                {% elif auth.status == 'partial_approved' %}
+                                <span class="badge bg-success opacity-75">{{ auth.get_status_display }}</span>
+                                {% elif auth.status == 'denied' %}
+                                <span class="badge bg-danger">{{ auth.get_status_display }}</span>
+                                {% elif auth.status == 'cancelled' %}
+                                <span class="badge bg-dark">{{ auth.get_status_display }}</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if auth.priority == 'urgent' %}
+                                <span class="badge bg-danger">{{ auth.get_priority_display }}</span>
+                                {% elif auth.priority == 'high' %}
+                                <span class="badge bg-warning text-dark">{{ auth.get_priority_display }}</span>
+                                {% elif auth.priority == 'normal' %}
+                                <span class="badge bg-secondary">{{ auth.get_priority_display }}</span>
+                                {% else %}
+                                <span class="badge bg-info">{{ auth.get_priority_display }}</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{% url 'authorizations:authorization_detail' auth.id %}"
+                                   class="btn btn-sm btn-outline-primary"
+                                   title="Ver detalle">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="9" class="text-center text-muted py-4">
+                                <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+                                No se encontraron autorizaciones con los filtros aplicados.
+                                <br>
+                                <a href="{% url 'authorizations:authorization_create' %}" class="btn btn-primary mt-2">
+                                    <i class="bi bi-plus-circle"></i> Crear primera autorización
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Paginación -->
+            {% if authorizations.has_other_pages %}
+            <nav class="mt-4">
+                <ul class="pagination justify-content-center">
+                    {% if authorizations.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ authorizations.previous_page_number }}{% if filters.search %}&search={{ filters.search }}{% endif %}{% if filters.status %}&status={{ filters.status }}{% endif %}{% if filters.eps %}&eps={{ filters.eps }}{% endif %}{% if filters.physician %}&physician={{ filters.physician }}{% endif %}{% if filters.priority %}&priority={{ filters.priority }}{% endif %}{% if filters.service_type %}&service_type={{ filters.service_type }}{% endif %}{% if filters.date_from %}&date_from={{ filters.date_from }}{% endif %}{% if filters.date_to %}&date_to={{ filters.date_to }}{% endif %}">
+                            <i class="bi bi-chevron-left"></i> Anterior
+                        </a>
+                    </li>
+                    {% endif %}
+
+                    <li class="page-item active">
+                        <span class="page-link">
+                            Página {{ authorizations.number }} de {{ authorizations.paginator.num_pages }}
+                        </span>
+                    </li>
+
+                    {% if authorizations.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ authorizations.next_page_number }}{% if filters.search %}&search={{ filters.search }}{% endif %}{% if filters.status %}&status={{ filters.status }}{% endif %}{% if filters.eps %}&eps={{ filters.eps }}{% endif %}{% if filters.physician %}&physician={{ filters.physician }}{% endif %}{% if filters.priority %}&priority={{ filters.priority }}{% endif %}{% if filters.service_type %}&service_type={{ filters.service_type }}{% endif %}{% if filters.date_from %}&date_from={{ filters.date_from }}{% endif %}{% if filters.date_to %}&date_to={{ filters.date_to }}{% endif %}">
+                            Siguiente <i class="bi bi-chevron-right"></i>
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

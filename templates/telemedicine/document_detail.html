@@ -1,0 +1,242 @@
+{% extends 'base.html' %}
+{% block title %}Detalle de Documento - {{ document.document_number }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-file-earmark-text"></i> Documento: {{ document.document_number }}</h2>
+        <div>
+            {% if not document.is_signed %}
+            <a href="{% url 'telemedicine:document_sign' document.id %}" class="btn btn-success">
+                <i class="bi bi-pen"></i> Firmar Documento
+            </a>
+            {% endif %}
+            <button onclick="window.print()" class="btn btn-primary">
+                <i class="bi bi-printer"></i> Imprimir
+            </button>
+            <a href="{% url 'telemedicine:document_list' %}" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Volver
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <!-- Información del Documento -->
+            <div class="card mb-3">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="bi bi-info-circle"></i> Información del Documento</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <strong>Número de Documento:</strong>
+                            <p class="mb-0">{{ document.document_number }}</p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <strong>Tipo:</strong>
+                            <p class="mb-0">
+                                {% if document.document_type == 'prescription' %}
+                                <span class="badge bg-primary">Receta Médica</span>
+                                {% elif document.document_type == 'medical_certificate' %}
+                                <span class="badge bg-success">Certificado Médico</span>
+                                {% elif document.document_type == 'sick_leave' %}
+                                <span class="badge bg-warning text-dark">Incapacidad Laboral</span>
+                                {% elif document.document_type == 'lab_order' %}
+                                <span class="badge bg-info">Orden de Laboratorio</span>
+                                {% elif document.document_type == 'imaging_order' %}
+                                <span class="badge bg-secondary">Orden de Imágenes</span>
+                                {% elif document.document_type == 'referral' %}
+                                <span class="badge bg-danger">Remisión</span>
+                                {% elif document.document_type == 'consent' %}
+                                <span class="badge bg-dark">Consentimiento Informado</span>
+                                {% else %}
+                                <span class="badge bg-primary">Informe Médico</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <strong>Paciente:</strong>
+                            <p class="mb-0">{{ document.patient.third_party.name }}</p>
+                            <small class="text-muted">{{ document.patient.third_party.identification_number }}</small>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <strong>Médico/Profesional:</strong>
+                            <p class="mb-0">{{ document.doctor.third_party.name }}</p>
+                            <small class="text-muted">{{ document.doctor.specialty }}</small>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <strong>Fecha de Emisión:</strong>
+                            <p class="mb-0">{{ document.issue_date|date:"d/m/Y" }}</p>
+                        </div>
+                        {% if document.valid_until %}
+                        <div class="col-md-6 mb-3">
+                            <strong>Válido Hasta:</strong>
+                            <p class="mb-0">{{ document.valid_until|date:"d/m/Y" }}</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Título y Contenido -->
+            <div class="card mb-3">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="bi bi-file-text"></i> {{ document.title }}</h5>
+                </div>
+                <div class="card-body">
+                    <div class="document-content p-3" style="white-space: pre-wrap; font-family: 'Times New Roman', serif; line-height: 1.6;">
+{{ document.content }}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Información Clínica -->
+            {% if document.diagnosis or document.observations %}
+            <div class="card mb-3">
+                <div class="card-header bg-info text-white">
+                    <h6 class="mb-0"><i class="bi bi-clipboard-data"></i> Información Clínica</h6>
+                </div>
+                <div class="card-body">
+                    {% if document.diagnosis %}
+                    <div class="mb-3">
+                        <strong>Diagnóstico:</strong>
+                        <p class="mb-0">{{ document.diagnosis }}</p>
+                    </div>
+                    {% endif %}
+                    {% if document.observations %}
+                    <div class="mb-0">
+                        <strong>Observaciones:</strong>
+                        <p class="mb-0">{{ document.observations }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Relación con Consultas/Visitas -->
+            {% if document.virtual_consultation or document.home_care_visit %}
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h6 class="mb-0"><i class="bi bi-link-45deg"></i> Registros Relacionados</h6>
+                </div>
+                <div class="card-body">
+                    {% if document.virtual_consultation %}
+                    <div class="mb-2">
+                        <strong>Consulta Virtual:</strong>
+                        <a href="{% url 'telemedicine:virtual_consultation_detail' document.virtual_consultation.id %}" class="btn btn-sm btn-outline-success">
+                            <i class="bi bi-laptop"></i> Ver Consulta {{ document.virtual_consultation.consultation_number }}
+                        </a>
+                    </div>
+                    {% endif %}
+                    {% if document.home_care_visit %}
+                    <div class="mb-0">
+                        <strong>Visita Domiciliaria:</strong>
+                        <a href="{% url 'telemedicine:home_care_visit_detail' document.home_care_visit.id %}" class="btn btn-sm btn-outline-info">
+                            <i class="bi bi-house-heart"></i> Ver Visita {{ document.home_care_visit.visit_number }}
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Firma Digital -->
+            <div class="card mb-3 {% if document.is_signed %}border-success{% else %}border-warning{% endif %}">
+                <div class="card-header {% if document.is_signed %}bg-success{% else %}bg-warning{% endif %} text-white">
+                    <h6 class="mb-0"><i class="bi bi-pen"></i> Firma Digital</h6>
+                </div>
+                <div class="card-body">
+                    {% if document.is_signed %}
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <div class="alert alert-success mb-0">
+                                <i class="bi bi-check-circle-fill"></i> <strong>Documento Firmado Digitalmente</strong>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <strong>Firmado por:</strong>
+                            <p class="mb-0">{{ document.signed_by.get_full_name }}</p>
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <strong>Fecha de Firma:</strong>
+                            <p class="mb-0">{{ document.signed_at|date:"d/m/Y H:i:s" }}</p>
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <strong>Hash de Firma:</strong>
+                            <p class="mb-0"><code>{{ document.signature_hash }}</code></p>
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <strong>IP del Firmante:</strong>
+                            <p class="mb-0"><code>{{ document.signature_ip }}</code></p>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-warning mb-0">
+                        <i class="bi bi-exclamation-triangle"></i> <strong>Este documento aún no ha sido firmado digitalmente.</strong>
+                        <div class="mt-2">
+                            <a href="{% url 'telemedicine:document_sign' document.id %}" class="btn btn-success">
+                                <i class="bi bi-pen"></i> Firmar Ahora
+                            </a>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Panel Lateral -->
+        <div class="col-md-4">
+            <!-- Estado del Documento -->
+            <div class="card mb-3">
+                <div class="card-header {% if document.is_signed %}bg-success{% else %}bg-warning{% endif %} text-white">
+                    <h6 class="mb-0"><i class="bi bi-shield-check"></i> Estado del Documento</h6>
+                </div>
+                <div class="card-body text-center">
+                    {% if document.is_signed %}
+                    <i class="bi bi-check-circle fs-1 text-success"></i>
+                    <h5 class="mt-2 text-success">Firmado</h5>
+                    <p class="text-muted mb-0">Documento válido y verificable</p>
+                    {% else %}
+                    <i class="bi bi-clock fs-1 text-warning"></i>
+                    <h5 class="mt-2 text-warning">Pendiente de Firma</h5>
+                    <p class="text-muted mb-0">Requiere firma digital</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Información del Sistema -->
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="mb-0"><i class="bi bi-clock-history"></i> Información del Sistema</h6>
+                </div>
+                <div class="card-body">
+                    <small class="text-muted">
+                        <p class="mb-2"><strong>Creado:</strong><br>{{ document.created_at|date:"d/m/Y H:i" }}</p>
+                        <p class="mb-2"><strong>Creado por:</strong><br>{{ document.created_by.get_full_name }}</p>
+                        <p class="mb-0"><strong>Última modificación:</strong><br>{{ document.updated_at|date:"d/m/Y H:i" }}</p>
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_css %}
+<style>
+@media print {
+    .btn, .card-header, nav, footer, .navbar {
+        display: none !important;
+    }
+    .card {
+        border: none !important;
+        box-shadow: none !important;
+    }
+    .document-content {
+        page-break-inside: avoid;
+    }
+}
+</style>
+{% endblock %}

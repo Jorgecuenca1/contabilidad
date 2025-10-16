@@ -1,0 +1,294 @@
+{% extends 'base.html' %}
+{% block title %}Nuevo Electrocardiograma{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2><i class="bi bi-activity"></i> Nuevo Electrocardiograma (ECG)</h2>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'cardiology:dashboard' %}">Cardiología</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'cardiology:ecg_list' %}">Electrocardiogramas</a></li>
+                    <li class="breadcrumb-item active">Nuevo</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <i class="bi bi-activity"></i> Formulario de Electrocardiograma
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+
+                        <!-- INFORMACIÓN DEL PACIENTE -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h5 class="border-bottom pb-2"><i class="bi bi-person"></i> Información del Paciente</h5>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="patient_id" class="form-label">Paciente <span class="text-danger">*</span></label>
+                                <select name="patient_id" id="patient_id" class="form-select" required>
+                                    <option value="">Seleccione un paciente...</option>
+                                    {% for patient in patients %}
+                                    <option value="{{ patient.id }}">
+                                        {{ patient.third_party.first_name }} {{ patient.third_party.last_name }}
+                                        ({{ patient.third_party.document_number }})
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="consultation_id" class="form-label">Consulta Relacionada (opcional)</label>
+                                <select name="consultation_id" id="consultation_id" class="form-select">
+                                    <option value="">Ninguna</option>
+                                    {% for consult in consultations %}
+                                    <option value="{{ consult.id }}">
+                                        {{ consult.consultation_number }} - {{ consult.patient.third_party.first_name }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- INFORMACIÓN DEL ESTUDIO -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h5 class="border-bottom pb-2"><i class="bi bi-calendar-event"></i> Información del Estudio</h5>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label for="ecg_date" class="form-label">Fecha y Hora <span class="text-danger">*</span></label>
+                                <input type="datetime-local" name="ecg_date" id="ecg_date" class="form-control" required>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label for="ecg_type" class="form-label">Tipo de ECG <span class="text-danger">*</span></label>
+                                <select name="ecg_type" id="ecg_type" class="form-select" required>
+                                    {% for value, label in ecg_type_choices %}
+                                    <option value="{{ value }}">{{ label }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- PERSONAL -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h5 class="border-bottom pb-2"><i class="bi bi-people"></i> Personal</h5>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="performed_by_id" class="form-label">Realizado Por <span class="text-danger">*</span></label>
+                                <select name="performed_by_id" id="performed_by_id" class="form-select" required>
+                                    <option value="">Seleccione...</option>
+                                    {% for tech in technicians %}
+                                    <option value="{{ tech.id }}">{{ tech.first_name }} {{ tech.last_name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="interpreted_by_id" class="form-label">Interpretado Por <span class="text-danger">*</span></label>
+                                <select name="interpreted_by_id" id="interpreted_by_id" class="form-select" required>
+                                    <option value="">Seleccione...</option>
+                                    {% for tech in technicians %}
+                                    <option value="{{ tech.id }}">{{ tech.first_name }} {{ tech.last_name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- PARÁMETROS DEL ECG -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h5 class="border-bottom pb-2"><i class="bi bi-graph-up"></i> Parámetros del ECG</h5>
+                            </div>
+
+                            <div class="col-md-3">
+                                <label for="heart_rate" class="form-label">Frecuencia Cardíaca (lpm) <span class="text-danger">*</span></label>
+                                <input type="number" name="heart_rate" id="heart_rate" class="form-control"
+                                       min="20" max="300" placeholder="70" required>
+                            </div>
+
+                            <div class="col-md-3">
+                                <label for="pr_interval" class="form-label">Intervalo PR (ms)</label>
+                                <input type="number" step="0.01" name="pr_interval" id="pr_interval"
+                                       class="form-control" placeholder="160">
+                            </div>
+
+                            <div class="col-md-3">
+                                <label for="qrs_duration" class="form-label">Duración QRS (ms)</label>
+                                <input type="number" step="0.01" name="qrs_duration" id="qrs_duration"
+                                       class="form-control" placeholder="80">
+                            </div>
+
+                            <div class="col-md-3">
+                                <label for="qt_interval" class="form-label">Intervalo QT (ms)</label>
+                                <input type="number" step="0.01" name="qt_interval" id="qt_interval"
+                                       class="form-control" placeholder="400">
+                            </div>
+
+                            <div class="col-md-3">
+                                <label for="qtc_interval" class="form-label">QTc corregido (ms)</label>
+                                <input type="number" step="0.01" name="qtc_interval" id="qtc_interval"
+                                       class="form-control" placeholder="420">
+                            </div>
+                        </div>
+
+                        <!-- EJES ELÉCTRICOS -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h5 class="border-bottom pb-2"><i class="bi bi-compass"></i> Ejes Eléctricos</h5>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label for="p_wave_axis" class="form-label">Eje Onda P (grados)</label>
+                                <input type="number" name="p_wave_axis" id="p_wave_axis"
+                                       class="form-control" placeholder="60">
+                            </div>
+
+                            <div class="col-md-4">
+                                <label for="qrs_axis" class="form-label">Eje QRS (grados)</label>
+                                <input type="number" name="qrs_axis" id="qrs_axis"
+                                       class="form-control" placeholder="60">
+                            </div>
+
+                            <div class="col-md-4">
+                                <label for="t_wave_axis" class="form-label">Eje Onda T (grados)</label>
+                                <input type="number" name="t_wave_axis" id="t_wave_axis"
+                                       class="form-control" placeholder="40">
+                            </div>
+                        </div>
+
+                        <!-- RITMO -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h5 class="border-bottom pb-2"><i class="bi bi-heart-pulse"></i> Ritmo</h5>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="rhythm" class="form-label">Ritmo <span class="text-danger">*</span></label>
+                                <select name="rhythm" id="rhythm" class="form-select" required>
+                                    {% for value, label in rhythm_choices %}
+                                    <option value="{{ value }}">{{ label }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="rhythm_description" class="form-label">Descripción del Ritmo</label>
+                                <input type="text" name="rhythm_description" id="rhythm_description"
+                                       class="form-control" placeholder="Detalles adicionales del ritmo...">
+                            </div>
+                        </div>
+
+                        <!-- HALLAZGOS -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h5 class="border-bottom pb-2"><i class="bi bi-search"></i> Hallazgos</h5>
+                            </div>
+
+                            <div class="col-md-12 mb-3">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="has_st_changes" id="has_st_changes">
+                                            <label class="form-check-label" for="has_st_changes">Cambios en segmento ST</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="has_t_wave_changes" id="has_t_wave_changes">
+                                            <label class="form-check-label" for="has_t_wave_changes">Cambios en onda T</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="has_q_waves" id="has_q_waves">
+                                            <label class="form-check-label" for="has_q_waves">Ondas Q patológicas</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="has_hypertrophy" id="has_hypertrophy">
+                                            <label class="form-check-label" for="has_hypertrophy">Hipertrofia</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="has_conduction_block" id="has_conduction_block">
+                                            <label class="form-check-label" for="has_conduction_block">Bloqueo de conducción</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-12">
+                                <label for="findings" class="form-label">Hallazgos Electrocardiográficos <span class="text-danger">*</span></label>
+                                <textarea name="findings" id="findings" class="form-control" rows="4" required
+                                          placeholder="Describa los hallazgos encontrados en el electrocardiograma..."></textarea>
+                            </div>
+                        </div>
+
+                        <!-- INTERPRETACIÓN Y RESULTADO -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h5 class="border-bottom pb-2"><i class="bi bi-clipboard-check"></i> Interpretación y Resultado</h5>
+                            </div>
+
+                            <div class="col-md-12 mb-3">
+                                <label for="interpretation" class="form-label">Interpretación Clínica <span class="text-danger">*</span></label>
+                                <textarea name="interpretation" id="interpretation" class="form-control" rows="3" required
+                                          placeholder="Interpretación clínica del ECG..."></textarea>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="result" class="form-label">Resultado <span class="text-danger">*</span></label>
+                                <select name="result" id="result" class="form-select" required>
+                                    {% for value, label in result_choices %}
+                                    <option value="{{ value }}">{{ label }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="col-md-12 mb-3">
+                                <label for="conclusion" class="form-label">Conclusión <span class="text-danger">*</span></label>
+                                <textarea name="conclusion" id="conclusion" class="form-control" rows="2" required
+                                          placeholder="Conclusión diagnóstica..."></textarea>
+                            </div>
+
+                            <div class="col-md-12">
+                                <label for="recommendations" class="form-label">Recomendaciones</label>
+                                <textarea name="recommendations" id="recommendations" class="form-control" rows="2"
+                                          placeholder="Recomendaciones clínicas..."></textarea>
+                            </div>
+                        </div>
+
+                        <!-- BOTONES -->
+                        <div class="row">
+                            <div class="col-12">
+                                <hr>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-save"></i> Guardar ECG
+                                </button>
+                                <a href="{% url 'cardiology:ecg_list' %}" class="btn btn-secondary">
+                                    <i class="bi bi-x-circle"></i> Cancelar
+                                </a>
+                            </div>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

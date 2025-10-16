@@ -1,0 +1,176 @@
+{% extends 'base.html' %}
+
+{% block title %}{% if donor %}Editar Donante{% else %}Nuevo Donante{% endif %}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'core:dashboard' %}">Dashboard</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'blood_bank:index' %}">Banco de Sangre</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'blood_bank:donor_list' %}">Donantes</a></li>
+            <li class="breadcrumb-item active">{% if donor %}Editar{% else %}Nuevo{% endif %}</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-person-plus"></i> {% if donor %}Editar Donante{% else %}Registrar Nuevo Donante{% endif %}
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form method="post" id="donorForm">
+                        {% csrf_token %}
+
+                        <div class="row mb-3">
+                            <div class="col-md-12">
+                                <div class="alert alert-info">
+                                    <i class="bi bi-info-circle"></i>
+                                    <strong>Información:</strong> Puede vincular el donante con un tercero existente o registrar sus datos manualmente.
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Vincular con Tercero (Opcional) -->
+                        <div class="row mb-4">
+                            <div class="col-md-12">
+                                <h6 class="border-bottom pb-2 mb-3">Vincular con Registro Existente (Opcional)</h6>
+                            </div>
+                            <div class="col-md-12">
+                                <label for="third_party" class="form-label">Buscar Tercero Registrado</label>
+                                <select class="form-select" id="third_party" name="third_party">
+                                    <option value="">-- Seleccionar tercero existente (opcional) --</option>
+                                    {% for tp in third_parties %}
+                                    <option value="{{ tp.id }}">{{ tp.get_full_name }} - {{ tp.document_number }}</option>
+                                    {% endfor %}
+                                </select>
+                                <small class="text-muted">Si selecciona un tercero, algunos campos se completarán automáticamente</small>
+                            </div>
+                        </div>
+
+                        <!-- Datos Personales -->
+                        <div class="row mb-4">
+                            <div class="col-md-12">
+                                <h6 class="border-bottom pb-2 mb-3">Información Personal</h6>
+                            </div>
+
+                            <div class="col-md-3">
+                                <label for="document_type" class="form-label">Tipo Documento *</label>
+                                <select class="form-select" id="document_type" name="document_type" required>
+                                    <option value="CC">Cédula de Ciudadanía</option>
+                                    <option value="CE">Cédula de Extranjería</option>
+                                    <option value="PA">Pasaporte</option>
+                                    <option value="TI">Tarjeta de Identidad</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-3">
+                                <label for="document_number" class="form-label">Número Documento *</label>
+                                <input type="text" class="form-control" id="document_number" name="document_number" required>
+                            </div>
+
+                            <div class="col-md-3">
+                                <label for="first_name" class="form-label">Nombres *</label>
+                                <input type="text" class="form-control" id="first_name" name="first_name" required>
+                            </div>
+
+                            <div class="col-md-3">
+                                <label for="last_name" class="form-label">Apellidos *</label>
+                                <input type="text" class="form-control" id="last_name" name="last_name" required>
+                            </div>
+                        </div>
+
+                        <div class="row mb-4">
+                            <div class="col-md-3">
+                                <label for="birth_date" class="form-label">Fecha de Nacimiento</label>
+                                <input type="date" class="form-control" id="birth_date" name="birth_date">
+                            </div>
+
+                            <div class="col-md-3">
+                                <label for="gender" class="form-label">Género *</label>
+                                <select class="form-select" id="gender" name="gender" required>
+                                    <option value="">-- Seleccionar --</option>
+                                    <option value="M">Masculino</option>
+                                    <option value="F">Femenino</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-3">
+                                <label for="phone" class="form-label">Teléfono *</label>
+                                <input type="tel" class="form-control" id="phone" name="phone" required>
+                            </div>
+
+                            <div class="col-md-3">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="email" name="email">
+                            </div>
+                        </div>
+
+                        <div class="row mb-4">
+                            <div class="col-md-12">
+                                <label for="address" class="form-label">Dirección</label>
+                                <input type="text" class="form-control" id="address" name="address">
+                            </div>
+                        </div>
+
+                        <!-- Información Sanguínea -->
+                        <div class="row mb-4">
+                            <div class="col-md-12">
+                                <h6 class="border-bottom pb-2 mb-3">Información Sanguínea</h6>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label for="blood_type" class="form-label">Tipo de Sangre *</label>
+                                <select class="form-select" id="blood_type" name="blood_type" required>
+                                    <option value="">-- Seleccionar --</option>
+                                    <option value="A+">A+</option>
+                                    <option value="A-">A-</option>
+                                    <option value="B+">B+</option>
+                                    <option value="B-">B-</option>
+                                    <option value="AB+">AB+</option>
+                                    <option value="AB-">AB-</option>
+                                    <option value="O+">O+</option>
+                                    <option value="O-">O-</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label for="rh_factor" class="form-label">Factor RH *</label>
+                                <select class="form-select" id="rh_factor" name="rh_factor" required>
+                                    <option value="">-- Seleccionar --</option>
+                                    <option value="positive">Positivo</option>
+                                    <option value="negative">Negativo</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label for="donor_type" class="form-label">Tipo de Donante *</label>
+                                <select class="form-select" id="donor_type" name="donor_type" required>
+                                    <option value="voluntary">Voluntario</option>
+                                    <option value="directed">Dirigido</option>
+                                    <option value="autologous">Autólogo</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12">
+                                <hr>
+                                <button type="submit" class="btn btn-success">
+                                    <i class="bi bi-check-circle"></i> Guardar Donante
+                                </button>
+                                <a href="{% url 'blood_bank:donor_list' %}" class="btn btn-secondary">
+                                    <i class="bi bi-x-circle"></i> Cancelar
+                                </a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

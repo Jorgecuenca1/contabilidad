@@ -1,0 +1,192 @@
+{% extends 'base.html' %}
+
+{% block title %}Nueva Donación - Banco de Sangre{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'core:dashboard' %}">Dashboard</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'blood_bank:index' %}">Banco de Sangre</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'blood_bank:donation_list' %}">Donaciones</a></li>
+            <li class="breadcrumb-item active">Nueva Donación</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-droplet-fill"></i> Registrar Nueva Donación
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form method="post" id="donationForm">
+                        {% csrf_token %}
+
+                        <div class="row mb-3">
+                            <div class="col-md-12">
+                                <div class="alert alert-info">
+                                    <i class="bi bi-info-circle"></i>
+                                    <strong>Importante:</strong> Antes de proceder, verifique que el donante cumple con todos los criterios de elegibilidad.
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Selección de Donante -->
+                        <div class="row mb-4">
+                            <div class="col-md-12">
+                                <h6 class="border-bottom pb-2 mb-3">Información del Donante</h6>
+                            </div>
+                            <div class="col-md-12">
+                                <label for="donor" class="form-label">Donante *</label>
+                                <select class="form-select" id="donor" name="donor" required>
+                                    <option value="">-- Seleccionar Donante --</option>
+                                    {% for d in donors %}
+                                    <option value="{{ d.id }}">
+                                        {{ d.donor_code }} - {{ d.first_name }} {{ d.last_name }} - {{ d.blood_type }} - {{ d.document_number }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                                <small class="text-muted">Si el donante no aparece en la lista, <a href="{% url 'blood_bank:donor_create' %}">regístrelo primero</a></small>
+                            </div>
+                        </div>
+
+                        <!-- Tipo de Donación -->
+                        <div class="row mb-4">
+                            <div class="col-md-12">
+                                <h6 class="border-bottom pb-2 mb-3">Datos de la Donación</h6>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="donation_type" class="form-label">Tipo de Donación *</label>
+                                <select class="form-select" id="donation_type" name="donation_type" required>
+                                    <option value="whole_blood">Sangre Total</option>
+                                    <option value="plasma">Plasma</option>
+                                    <option value="platelets">Plaquetas</option>
+                                    <option value="double_red_cells">Doble Glóbulos Rojos</option>
+                                    <option value="autologous">Autóloga</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="volume_ml" class="form-label">Volumen (ml)</label>
+                                <input type="number" class="form-control" id="volume_ml" name="volume_ml" step="1" placeholder="Ejemplo: 450">
+                                <small class="text-muted">Volumen estándar: 450ml sangre total</small>
+                            </div>
+                        </div>
+
+                        <!-- Evaluación Pre-donación -->
+                        <div class="row mb-4">
+                            <div class="col-md-12">
+                                <h6 class="border-bottom pb-2 mb-3">Evaluación Pre-Donación</h6>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="weight_kg" class="form-label">Peso (kg)</label>
+                                <input type="number" class="form-control" id="weight_kg" name="weight_kg" step="0.1" placeholder="Ejemplo: 65.5">
+                            </div>
+                            <div class="col-md-3">
+                                <label for="hemoglobin" class="form-label">Hemoglobina (g/dL)</label>
+                                <input type="number" class="form-control" id="hemoglobin" name="hemoglobin" step="0.1" placeholder="Ejemplo: 13.5">
+                                <small class="text-muted">Mínimo: 12.5 g/dL (mujeres), 13.0 g/dL (hombres)</small>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="pulse" class="form-label">Pulso (lpm)</label>
+                                <input type="number" class="form-control" id="pulse" name="pulse" placeholder="Ejemplo: 72">
+                            </div>
+                            <div class="col-md-3">
+                                <label for="temperature" class="form-label">Temperatura (°C)</label>
+                                <input type="number" class="form-control" id="temperature" name="temperature" step="0.1" placeholder="Ejemplo: 36.5">
+                            </div>
+                        </div>
+
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <label for="blood_pressure_systolic" class="form-label">Presión Arterial Sistólica (mmHg)</label>
+                                <input type="number" class="form-control" id="blood_pressure_systolic" name="blood_pressure_systolic" placeholder="Ejemplo: 120">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="blood_pressure_diastolic" class="form-label">Presión Arterial Diastólica (mmHg)</label>
+                                <input type="number" class="form-control" id="blood_pressure_diastolic" name="blood_pressure_diastolic" placeholder="Ejemplo: 80">
+                            </div>
+                        </div>
+
+                        <!-- Personal -->
+                        <div class="row mb-4">
+                            <div class="col-md-12">
+                                <h6 class="border-bottom pb-2 mb-3">Personal Responsable</h6>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="phlebotomist" class="form-label">Flebotomista *</label>
+                                <select class="form-select" id="phlebotomist" name="phlebotomist" required>
+                                    <option value="">-- Seleccionar Flebotomista --</option>
+                                    {% for emp in employees %}
+                                    <option value="{{ emp.id }}">
+                                        {{ emp.third_party.first_name }} {{ emp.third_party.last_name }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="supervising_physician" class="form-label">Médico Supervisor (Opcional)</label>
+                                <select class="form-select" id="supervising_physician" name="supervising_physician">
+                                    <option value="">-- Seleccionar Médico --</option>
+                                    {% for emp in employees %}
+                                    <option value="{{ emp.id }}">
+                                        {{ emp.third_party.first_name }} {{ emp.third_party.last_name }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Aprobación Pre-Donación -->
+                        <div class="row mb-4">
+                            <div class="col-md-12">
+                                <h6 class="border-bottom pb-2 mb-3">Aprobación</h6>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="pre_donation_approved" name="pre_donation_approved">
+                                    <label class="form-check-label" for="pre_donation_approved">
+                                        <strong>Donante aprobado para la donación</strong>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-12 mt-3">
+                                <label for="pre_donation_notes" class="form-label">Notas/Observaciones</label>
+                                <textarea class="form-control" id="pre_donation_notes" name="pre_donation_notes" rows="3" placeholder="Ingrese cualquier observación relevante..."></textarea>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12">
+                                <hr>
+                                <button type="submit" class="btn btn-success btn-lg">
+                                    <i class="bi bi-check-circle"></i> Registrar Donación
+                                </button>
+                                <a href="{% url 'blood_bank:donation_list' %}" class="btn btn-secondary btn-lg">
+                                    <i class="bi bi-x-circle"></i> Cancelar
+                                </a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Auto-populate query parameter if donor is passed in URL
+document.addEventListener('DOMContentLoaded', function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const donorId = urlParams.get('donor');
+    if (donorId) {
+        const donorSelect = document.getElementById('donor');
+        if (donorSelect) {
+            donorSelect.value = donorId;
+        }
+    }
+});
+</script>
+{% endblock %}

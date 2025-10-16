@@ -1,0 +1,242 @@
+{% extends 'base.html' %}
+{% block title %}Lista de Facturas{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-receipt"></i> Facturas de Salud</h2>
+        <div>
+            <a href="{% url 'billing_health:dashboard' %}" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Dashboard
+            </a>
+            <a href="{% url 'billing_health:invoice_create' %}" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> Nueva Factura
+            </a>
+        </div>
+    </div>
+
+    <!-- Filtros de Búsqueda -->
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <i class="bi bi-funnel"></i> Filtros de Búsqueda
+        </div>
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-3">
+                    <label class="form-label">Buscar</label>
+                    <input type="text" class="form-control" name="search" value="{{ search }}"
+                           placeholder="Número, pagador, paciente...">
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label">Estado</label>
+                    <select class="form-select" name="status">
+                        <option value="">Todos</option>
+                        <option value="draft" {% if status == 'draft' %}selected{% endif %}>Borrador</option>
+                        <option value="pending" {% if status == 'pending' %}selected{% endif %}>Pendiente</option>
+                        <option value="approved" {% if status == 'approved' %}selected{% endif %}>Aprobada</option>
+                        <option value="issued" {% if status == 'issued' %}selected{% endif %}>Emitida</option>
+                        <option value="paid" {% if status == 'paid' %}selected{% endif %}>Pagada</option>
+                        <option value="glosa" {% if status == 'glosa' %}selected{% endif %}>Glosa</option>
+                        <option value="cancelled" {% if status == 'cancelled' %}selected{% endif %}>Anulada</option>
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label">Tipo</label>
+                    <select class="form-select" name="invoice_type">
+                        <option value="">Todos</option>
+                        <option value="ambulatory" {% if invoice_type == 'ambulatory' %}selected{% endif %}>Ambulatoria</option>
+                        <option value="hospitalization" {% if invoice_type == 'hospitalization' %}selected{% endif %}>Hospitalización</option>
+                        <option value="emergency" {% if invoice_type == 'emergency' %}selected{% endif %}>Urgencias</option>
+                        <option value="surgery" {% if invoice_type == 'surgery' %}selected{% endif %}>Cirugía</option>
+                        <option value="consultation" {% if invoice_type == 'consultation' %}selected{% endif %}>Consulta</option>
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label">Pagador</label>
+                    <select class="form-select" name="payer">
+                        <option value="">Todos</option>
+                        {% for payer in payers %}
+                        <option value="{{ payer.id }}" {% if payer_id == payer.id|stringformat:"s" %}selected{% endif %}>
+                            {{ payer.name|truncatewords:3 }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label">Fecha Desde</label>
+                    <input type="date" class="form-control" name="date_from" value="{{ date_from }}">
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label">Fecha Hasta</label>
+                    <input type="date" class="form-control" name="date_to" value="{{ date_to }}">
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label">Glosas</label>
+                    <select class="form-select" name="has_glosa">
+                        <option value="">Todas</option>
+                        <option value="true" {% if has_glosa == 'true' %}selected{% endif %}>Con Glosa</option>
+                        <option value="false" {% if has_glosa == 'false' %}selected{% endif %}>Sin Glosa</option>
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label">RIPS</label>
+                    <select class="form-select" name="rips_generated">
+                        <option value="">Todos</option>
+                        <option value="true" {% if rips_generated == 'true' %}selected{% endif %}>Generados</option>
+                        <option value="false" {% if rips_generated == 'false' %}selected{% endif %}>Pendientes</option>
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label">Ordenar por</label>
+                    <select class="form-select" name="sort">
+                        <option value="-invoice_date" {% if sort_by == '-invoice_date' %}selected{% endif %}>Fecha (reciente)</option>
+                        <option value="invoice_date" {% if sort_by == 'invoice_date' %}selected{% endif %}>Fecha (antiguo)</option>
+                        <option value="invoice_number" {% if sort_by == 'invoice_number' %}selected{% endif %}>Número</option>
+                        <option value="-total_amount" {% if sort_by == '-total_amount' %}selected{% endif %}>Monto (mayor)</option>
+                        <option value="total_amount" {% if sort_by == 'total_amount' %}selected{% endif %}>Monto (menor)</option>
+                    </select>
+                </div>
+
+                <div class="col-12">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-search"></i> Buscar
+                    </button>
+                    <a href="{% url 'billing_health:invoice_list' %}" class="btn btn-secondary">
+                        <i class="bi bi-x-circle"></i> Limpiar
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Resultados -->
+    <div class="card">
+        <div class="card-header bg-secondary text-white">
+            <i class="bi bi-list-ul"></i> Resultados ({{ total_results }} facturas encontradas)
+        </div>
+        <div class="card-body">
+            {% if page_obj %}
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped">
+                        <thead>
+                            <tr>
+                                <th>Número</th>
+                                <th>Fecha</th>
+                                <th>Tipo</th>
+                                <th>Pagador</th>
+                                <th>Paciente</th>
+                                <th>Estado</th>
+                                <th class="text-end">Total</th>
+                                <th>Glosa</th>
+                                <th>RIPS</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for invoice in page_obj %}
+                            <tr>
+                                <td><strong>{{ invoice.invoice_number }}</strong></td>
+                                <td>{{ invoice.invoice_date|date:"d/m/Y" }}</td>
+                                <td>
+                                    <small>{{ invoice.get_invoice_type_display }}</small>
+                                </td>
+                                <td>{{ invoice.payer.name|truncatewords:3 }}</td>
+                                <td>{{ invoice.patient.name|truncatewords:3 }}</td>
+                                <td>
+                                    {% if invoice.status == 'paid' %}
+                                        <span class="badge bg-success">Pagada</span>
+                                    {% elif invoice.status == 'approved' %}
+                                        <span class="badge bg-primary">Aprobada</span>
+                                    {% elif invoice.status == 'issued' %}
+                                        <span class="badge bg-info">Emitida</span>
+                                    {% elif invoice.status == 'draft' %}
+                                        <span class="badge bg-secondary">Borrador</span>
+                                    {% elif invoice.status == 'glosa' %}
+                                        <span class="badge bg-danger">Glosa</span>
+                                    {% elif invoice.status == 'cancelled' %}
+                                        <span class="badge bg-dark">Anulada</span>
+                                    {% else %}
+                                        <span class="badge bg-warning">{{ invoice.get_status_display }}</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-end">
+                                    <strong>${{ invoice.total_amount|floatformat:0 }}</strong>
+                                </td>
+                                <td>
+                                    {% if invoice.has_glosa %}
+                                        <span class="badge bg-danger" title="Tiene glosa">
+                                            <i class="bi bi-exclamation-triangle"></i> ${{ invoice.glosa_amount|floatformat:0 }}
+                                        </span>
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if invoice.rips_generated %}
+                                        <span class="badge bg-success" title="RIPS Generados">
+                                            <i class="bi bi-check-circle"></i>
+                                        </span>
+                                    {% else %}
+                                        <span class="badge bg-secondary" title="RIPS Pendientes">
+                                            <i class="bi bi-clock"></i>
+                                        </span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <a href="{% url 'billing_health:invoice_detail' invoice.id %}"
+                                       class="btn btn-sm btn-info" title="Ver Detalle">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Paginación -->
+                {% if page_obj.has_other_pages %}
+                <nav aria-label="Paginación">
+                    <ul class="pagination justify-content-center">
+                        {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page=1{% if search %}&search={{ search }}{% endif %}{% if status %}&status={{ status }}{% endif %}">Primera</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if search %}&search={{ search }}{% endif %}{% if status %}&status={{ status }}{% endif %}">Anterior</a>
+                        </li>
+                        {% endif %}
+
+                        <li class="page-item active">
+                            <span class="page-link">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+                        </li>
+
+                        {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if search %}&search={{ search }}{% endif %}{% if status %}&status={{ status }}{% endif %}">Siguiente</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.paginator.num_pages %}{% if search %}&search={{ search }}{% endif %}{% if status %}&status={{ status }}{% endif %}">Última</a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+                {% endif %}
+            {% else %}
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle"></i>
+                    No se encontraron facturas con los criterios de búsqueda especificados.
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,165 @@
+{% extends 'base.html' %}
+{% block title %}Crear Reporte Empresarial{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <h2 class="mb-4">
+        <i class="bi bi-file-earmark-bar-graph"></i> Nuevo Reporte Empresarial
+    </h2>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <!-- Información Básica -->
+        <div class="card mb-3">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="bi bi-info-circle"></i> Información del Reporte</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Tipo de Reporte <span class="text-danger">*</span></label>
+                        <select name="report_type" class="form-select" required>
+                            <option value="">Seleccionar...</option>
+                            <option value="consolidado_examenes">Consolidado de Exámenes</option>
+                            <option value="ausentismo">Ausentismo Laboral</option>
+                            <option value="accidentalidad">Accidentalidad</option>
+                            <option value="morbilidad">Morbilidad</option>
+                            <option value="riesgos_identificados">Riesgos Identificados</option>
+                            <option value="aptitudes">Aptitudes Laborales</option>
+                            <option value="seguimiento">Seguimiento y Control</option>
+                            <option value="estadistico">Estadístico</option>
+                            <option value="personalizado">Personalizado</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Título del Reporte <span class="text-danger">*</span></label>
+                        <input type="text" name="report_title" class="form-control" required placeholder="Título descriptivo del reporte">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Período -->
+        <div class="card mb-3">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0"><i class="bi bi-calendar-range"></i> Período del Reporte</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Fecha Inicio <span class="text-danger">*</span></label>
+                        <input type="date" name="period_start" class="form-control" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Fecha Fin <span class="text-danger">*</span></label>
+                        <input type="date" name="period_end" class="form-control" required>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filtros -->
+        <div class="card mb-3">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0"><i class="bi bi-funnel"></i> Filtros Aplicados</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label">Empresa Cliente</label>
+                        <input type="text" name="client_company" class="form-control" placeholder="Nombre de la empresa">
+                        <small class="text-muted">Empresa para la que se genera el reporte</small>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Filtro por Área</label>
+                        <input type="text" name="work_area_filter" class="form-control" placeholder="Área de trabajo">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Filtro por Cargo</label>
+                        <input type="text" name="job_position_filter" class="form-control" placeholder="Cargo">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contenido del Reporte -->
+        <div class="card mb-3">
+            <div class="card-header bg-warning">
+                <h5 class="mb-0"><i class="bi bi-file-text"></i> Contenido del Reporte</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-12">
+                        <label class="form-label">Resumen Ejecutivo</label>
+                        <textarea name="summary" class="form-control" rows="4" placeholder="Resumen general del reporte..."></textarea>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">Hallazgos Principales</label>
+                        <textarea name="findings" class="form-control" rows="5" placeholder="Hallazgos más relevantes encontrados..."></textarea>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">Recomendaciones Generales</label>
+                        <textarea name="recommendations" class="form-control" rows="5" placeholder="Recomendaciones para la empresa..."></textarea>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">Conclusiones</label>
+                        <textarea name="conclusions" class="form-control" rows="4" placeholder="Conclusiones del reporte..."></textarea>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">Descripción de Anexos</label>
+                        <textarea name="attachments_description" class="form-control" rows="3" placeholder="Documentos, gráficas y otros anexos incluidos..."></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Estado y Destinatario -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-check-circle"></i> Estado y Destinatario</h6>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <label class="form-label">Estado <span class="text-danger">*</span></label>
+                        <select name="status" class="form-select" required>
+                            <option value="borrador">Borrador</option>
+                            <option value="generado">Generado</option>
+                            <option value="enviado">Enviado</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Fecha de Generación</label>
+                        <input type="date" name="generated_date" class="form-control">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Fecha de Envío</label>
+                        <input type="date" name="sent_date" class="form-control">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Destinatario</label>
+                        <input type="text" name="recipient" class="form-control" placeholder="Nombre del destinatario">
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">Observaciones</label>
+                        <textarea name="observations" class="form-control" rows="2"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Botones -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <button type="submit" class="btn btn-success btn-lg">
+                    <i class="bi bi-save"></i> Guardar Reporte
+                </button>
+                <a href="{% url 'occupational_health:report_list' %}" class="btn btn-secondary btn-lg">
+                    <i class="bi bi-x-circle"></i> Cancelar
+                </a>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}

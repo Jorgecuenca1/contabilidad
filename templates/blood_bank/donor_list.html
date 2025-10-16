@@ -1,0 +1,180 @@
+{% extends 'base.html' %}
+
+{% block title %}Donantes - Banco de Sangre{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'core:dashboard' %}">Dashboard</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'blood_bank:index' %}">Banco de Sangre</a></li>
+            <li class="breadcrumb-item active">Donantes</li>
+        </ol>
+    </nav>
+
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <h2><i class="bi bi-people-fill text-danger"></i> Donantes Registrados</h2>
+        </div>
+        <div class="col-md-6 text-end">
+            <a href="{% url 'blood_bank:donor_create' %}" class="btn btn-success">
+                <i class="bi bi-person-plus"></i> Nuevo Donante
+            </a>
+        </div>
+    </div>
+
+    <!-- Filtros -->
+    <div class="card mb-3">
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-4">
+                    <label class="form-label">Búsqueda</label>
+                    <input type="text" class="form-control" name="search" value="{{ search }}"
+                           placeholder="Código, documento, nombre...">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Tipo de Sangre</label>
+                    <select class="form-select" name="blood_type">
+                        <option value="">-- Todos --</option>
+                        <option value="A+" {% if blood_type_filter == 'A+' %}selected{% endif %}>A+</option>
+                        <option value="A-" {% if blood_type_filter == 'A-' %}selected{% endif %}>A-</option>
+                        <option value="B+" {% if blood_type_filter == 'B+' %}selected{% endif %}>B+</option>
+                        <option value="B-" {% if blood_type_filter == 'B-' %}selected{% endif %}>B-</option>
+                        <option value="AB+" {% if blood_type_filter == 'AB+' %}selected{% endif %}>AB+</option>
+                        <option value="AB-" {% if blood_type_filter == 'AB-' %}selected{% endif %}>AB-</option>
+                        <option value="O+" {% if blood_type_filter == 'O+' %}selected{% endif %}>O+</option>
+                        <option value="O-" {% if blood_type_filter == 'O-' %}selected{% endif %}>O-</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Estado</label>
+                    <select class="form-select" name="status">
+                        <option value="">-- Todos --</option>
+                        <option value="active" {% if status_filter == 'active' %}selected{% endif %}>Activo</option>
+                        <option value="inactive" {% if status_filter == 'inactive' %}selected{% endif %}>Inactivo</option>
+                        <option value="deferred" {% if status_filter == 'deferred' %}selected{% endif %}>Diferido</option>
+                        <option value="rejected" {% if status_filter == 'rejected' %}selected{% endif %}>Rechazado</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">&nbsp;</label>
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-search"></i> Filtrar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Tabla de donantes -->
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Código</th>
+                            <th>Donante</th>
+                            <th>Documento</th>
+                            <th>Tipo Sangre</th>
+                            <th>Tipo Donante</th>
+                            <th>Última Donación</th>
+                            <th>Total Donaciones</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for donor in page_obj %}
+                        <tr>
+                            <td>
+                                <strong><a href="{% url 'blood_bank:donor_detail' donor.id %}">{{ donor.donor_code }}</a></strong>
+                            </td>
+                            <td>
+                                {{ donor.first_name }} {{ donor.last_name }}<br>
+                                <small class="text-muted">{{ donor.gender|default:"-" }} | {{ donor.phone }}</small>
+                            </td>
+                            <td>{{ donor.document_type }} {{ donor.document_number }}</td>
+                            <td>
+                                <span class="badge bg-danger">{{ donor.blood_type }}</span>
+                                <span class="badge bg-secondary">{{ donor.get_rh_factor_display }}</span>
+                            </td>
+                            <td>
+                                <span class="badge bg-info">{{ donor.get_donor_type_display }}</span>
+                            </td>
+                            <td>
+                                {% if donor.last_donation_date %}
+                                    {{ donor.last_donation_date|date:"d/m/Y" }}<br>
+                                    <small class="text-muted">{{ donor.last_donation_date|timesince }} atrás</small>
+                                {% else %}
+                                    <span class="text-muted">Sin donaciones</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-center">
+                                <strong>{{ donor.total_donations }}</strong>
+                            </td>
+                            <td>
+                                {% if donor.status == 'active' %}
+                                    <span class="badge bg-success">Activo</span>
+                                {% elif donor.status == 'inactive' %}
+                                    <span class="badge bg-secondary">Inactivo</span>
+                                {% elif donor.status == 'deferred' %}
+                                    <span class="badge bg-warning">Diferido</span>
+                                {% elif donor.status == 'rejected' %}
+                                    <span class="badge bg-danger">Rechazado</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{% url 'blood_bank:donor_detail' donor.id %}" class="btn btn-sm btn-info" title="Ver Detalle">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="9" class="text-center text-muted">
+                                <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+                                No se encontraron donantes.
+                                <br>
+                                <a href="{% url 'blood_bank:donor_create' %}" class="btn btn-success btn-sm mt-2">
+                                    <i class="bi bi-person-plus"></i> Registrar Primer Donante
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Paginación -->
+            {% if page_obj.has_other_pages %}
+            <nav aria-label="Paginación">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page=1{% if search %}&search={{ search }}{% endif %}{% if blood_type_filter %}&blood_type={{ blood_type_filter }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}">Primera</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if search %}&search={{ search }}{% endif %}{% if blood_type_filter %}&blood_type={{ blood_type_filter }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}">Anterior</a>
+                    </li>
+                    {% endif %}
+
+                    <li class="page-item active">
+                        <span class="page-link">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+                    </li>
+
+                    {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if search %}&search={{ search }}{% endif %}{% if blood_type_filter %}&blood_type={{ blood_type_filter }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}">Siguiente</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if search %}&search={{ search }}{% endif %}{% if blood_type_filter %}&blood_type={{ blood_type_filter }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}">Última</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

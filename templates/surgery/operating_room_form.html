@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+{% block title %}{% if room %}Editar{% else %}Nuevo{% endif %} Quirófano{% endblock %}
+{% block content %}
+<div class="container-fluid">
+    <h2><i class="bi bi-door-closed"></i> {% if room %}Editar{% else %}Nuevo{% endif %} Quirófano</h2>
+
+    <form method="post" class="mt-4">
+        {% csrf_token %}
+        <div class="row">
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label class="form-label">Número de Quirófano *</label>
+                    <input type="text" class="form-control" name="room_number" value="{% if room %}{{ room.room_number }}{% endif %}" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Nombre *</label>
+                    <input type="text" class="form-control" name="room_name" value="{% if room %}{{ room.room_name }}{% endif %}" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Tipo *</label>
+                    <select class="form-select" name="room_type" required>
+                        <option value="general" {% if room and room.room_type == 'general' %}selected{% endif %}>General</option>
+                        <option value="specialized" {% if room and room.room_type == 'specialized' %}selected{% endif %}>Especializado</option>
+                        <option value="trauma" {% if room and room.room_type == 'trauma' %}selected{% endif %}>Trauma</option>
+                        <option value="ambulatory" {% if room and room.room_type == 'ambulatory' %}selected{% endif %}>Ambulatorio</option>
+                        <option value="cardiac" {% if room and room.room_type == 'cardiac' %}selected{% endif %}>Cardíaco</option>
+                        <option value="neurosurgery" {% if room and room.room_type == 'neurosurgery' %}selected{% endif %}>Neurocirugía</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Piso *</label>
+                    <input type="text" class="form-control" name="floor" value="{% if room %}{{ room.floor }}{% endif %}" required>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label class="form-label">Edificio</label>
+                    <input type="text" class="form-control" name="building" value="{% if room %}{{ room.building }}{% endif %}">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Estado *</label>
+                    <select class="form-select" name="status" required>
+                        <option value="available" {% if not room or room.status == 'available' %}selected{% endif %}>Disponible</option>
+                        <option value="in_use" {% if room and room.status == 'in_use' %}selected{% endif %}>En Uso</option>
+                        <option value="cleaning" {% if room and room.status == 'cleaning' %}selected{% endif %}>En Limpieza</option>
+                        <option value="maintenance" {% if room and room.status == 'maintenance' %}selected{% endif %}>Mantenimiento</option>
+                        <option value="out_of_service" {% if room and room.status == 'out_of_service' %}selected{% endif %}>Fuera de Servicio</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Capacidad</label>
+                    <input type="number" class="form-control" name="capacity" value="{% if room %}{{ room.capacity }}{% else %}1{% endif %}" min="1">
+                </div>
+                <div class="mb-3 form-check">
+                    <input type="checkbox" class="form-check-input" name="has_laminar_flow" {% if room and room.has_laminar_flow %}checked{% endif %}>
+                    <label class="form-check-label">Tiene Flujo Laminar</label>
+                </div>
+            </div>
+            <div class="col-12">
+                <div class="mb-3">
+                    <label class="form-label">Equipamiento</label>
+                    <textarea class="form-control" name="equipment_description" rows="3">{% if room %}{{ room.equipment_description }}{% endif %}</textarea>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Notas</label>
+                    <textarea class="form-control" name="notes" rows="2">{% if room %}{{ room.notes }}{% endif %}</textarea>
+                </div>
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary"><i class="bi bi-save"></i> Guardar</button>
+        <a href="{% url 'surgery:operating_room_list' %}" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>
+{% endblock %}

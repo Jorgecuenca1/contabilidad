@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% block title %}Odontogramas{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <h2 class="mb-4"><i class="bi bi-diagram-3"></i> Odontogramas</h2>
+
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Paciente</th>
+                            <th>Tipo Dentición</th>
+                            <th>Fecha</th>
+                            <th>Creado Por</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for odontogram in page_obj %}
+                        <tr>
+                            <td>{{ odontogram.patient.third_party.name }}</td>
+                            <td>{{ odontogram.get_dentition_type_display }}</td>
+                            <td>{{ odontogram.odontogram_date|date:"d/m/Y" }}</td>
+                            <td><small>{{ odontogram.created_by.get_full_name }}</small></td>
+                            <td>
+                                <a href="{% url 'dentistry:odontogram_detail' odontogram.id %}" class="btn btn-sm btn-info">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center text-muted">No se encontraron odontogramas</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,729 @@
+{% extends 'base.html' %}
+{% block title %}Autorización {{ authorization.authorization_number }} - Autorizaciones EPS{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'core:dashboard' %}">Dashboard</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'authorizations:index' %}">Autorizaciones EPS</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'authorizations:authorization_list' %}">Solicitudes</a></li>
+            <li class="breadcrumb-item active">{{ authorization.authorization_number }}</li>
+        </ol>
+    </nav>
+
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2><i class="bi bi-file-earmark-check"></i> Autorización: {{ authorization.authorization_number }}</h2>
+            <p class="text-muted mb-0">
+                Solicitada el {{ authorization.request_date|date:"d/m/Y H:i" }}
+                {% if authorization.status == 'approved' or authorization.status == 'partial_approved' %}
+                <span class="badge bg-success ms-2">{{ authorization.get_status_display }}</span>
+                {% elif authorization.status == 'under_review' %}
+                <span class="badge bg-warning ms-2">{{ authorization.get_status_display }}</span>
+                {% elif authorization.status == 'submitted' %}
+                <span class="badge bg-primary ms-2">{{ authorization.get_status_display }}</span>
+                {% elif authorization.status == 'denied' %}
+                <span class="badge bg-danger ms-2">{{ authorization.get_status_display }}</span>
+                {% elif authorization.status == 'cancelled' %}
+                <span class="badge bg-dark ms-2">{{ authorization.get_status_display }}</span>
+                {% else %}
+                <span class="badge bg-secondary ms-2">{{ authorization.get_status_display }}</span>
+                {% endif %}
+            </p>
+        </div>
+        <div>
+            <a href="{% url 'authorizations:authorization_list' %}" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Volver
+            </a>
+        </div>
+    </div>
+
+    <!-- Messages -->
+    {% if messages %}
+    <div class="row mb-3">
+        <div class="col-12">
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="row">
+        <!-- Columna Principal -->
+        <div class="col-md-8">
+            <!-- Información del Paciente y EPS -->
+            <div class="card mb-3">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="bi bi-person-badge"></i> Información del Paciente y EPS</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <strong>Paciente:</strong>
+                            <p class="mb-0">{{ authorization.patient.get_full_name }}</p>
+                            <small class="text-muted">{{ authorization.patient.document_type }} {{ authorization.patient.document_number }}</small>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <strong>EPS:</strong>
+                            <p class="mb-0">{{ authorization.eps.name }}</p>
+                            {% if authorization.eps.code %}
+                            <small class="text-muted">Código: {{ authorization.eps.code }}</small>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <strong>Médico Solicitante:</strong>
+                            <p class="mb-0">{{ authorization.requesting_physician.get_full_name }}</p>
+                            {% if authorization.requesting_physician.professional_card %}
+                            <small class="text-muted">TP: {{ authorization.requesting_physician.professional_card }}</small>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <strong>Prioridad:</strong>
+                            <p class="mb-0">
+                                {% if authorization.priority == 'urgent' %}
+                                <span class="badge bg-danger">{{ authorization.get_priority_display }}</span>
+                                {% elif authorization.priority == 'high' %}
+                                <span class="badge bg-warning text-dark">{{ authorization.get_priority_display }}</span>
+                                {% elif authorization.priority == 'normal' %}
+                                <span class="badge bg-secondary">{{ authorization.get_priority_display }}</span>
+                                {% else %}
+                                <span class="badge bg-info">{{ authorization.get_priority_display }}</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Detalles del Servicio Solicitado -->
+            <div class="card mb-3">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="bi bi-clipboard2-pulse"></i> Detalles del Servicio Solicitado</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <strong>Tipo de Servicio:</strong>
+                            <p class="mb-0">{{ authorization.get_service_type_display }}</p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <strong>Código CUPS:</strong>
+                            <p class="mb-0">{{ authorization.cups_code|default:"No especificado" }}</p>
+                        </div>
+                        <div class="col-md-12 mb-3">
+                            <strong>Descripción del Servicio:</strong>
+                            <p class="mb-0">{{ authorization.service_description }}</p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <strong>Cantidad Solicitada:</strong>
+                            <p class="mb-0">{{ authorization.quantity }}</p>
+                        </div>
+                        {% if authorization.approved_quantity %}
+                        <div class="col-md-6 mb-3">
+                            <strong>Cantidad Aprobada:</strong>
+                            <p class="mb-0">
+                                {{ authorization.approved_quantity }}
+                                {% if authorization.approved_quantity < authorization.quantity %}
+                                <span class="badge bg-warning text-dark">Aprobación Parcial</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Diagnóstico -->
+            <div class="card mb-3">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0"><i class="bi bi-file-medical"></i> Diagnóstico</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <strong>Código CIE-10:</strong>
+                            <p class="mb-0"><code>{{ authorization.diagnosis_code }}</code></p>
+                        </div>
+                        <div class="col-md-8 mb-3">
+                            <strong>Descripción del Diagnóstico:</strong>
+                            <p class="mb-0">{{ authorization.diagnosis_description }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Justificación Médica -->
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-file-text"></i> Justificación Médica</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <strong>Justificación Médica:</strong>
+                        <p class="mt-2">{{ authorization.medical_justification }}</p>
+                    </div>
+                    {% if authorization.clinical_history_summary %}
+                    <div class="mb-0">
+                        <strong>Resumen de Historia Clínica:</strong>
+                        <p class="mt-2">{{ authorization.clinical_history_summary }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Respuesta de la EPS -->
+            {% if authorization.status == 'approved' or authorization.status == 'partial_approved' or authorization.status == 'denied' %}
+            <div class="card mb-3">
+                <div class="card-header {% if authorization.status == 'approved' or authorization.status == 'partial_approved' %}bg-success text-white{% else %}bg-danger text-white{% endif %}">
+                    <h5 class="mb-0"><i class="bi bi-building"></i> Respuesta de la EPS</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        {% if authorization.eps_authorization_number %}
+                        <div class="col-md-6 mb-3">
+                            <strong>Número de Autorización EPS:</strong>
+                            <p class="mb-0"><code>{{ authorization.eps_authorization_number }}</code></p>
+                        </div>
+                        {% endif %}
+                        {% if authorization.response_date %}
+                        <div class="col-md-6 mb-3">
+                            <strong>Fecha de Respuesta:</strong>
+                            <p class="mb-0">{{ authorization.response_date|date:"d/m/Y H:i" }}</p>
+                        </div>
+                        {% endif %}
+                        {% if authorization.expiration_date %}
+                        <div class="col-md-6 mb-3">
+                            <strong>Fecha de Vencimiento:</strong>
+                            <p class="mb-0">
+                                {{ authorization.expiration_date|date:"d/m/Y" }}
+                                {% if authorization.is_expired %}
+                                <span class="badge bg-danger">Vencida</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                        {% endif %}
+                        {% if authorization.eps_response %}
+                        <div class="col-md-12 mb-3">
+                            <strong>Notas de Respuesta:</strong>
+                            <p class="mb-0">{{ authorization.eps_response }}</p>
+                        </div>
+                        {% endif %}
+                        {% if authorization.denial_reason %}
+                        <div class="col-md-12">
+                            <div class="alert alert-danger mb-0">
+                                <strong><i class="bi bi-exclamation-triangle"></i> Motivo de Negación:</strong>
+                                <p class="mb-0 mt-2">{{ authorization.denial_reason }}</p>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Historial de Uso -->
+            {% if authorization.status == 'approved' or authorization.status == 'partial_approved' %}
+            <div class="card mb-3">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="bi bi-graph-up"></i> Historial de Uso</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <strong>Cantidad Aprobada:</strong>
+                            <p class="fs-4 mb-0">{{ authorization.approved_quantity }}</p>
+                        </div>
+                        <div class="col-md-4">
+                            <strong>Cantidad Usada:</strong>
+                            <p class="fs-4 mb-0 text-warning">{{ total_used }}</p>
+                        </div>
+                        <div class="col-md-4">
+                            <strong>Disponible:</strong>
+                            <p class="fs-4 mb-0 {% if available_quantity > 0 %}text-success{% else %}text-danger{% endif %}">
+                                {{ available_quantity }}
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Barra de progreso -->
+                    <div class="mb-3">
+                        {% widthratio total_used authorization.approved_quantity 100 as usage_percent %}
+                        <div class="progress" style="height: 25px;">
+                            <div class="progress-bar {% if usage_percent >= 100 %}bg-danger{% elif usage_percent >= 75 %}bg-warning{% else %}bg-success{% endif %}"
+                                 role="progressbar"
+                                 style="width: {% if usage_percent > 100 %}100{% else %}{{ usage_percent }}{% endif %}%">
+                                {{ usage_percent }}% Usado
+                            </div>
+                        </div>
+                    </div>
+
+                    {% if usage_history %}
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Fecha de Uso</th>
+                                    <th>Cantidad</th>
+                                    <th>Registrado por</th>
+                                    <th>Notas</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for usage in usage_history %}
+                                <tr>
+                                    <td>{{ usage.usage_date|date:"d/m/Y H:i" }}</td>
+                                    <td>{{ usage.quantity_used }}</td>
+                                    <td>{{ usage.created_by.get_full_name }}</td>
+                                    <td>{{ usage.notes|default:"-" }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <p class="text-muted text-center mb-0">No se han registrado usos de esta autorización.</p>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Contrarreferencias -->
+            {% if counter_referrals %}
+            <div class="card mb-3">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="bi bi-arrow-left-right"></i> Contrarreferencias</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Número</th>
+                                    <th>Médico</th>
+                                    <th>Fecha de Servicio</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for cr in counter_referrals %}
+                                <tr>
+                                    <td><strong>{{ cr.counter_referral_number }}</strong></td>
+                                    <td>{{ cr.referring_physician.get_full_name }}</td>
+                                    <td>{{ cr.service_date|date:"d/m/Y" }}</td>
+                                    <td>
+                                        {% if cr.status == 'pending' %}
+                                        <span class="badge bg-warning">{{ cr.get_status_display }}</span>
+                                        {% elif cr.status == 'sent' %}
+                                        <span class="badge bg-primary">{{ cr.get_status_display }}</span>
+                                        {% elif cr.status == 'received' %}
+                                        <span class="badge bg-success">{{ cr.get_status_display }}</span>
+                                        {% else %}
+                                        <span class="badge bg-secondary">{{ cr.get_status_display }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <a href="{% url 'authorizations:counter_referral_detail' cr.id %}"
+                                           class="btn btn-sm btn-outline-primary">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Documentos Adjuntos -->
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-paperclip"></i> Documentos Adjuntos</h5>
+                </div>
+                <div class="card-body">
+                    {% if attachments %}
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Título</th>
+                                    <th>Tipo</th>
+                                    <th>Fecha</th>
+                                    <th>Subido por</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for attachment in attachments %}
+                                <tr>
+                                    <td>{{ attachment.title }}</td>
+                                    <td><span class="badge bg-secondary">{{ attachment.get_document_type_display }}</span></td>
+                                    <td>{{ attachment.created_at|date:"d/m/Y H:i" }}</td>
+                                    <td>{{ attachment.created_by.get_full_name }}</td>
+                                    <td>
+                                        <a href="{% url 'authorizations:attachment_download' attachment.id %}"
+                                           class="btn btn-sm btn-outline-primary"
+                                           title="Descargar">
+                                            <i class="bi bi-download"></i>
+                                        </a>
+                                        <button type="button"
+                                                class="btn btn-sm btn-outline-danger"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#deleteAttachmentModal{{ attachment.id }}"
+                                                title="Eliminar">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+
+                                <!-- Modal Eliminar Adjunto -->
+                                <div class="modal fade" id="deleteAttachmentModal{{ attachment.id }}" tabindex="-1">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header bg-danger text-white">
+                                                <h5 class="modal-title">Confirmar Eliminación</h5>
+                                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <p>¿Está seguro de eliminar el documento <strong>{{ attachment.title }}</strong>?</p>
+                                                <p class="text-muted">Esta acción no se puede deshacer.</p>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                                <form method="post" action="{% url 'authorizations:attachment_delete' attachment.id %}" style="display: inline;">
+                                                    {% csrf_token %}
+                                                    <button type="submit" class="btn btn-danger">Eliminar</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <p class="text-muted text-center mb-0">No hay documentos adjuntos.</p>
+                    {% endif %}
+
+                    <div class="text-center mt-3">
+                        <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#uploadAttachmentModal">
+                            <i class="bi bi-upload"></i> Subir Documento
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Columna Lateral - Acciones -->
+        <div class="col-md-4">
+            <!-- Acciones -->
+            <div class="card mb-3">
+                <div class="card-header bg-warning text-dark">
+                    <h6 class="mb-0"><i class="bi bi-gear"></i> Acciones</h6>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <!-- Editar -->
+                        {% if authorization.status == 'draft' or authorization.status == 'submitted' %}
+                        <a href="{% url 'authorizations:authorization_update' authorization.id %}" class="btn btn-primary">
+                            <i class="bi bi-pencil"></i> Editar
+                        </a>
+                        {% endif %}
+
+                        <!-- Enviar -->
+                        {% if authorization.status == 'draft' %}
+                        <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#submitModal">
+                            <i class="bi bi-send"></i> Enviar a EPS
+                        </button>
+                        {% endif %}
+
+                        <!-- Aprobar -->
+                        {% if authorization.status == 'submitted' or authorization.status == 'under_review' %}
+                        <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#approveModal">
+                            <i class="bi bi-check-circle"></i> Aprobar
+                        </button>
+                        {% endif %}
+
+                        <!-- Negar -->
+                        {% if authorization.status == 'submitted' or authorization.status == 'under_review' %}
+                        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#denyModal">
+                            <i class="bi bi-x-circle"></i> Negar
+                        </button>
+                        {% endif %}
+
+                        <!-- Registrar Uso -->
+                        {% if authorization.status == 'approved' or authorization.status == 'partial_approved' %}
+                        {% if available_quantity > 0 %}
+                        <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#registerUsageModal">
+                            <i class="bi bi-plus-circle"></i> Registrar Uso
+                        </button>
+                        {% endif %}
+                        {% endif %}
+
+                        <!-- Cancelar -->
+                        {% if authorization.status != 'cancelled' and authorization.status != 'denied' %}
+                        <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#cancelModal">
+                            <i class="bi bi-x-circle"></i> Cancelar Autorización
+                        </button>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Información del Sistema -->
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="mb-0"><i class="bi bi-clock-history"></i> Información del Sistema</h6>
+                </div>
+                <div class="card-body">
+                    <small class="text-muted">
+                        <p class="mb-2"><strong>Creado:</strong><br>{{ authorization.created_at|date:"d/m/Y H:i" }}</p>
+                        <p class="mb-2"><strong>Creado por:</strong><br>{{ authorization.created_by.get_full_name }}</p>
+                        {% if authorization.updated_at %}
+                        <p class="mb-2"><strong>Última modificación:</strong><br>{{ authorization.updated_at|date:"d/m/Y H:i" }}</p>
+                        {% endif %}
+                        {% if authorization.updated_by %}
+                        <p class="mb-0"><strong>Modificado por:</strong><br>{{ authorization.updated_by.get_full_name }}</p>
+                        {% endif %}
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Enviar -->
+<div class="modal fade" id="submitModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="post" action="{% url 'authorizations:authorization_submit' authorization.id %}">
+                {% csrf_token %}
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title"><i class="bi bi-send"></i> Enviar Autorización</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>¿Está seguro de enviar esta autorización a la EPS?</p>
+                    <p class="text-muted">Una vez enviada, no podrá modificar algunos campos.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-success">Enviar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Aprobar -->
+<div class="modal fade" id="approveModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form method="post" action="{% url 'authorizations:authorization_approve' authorization.id %}">
+                {% csrf_token %}
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title"><i class="bi bi-check-circle"></i> Aprobar Autorización</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Número de Autorización EPS <span class="text-danger">*</span></label>
+                        <input type="text" name="eps_authorization_number" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Cantidad Aprobada <span class="text-danger">*</span></label>
+                        <input type="number" name="approved_quantity" class="form-control"
+                               min="1" max="{{ authorization.quantity }}"
+                               value="{{ authorization.quantity }}" required>
+                        <small class="text-muted">Cantidad solicitada: {{ authorization.quantity }}</small>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Días de Vigencia <span class="text-danger">*</span></label>
+                        <input type="number" name="expiration_days" class="form-control"
+                               min="1" value="30" required>
+                        <small class="text-muted">Días hasta que venza la autorización</small>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Notas de Respuesta</label>
+                        <textarea name="eps_response" class="form-control" rows="3"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-success">Aprobar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Negar -->
+<div class="modal fade" id="denyModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="post" action="{% url 'authorizations:authorization_deny' authorization.id %}">
+                {% csrf_token %}
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title"><i class="bi bi-x-circle"></i> Negar Autorización</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Motivo de Negación <span class="text-danger">*</span></label>
+                        <textarea name="denial_reason" class="form-control" rows="4" required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-danger">Negar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Cancelar -->
+<div class="modal fade" id="cancelModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="post" action="{% url 'authorizations:authorization_cancel' authorization.id %}">
+                {% csrf_token %}
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title"><i class="bi bi-x-circle"></i> Cancelar Autorización</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>¿Está seguro de cancelar esta autorización?</p>
+                    <p class="text-muted">Esta acción no se puede deshacer.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="submit" class="btn btn-danger">Cancelar Autorización</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Registrar Uso -->
+<div class="modal fade" id="registerUsageModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="post" action="{% url 'authorizations:usage_create' authorization.id %}" id="usageForm">
+                {% csrf_token %}
+                <div class="modal-header bg-info text-white">
+                    <h5 class="modal-title"><i class="bi bi-plus-circle"></i> Registrar Uso</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-info">
+                        <strong>Disponible:</strong> {{ available_quantity }} de {{ authorization.approved_quantity }}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Fecha de Uso <span class="text-danger">*</span></label>
+                        <input type="date" name="usage_date" class="form-control" value="{{ today|date:'Y-m-d' }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Cantidad Usada <span class="text-danger">*</span></label>
+                        <input type="number" name="quantity_used" class="form-control"
+                               min="1" max="{{ available_quantity }}" value="1" required id="quantityUsed">
+                        <div id="quantityError" class="text-danger small mt-1" style="display: none;">
+                            La cantidad excede lo disponible
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Notas</label>
+                        <textarea name="notes" class="form-control" rows="3"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-info">Registrar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Subir Adjunto -->
+<div class="modal fade" id="uploadAttachmentModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="post" action="{% url 'authorizations:attachment_upload' 'authorization' authorization.id %}" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title"><i class="bi bi-upload"></i> Subir Documento</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Título <span class="text-danger">*</span></label>
+                        <input type="text" name="title" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Tipo de Documento <span class="text-danger">*</span></label>
+                        <select name="document_type" class="form-select" required>
+                            <option value="">Seleccione...</option>
+                            <option value="medical_order">Orden Médica</option>
+                            <option value="clinical_history">Historia Clínica</option>
+                            <option value="lab_results">Resultados de Laboratorio</option>
+                            <option value="imaging">Imágenes Diagnósticas</option>
+                            <option value="consent">Consentimiento Informado</option>
+                            <option value="eps_response">Respuesta EPS</option>
+                            <option value="other">Otro</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Descripción</label>
+                        <textarea name="description" class="form-control" rows="2"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Archivo <span class="text-danger">*</span></label>
+                        <input type="file" name="file" class="form-control" required>
+                        <small class="text-muted">Formatos: PDF, DOC, DOCX, JPG, PNG (Máx. 10MB)</small>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Subir</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Validar cantidad de uso
+    const usageForm = document.getElementById('usageForm');
+    if (usageForm) {
+        const quantityInput = document.getElementById('quantityUsed');
+        const quantityError = document.getElementById('quantityError');
+        const maxAvailable = {{ available_quantity }};
+
+        quantityInput.addEventListener('input', function() {
+            if (parseInt(this.value) > maxAvailable) {
+                quantityError.style.display = 'block';
+                usageForm.querySelector('button[type="submit"]').disabled = true;
+            } else {
+                quantityError.style.display = 'none';
+                usageForm.querySelector('button[type="submit"]').disabled = false;
+            }
+        });
+    }
+});
+</script>
+{% endblock %}

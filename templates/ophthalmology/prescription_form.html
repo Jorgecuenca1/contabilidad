@@ -1,0 +1,228 @@
+{% extends 'base.html' %}
+{% block title %}Nueva Prescripción de Lentes{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="mb-4">
+        <h2><i class="bi bi-eyeglasses"></i> Nueva Prescripción de Lentes</h2>
+        {% if consultation %}
+        <p class="text-muted">Consulta: {{ consultation.consultation_number }} - Paciente: {{ consultation.patient.third_party.name }}</p>
+        {% endif %}
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+
+                <!-- Información del Paciente -->
+                <div class="card mb-3">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">Información del Paciente</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="form-label">Paciente <span class="text-danger">*</span></label>
+                            {% if consultation %}
+                            <input type="hidden" name="patient" value="{{ consultation.patient.id }}">
+                            <input type="text" class="form-control" value="{{ consultation.patient.third_party.name }}" readonly>
+                            {% else %}
+                            <select name="patient" class="form-select" required>
+                                <option value="">Seleccione un paciente...</option>
+                                {% for patient in patients %}
+                                <option value="{{ patient.id }}">
+                                    {{ patient.third_party.name }} - {{ patient.third_party.identification_number }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tipo de Lentes -->
+                <div class="card mb-3">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0">Tipo de Lentes</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Tipo de Lentes <span class="text-danger">*</span></label>
+                                <select name="lens_type" class="form-select" required>
+                                    <option value="">Seleccione...</option>
+                                    <option value="single_vision">Visión Sencilla</option>
+                                    <option value="bifocal">Bifocal</option>
+                                    <option value="progressive">Progresivo</option>
+                                    <option value="reading">Lectura</option>
+                                    <option value="computer">Computador</option>
+                                    <option value="sunglasses">Lentes de Sol</option>
+                                    <option value="contact_lenses">Lentes de Contacto</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Uso Recomendado</label>
+                                <select name="recommended_usage" class="form-select">
+                                    <option value="full_time">Tiempo Completo</option>
+                                    <option value="distance">Solo Distancia</option>
+                                    <option value="near">Solo Cerca</option>
+                                    <option value="computer">Solo Computador</option>
+                                    <option value="driving">Conducir</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Prescripción Óptica -->
+                <div class="card mb-3">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0">Prescripción Óptica</h5>
+                    </div>
+                    <div class="card-body">
+                        <!-- Ojo Derecho -->
+                        <div class="mb-3">
+                            <h6 class="text-primary">OD - Ojo Derecho</h6>
+                            <div class="row">
+                                <div class="col-md-2">
+                                    <label class="form-label">Esfera <span class="text-danger">*</span></label>
+                                    <input type="number" step="0.25" name="od_sphere" class="form-control" required
+                                           placeholder="Ej: -2.00">
+                                </div>
+                                <div class="col-md-2">
+                                    <label class="form-label">Cilindro</label>
+                                    <input type="number" step="0.25" name="od_cylinder" class="form-control"
+                                           placeholder="Ej: -0.75">
+                                </div>
+                                <div class="col-md-2">
+                                    <label class="form-label">Eje</label>
+                                    <input type="number" min="0" max="180" name="od_axis" class="form-control"
+                                           placeholder="Ej: 90">
+                                    <small class="text-muted">0-180°</small>
+                                </div>
+                                <div class="col-md-2">
+                                    <label class="form-label">Adición</label>
+                                    <input type="number" step="0.25" name="od_add" class="form-control"
+                                           placeholder="Ej: +2.00">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Ojo Izquierdo -->
+                        <div class="mb-3">
+                            <h6 class="text-danger">OS - Ojo Izquierdo</h6>
+                            <div class="row">
+                                <div class="col-md-2">
+                                    <label class="form-label">Esfera <span class="text-danger">*</span></label>
+                                    <input type="number" step="0.25" name="os_sphere" class="form-control" required
+                                           placeholder="Ej: -2.00">
+                                </div>
+                                <div class="col-md-2">
+                                    <label class="form-label">Cilindro</label>
+                                    <input type="number" step="0.25" name="os_cylinder" class="form-control"
+                                           placeholder="Ej: -0.75">
+                                </div>
+                                <div class="col-md-2">
+                                    <label class="form-label">Eje</label>
+                                    <input type="number" min="0" max="180" name="os_axis" class="form-control"
+                                           placeholder="Ej: 90">
+                                    <small class="text-muted">0-180°</small>
+                                </div>
+                                <div class="col-md-2">
+                                    <label class="form-label">Adición</label>
+                                    <input type="number" step="0.25" name="os_add" class="form-control"
+                                           placeholder="Ej: +2.00">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Distancia Pupilar -->
+                        <div class="mb-3">
+                            <h6 class="text-success">Distancia Pupilar (DP)</h6>
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <label class="form-label">DP Distancia <span class="text-danger">*</span></label>
+                                    <input type="number" step="0.5" name="pd_distance" class="form-control" required
+                                           placeholder="Ej: 63.0">
+                                    <small class="text-muted">Milímetros</small>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">DP Cerca</label>
+                                    <input type="number" step="0.5" name="pd_near" class="form-control"
+                                           placeholder="Ej: 60.0">
+                                    <small class="text-muted">Milímetros</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Características de los Lentes -->
+                <div class="card mb-3">
+                    <div class="card-header bg-warning text-dark">
+                        <h5 class="mb-0">Características Adicionales</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="anti_reflective" id="anti_reflective">
+                                    <label class="form-check-label" for="anti_reflective">
+                                        Antirreflejo
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="photochromic" id="photochromic">
+                                    <label class="form-check-label" for="photochromic">
+                                        Fotocromático
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="blue_filter" id="blue_filter">
+                                    <label class="form-check-label" for="blue_filter">
+                                        Filtro Luz Azul
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="polarized" id="polarized">
+                                    <label class="form-check-label" for="polarized">
+                                        Polarizado
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-3">
+                            <label class="form-label">Material Recomendado</label>
+                            <input type="text" name="recommended_material" class="form-control"
+                                   placeholder="Ej: Policarbonato, CR-39, High Index 1.67...">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Observaciones -->
+                <div class="mb-3">
+                    <label class="form-label">Observaciones</label>
+                    <textarea name="observations" class="form-control" rows="3"
+                              placeholder="Observaciones adicionales sobre la prescripción..."></textarea>
+                </div>
+
+                <!-- Botones -->
+                <div class="d-flex justify-content-between">
+                    <a href="{% url 'ophthalmology:prescription_list' %}" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left"></i> Cancelar
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-save"></i> Guardar Prescripción
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

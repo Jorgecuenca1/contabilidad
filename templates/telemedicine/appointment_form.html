@@ -1,0 +1,226 @@
+{% extends 'base.html' %}
+{% block title %}Crear Cita - Telemedicina{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <h2 class="mb-4">
+        <i class="bi bi-calendar-plus"></i> Nueva Cita de Telemedicina
+    </h2>
+
+    <form method="post" id="appointmentForm">
+        {% csrf_token %}
+
+        <!-- Información Básica -->
+        <div class="card mb-3">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="bi bi-info-circle"></i> Información Básica</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Paciente <span class="text-danger">*</span></label>
+                        <select name="patient" class="form-select" required>
+                            <option value="">Seleccionar paciente...</option>
+                            {% for patient in patients %}
+                            <option value="{{ patient.id }}">{{ patient.third_party.name }} - {{ patient.third_party.identification_number }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Médico <span class="text-danger">*</span></label>
+                        <select name="doctor" class="form-select" required>
+                            <option value="">Seleccionar médico...</option>
+                            {% for doctor in doctors %}
+                            <option value="{{ doctor.id }}">{{ doctor.third_party.name }} - {{ doctor.specialty }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Detalles de la Cita -->
+        <div class="card mb-3">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0"><i class="bi bi-calendar-check"></i> Detalles de la Cita</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label">Tipo de Cita <span class="text-danger">*</span></label>
+                        <select name="appointment_type" id="appointmentType" class="form-select" required>
+                            <option value="">Seleccionar tipo...</option>
+                            <option value="virtual">Consulta Virtual</option>
+                            <option value="home_care">Atención Domiciliaria</option>
+                            <option value="phone">Llamada Telefónica</option>
+                            <option value="chat">Chat en Línea</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Fecha y Hora <span class="text-danger">*</span></label>
+                        <input type="datetime-local" name="appointment_date" class="form-control" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Duración (minutos) <span class="text-danger">*</span></label>
+                        <input type="number" name="duration_minutes" class="form-control" value="30" min="15" max="180" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Motivo de la Cita <span class="text-danger">*</span></label>
+                        <textarea name="reason" class="form-control" rows="3" required placeholder="Describa el motivo de la consulta"></textarea>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Prioridad <span class="text-danger">*</span></label>
+                        <select name="priority" class="form-select" required>
+                            <option value="low">Baja</option>
+                            <option value="medium" selected>Media</option>
+                            <option value="high">Alta</option>
+                            <option value="urgent">Urgente</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Estado <span class="text-danger">*</span></label>
+                        <select name="status" class="form-select" required>
+                            <option value="scheduled" selected>Programada</option>
+                            <option value="in_progress">En Progreso</option>
+                            <option value="completed">Completada</option>
+                            <option value="cancelled">Cancelada</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Campos Condicionales: Consulta Virtual -->
+        <div class="card mb-3" id="virtualFields" style="display: none;">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0"><i class="bi bi-laptop"></i> Detalles de Consulta Virtual</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Link de la Reunión <span class="text-danger">*</span></label>
+                        <input type="url" name="meeting_link" id="meetingLink" class="form-control" placeholder="https://meet.google.com/xxx-xxxx-xxx">
+                        <small class="text-muted">Enlace de Zoom, Google Meet, Teams, etc.</small>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">ID de la Reunión</label>
+                        <input type="text" name="meeting_id" class="form-control" placeholder="Opcional">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Contraseña de la Reunión</label>
+                        <input type="text" name="meeting_password" class="form-control" placeholder="Opcional">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Campos Condicionales: Atención Domiciliaria -->
+        <div class="card mb-3" id="homeFields" style="display: none;">
+            <div class="card-header bg-warning text-dark">
+                <h5 class="mb-0"><i class="bi bi-house-heart"></i> Detalles de Atención Domiciliaria</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-12">
+                        <label class="form-label">Dirección Completa <span class="text-danger">*</span></label>
+                        <input type="text" name="home_address" id="homeAddress" class="form-control" placeholder="Calle, número, barrio">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Ciudad <span class="text-danger">*</span></label>
+                        <input type="text" name="home_city" id="homeCity" class="form-control">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Departamento <span class="text-danger">*</span></label>
+                        <input type="text" name="home_state" id="homeState" class="form-control">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Código Postal</label>
+                        <input type="text" name="home_postal_code" class="form-control">
+                    </div>
+                    <div class="col-md-12">
+                        <label class="form-label">Referencias de la Dirección</label>
+                        <textarea name="address_reference" class="form-control" rows="2" placeholder="Ej: Casa esquinera, portón blanco, frente al parque"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Instrucciones Especiales -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-sticky"></i> Instrucciones Especiales</h6>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-12">
+                        <label class="form-label">Instrucciones para el Paciente</label>
+                        <textarea name="special_instructions" class="form-control" rows="3" placeholder="Instrucciones previas a la cita, preparación, documentos necesarios, etc."></textarea>
+                    </div>
+                    <div class="col-md-12">
+                        <label class="form-label">Notas Internas</label>
+                        <textarea name="internal_notes" class="form-control" rows="2" placeholder="Notas privadas para el equipo médico"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Botones -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <button type="submit" class="btn btn-primary btn-lg">
+                    <i class="bi bi-save"></i> Guardar Cita
+                </button>
+                <a href="{% url 'telemedicine:appointment_list' %}" class="btn btn-secondary btn-lg">
+                    <i class="bi bi-x-circle"></i> Cancelar
+                </a>
+            </div>
+        </div>
+    </form>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const appointmentType = document.getElementById('appointmentType');
+    const virtualFields = document.getElementById('virtualFields');
+    const homeFields = document.getElementById('homeFields');
+    const meetingLink = document.getElementById('meetingLink');
+    const homeAddress = document.getElementById('homeAddress');
+    const homeCity = document.getElementById('homeCity');
+    const homeState = document.getElementById('homeState');
+
+    appointmentType.addEventListener('change', function() {
+        // Ocultar todos los campos condicionales
+        virtualFields.style.display = 'none';
+        homeFields.style.display = 'none';
+
+        // Remover required de todos los campos condicionales
+        meetingLink.removeAttribute('required');
+        homeAddress.removeAttribute('required');
+        homeCity.removeAttribute('required');
+        homeState.removeAttribute('required');
+
+        // Mostrar campos según el tipo seleccionado
+        if (this.value === 'virtual') {
+            virtualFields.style.display = 'block';
+            meetingLink.setAttribute('required', 'required');
+        } else if (this.value === 'home_care') {
+            homeFields.style.display = 'block';
+            homeAddress.setAttribute('required', 'required');
+            homeCity.setAttribute('required', 'required');
+            homeState.setAttribute('required', 'required');
+        }
+    });
+
+    // Generar link de reunión automático (ejemplo)
+    document.querySelector('select[name="doctor"]').addEventListener('change', function() {
+        if (appointmentType.value === 'virtual') {
+            const randomId = Math.random().toString(36).substring(2, 15);
+            meetingLink.value = 'https://meet.example.com/' + randomId;
+        }
+    });
+});
+</script>
+{% endblock %}

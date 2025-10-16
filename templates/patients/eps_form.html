@@ -1,0 +1,157 @@
+{% extends 'base.html' %}
+{% block title %}{% if eps %}Editar{% else %}Nueva{% endif %} EPS{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>
+            <i class="bi bi-building-{% if eps %}pencil{% else %}add{% endif %}"></i>
+            {% if eps %}Editar{% else %}Registrar Nueva{% endif %} EPS
+        </h2>
+        <a href="{% url 'patients:eps_list' %}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> {% if eps %}Cancelar{% else %}Volver{% endif %}
+        </a>
+    </div>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <!-- Información General -->
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <i class="bi bi-info-circle"></i> Información General
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-2 mb-3">
+                        <label class="form-label">Código <span class="text-danger">*</span></label>
+                        <input type="text" name="code" class="form-control"
+                               value="{{ form.code.value|default:'' }}"
+                               placeholder="Ej: EPS001" required>
+                        <small class="text-muted">Código único de la EPS</small>
+                    </div>
+
+                    <div class="col-md-5 mb-3">
+                        <label class="form-label">Nombre Completo <span class="text-danger">*</span></label>
+                        <input type="text" name="name" class="form-control"
+                               value="{{ form.name.value|default:'' }}"
+                               placeholder="Nombre completo de la EPS" required>
+                    </div>
+
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label">Nombre Corto</label>
+                        <input type="text" name="short_name" class="form-control"
+                               value="{{ form.short_name.value|default:'' }}"
+                               placeholder="Siglas o nombre corto">
+                    </div>
+
+                    <div class="col-md-2 mb-3">
+                        <label class="form-label">NIT <span class="text-danger">*</span></label>
+                        <input type="text" name="nit" class="form-control"
+                               value="{{ form.nit.value|default:'' }}"
+                               placeholder="NIT sin DV" required>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Información de Contacto -->
+        <div class="card mb-4">
+            <div class="card-header bg-success text-white">
+                <i class="bi bi-telephone-fill"></i> Información de Contacto
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label">Teléfono</label>
+                        <input type="text" name="phone" class="form-control"
+                               value="{{ form.phone.value|default:'' }}"
+                               placeholder="Teléfono principal">
+                    </div>
+
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label">Email</label>
+                        <input type="email" name="email" class="form-control"
+                               value="{{ form.email.value|default:'' }}"
+                               placeholder="correo@eps.com">
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Dirección</label>
+                        <input type="text" name="address" class="form-control"
+                               value="{{ form.address.value|default:'' }}"
+                               placeholder="Dirección completa">
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label">Ciudad</label>
+                        <input type="text" name="city" class="form-control"
+                               value="{{ form.city.value|default:'' }}"
+                               placeholder="Ciudad">
+                    </div>
+
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label">Departamento</label>
+                        <input type="text" name="state" class="form-control"
+                               value="{{ form.state.value|default:'' }}"
+                               placeholder="Departamento">
+                    </div>
+
+                    <div class="col-md-2 mb-3">
+                        <label class="form-label">País</label>
+                        <input type="text" name="country" class="form-control"
+                               value="{{ form.country.value|default:'Colombia' }}"
+                               placeholder="País">
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Sitio Web</label>
+                        <input type="url" name="website" class="form-control"
+                               value="{{ form.website.value|default:'' }}"
+                               placeholder="https://www.eps.com">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Observaciones y Estado -->
+        <div class="card mb-4">
+            <div class="card-header bg-info text-white">
+                <i class="bi bi-file-text"></i> Información Adicional
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-10 mb-3">
+                        <label class="form-label">Observaciones</label>
+                        <textarea name="observations" class="form-control" rows="3"
+                                  placeholder="Información adicional sobre la EPS">{{ form.observations.value|default:'' }}</textarea>
+                    </div>
+
+                    <div class="col-md-2 mb-3">
+                        <label class="form-label">Estado</label>
+                        <div class="form-check form-switch mt-2">
+                            <input class="form-check-input" type="checkbox" name="is_active"
+                                   id="isActive" {% if not eps or form.is_active.value %}checked{% endif %}>
+                            <label class="form-check-label" for="isActive">
+                                Activa
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Botones de Acción -->
+        <div class="d-flex justify-content-between mb-4">
+            <a href="{% url 'patients:eps_list' %}" class="btn btn-secondary">
+                <i class="bi bi-x-circle"></i> Cancelar
+            </a>
+            <button type="submit" class="btn btn-primary btn-lg">
+                <i class="bi bi-save"></i> {% if eps %}Actualizar{% else %}Registrar{% endif %} EPS
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}

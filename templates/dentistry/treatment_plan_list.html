@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% block title %}Planes de Tratamiento{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between mb-4">
+        <h2><i class="bi bi-clipboard-check"></i> Planes de Tratamiento</h2>
+        <a href="{% url 'dentistry:treatment_plan_create' %}" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> Nuevo Plan
+        </a>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Plan</th>
+                            <th>Paciente</th>
+                            <th>Odontólogo</th>
+                            <th>Fecha</th>
+                            <th>Estado</th>
+                            <th>Costo Est.</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for plan in page_obj %}
+                        <tr>
+                            <td><strong>{{ plan.plan_number }}</strong></td>
+                            <td>{{ plan.patient.third_party.name|truncatewords:3 }}</td>
+                            <td><small>{{ plan.dentist.get_full_name|truncatewords:2 }}</small></td>
+                            <td>{{ plan.plan_date|date:"d/m/Y" }}</td>
+                            <td>
+                                {% if plan.status == 'draft' %}<span class="badge bg-secondary">Borrador</span>
+                                {% elif plan.status == 'approved' %}<span class="badge bg-success">Aprobado</span>
+                                {% elif plan.status == 'in_progress' %}<span class="badge bg-primary">En Progreso</span>
+                                {% elif plan.status == 'completed' %}<span class="badge bg-success">Completado</span>
+                                {% endif %}
+                            </td>
+                            <td>${{ plan.total_estimated_cost|floatformat:0 }}</td>
+                            <td>
+                                <a href="{% url 'dentistry:treatment_plan_detail' plan.id %}" class="btn btn-sm btn-info">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="7" class="text-center text-muted">No se encontraron planes</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

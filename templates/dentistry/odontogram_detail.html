@@ -1,0 +1,318 @@
+{% extends 'base.html' %}
+{% block title %}Odontograma - {{ odontogram.patient }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-diagram-3"></i> Odontograma - {{ odontogram.patient.third_party.name }}</h2>
+        <a href="{% url 'dentistry:odontogram_list' %}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Volver
+        </a>
+    </div>
+
+    <div class="row g-3 mb-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="bi bi-info-circle"></i> Información del Paciente</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <p><strong>Paciente:</strong> {{ odontogram.patient.third_party.name }}</p>
+                            <p><strong>Documento:</strong> {{ odontogram.patient.third_party.identification_number }}</p>
+                        </div>
+                        <div class="col-md-3">
+                            <p><strong>Tipo de Dentición:</strong> {{ odontogram.get_dentition_type_display }}</p>
+                            <p><strong>Fecha:</strong> {{ odontogram.odontogram_date|date:"d/m/Y" }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            {% if odontogram.general_observations %}
+                            <p><strong>Observaciones:</strong> {{ odontogram.general_observations }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ODONTOGRAMA VISUAL -->
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0"><i class="bi bi-diagram-3"></i> Odontograma - Sistema FDI</h5>
+        </div>
+        <div class="card-body">
+            <!-- Superior -->
+            <div class="text-center mb-2"><strong>ARCADA SUPERIOR</strong></div>
+            <div class="row">
+                <!-- Cuadrante 1 - Superior Derecho (18-11) -->
+                <div class="col-6 text-center">
+                    <div class="d-flex justify-content-around mb-3">
+                        {% for num in "87654321" %}
+                        <div class="tooth-box" data-fdi="1{{ num }}" onclick="editTooth('1{{ num }}')">
+                            <div class="tooth-number">1{{ num }}</div>
+                            <div class="tooth-icon">
+                                <i class="bi bi-circle tooth-visual"></i>
+                            </div>
+                            <div class="tooth-status" id="status-1{{ num }}"></div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <!-- Cuadrante 2 - Superior Izquierdo (21-28) -->
+                <div class="col-6 text-center">
+                    <div class="d-flex justify-content-around mb-3">
+                        {% for num in "12345678" %}
+                        <div class="tooth-box" data-fdi="2{{ num }}" onclick="editTooth('2{{ num }}')">
+                            <div class="tooth-number">2{{ num }}</div>
+                            <div class="tooth-icon">
+                                <i class="bi bi-circle tooth-visual"></i>
+                            </div>
+                            <div class="tooth-status" id="status-2{{ num }}"></div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <hr>
+
+            <!-- Inferior -->
+            <div class="row">
+                <!-- Cuadrante 4 - Inferior Derecho (48-41) -->
+                <div class="col-6 text-center">
+                    <div class="d-flex justify-content-around mt-3">
+                        {% for num in "87654321" %}
+                        <div class="tooth-box" data-fdi="4{{ num }}" onclick="editTooth('4{{ num }}')">
+                            <div class="tooth-status" id="status-4{{ num }}"></div>
+                            <div class="tooth-icon">
+                                <i class="bi bi-circle tooth-visual"></i>
+                            </div>
+                            <div class="tooth-number">4{{ num }}</div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <!-- Cuadrante 3 - Inferior Izquierdo (31-38) -->
+                <div class="col-6 text-center">
+                    <div class="d-flex justify-content-around mt-3">
+                        {% for num in "12345678" %}
+                        <div class="tooth-box" data-fdi="3{{ num }}" onclick="editTooth('3{{ num }}')">
+                            <div class="tooth-status" id="status-3{{ num }}"></div>
+                            <div class="tooth-icon">
+                                <i class="bi bi-circle tooth-visual"></i>
+                            </div>
+                            <div class="tooth-number">3{{ num }}</div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            <div class="text-center mt-2"><strong>ARCADA INFERIOR</strong></div>
+
+            <div class="alert alert-info mt-4">
+                <strong><i class="bi bi-info-circle"></i> Instrucciones:</strong> Haz clic en cualquier diente para editar su estado y condiciones.
+            </div>
+        </div>
+    </div>
+
+    <!-- Leyenda -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h6 class="mb-0"><i class="bi bi-bookmark"></i> Leyenda de Condiciones</h6>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                {% for condition in conditions %}
+                <div class="col-md-3 mb-2">
+                    <span class="badge" style="background-color: {{ condition.color }};">{{ condition.symbol }}</span>
+                    {{ condition.name }}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para editar diente -->
+<div class="modal fade" id="toothModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">Editar Diente <span id="modalToothNumber"></span></h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="post" action="{% url 'dentistry:odontogram_tooth_update' odontogram.id %}" id="toothForm">
+                {% csrf_token %}
+                <input type="hidden" name="fdi_number" id="modalFdiNumber">
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Estado del Diente</label>
+                            <select name="state" class="form-select" id="toothState">
+                                <option value="present">Presente</option>
+                                <option value="absent">Ausente</option>
+                                <option value="extracted">Extraído</option>
+                                <option value="congenital_absence">Ausencia Congénita</option>
+                                <option value="unerupted">Sin Erupcionar</option>
+                                <option value="impacted">Impactado</option>
+                            </select>
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label">Condiciones</label>
+                            <select name="conditions" class="form-select" id="toothConditions" multiple size="5">
+                                {% for condition in conditions %}
+                                <option value="{{ condition.id }}">{{ condition.name }}</option>
+                                {% endfor %}
+                            </select>
+                            <small class="text-muted">Mantén Ctrl para seleccionar múltiples</small>
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label"><strong>Superficies Afectadas</strong></label>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="surface_mesial" id="surfaceM">
+                                <label class="form-check-label" for="surfaceM">Mesial (M)</label>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="surface_distal" id="surfaceD">
+                                <label class="form-check-label" for="surfaceD">Distal (D)</label>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="surface_occlusal" id="surfaceO">
+                                <label class="form-check-label" for="surfaceO">Oclusal (O)</label>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="surface_vestibular" id="surfaceV">
+                                <label class="form-check-label" for="surfaceV">Vestibular (V)</label>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="surface_lingual" id="surfaceL">
+                                <label class="form-check-label" for="surfaceL">Lingual/Palatina (L/P)</label>
+                            </div>
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label">Observaciones</label>
+                            <textarea name="observations" class="form-control" id="toothObservations" rows="2"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+.tooth-box {
+    cursor: pointer;
+    padding: 5px;
+    border: 2px solid transparent;
+    border-radius: 8px;
+    transition: all 0.3s;
+}
+
+.tooth-box:hover {
+    border-color: #0d6efd;
+    background-color: #e7f1ff;
+}
+
+.tooth-number {
+    font-size: 11px;
+    font-weight: bold;
+    color: #666;
+}
+
+.tooth-icon {
+    font-size: 28px;
+    color: #333;
+}
+
+.tooth-visual {
+    transition: color 0.3s;
+}
+
+.tooth-status {
+    font-size: 10px;
+    min-height: 16px;
+}
+
+.tooth-absent .tooth-visual {
+    color: #dc3545;
+    text-decoration: line-through;
+}
+
+.tooth-extracted .tooth-visual {
+    color: #6c757d;
+}
+
+.tooth-caries .tooth-visual {
+    color: #ff6b6b;
+}
+</style>
+
+<script>
+function editTooth(fdiNumber) {
+    document.getElementById('modalToothNumber').textContent = fdiNumber;
+    document.getElementById('modalFdiNumber').value = fdiNumber;
+
+    // Limpiar formulario
+    document.getElementById('toothState').value = 'present';
+    document.querySelectorAll('#toothConditions option').forEach(opt => opt.selected = false);
+    ['surfaceM', 'surfaceD', 'surfaceO', 'surfaceV', 'surfaceL'].forEach(id => {
+        document.getElementById(id).checked = false;
+    });
+    document.getElementById('toothObservations').value = '';
+
+    // Abrir modal
+    new bootstrap.Modal(document.getElementById('toothModal')).show();
+}
+
+// Actualizar estado visual después de guardar
+document.getElementById('toothForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const formData = new FormData(this);
+
+    fetch(this.action, {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRFToken': formData.get('csrfmiddlewaretoken')
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            bootstrap.Modal.getInstance(document.getElementById('toothModal')).hide();
+            location.reload();
+        } else {
+            alert('Error: ' + data.error);
+        }
+    })
+    .catch(error => {
+        alert('Error al guardar: ' + error);
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,234 @@
+{% extends 'base.html' %}
+{% block title %}Nueva Consulta Virtual{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <h2 class="mb-4">
+        <i class="bi bi-laptop"></i> Nueva Consulta Virtual
+    </h2>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <!-- Información Básica -->
+        <div class="card mb-3">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="bi bi-info-circle"></i> Información Básica</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label">Paciente <span class="text-danger">*</span></label>
+                        <select name="patient" class="form-select" required>
+                            <option value="">Seleccionar paciente...</option>
+                            {% for patient in patients %}
+                            <option value="{{ patient.id }}">{{ patient.third_party.name }} - {{ patient.third_party.identification_number }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Médico <span class="text-danger">*</span></label>
+                        <select name="doctor" class="form-select" required>
+                            <option value="">Seleccionar médico...</option>
+                            {% for doctor in doctors %}
+                            <option value="{{ doctor.id }}">{{ doctor.third_party.name }} - {{ doctor.specialty }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Fecha y Hora <span class="text-danger">*</span></label>
+                        <input type="datetime-local" name="consultation_date" class="form-control" required>
+                    </div>
+                    {% if appointment %}
+                    <input type="hidden" name="appointment" value="{{ appointment.id }}">
+                    <div class="col-md-12">
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle"></i> Esta consulta está relacionada con la cita: <strong>{{ appointment.appointment_number }}</strong>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Motivo de Consulta y Síntomas -->
+        <div class="card mb-3">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0"><i class="bi bi-clipboard2-pulse"></i> Motivo de Consulta y Síntomas</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-12">
+                        <label class="form-label">Motivo Principal de Consulta <span class="text-danger">*</span></label>
+                        <textarea name="chief_complaint" class="form-control" rows="3" required placeholder="Describa el motivo principal de la consulta"></textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Síntomas Actuales <span class="text-danger">*</span></label>
+                        <textarea name="current_symptoms" class="form-control" rows="4" required placeholder="Liste y describa los síntomas actuales del paciente"></textarea>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Duración de Síntomas <span class="text-danger">*</span></label>
+                        <input type="text" name="symptom_duration" class="form-control" required placeholder="Ej: 3 días, 1 semana">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Intensidad del Dolor (0-10)</label>
+                        <input type="number" name="pain_scale" class="form-control" min="0" max="10" placeholder="0 = Sin dolor, 10 = Máximo">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Examen Remoto -->
+        <div class="card mb-3">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0"><i class="bi bi-camera-video"></i> Examen Remoto</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-12">
+                        <label class="form-label">Hallazgos del Examen Visual Remoto</label>
+                        <textarea name="remote_examination" class="form-control" rows="4" placeholder="Observaciones realizadas durante la videoconsulta: apariencia general, estado de alerta, coloración de piel, etc."></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Signos Vitales (Reportados por el Paciente) -->
+        <div class="card mb-3">
+            <div class="card-header bg-warning text-dark">
+                <h6 class="mb-0"><i class="bi bi-heart-pulse"></i> Signos Vitales (Reportados por el Paciente)</h6>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <label class="form-label">Presión Arterial</label>
+                        <input type="text" name="blood_pressure" class="form-control" placeholder="120/80">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Frecuencia Cardíaca (lpm)</label>
+                        <input type="number" name="heart_rate" class="form-control" placeholder="72">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Temperatura (°C)</label>
+                        <input type="number" name="temperature" class="form-control" step="0.1" placeholder="36.5">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Saturación O2 (%)</label>
+                        <input type="number" name="oxygen_saturation" class="form-control" min="0" max="100" placeholder="98">
+                    </div>
+                </div>
+                <small class="text-muted">* Valores reportados por el paciente usando dispositivos caseros</small>
+            </div>
+        </div>
+
+        <!-- Diagnóstico y Plan de Tratamiento -->
+        <div class="card mb-3">
+            <div class="card-header bg-danger text-white">
+                <h5 class="mb-0"><i class="bi bi-clipboard-data"></i> Diagnóstico y Plan de Tratamiento</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Diagnóstico <span class="text-danger">*</span></label>
+                        <textarea name="diagnosis" class="form-control" rows="3" required placeholder="Diagnóstico principal y secundarios (CIE-10)"></textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Plan de Tratamiento <span class="text-danger">*</span></label>
+                        <textarea name="treatment_plan" class="form-control" rows="3" required placeholder="Descripción del plan de tratamiento"></textarea>
+                    </div>
+                    <div class="col-md-12">
+                        <label class="form-label">Medicamentos Prescritos</label>
+                        <textarea name="medications_prescribed" class="form-control" rows="3" placeholder="Lista de medicamentos con dosificación y duración del tratamiento"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recomendaciones y Seguimiento -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-chat-left-text"></i> Recomendaciones y Seguimiento</h6>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Recomendaciones Generales</label>
+                        <textarea name="recommendations" class="form-control" rows="4" placeholder="Recomendaciones de cuidado, estilo de vida, dieta, etc."></textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Instrucciones de Seguimiento</label>
+                        <textarea name="follow_up_instructions" class="form-control" rows="4" placeholder="Cuándo volver a consultar, señales de alarma, etc."></textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="requires_follow_up" id="requiresFollowUp">
+                            <label class="form-check-label" for="requiresFollowUp">
+                                Requiere Consulta de Seguimiento
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Fecha Sugerida para Seguimiento</label>
+                        <input type="date" name="suggested_follow_up_date" class="form-control">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Órdenes de Laboratorio e Imágenes -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-file-medical"></i> Órdenes Médicas</h6>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Exámenes de Laboratorio Ordenados</label>
+                        <textarea name="lab_tests_ordered" class="form-control" rows="3" placeholder="Ej: Hemograma completo, Glicemia en ayunas, Perfil lipídico"></textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Estudios de Imagen Ordenados</label>
+                        <textarea name="imaging_studies_ordered" class="form-control" rows="3" placeholder="Ej: Radiografía de tórax, Ecografía abdominal"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Calidad de la Conexión -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-wifi"></i> Calidad de la Conexión</h6>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label">Calidad de la Conexión <span class="text-danger">*</span></label>
+                        <select name="connection_quality" class="form-select" required>
+                            <option value="excellent">Excelente</option>
+                            <option value="good" selected>Buena</option>
+                            <option value="fair">Regular</option>
+                            <option value="poor">Mala</option>
+                        </select>
+                    </div>
+                    <div class="col-md-8">
+                        <label class="form-label">Observaciones sobre la Conexión</label>
+                        <textarea name="technical_notes" class="form-control" rows="2" placeholder="Problemas técnicos, interrupciones, calidad de audio/video, etc."></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Botones -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <button type="submit" class="btn btn-primary btn-lg">
+                    <i class="bi bi-save"></i> Guardar Consulta
+                </button>
+                <a href="{% url 'telemedicine:virtual_consultation_list' %}" class="btn btn-secondary btn-lg">
+                    <i class="bi bi-x-circle"></i> Cancelar
+                </a>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}

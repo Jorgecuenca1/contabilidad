@@ -1,0 +1,296 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ donation.donation_number }} - Donación{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'core:dashboard' %}">Dashboard</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'blood_bank:index' %}">Banco de Sangre</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'blood_bank:donation_list' %}">Donaciones</a></li>
+            <li class="breadcrumb-item active">{{ donation.donation_number }}</li>
+        </ol>
+    </nav>
+
+    <div class="row mb-3">
+        <div class="col-md-8">
+            <h2><i class="bi bi-droplet-fill text-danger"></i> Donación {{ donation.donation_number }}</h2>
+            <p class="text-muted">{{ donation.donation_date|date:"d/m/Y H:i" }}</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="{% url 'blood_bank:donation_list' %}" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Volver
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Información del Donante -->
+        <div class="col-md-4">
+            <div class="card mb-3">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="mb-0"><i class="bi bi-person-badge"></i> Información del Donante</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-sm">
+                        <tr>
+                            <th width="40%">Código:</th>
+                            <td><a href="{% url 'blood_bank:donor_detail' donation.donor.id %}"><strong>{{ donation.donor.donor_code }}</strong></a></td>
+                        </tr>
+                        <tr>
+                            <th>Nombre:</th>
+                            <td>{{ donation.donor.first_name }} {{ donation.donor.last_name }}</td>
+                        </tr>
+                        <tr>
+                            <th>Documento:</th>
+                            <td>{{ donation.donor.document_type }} {{ donation.donor.document_number }}</td>
+                        </tr>
+                        <tr>
+                            <th>Tipo Sangre:</th>
+                            <td><span class="badge bg-danger">{{ donation.donor.blood_type }}</span></td>
+                        </tr>
+                        <tr>
+                            <th>Factor RH:</th>
+                            <td><span class="badge bg-secondary">{{ donation.donor.get_rh_factor_display }}</span></td>
+                        </tr>
+                        <tr>
+                            <th>Teléfono:</th>
+                            <td>{{ donation.donor.phone }}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card mb-3">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="bi bi-clipboard-pulse"></i> Datos de la Donación</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-sm">
+                        <tr>
+                            <th width="40%">Tipo Donación:</th>
+                            <td><span class="badge bg-info">{{ donation.get_donation_type_display }}</span></td>
+                        </tr>
+                        <tr>
+                            <th>Fecha/Hora:</th>
+                            <td>{{ donation.donation_date|date:"d/m/Y H:i" }}</td>
+                        </tr>
+                        <tr>
+                            <th>Volumen:</th>
+                            <td><strong>{{ donation.volume_ml|default:"-" }} ml</strong></td>
+                        </tr>
+                        <tr>
+                            <th>Estado:</th>
+                            <td>
+                                {% if donation.status == 'scheduled' %}
+                                    <span class="badge bg-secondary">Programada</span>
+                                {% elif donation.status == 'in_process' %}
+                                    <span class="badge bg-warning text-dark">En Proceso</span>
+                                {% elif donation.status == 'completed' %}
+                                    <span class="badge bg-success">Completada</span>
+                                {% elif donation.status == 'cancelled' %}
+                                    <span class="badge bg-danger">Cancelada</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Evaluación Pre-Donación y Personal -->
+        <div class="col-md-8">
+            <div class="card mb-3">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="bi bi-heart-pulse"></i> Evaluación Pre-Donación</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <strong>Peso:</strong> {{ donation.weight_kg|default:"-" }} kg
+                        </div>
+                        <div class="col-md-4">
+                            <strong>Hemoglobina:</strong> {{ donation.hemoglobin|default:"-" }} g/dL
+                        </div>
+                        <div class="col-md-4">
+                            <strong>Pulso:</strong> {{ donation.pulse|default:"-" }} lpm
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col-md-4">
+                            <strong>PA Sistólica:</strong> {{ donation.blood_pressure_systolic|default:"-" }} mmHg
+                        </div>
+                        <div class="col-md-4">
+                            <strong>PA Diastólica:</strong> {{ donation.blood_pressure_diastolic|default:"-" }} mmHg
+                        </div>
+                        <div class="col-md-4">
+                            <strong>Temperatura:</strong> {{ donation.temperature|default:"-" }} °C
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-md-12">
+                            <strong>Pre-Donación Aprobada:</strong>
+                            {% if donation.pre_donation_approved %}
+                                <span class="badge bg-success">Sí</span>
+                            {% else %}
+                                <span class="badge bg-warning">No</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% if donation.pre_donation_notes %}
+                    <div class="row mt-3">
+                        <div class="col-md-12">
+                            <strong>Notas/Observaciones:</strong>
+                            <p class="mt-1">{{ donation.pre_donation_notes }}</p>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="card mb-3">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="bi bi-people"></i> Personal Responsable</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-sm">
+                        <tr>
+                            <th width="30%">Flebotomista:</th>
+                            <td>
+                                {% if donation.phlebotomist %}
+                                    {{ donation.phlebotomist.third_party.first_name }} {{ donation.phlebotomist.third_party.last_name }}
+                                {% else %}
+                                    <span class="text-muted">No asignado</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Médico Supervisor:</th>
+                            <td>
+                                {% if donation.supervising_physician %}
+                                    {{ donation.supervising_physician.third_party.first_name }} {{ donation.supervising_physician.third_party.last_name }}
+                                {% else %}
+                                    <span class="text-muted">No asignado</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Creado por:</th>
+                            <td>{{ donation.created_by.get_full_name }}</td>
+                        </tr>
+                        <tr>
+                            <th>Fecha Creación:</th>
+                            <td>{{ donation.created_at|date:"d/m/Y H:i" }}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Pruebas de Cribado -->
+            <div class="card mb-3">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0"><i class="bi bi-prescription2"></i> Pruebas de Cribado</h5>
+                </div>
+                <div class="card-body">
+                    {% if screening_tests %}
+                    <div class="table-responsive">
+                        <table class="table table-sm table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Tipo de Prueba</th>
+                                    <th>Fecha</th>
+                                    <th>Resultado</th>
+                                    <th>Realizada por</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for test in screening_tests %}
+                                <tr>
+                                    <td><strong>{{ test.get_test_type_display }}</strong></td>
+                                    <td>{{ test.test_date|date:"d/m/Y" }}</td>
+                                    <td>
+                                        {% if test.result == 'negative' %}
+                                            <span class="badge bg-success">Negativo</span>
+                                        {% elif test.result == 'positive' %}
+                                            <span class="badge bg-danger">Positivo</span>
+                                        {% elif test.result == 'indeterminate' %}
+                                            <span class="badge bg-warning text-dark">Indeterminado</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ test.performed_by.third_party.get_full_name|default:"-" }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle"></i> No se han registrado pruebas de cribado para esta donación.
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Hemocomponentes Derivados -->
+            <div class="card">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="mb-0"><i class="bi bi-droplet-half"></i> Hemocomponentes Derivados</h5>
+                </div>
+                <div class="card-body">
+                    {% if components %}
+                    <div class="table-responsive">
+                        <table class="table table-sm table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Código</th>
+                                    <th>Tipo</th>
+                                    <th>Tipo Sangre</th>
+                                    <th>Volumen</th>
+                                    <th>Fecha Separación</th>
+                                    <th>Fecha Vencimiento</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for comp in components %}
+                                <tr>
+                                    <td><a href="{% url 'blood_bank:component_detail' comp.id %}"><strong>{{ comp.component_code }}</strong></a></td>
+                                    <td>{{ comp.get_component_type_display }}</td>
+                                    <td><span class="badge bg-danger">{{ comp.blood_type }}</span></td>
+                                    <td>{{ comp.volume_ml }} ml</td>
+                                    <td>{{ comp.separation_date|date:"d/m/Y"|default:"-" }}</td>
+                                    <td>{{ comp.expiration_date|date:"d/m/Y" }}</td>
+                                    <td>
+                                        {% if comp.status == 'available' %}
+                                            <span class="badge bg-success">Disponible</span>
+                                        {% elif comp.status == 'used' %}
+                                            <span class="badge bg-secondary">Usado</span>
+                                        {% elif comp.status == 'expired' %}
+                                            <span class="badge bg-danger">Vencido</span>
+                                        {% elif comp.status == 'discarded' %}
+                                            <span class="badge bg-dark">Descartado</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <a href="{% url 'blood_bank:component_detail' comp.id %}" class="btn btn-sm btn-info">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle"></i> No se han procesado hemocomponentes de esta donación aún.
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

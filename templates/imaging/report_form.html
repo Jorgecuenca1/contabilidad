@@ -1,0 +1,162 @@
+{% extends 'base.html' %}
+{% block title %}Crear Informe Radiológico - Imágenes Diagnósticas{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-file-earmark-text"></i> Crear Informe Radiológico</h2>
+        <a href="{% url 'imaging:study_detail' study.id %}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Volver al Estudio
+        </a>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-10 mx-auto">
+            <!-- Información del Estudio -->
+            <div class="card mb-3">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="bi bi-info-circle"></i> Información del Estudio</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <p><strong>Estudio:</strong> {{ study.study_number }}</p>
+                            <p><strong>Paciente:</strong> {{ study.order.patient.third_party.name }}</p>
+                        </div>
+                        <div class="col-md-4">
+                            <p><strong>Modalidad:</strong> {{ study.order.modality.name }}</p>
+                            <p><strong>Procedimiento:</strong> {{ study.order.procedure_description }}</p>
+                        </div>
+                        <div class="col-md-4">
+                            <p><strong>Indicación:</strong> {{ study.order.clinical_indication|truncatewords:10 }}</p>
+                            <p><strong>Fecha Estudio:</strong> {{ study.study_date|date:"d/m/Y" }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Formulario del Informe -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-file-text"></i> Datos del Informe</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <div class="alert alert-info">
+                                    <i class="bi bi-info-circle"></i> Complete todos los campos del informe radiológico siguiendo la estructura estándar.
+                                </div>
+                            </div>
+
+                            <!-- Técnica -->
+                            <div class="col-12">
+                                <label class="form-label"><strong>Técnica</strong> <span class="text-danger">*</span></label>
+                                <textarea name="technique" class="form-control" rows="3" required
+                                          placeholder="Describa la técnica utilizada para el estudio (proyecciones, protocolos, uso de contraste, parámetros técnicos...)">{{ study.order.procedure_description }}
+
+Número de imágenes: {{ study.number_of_images }}
+{% if study.contrast_used %}Contraste: {{ study.contrast_type }}{% endif %}
+Equipo: {{ study.equipment_used.name }}</textarea>
+                            </div>
+
+                            <!-- Hallazgos -->
+                            <div class="col-12">
+                                <label class="form-label"><strong>Hallazgos</strong> <span class="text-danger">*</span></label>
+                                <textarea name="findings" class="form-control" rows="6" required
+                                          placeholder="Describa detalladamente los hallazgos encontrados en el estudio, estructuras evaluadas, alteraciones identificadas..."></textarea>
+                                <small class="text-muted">Describa todos los hallazgos relevantes de forma sistemática y detallada.</small>
+                            </div>
+
+                            <!-- Impresión Diagnóstica -->
+                            <div class="col-12">
+                                <label class="form-label"><strong>Impresión Diagnóstica</strong> <span class="text-danger">*</span></label>
+                                <textarea name="impression" class="form-control" rows="4" required
+                                          placeholder="Conclusión diagnóstica basada en los hallazgos..."></textarea>
+                                <small class="text-muted">Resuma las conclusiones diagnósticas principales.</small>
+                            </div>
+
+                            <!-- Recomendaciones -->
+                            <div class="col-12">
+                                <label class="form-label"><strong>Recomendaciones</strong></label>
+                                <textarea name="recommendations" class="form-control" rows="3"
+                                          placeholder="Recomendaciones adicionales, estudios complementarios sugeridos, seguimiento..."></textarea>
+                            </div>
+
+                            <!-- Clasificación del Informe -->
+                            <div class="col-12 mt-3">
+                                <h6 class="border-bottom pb-2">Clasificación del Informe</h6>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="is_normal" id="isNormal">
+                                    <label class="form-check-label" for="isNormal">
+                                        <strong>Estudio Normal</strong> (sin hallazgos patológicos)
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="is_critical" id="isCritical">
+                                    <label class="form-check-label text-danger" for="isCritical">
+                                        <strong>Hallazgo Crítico</strong> (requiere notificación inmediata)
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="col-12" id="criticalWarning" style="display: none;">
+                                <div class="alert alert-danger">
+                                    <i class="bi bi-exclamation-triangle"></i> <strong>Atención:</strong> Los hallazgos críticos requieren notificación inmediata al médico tratante según protocolo institucional.
+                                </div>
+                            </div>
+
+                            <!-- Información Adicional -->
+                            <div class="col-12 mt-3">
+                                <div class="alert alert-secondary">
+                                    <p class="mb-1"><strong>Radiólogo:</strong> {{ user.get_full_name }}</strong></p>
+                                    <p class="mb-0"><small>El informe se guardará como borrador y podrá ser finalizado posteriormente.</small></p>
+                                </div>
+                            </div>
+
+                            <div class="col-12 mt-4">
+                                <button type="submit" class="btn btn-primary btn-lg">
+                                    <i class="bi bi-save"></i> Guardar Informe (Borrador)
+                                </button>
+                                <a href="{% url 'imaging:study_detail' study.id %}" class="btn btn-secondary">
+                                    <i class="bi bi-x-circle"></i> Cancelar
+                                </a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Mostrar advertencia cuando se marca hallazgo crítico
+document.getElementById('isCritical').addEventListener('change', function() {
+    document.getElementById('criticalWarning').style.display = this.checked ? 'block' : 'none';
+});
+
+// Si marca como normal, desmarcar crítico
+document.getElementById('isNormal').addEventListener('change', function() {
+    if (this.checked) {
+        document.getElementById('isCritical').checked = false;
+        document.getElementById('criticalWarning').style.display = 'none';
+    }
+});
+
+// Si marca como crítico, desmarcar normal
+document.getElementById('isCritical').addEventListener('change', function() {
+    if (this.checked) {
+        document.getElementById('isNormal').checked = false;
+    }
+});
+</script>
+{% endblock %}

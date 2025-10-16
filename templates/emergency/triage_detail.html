@@ -1,0 +1,298 @@
+{% extends 'base.html' %}
+{% block title %}Detalle de Triage - {{ triage.triage_number }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-clipboard-pulse"></i> Triage: {{ triage.triage_number }}</h2>
+        <div>
+            <a href="{% url 'emergency:triage_update' triage.id %}" class="btn btn-warning">
+                <i class="bi bi-pencil"></i> Editar
+            </a>
+            <a href="{% url 'emergency:triage_list' %}" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Volver
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <!-- Información del Paciente -->
+            <div class="card mb-3">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="bi bi-person"></i> Información del Paciente</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <strong>Paciente:</strong>
+                            <p class="mb-0">{{ triage.patient.third_party.name }}</p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <strong>Identificación:</strong>
+                            <p class="mb-0">{{ triage.patient.third_party.identification_number }}</p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <strong>Historia Clínica:</strong>
+                            <p class="mb-0">{{ triage.patient.medical_record_number }}</p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <strong>Fecha de Nacimiento:</strong>
+                            <p class="mb-0">{{ triage.patient.date_of_birth|date:"d/m/Y" }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Clasificación de Triage -->
+            <div class="card mb-3">
+                <div class="card-header {% if triage.triage_level == 'I' %}bg-danger{% elif triage.triage_level == 'II' %}bg-warning text-dark{% elif triage.triage_level == 'III' %}bg-info{% elif triage.triage_level == 'IV' %}bg-success{% else %}bg-primary{% endif %} text-white">
+                    <h5 class="mb-0"><i class="bi bi-tag"></i> Clasificación de Triage</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <strong>Nivel de Triage:</strong>
+                            <p class="mb-0">
+                                {% if triage.triage_level == 'I' %}
+                                <span class="badge bg-danger fs-6">
+                                    <i class="bi bi-exclamation-triangle-fill"></i> Nivel I - RESUCITACIÓN (Rojo)
+                                </span>
+                                {% elif triage.triage_level == 'II' %}
+                                <span class="badge bg-warning text-dark fs-6">
+                                    <i class="bi bi-exclamation-circle-fill"></i> Nivel II - EMERGENCIA (Naranja)
+                                </span>
+                                {% elif triage.triage_level == 'III' %}
+                                <span class="badge bg-info fs-6">
+                                    <i class="bi bi-info-circle-fill"></i> Nivel III - URGENCIA (Amarillo)
+                                </span>
+                                {% elif triage.triage_level == 'IV' %}
+                                <span class="badge bg-success fs-6">
+                                    <i class="bi bi-check-circle-fill"></i> Nivel IV - URGENCIA MENOR (Verde)
+                                </span>
+                                {% else %}
+                                <span class="badge bg-primary fs-6">
+                                    <i class="bi bi-circle-fill"></i> Nivel V - NO URGENTE (Azul)
+                                </span>
+                                {% endif %}
+                            </p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <strong>Tiempo de Prioridad:</strong>
+                            <p class="mb-0">
+                                {% if triage.priority_time == 0 %}
+                                <span class="badge bg-danger">Atención Inmediata</span>
+                                {% else %}
+                                <span class="badge bg-info">{{ triage.priority_time }} minutos máximo</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Información de Llegada -->
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h6 class="mb-0"><i class="bi bi-clock-history"></i> Información de Llegada</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <strong>Fecha y Hora de Llegada:</strong>
+                            <p class="mb-0">{{ triage.arrival_datetime|date:"d/m/Y H:i" }}</p>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <strong>Modo de Llegada:</strong>
+                            <p class="mb-0">{{ triage.get_arrival_mode_display }}</p>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <strong>Acompañado por:</strong>
+                            <p class="mb-0">{{ triage.accompanied_by|default:"No especificado" }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Motivo de Consulta -->
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h6 class="mb-0"><i class="bi bi-file-text"></i> Motivo de Consulta</h6>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <strong>Queja Principal:</strong>
+                        <p class="mb-0">{{ triage.chief_complaint }}</p>
+                    </div>
+                    {% if triage.symptom_duration %}
+                    <div class="mb-3">
+                        <strong>Duración de Síntomas:</strong>
+                        <p class="mb-0">{{ triage.symptom_duration }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Signos Vitales -->
+            <div class="card mb-3">
+                <div class="card-header bg-info text-white">
+                    <h6 class="mb-0"><i class="bi bi-activity"></i> Signos Vitales en Triage</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4 mb-2">
+                            <strong>Presión Arterial:</strong>
+                            <p class="mb-0">{{ triage.blood_pressure|default:"No registrada" }}</p>
+                        </div>
+                        <div class="col-md-4 mb-2">
+                            <strong>Frecuencia Cardíaca:</strong>
+                            <p class="mb-0">{% if triage.heart_rate %}{{ triage.heart_rate }} lpm{% else %}No registrada{% endif %}</p>
+                        </div>
+                        <div class="col-md-4 mb-2">
+                            <strong>Frecuencia Respiratoria:</strong>
+                            <p class="mb-0">{% if triage.respiratory_rate %}{{ triage.respiratory_rate }} rpm{% else %}No registrada{% endif %}</p>
+                        </div>
+                        <div class="col-md-4 mb-2">
+                            <strong>Temperatura:</strong>
+                            <p class="mb-0">{% if triage.temperature %}{{ triage.temperature }}°C{% else %}No registrada{% endif %}</p>
+                        </div>
+                        <div class="col-md-4 mb-2">
+                            <strong>Saturación O2:</strong>
+                            <p class="mb-0">{% if triage.oxygen_saturation %}{{ triage.oxygen_saturation }}%{% else %}No registrada{% endif %}</p>
+                        </div>
+                        <div class="col-md-4 mb-2">
+                            <strong>Escala de Dolor:</strong>
+                            <p class="mb-0">{% if triage.pain_scale %}{{ triage.pain_scale }}/10{% else %}No registrada{% endif %}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Evaluación Neurológica -->
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h6 class="mb-0"><i class="bi bi-brain"></i> Evaluación Neurológica</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-2">
+                            <strong>Nivel de Consciencia:</strong>
+                            <p class="mb-0">{{ triage.get_consciousness_level_display }}</p>
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <strong>Escala de Glasgow:</strong>
+                            <p class="mb-0">{% if triage.glasgow_score %}{{ triage.glasgow_score }}/15{% else %}No registrada{% endif %}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Signos de Alarma y Alergias -->
+            <div class="card mb-3">
+                <div class="card-header bg-warning text-dark">
+                    <h6 class="mb-0"><i class="bi bi-exclamation-triangle"></i> Signos de Alarma y Alergias</h6>
+                </div>
+                <div class="card-body">
+                    {% if triage.warning_signs %}
+                    <div class="mb-3">
+                        <strong>Signos de Alarma:</strong>
+                        <div class="alert alert-warning mb-0">{{ triage.warning_signs }}</div>
+                    </div>
+                    {% endif %}
+                    {% if triage.allergies %}
+                    <div class="mb-3">
+                        <strong>Alergias Conocidas:</strong>
+                        <div class="alert alert-danger mb-0">{{ triage.allergies }}</div>
+                    </div>
+                    {% endif %}
+                    {% if triage.current_medications %}
+                    <div class="mb-3">
+                        <strong>Medicación Actual:</strong>
+                        <p class="mb-0">{{ triage.current_medications }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Observaciones -->
+            {% if triage.observations %}
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h6 class="mb-0"><i class="bi bi-journal-text"></i> Observaciones de Triage</h6>
+                </div>
+                <div class="card-body">
+                    <p class="mb-0">{{ triage.observations }}</p>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Panel Lateral -->
+        <div class="col-md-4">
+            <!-- Estado y Acciones -->
+            <div class="card mb-3">
+                <div class="card-header bg-success text-white">
+                    <h6 class="mb-0"><i class="bi bi-gear"></i> Estado y Acciones</h6>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <strong>Estado de Admisión:</strong>
+                        <p class="mb-0">
+                            {% if has_admission %}
+                            <span class="badge bg-success">
+                                <i class="bi bi-check-circle"></i> Admitido a Urgencias
+                            </span>
+                            {% else %}
+                            <span class="badge bg-warning text-dark">
+                                <i class="bi bi-hourglass-split"></i> Pendiente de Admisión
+                            </span>
+                            {% endif %}
+                        </p>
+                    </div>
+                    <div class="d-grid gap-2">
+                        {% if not has_admission %}
+                        <a href="{% url 'emergency:admission_create' %}?triage={{ triage.id }}" class="btn btn-success">
+                            <i class="bi bi-clipboard-plus"></i> Crear Admisión
+                        </a>
+                        {% else %}
+                        <a href="{% url 'emergency:admission_detail' triage.admission.id %}" class="btn btn-primary">
+                            <i class="bi bi-eye"></i> Ver Admisión
+                        </a>
+                        {% endif %}
+                        <a href="{% url 'emergency:triage_update' triage.id %}" class="btn btn-warning">
+                            <i class="bi bi-pencil"></i> Editar Triage
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Información del Personal -->
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h6 class="mb-0"><i class="bi bi-people"></i> Personal de Triage</h6>
+                </div>
+                <div class="card-body">
+                    <div class="mb-2">
+                        <strong>Enfermera de Triage:</strong>
+                        <p class="mb-0">{{ triage.triage_nurse.get_full_name }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Información del Sistema -->
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="mb-0"><i class="bi bi-clock-history"></i> Información del Sistema</h6>
+                </div>
+                <div class="card-body">
+                    <small class="text-muted">
+                        <p class="mb-2"><strong>Fecha de Triage:</strong><br>{{ triage.triage_datetime|date:"d/m/Y H:i" }}</p>
+                        <p class="mb-2"><strong>Creado por:</strong><br>{{ triage.created_by.get_full_name }}</p>
+                        <p class="mb-0"><strong>Última modificación:</strong><br>{{ triage.updated_at|date:"d/m/Y H:i" }}</p>
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

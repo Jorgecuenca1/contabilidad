@@ -1,0 +1,306 @@
+{% extends 'base.html' %}
+{% block title %}{% if is_update %}Actualizar{% else %}Crear{% endif %} Triage{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <h2 class="mb-4">
+        <i class="bi bi-clipboard-pulse"></i> {% if is_update %}Actualizar Triage: {{ triage.triage_number }}{% else %}Nueva Evaluación de Triage{% endif %}
+    </h2>
+
+    <form method="post" id="triageForm">
+        {% csrf_token %}
+
+        <!-- Selección de Paciente -->
+        {% if not is_update %}
+        <div class="card mb-3">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="bi bi-person"></i> Selección de Paciente</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-12">
+                        <label class="form-label">Paciente <span class="text-danger">*</span></label>
+                        <select name="patient" class="form-select" required>
+                            <option value="">Seleccionar paciente...</option>
+                            {% for patient in patients %}
+                            <option value="{{ patient.id }}">
+                                {{ patient.third_party.name }} - {{ patient.third_party.identification_number }} (HC: {{ patient.medical_record_number }})
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Información de Llegada -->
+        <div class="card mb-3">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0"><i class="bi bi-clock-history"></i> Información de Llegada</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    {% if not is_update %}
+                    <div class="col-md-4">
+                        <label class="form-label">Fecha y Hora de Llegada <span class="text-danger">*</span></label>
+                        <input type="datetime-local" name="arrival_datetime" class="form-control" required>
+                    </div>
+                    {% endif %}
+                    <div class="col-md-4">
+                        <label class="form-label">Modo de Llegada <span class="text-danger">*</span></label>
+                        <select name="arrival_mode" class="form-select" required>
+                            {% for value, label in arrival_mode_choices %}
+                            <option value="{{ value }}" {% if is_update and triage.arrival_mode == value %}selected{% endif %}>{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Acompañado por</label>
+                        <input type="text" name="accompanied_by" class="form-control" placeholder="Nombre del acompañante" value="{% if is_update %}{{ triage.accompanied_by }}{% endif %}">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Motivo de Consulta -->
+        <div class="card mb-3">
+            <div class="card-header bg-warning text-dark">
+                <h5 class="mb-0"><i class="bi bi-file-text"></i> Motivo de Consulta</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-8">
+                        <label class="form-label">Queja Principal <span class="text-danger">*</span></label>
+                        <textarea name="chief_complaint" class="form-control" rows="3" required placeholder="Describa el motivo principal de consulta">{% if is_update %}{{ triage.chief_complaint }}{% endif %}</textarea>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Duración de Síntomas</label>
+                        <input type="text" name="symptom_duration" class="form-control" placeholder="Ej: 2 días, 5 horas" value="{% if is_update %}{{ triage.symptom_duration }}{% endif %}">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Signos Vitales -->
+        <div class="card mb-3">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0"><i class="bi bi-activity"></i> Signos Vitales</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <label class="form-label">Presión Arterial</label>
+                        <input type="text" name="blood_pressure" class="form-control" placeholder="120/80" value="{% if is_update %}{{ triage.blood_pressure }}{% endif %}">
+                        <small class="text-muted">mmHg</small>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Frecuencia Cardíaca</label>
+                        <input type="number" name="heart_rate" class="form-control" placeholder="75" min="30" max="250" value="{% if is_update %}{{ triage.heart_rate }}{% endif %}">
+                        <small class="text-muted">latidos por minuto</small>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Frecuencia Respiratoria</label>
+                        <input type="number" name="respiratory_rate" class="form-control" placeholder="18" min="5" max="60" value="{% if is_update %}{{ triage.respiratory_rate }}{% endif %}">
+                        <small class="text-muted">respiraciones por minuto</small>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Temperatura</label>
+                        <input type="number" step="0.1" name="temperature" class="form-control" placeholder="36.5" min="30" max="45" value="{% if is_update %}{{ triage.temperature }}{% endif %}">
+                        <small class="text-muted">°C</small>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Saturación O2</label>
+                        <input type="number" name="oxygen_saturation" class="form-control" placeholder="98" min="50" max="100" value="{% if is_update %}{{ triage.oxygen_saturation }}{% endif %}">
+                        <small class="text-muted">%</small>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Escala de Dolor</label>
+                        <input type="number" name="pain_scale" class="form-control" placeholder="5" min="0" max="10" value="{% if is_update %}{{ triage.pain_scale }}{% endif %}">
+                        <small class="text-muted">0 (sin dolor) - 10 (máximo dolor)</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Evaluación Neurológica -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-brain"></i> Evaluación Neurológica</h6>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Nivel de Consciencia <span class="text-danger">*</span></label>
+                        <select name="consciousness_level" class="form-select" required>
+                            {% for value, label in consciousness_level_choices %}
+                            <option value="{{ value }}" {% if is_update and triage.consciousness_level == value %}selected{% elif not is_update and value == 'alert' %}selected{% endif %}>{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Escala de Glasgow</label>
+                        <input type="number" name="glasgow_score" class="form-control" placeholder="15" min="3" max="15" value="{% if is_update %}{{ triage.glasgow_score }}{% endif %}">
+                        <small class="text-muted">3 (mínimo) - 15 (máximo)</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Clasificación de Triage -->
+        <div class="card mb-3">
+            <div class="card-header bg-danger text-white">
+                <h5 class="mb-0"><i class="bi bi-tag"></i> Clasificación de Triage</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-12">
+                        <label class="form-label">Nivel de Triage <span class="text-danger">*</span></label>
+                        <select name="triage_level" id="triageLevel" class="form-select" required>
+                            <option value="">Seleccionar nivel...</option>
+                            {% for value, label in triage_level_choices %}
+                            <option value="{{ value }}" {% if is_update and triage.triage_level == value %}selected{% endif %}>{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-12">
+                        <div id="triageInfo" class="alert" style="display: none;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Signos de Alarma y Alergias -->
+        <div class="card mb-3">
+            <div class="card-header bg-warning text-dark">
+                <h6 class="mb-0"><i class="bi bi-exclamation-triangle"></i> Signos de Alarma y Alergias</h6>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Signos de Alarma</label>
+                        <textarea name="warning_signs" class="form-control" rows="3" placeholder="Describa signos de alarma identificados">{% if is_update %}{{ triage.warning_signs }}{% endif %}</textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Alergias Conocidas</label>
+                        <textarea name="allergies" class="form-control" rows="3" placeholder="Medicamentos, alimentos, etc.">{% if is_update %}{{ triage.allergies }}{% endif %}</textarea>
+                    </div>
+                    <div class="col-md-12">
+                        <label class="form-label">Medicación Actual</label>
+                        <textarea name="current_medications" class="form-control" rows="2" placeholder="Medicamentos que está tomando actualmente">{% if is_update %}{{ triage.current_medications }}{% endif %}</textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Personal y Observaciones -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-journal-text"></i> Personal y Observaciones</h6>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    {% if not is_update %}
+                    <div class="col-md-6">
+                        <label class="form-label">Enfermera de Triage <span class="text-danger">*</span></label>
+                        <select name="triage_nurse" class="form-select" required>
+                            <option value="">Seleccionar enfermera...</option>
+                            {% for nurse in nurses %}
+                            <option value="{{ nurse.id }}">{{ nurse.get_full_name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    {% endif %}
+                    <div class="col-md-12">
+                        <label class="form-label">Observaciones de Triage</label>
+                        <textarea name="observations" class="form-control" rows="3" placeholder="Observaciones adicionales del personal de triage">{% if is_update %}{{ triage.observations }}{% endif %}</textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Botones -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <button type="submit" class="btn btn-primary btn-lg">
+                    <i class="bi bi-save"></i> {% if is_update %}Actualizar{% else %}Guardar{% endif %} Triage
+                </button>
+                <a href="{% if is_update %}{% url 'emergency:triage_detail' triage.id %}{% else %}{% url 'emergency:triage_list' %}{% endif %}" class="btn btn-secondary btn-lg">
+                    <i class="bi bi-x-circle"></i> Cancelar
+                </a>
+            </div>
+        </div>
+    </form>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const triageLevel = document.getElementById('triageLevel');
+    const triageInfo = document.getElementById('triageInfo');
+
+    const triageData = {
+        'I': {
+            color: 'Rojo',
+            time: 'Inmediato',
+            description: 'Resucitación - Condición que amenaza la vida, requiere intervención inmediata',
+            class: 'alert-danger'
+        },
+        'II': {
+            color: 'Naranja',
+            time: '15 minutos',
+            description: 'Emergencia - Situación de alto riesgo, requiere atención prioritaria',
+            class: 'alert-warning'
+        },
+        'III': {
+            color: 'Amarillo',
+            time: '30 minutos',
+            description: 'Urgencia - Condición potencialmente seria, puede esperar un breve período',
+            class: 'alert-info'
+        },
+        'IV': {
+            color: 'Verde',
+            time: '60 minutos',
+            description: 'Urgencia Menor - Condición estable, puede esperar hasta 1 hora',
+            class: 'alert-success'
+        },
+        'V': {
+            color: 'Azul',
+            time: '120 minutos',
+            description: 'No Urgente - Condición no urgente, puede esperar más tiempo',
+            class: 'alert-primary'
+        }
+    };
+
+    triageLevel.addEventListener('change', function() {
+        const level = this.value;
+        if (level && triageData[level]) {
+            const data = triageData[level];
+            triageInfo.className = 'alert ' + data.class;
+            triageInfo.innerHTML = `
+                <strong>Color: ${data.color}</strong><br>
+                <strong>Tiempo de Atención: ${data.time}</strong><br>
+                ${data.description}
+            `;
+            triageInfo.style.display = 'block';
+        } else {
+            triageInfo.style.display = 'none';
+        }
+    });
+
+    // Trigger change event if value is already selected (for update form)
+    if (triageLevel.value) {
+        triageLevel.dispatchEvent(new Event('change'));
+    }
+
+    // Set current datetime for arrival if creating new triage
+    {% if not is_update %}
+    const now = new Date();
+    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+    document.querySelector('input[name="arrival_datetime"]').value = now.toISOString().slice(0, 16);
+    {% endif %}
+});
+</script>
+{% endblock %}

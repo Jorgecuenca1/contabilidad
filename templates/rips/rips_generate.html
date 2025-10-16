@@ -1,0 +1,233 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block title %}Generar RIPS - RIPS{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h2><i class="fas fa-file-export"></i> Generar Archivos RIPS</h2>
+                    <p class="text-muted">Generación de Registros Individuales de Prestación de Servicios de Salud</p>
+                </div>
+                <div>
+                    <a href="{% url 'rips:rips_list' %}" class="btn btn-info">
+                        <i class="fas fa-archive"></i> Archivos RIPS
+                    </a>
+                    <a href="{% url 'rips:dashboard' %}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Información Importante -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="alert alert-info">
+                <h5 class="alert-heading"><i class="fas fa-info-circle"></i> Información sobre RIPS</h5>
+                <p>Los archivos RIPS son obligatorios para reportar a las entidades de salud (EPS, MinSalud) las prestaciones de servicios realizadas.</p>
+                <hr>
+                <ul class="mb-0">
+                    <li><strong>Solo se pueden generar RIPS de facturas emitidas, enviadas o pagadas</strong></li>
+                    <li>Los RIPS incluyen: datos del usuario, consultas, procedimientos, medicamentos y urgencias</li>
+                    <li>El formato se genera según la normativa vigente (Resolución 3374/2000 y 256/2016)</li>
+                    <li>Se generan archivos en formato JSON listos para envío</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Formulario de Generación -->
+    <div class="row">
+        <div class="col-lg-8 offset-lg-2">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <i class="fas fa-file-medical"></i> Seleccionar Factura para Generar RIPS
+                </div>
+                <div class="card-body">
+                    <form method="post" id="ripsForm">
+                        {% csrf_token %}
+
+                        <div class="mb-3">
+                            <label for="invoice_id" class="form-label">
+                                <i class="fas fa-file-invoice"></i> Factura *
+                            </label>
+                            <select name="invoice_id" id="invoice_id" class="form-select" required>
+                                <option value="">Seleccione una factura...</option>
+                                {% for invoice in invoices %}
+                                <option value="{{ invoice.id }}"
+                                        data-number="{{ invoice.invoice_number }}"
+                                        data-patient="{{ invoice.patient.third_party.first_name }} {{ invoice.patient.third_party.last_name }}"
+                                        data-date="{{ invoice.invoice_date|date:'d/m/Y' }}"
+                                        data-total="{{ invoice.total_amount }}"
+                                        data-items="{{ invoice.items.count }}">
+                                    {{ invoice.invoice_number }} -
+                                    {{ invoice.patient.third_party.first_name }} {{ invoice.patient.third_party.last_name }} -
+                                    ${{ invoice.total_amount|intcomma }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                            <small class="form-text text-muted">
+                                Solo se muestran facturas emitidas que aún no tienen RIPS generado
+                            </small>
+                        </div>
+
+                        <!-- Vista previa de factura seleccionada -->
+                        <div id="invoice_preview" class="card mb-3" style="display: none;">
+                            <div class="card-header bg-light">
+                                <strong>Vista Previa de la Factura</strong>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6 mb-2">
+                                        <strong>Número:</strong>
+                                        <span id="preview_number"></span>
+                                    </div>
+                                    <div class="col-md-6 mb-2">
+                                        <strong>Fecha:</strong>
+                                        <span id="preview_date"></span>
+                                    </div>
+                                    <div class="col-md-6 mb-2">
+                                        <strong>Paciente:</strong>
+                                        <span id="preview_patient"></span>
+                                    </div>
+                                    <div class="col-md-6 mb-2">
+                                        <strong>Total:</strong>
+                                        <span id="preview_total" class="text-success fw-bold"></span>
+                                    </div>
+                                    <div class="col-md-12 mb-2">
+                                        <strong>Items:</strong>
+                                        <span id="preview_items"></span> servicios
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="format" class="form-label">
+                                <i class="fas fa-file-code"></i> Formato de Archivo *
+                            </label>
+                            <select name="format" id="format" class="form-select" required>
+                                <option value="json" selected>JSON (Recomendado)</option>
+                                <option value="xml">XML</option>
+                                <option value="txt">TXT (Texto Plano)</option>
+                            </select>
+                            <small class="form-text text-muted">
+                                El formato JSON es el más utilizado y compatible con sistemas modernos
+                            </small>
+                        </div>
+
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-triangle"></i> <strong>Antes de generar:</strong>
+                            <ul class="mb-0 mt-2">
+                                <li>Verifique que todos los servicios tengan códigos CUPS/CUM correctos</li>
+                                <li>Confirme que los diagnósticos CIE-10 estén registrados</li>
+                                <li>Asegúrese que los datos del paciente estén completos</li>
+                                <li>Los archivos RIPS se guardarán automáticamente en el sistema</li>
+                            </ul>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="{% url 'rips:dashboard' %}" class="btn btn-secondary">
+                                <i class="fas fa-times"></i> Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-file-export"></i> Generar RIPS
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Facturas Disponibles -->
+            {% if invoices %}
+            <div class="card mt-4">
+                <div class="card-header bg-secondary text-white">
+                    <i class="fas fa-list"></i> Facturas Disponibles para RIPS
+                    <span class="badge bg-light text-dark float-end">{{ invoices|length }}</span>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-sm table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Número</th>
+                                    <th>Paciente</th>
+                                    <th>Fecha</th>
+                                    <th>Total</th>
+                                    <th>Items</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for invoice in invoices %}
+                                <tr>
+                                    <td><strong>{{ invoice.invoice_number }}</strong></td>
+                                    <td>
+                                        {{ invoice.patient.third_party.first_name }}
+                                        {{ invoice.patient.third_party.last_name }}
+                                    </td>
+                                    <td>{{ invoice.invoice_date|date:"d/m/Y" }}</td>
+                                    <td><strong>${{ invoice.total_amount|intcomma }}</strong></td>
+                                    <td>{{ invoice.items.count }} servicios</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div class="card mt-4">
+                <div class="card-body text-center py-5">
+                    <i class="fas fa-inbox fa-4x text-muted mb-3"></i>
+                    <h5 class="text-muted">No hay facturas disponibles para generar RIPS</h5>
+                    <p class="text-muted">
+                        Las facturas deben estar en estado "Emitida", "Enviada" o "Pagada"
+                        y no deben tener RIPS generado previamente.
+                    </p>
+                    <a href="{% url 'rips:episode_list' %}?status=closed" class="btn btn-primary mt-3">
+                        <i class="fas fa-folder"></i> Ver Episodios Pendientes de Facturar
+                    </a>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const invoiceSelect = document.getElementById('invoice_id');
+    const invoicePreview = document.getElementById('invoice_preview');
+
+    invoiceSelect.addEventListener('change', function() {
+        const selectedOption = this.options[this.selectedIndex];
+
+        if (this.value) {
+            // Mostrar vista previa
+            document.getElementById('preview_number').textContent = selectedOption.dataset.number;
+            document.getElementById('preview_patient').textContent = selectedOption.dataset.patient;
+            document.getElementById('preview_date').textContent = selectedOption.dataset.date;
+            document.getElementById('preview_total').textContent = '$' + parseFloat(selectedOption.dataset.total).toLocaleString();
+            document.getElementById('preview_items').textContent = selectedOption.dataset.items;
+
+            invoicePreview.style.display = 'block';
+        } else {
+            invoicePreview.style.display = 'none';
+        }
+    });
+
+    // Confirmación al generar
+    document.getElementById('ripsForm').addEventListener('submit', function(e) {
+        if (!confirm('¿Está seguro de generar los archivos RIPS para esta factura?')) {
+            e.preventDefault();
+            return false;
+        }
+    });
+});
+</script>
+{% endblock %}

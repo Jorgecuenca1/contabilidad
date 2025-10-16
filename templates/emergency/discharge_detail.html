@@ -1,0 +1,266 @@
+{% extends 'base.html' %}
+{% block title %}Alta de Urgencias - {{ discharge.discharge_number }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-door-open"></i> Alta: {{ discharge.discharge_number }}</h2>
+        <div>
+            <button onclick="window.print()" class="btn btn-primary">
+                <i class="bi bi-printer"></i> Imprimir
+            </button>
+            <a href="{% url 'emergency:admission_detail' discharge.admission.id %}" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Volver
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <!-- Información del Paciente -->
+            <div class="card mb-3">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="bi bi-person-badge"></i> Información del Paciente</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4 mb-2">
+                            <strong>Paciente:</strong> {{ discharge.patient.third_party.name }}
+                        </div>
+                        <div class="col-md-4 mb-2">
+                            <strong>Identificación:</strong> {{ discharge.patient.third_party.identification_number }}
+                        </div>
+                        <div class="col-md-4 mb-2">
+                            <strong>Historia Clínica:</strong> {{ discharge.patient.medical_record_number }}
+                        </div>
+                        <div class="col-md-4 mb-2">
+                            <strong>Admisión:</strong> {{ discharge.admission.admission_number }}
+                        </div>
+                        <div class="col-md-4 mb-2">
+                            <strong>Fecha Admisión:</strong> {{ discharge.admission.admission_datetime|date:"d/m/Y H:i" }}
+                        </div>
+                        <div class="col-md-4 mb-2">
+                            <strong>Fecha Alta:</strong> {{ discharge.discharge_datetime|date:"d/m/Y H:i" }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tipo de Alta y Condición -->
+            <div class="card mb-3">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="bi bi-clipboard-check"></i> Tipo de Alta y Condición</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <strong>Tipo de Alta:</strong>
+                            <p class="mb-0">
+                                {% if discharge.discharge_type == 'home' %}
+                                <span class="badge bg-success fs-6">Alta a Domicilio</span>
+                                {% elif discharge.discharge_type == 'hospitalization' %}
+                                <span class="badge bg-primary fs-6">Hospitalización</span>
+                                {% elif discharge.discharge_type == 'observation' %}
+                                <span class="badge bg-info fs-6">Pase a Observación</span>
+                                {% elif discharge.discharge_type == 'transfer' %}
+                                <span class="badge bg-warning text-dark fs-6">Traslado a Otra Institución</span>
+                                {% elif discharge.discharge_type == 'deceased' %}
+                                <span class="badge bg-dark fs-6">Fallecido</span>
+                                {% elif discharge.discharge_type == 'voluntary' %}
+                                <span class="badge bg-danger fs-6">Alta Voluntaria</span>
+                                {% else %}
+                                <span class="badge bg-danger fs-6">Salió sin Atención Médica</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <strong>Condición al Alta:</strong>
+                            <p class="mb-0">
+                                {% if discharge.discharge_condition == 'improved' %}
+                                <span class="badge bg-success fs-6">Mejorado</span>
+                                {% elif discharge.discharge_condition == 'stable' %}
+                                <span class="badge bg-info fs-6">Estable</span>
+                                {% elif discharge.discharge_condition == 'same' %}
+                                <span class="badge bg-warning text-dark fs-6">Sin Cambios</span>
+                                {% elif discharge.discharge_condition == 'worsened' %}
+                                <span class="badge bg-danger fs-6">Empeorado</span>
+                                {% else %}
+                                <span class="badge bg-dark fs-6">Fallecido</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Diagnóstico Final -->
+            <div class="card mb-3">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0"><i class="bi bi-clipboard2-pulse"></i> Diagnóstico Final</h5>
+                </div>
+                <div class="card-body">
+                    <p class="mb-0"><strong>{{ discharge.final_diagnosis }}</strong></p>
+                </div>
+            </div>
+
+            <!-- Tratamiento Recibido -->
+            <div class="card mb-3">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="bi bi-prescription2"></i> Tratamiento Recibido</h5>
+                </div>
+                <div class="card-body">
+                    <p>{{ discharge.treatment_received }}</p>
+                </div>
+            </div>
+
+            <!-- Medicamentos al Alta -->
+            {% if discharge.discharge_medications %}
+            <div class="card mb-3">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="bi bi-capsule"></i> Medicamentos al Alta</h5>
+                </div>
+                <div class="card-body">
+                    <pre class="bg-light p-3 rounded mb-0">{{ discharge.discharge_medications }}</pre>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Recomendaciones -->
+            <div class="card mb-3">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="bi bi-check2-circle"></i> Recomendaciones al Alta</h5>
+                </div>
+                <div class="card-body">
+                    <p>{{ discharge.recommendations }}</p>
+                </div>
+            </div>
+
+            <!-- Signos de Alarma -->
+            {% if discharge.warning_signs %}
+            <div class="card mb-3">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="mb-0"><i class="bi bi-exclamation-triangle-fill"></i> Signos de Alarma</h5>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-danger mb-0">
+                        <strong>Consultar inmediatamente si presenta:</strong>
+                        <p class="mb-0 mt-2">{{ discharge.warning_signs }}</p>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Seguimiento -->
+            {% if discharge.follow_up_required %}
+            <div class="card mb-3">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="bi bi-calendar-check"></i> Seguimiento</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-2">
+                            <strong>Requiere Seguimiento:</strong> <span class="badge bg-warning text-dark">SÍ</span>
+                        </div>
+                        {% if discharge.follow_up_specialty %}
+                        <div class="col-md-6 mb-2">
+                            <strong>Especialidad:</strong> {{ discharge.follow_up_specialty }}
+                        </div>
+                        {% endif %}
+                        {% if discharge.follow_up_days %}
+                        <div class="col-md-6 mb-2">
+                            <strong>Control en:</strong> {{ discharge.follow_up_days }} días
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Incapacidad -->
+            {% if discharge.sick_leave_days %}
+            <div class="card mb-3">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0"><i class="bi bi-file-earmark-medical"></i> Incapacidad</h5>
+                </div>
+                <div class="card-body">
+                    <p class="mb-0"><strong>Días de Incapacidad:</strong> {{ discharge.sick_leave_days }} días</p>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Información de Hospitalización -->
+            {% if discharge.discharge_type == 'hospitalization' and discharge.hospitalization_service %}
+            <div class="card mb-3">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="bi bi-building"></i> Información de Hospitalización</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-2">
+                            <strong>Servicio:</strong> {{ discharge.hospitalization_service }}
+                        </div>
+                        {% if discharge.bed_assigned %}
+                        <div class="col-md-6 mb-2">
+                            <strong>Cama Asignada:</strong> {{ discharge.bed_assigned }}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Información de Traslado -->
+            {% if discharge.discharge_type == 'transfer' and discharge.transfer_institution %}
+            <div class="card mb-3">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0"><i class="bi bi-arrow-left-right"></i> Información de Traslado</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-2">
+                        <strong>Institución de Traslado:</strong> {{ discharge.transfer_institution }}
+                    </div>
+                    {% if discharge.transfer_reason %}
+                    <div class="mb-2">
+                        <strong>Razón del Traslado:</strong>
+                        <p class="mb-0">{{ discharge.transfer_reason }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Observaciones -->
+            {% if discharge.observations %}
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h6 class="mb-0"><i class="bi bi-journal-text"></i> Observaciones</h6>
+                </div>
+                <div class="card-body">
+                    <p class="mb-0">{{ discharge.observations }}</p>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Médico que da el Alta -->
+            <div class="card mb-3">
+                <div class="card-header bg-secondary text-white">
+                    <h6 class="mb-0"><i class="bi bi-person-badge"></i> Médico</h6>
+                </div>
+                <div class="card-body">
+                    <p class="mb-2"><strong>Médico que da el Alta:</strong> {{ discharge.discharge_physician.get_full_name }}</p>
+                    <p class="mb-0"><small class="text-muted">Fecha de creación: {{ discharge.created_at|date:"d/m/Y H:i" }}</small></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_css %}
+<style>
+@media print {
+    .btn, .card-header { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+}
+</style>
+{% endblock %}

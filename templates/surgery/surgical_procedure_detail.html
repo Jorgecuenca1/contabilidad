@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% block title %}{{ procedure.name }}{% endblock %}
+{% block content %}
+<div class="container-fluid">
+    <h2><i class="bi bi-journal-medical"></i> {{ procedure.name }}</h2>
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white">Información del Procedimiento</div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Código CUPS:</strong> {{ procedure.code }}</p>
+                            <p><strong>Nombre:</strong> {{ procedure.name }}</p>
+                            <p><strong>Especialidad:</strong> {{ procedure.get_specialty_display }}</p>
+                            <p><strong>Complejidad:</strong>
+                                {% if procedure.complexity == 'low' %}
+                                    <span class="badge bg-info">Baja</span>
+                                {% elif procedure.complexity == 'medium' %}
+                                    <span class="badge bg-warning">Media</span>
+                                {% elif procedure.complexity == 'high' %}
+                                    <span class="badge bg-danger">Alta</span>
+                                {% else %}
+                                    <span class="badge bg-dark">Muy Alta</span>
+                                {% endif %}
+                            </p>
+                            <p><strong>Duración Estimada:</strong> {{ procedure.estimated_duration_minutes }} minutos</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Requiere UCI:</strong> {% if procedure.requires_icu %}Sí{% else %}No{% endif %}</p>
+                            <p><strong>Requiere Banco de Sangre:</strong> {% if procedure.requires_blood_bank %}Sí{% else %}No{% endif %}</p>
+                            {% if procedure.anesthesia_type_recommended %}
+                            <p><strong>Anestesia Recomendada:</strong> {{ procedure.anesthesia_type_recommended }}</p>
+                            {% endif %}
+                            <p><strong>Total Cirugías Realizadas:</strong> {{ total_surgeries }}</p>
+                            <p><strong>Cirugías Completadas:</strong> {{ completed_surgeries }}</p>
+                        </div>
+                    </div>
+                    {% if procedure.description %}
+                    <hr>
+                    <p><strong>Descripción:</strong><br>{{ procedure.description }}</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="mt-3">
+        <a href="{% url 'surgery:surgical_procedure_update' procedure.id %}" class="btn btn-warning">Editar</a>
+        <a href="{% url 'surgery:surgical_procedure_list' %}" class="btn btn-secondary">Volver</a>
+    </div>
+</div>
+{% endblock %}

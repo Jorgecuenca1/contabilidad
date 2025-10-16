@@ -27,9 +27,9 @@ def company_context(request):
         elif request.user.role in ['admin', 'contador']:
             # Administradores y contadores pueden seleccionar empresa
             context['can_select_company'] = True
-            
-            # Obtener empresa seleccionada de la sesión o usar la primera disponible
-            selected_company_id = request.session.get('selected_company_id')
+
+            # Obtener empresa seleccionada de la sesión (soportar ambas claves para compatibilidad)
+            selected_company_id = request.session.get('selected_company_id') or request.session.get('active_company')
             if selected_company_id:
                 try:
                     selected_company = accessible_companies.filter(id=selected_company_id).first()
@@ -38,6 +38,7 @@ def company_context(request):
                     else:
                         # La empresa en sesión ya no está disponible, limpiar y usar la primera
                         request.session.pop('selected_company_id', None)
+                        request.session.pop('active_company', None)
                         context['current_company'] = accessible_companies.first()
                 except:
                     context['current_company'] = accessible_companies.first()

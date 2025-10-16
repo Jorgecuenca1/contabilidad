@@ -1,0 +1,383 @@
+{% extends 'base.html' %}
+{% block title %}Contrarreferencia {{ counter_referral.counter_referral_number }} - Autorizaciones EPS{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'core:dashboard' %}">Dashboard</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'authorizations:index' %}">Autorizaciones EPS</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'authorizations:counter_referral_list' %}">Contrarreferencias</a></li>
+            <li class="breadcrumb-item active">{{ counter_referral.counter_referral_number }}</li>
+        </ol>
+    </nav>
+
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2><i class="bi bi-arrow-left-right"></i> Contrarreferencia: {{ counter_referral.counter_referral_number }}</h2>
+            <p class="text-muted mb-0">
+                Creada el {{ counter_referral.creation_date|date:"d/m/Y H:i" }}
+                {% if counter_referral.status == 'pending' %}
+                <span class="badge bg-warning ms-2">{{ counter_referral.get_status_display }}</span>
+                {% elif counter_referral.status == 'sent' %}
+                <span class="badge bg-primary ms-2">{{ counter_referral.get_status_display }}</span>
+                {% elif counter_referral.status == 'received' %}
+                <span class="badge bg-success ms-2">{{ counter_referral.get_status_display }}</span>
+                {% else %}
+                <span class="badge bg-secondary ms-2">{{ counter_referral.get_status_display }}</span>
+                {% endif %}
+            </p>
+        </div>
+        <div>
+            <a href="{% url 'authorizations:counter_referral_list' %}" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Volver
+            </a>
+        </div>
+    </div>
+
+    <!-- Messages -->
+    {% if messages %}
+    <div class="row mb-3">
+        <div class="col-12">
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="row">
+        <!-- Columna Principal -->
+        <div class="col-md-8">
+            <!-- Autorización de Referencia -->
+            <div class="card mb-3">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="bi bi-file-earmark-check"></i> Autorización de Referencia</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <strong>Número de Autorización:</strong>
+                            <p class="mb-0">
+                                <a href="{% url 'authorizations:authorization_detail' counter_referral.authorization_request.id %}">
+                                    {{ counter_referral.authorization_request.authorization_number }}
+                                </a>
+                            </p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <strong>Servicio Autorizado:</strong>
+                            <p class="mb-0">{{ counter_referral.authorization_request.service_description|truncatewords:10 }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Información del Paciente y EPS -->
+            <div class="card mb-3">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="bi bi-person-badge"></i> Información del Paciente y EPS</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <strong>Paciente:</strong>
+                            <p class="mb-0">{{ counter_referral.patient.get_full_name }}</p>
+                            <small class="text-muted">{{ counter_referral.patient.document_type }} {{ counter_referral.patient.document_number }}</small>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <strong>EPS:</strong>
+                            <p class="mb-0">{{ counter_referral.eps.name }}</p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <strong>Médico Referente:</strong>
+                            <p class="mb-0">{{ counter_referral.referring_physician.get_full_name }}</p>
+                            {% if counter_referral.referring_physician.professional_card %}
+                            <small class="text-muted">TP: {{ counter_referral.referring_physician.professional_card }}</small>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <strong>Fecha de Servicio:</strong>
+                            <p class="mb-0">{{ counter_referral.service_date|date:"d/m/Y" }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Servicios Prestados -->
+            <div class="card mb-3">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="bi bi-clipboard2-pulse"></i> Servicios Prestados</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-0">
+                        <strong>Descripción de Servicios:</strong>
+                        <p class="mt-2">{{ counter_referral.services_provided }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Resultados y Evolución -->
+            <div class="card mb-3">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0"><i class="bi bi-graph-up-arrow"></i> Resultados y Evolución del Paciente</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <strong>Resultados del Tratamiento:</strong>
+                        <p class="mt-2">{{ counter_referral.treatment_results }}</p>
+                    </div>
+
+                    {% if counter_referral.patient_evolution %}
+                    <div class="mb-3">
+                        <strong>Evolución del Paciente:</strong>
+                        <p class="mt-2">{{ counter_referral.patient_evolution }}</p>
+                    </div>
+                    {% endif %}
+
+                    <div class="mb-0">
+                        <strong>Diagnóstico Final:</strong>
+                        <p class="mt-2">{{ counter_referral.final_diagnosis }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recomendaciones y Seguimiento -->
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-file-text"></i> Recomendaciones y Seguimiento</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <strong>Recomendaciones:</strong>
+                        <p class="mt-2">{{ counter_referral.recommendations }}</p>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <strong>Requiere Seguimiento:</strong>
+                            <p class="mb-0">
+                                {% if counter_referral.requires_followup %}
+                                <span class="badge bg-warning">Sí</span>
+                                {% else %}
+                                <span class="badge bg-secondary">No</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+
+                    {% if counter_referral.requires_followup and counter_referral.followup_instructions %}
+                    <div class="mb-0">
+                        <strong>Instrucciones de Seguimiento:</strong>
+                        <div class="alert alert-info mt-2 mb-0">
+                            {{ counter_referral.followup_instructions }}
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Documentos Adjuntos -->
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-paperclip"></i> Documentos Adjuntos</h5>
+                </div>
+                <div class="card-body">
+                    {% if attachments %}
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Título</th>
+                                    <th>Tipo</th>
+                                    <th>Fecha</th>
+                                    <th>Subido por</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for attachment in attachments %}
+                                <tr>
+                                    <td>{{ attachment.title }}</td>
+                                    <td><span class="badge bg-secondary">{{ attachment.get_document_type_display }}</span></td>
+                                    <td>{{ attachment.created_at|date:"d/m/Y H:i" }}</td>
+                                    <td>{{ attachment.created_by.get_full_name }}</td>
+                                    <td>
+                                        <a href="{% url 'authorizations:attachment_download' attachment.id %}"
+                                           class="btn btn-sm btn-outline-primary"
+                                           title="Descargar">
+                                            <i class="bi bi-download"></i>
+                                        </a>
+                                        <button type="button"
+                                                class="btn btn-sm btn-outline-danger"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#deleteAttachmentModal{{ attachment.id }}"
+                                                title="Eliminar">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+
+                                <!-- Modal Eliminar Adjunto -->
+                                <div class="modal fade" id="deleteAttachmentModal{{ attachment.id }}" tabindex="-1">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header bg-danger text-white">
+                                                <h5 class="modal-title">Confirmar Eliminación</h5>
+                                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <p>¿Está seguro de eliminar el documento <strong>{{ attachment.title }}</strong>?</p>
+                                                <p class="text-muted">Esta acción no se puede deshacer.</p>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                                <form method="post" action="{% url 'authorizations:attachment_delete' attachment.id %}" style="display: inline;">
+                                                    {% csrf_token %}
+                                                    <button type="submit" class="btn btn-danger">Eliminar</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <p class="text-muted text-center mb-0">No hay documentos adjuntos.</p>
+                    {% endif %}
+
+                    <div class="text-center mt-3">
+                        <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#uploadAttachmentModal">
+                            <i class="bi bi-upload"></i> Subir Documento
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Columna Lateral - Acciones -->
+        <div class="col-md-4">
+            <!-- Acciones -->
+            <div class="card mb-3">
+                <div class="card-header bg-warning text-dark">
+                    <h6 class="mb-0"><i class="bi bi-gear"></i> Acciones</h6>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <!-- Editar -->
+                        {% if counter_referral.status == 'pending' %}
+                        <a href="{% url 'authorizations:counter_referral_update' counter_referral.id %}"
+                           class="btn btn-primary">
+                            <i class="bi bi-pencil"></i> Editar
+                        </a>
+                        {% endif %}
+
+                        <!-- Enviar -->
+                        {% if counter_referral.status == 'pending' %}
+                        <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#sendModal">
+                            <i class="bi bi-send"></i> Marcar como Enviada
+                        </button>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Información del Sistema -->
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="mb-0"><i class="bi bi-clock-history"></i> Información del Sistema</h6>
+                </div>
+                <div class="card-body">
+                    <small class="text-muted">
+                        <p class="mb-2"><strong>Creado:</strong><br>{{ counter_referral.created_at|date:"d/m/Y H:i" }}</p>
+                        <p class="mb-2"><strong>Creado por:</strong><br>{{ counter_referral.created_by.get_full_name }}</p>
+                        {% if counter_referral.sent_date %}
+                        <p class="mb-2"><strong>Enviada:</strong><br>{{ counter_referral.sent_date|date:"d/m/Y H:i" }}</p>
+                        {% endif %}
+                        {% if counter_referral.received_date %}
+                        <p class="mb-0"><strong>Recibida:</strong><br>{{ counter_referral.received_date|date:"d/m/Y H:i" }}</p>
+                        {% endif %}
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Enviar -->
+<div class="modal fade" id="sendModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="post" action="{% url 'authorizations:counter_referral_send' counter_referral.id %}">
+                {% csrf_token %}
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title"><i class="bi bi-send"></i> Marcar como Enviada</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>¿Está seguro de marcar esta contrarreferencia como enviada?</p>
+                    <p class="text-muted">Se registrará la fecha y hora de envío.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-success">Marcar como Enviada</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Subir Adjunto -->
+<div class="modal fade" id="uploadAttachmentModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="post" action="{% url 'authorizations:attachment_upload' 'counter_referral' counter_referral.id %}" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title"><i class="bi bi-upload"></i> Subir Documento</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Título <span class="text-danger">*</span></label>
+                        <input type="text" name="title" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Tipo de Documento <span class="text-danger">*</span></label>
+                        <select name="document_type" class="form-select" required>
+                            <option value="">Seleccione...</option>
+                            <option value="medical_order">Orden Médica</option>
+                            <option value="clinical_history">Historia Clínica</option>
+                            <option value="lab_results">Resultados de Laboratorio</option>
+                            <option value="imaging">Imágenes Diagnósticas</option>
+                            <option value="consent">Consentimiento Informado</option>
+                            <option value="eps_response">Respuesta EPS</option>
+                            <option value="other">Otro</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Descripción</label>
+                        <textarea name="description" class="form-control" rows="2"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Archivo <span class="text-danger">*</span></label>
+                        <input type="file" name="file" class="form-control" required>
+                        <small class="text-muted">Formatos: PDF, DOC, DOCX, JPG, PNG (Máx. 10MB)</small>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Subir</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

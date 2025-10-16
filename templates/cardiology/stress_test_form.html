@@ -1,0 +1,264 @@
+{% extends 'base.html' %}
+{% block title %}Nueva Prueba de Esfuerzo{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2><i class="bi bi-graph-up-arrow"></i> Nueva Prueba de Esfuerzo (Ergometría)</h2>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'cardiology:dashboard' %}">Cardiología</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'cardiology:stress_test_list' %}">Pruebas de Esfuerzo</a></li>
+                    <li class="breadcrumb-item active">Nueva</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <i class="bi bi-graph-up-arrow"></i> Formulario de Prueba de Esfuerzo
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+
+                        <!-- INFORMACIÓN DEL PACIENTE -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h5 class="border-bottom pb-2"><i class="bi bi-person"></i> Información del Paciente</h5>
+                            </div>
+
+                            <div class="col-md-12">
+                                <label for="patient_id" class="form-label">Paciente <span class="text-danger">*</span></label>
+                                <select name="patient_id" id="patient_id" class="form-select" required>
+                                    <option value="">Seleccione un paciente...</option>
+                                    {% for patient in patients %}
+                                    <option value="{{ patient.id }}">
+                                        {{ patient.third_party.first_name }} {{ patient.third_party.last_name }}
+                                        ({{ patient.third_party.document_number }})
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- INFORMACIÓN DEL ESTUDIO -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h5 class="border-bottom pb-2"><i class="bi bi-calendar-event"></i> Información del Estudio</h5>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="test_date" class="form-label">Fecha y Hora <span class="text-danger">*</span></label>
+                                <input type="datetime-local" name="test_date" id="test_date" class="form-control" required>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="protocol_used" class="form-label">Protocolo Utilizado <span class="text-danger">*</span></label>
+                                <select name="protocol_used" id="protocol_used" class="form-select" required>
+                                    {% for value, label in protocol_choices %}
+                                    <option value="{{ value }}">{{ label }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- PERSONAL -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h5 class="border-bottom pb-2"><i class="bi bi-people"></i> Personal</h5>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="performed_by_id" class="form-label">Realizado Por <span class="text-danger">*</span></label>
+                                <select name="performed_by_id" id="performed_by_id" class="form-select" required>
+                                    <option value="">Seleccione...</option>
+                                    {% for physician in physicians %}
+                                    <option value="{{ physician.id }}">{{ physician.first_name }} {{ physician.last_name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="supervised_by_id" class="form-label">Supervisado Por <span class="text-danger">*</span></label>
+                                <select name="supervised_by_id" id="supervised_by_id" class="form-select" required>
+                                    <option value="">Seleccione...</option>
+                                    {% for physician in physicians %}
+                                    <option value="{{ physician.id }}">{{ physician.first_name }} {{ physician.last_name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- DATOS BASALES -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h5 class="border-bottom pb-2"><i class="bi bi-heart-pulse"></i> Datos Basales (Pre-Ejercicio)</h5>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label for="baseline_bp_systolic" class="form-label">PA Sistólica Basal (mmHg) <span class="text-danger">*</span></label>
+                                <input type="number" name="baseline_bp_systolic" id="baseline_bp_systolic"
+                                       class="form-control" placeholder="120" required>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label for="baseline_bp_diastolic" class="form-label">PA Diastólica Basal (mmHg) <span class="text-danger">*</span></label>
+                                <input type="number" name="baseline_bp_diastolic" id="baseline_bp_diastolic"
+                                       class="form-control" placeholder="80" required>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label for="baseline_heart_rate" class="form-label">FC Basal (lpm) <span class="text-danger">*</span></label>
+                                <input type="number" name="baseline_heart_rate" id="baseline_heart_rate"
+                                       class="form-control" placeholder="70" required>
+                            </div>
+                        </div>
+
+                        <!-- DATOS DEL EJERCICIO -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h5 class="border-bottom pb-2"><i class="bi bi-activity"></i> Datos del Ejercicio</h5>
+                            </div>
+
+                            <div class="col-md-3">
+                                <label for="exercise_duration_minutes" class="form-label">Duración (minutos) <span class="text-danger">*</span></label>
+                                <input type="number" step="0.01" name="exercise_duration_minutes" id="exercise_duration_minutes"
+                                       class="form-control" placeholder="12.5" required>
+                            </div>
+
+                            <div class="col-md-3">
+                                <label for="max_heart_rate_achieved" class="form-label">FC Máxima Alcanzada <span class="text-danger">*</span></label>
+                                <input type="number" name="max_heart_rate_achieved" id="max_heart_rate_achieved"
+                                       class="form-control" placeholder="150" required>
+                            </div>
+
+                            <div class="col-md-3">
+                                <label for="max_heart_rate_predicted" class="form-label">FC Máxima Predicha <span class="text-danger">*</span></label>
+                                <input type="number" name="max_heart_rate_predicted" id="max_heart_rate_predicted"
+                                       class="form-control" placeholder="170" required>
+                                <small class="text-muted">220 - edad</small>
+                            </div>
+
+                            <div class="col-md-3">
+                                <label for="percentage_max_hr" class="form-label">% FC Máxima <span class="text-danger">*</span></label>
+                                <input type="number" step="0.01" name="percentage_max_hr" id="percentage_max_hr"
+                                       class="form-control" placeholder="88.2" required>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label for="max_bp_systolic" class="form-label">PA Sistólica Máxima <span class="text-danger">*</span></label>
+                                <input type="number" name="max_bp_systolic" id="max_bp_systolic"
+                                       class="form-control" placeholder="180" required>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label for="max_bp_diastolic" class="form-label">PA Diastólica Máxima <span class="text-danger">*</span></label>
+                                <input type="number" name="max_bp_diastolic" id="max_bp_diastolic"
+                                       class="form-control" placeholder="90" required>
+                            </div>
+                        </div>
+
+                        <!-- MOTIVO DE DETENCIÓN -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h5 class="border-bottom pb-2"><i class="bi bi-stop-circle"></i> Detención de la Prueba</h5>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="stop_reason" class="form-label">Motivo de Detención <span class="text-danger">*</span></label>
+                                <select name="stop_reason" id="stop_reason" class="form-select" required>
+                                    {% for value, label in stop_reason_choices %}
+                                    <option value="{{ value }}">{{ label }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="stop_reason_details" class="form-label">Detalles del Motivo</label>
+                                <textarea name="stop_reason_details" id="stop_reason_details"
+                                          class="form-control" rows="2" placeholder="Descripción detallada..."></textarea>
+                            </div>
+                        </div>
+
+                        <!-- CAMBIOS ELECTROCARDIOGRÁFICOS -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h5 class="border-bottom pb-2"><i class="bi bi-clipboard-pulse"></i> Cambios Electrocardiográficos</h5>
+                            </div>
+
+                            <div class="col-md-12 mb-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="st_segment_changes" id="st_segment_changes">
+                                    <label class="form-check-label" for="st_segment_changes">
+                                        Cambios en segmento ST
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="col-md-12">
+                                <label for="st_segment_description" class="form-label">Descripción de Cambios ST</label>
+                                <textarea name="st_segment_description" id="st_segment_description"
+                                          class="form-control" rows="2"
+                                          placeholder="Si hay cambios en ST, descríbalos aquí..."></textarea>
+                            </div>
+                        </div>
+
+                        <!-- RESULTADO E INTERPRETACIÓN -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h5 class="border-bottom pb-2"><i class="bi bi-clipboard-check"></i> Resultado e Interpretación</h5>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="result" class="form-label">Resultado <span class="text-danger">*</span></label>
+                                <select name="result" id="result" class="form-select" required>
+                                    {% for value, label in result_choices %}
+                                    <option value="{{ value }}">{{ label }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="col-md-12 mb-3">
+                                <label for="interpretation" class="form-label">Interpretación <span class="text-danger">*</span></label>
+                                <textarea name="interpretation" id="interpretation" class="form-control" rows="3" required
+                                          placeholder="Interpretación de la prueba de esfuerzo..."></textarea>
+                            </div>
+
+                            <div class="col-md-12 mb-3">
+                                <label for="conclusion" class="form-label">Conclusión <span class="text-danger">*</span></label>
+                                <textarea name="conclusion" id="conclusion" class="form-control" rows="2" required
+                                          placeholder="Conclusión diagnóstica..."></textarea>
+                            </div>
+
+                            <div class="col-md-12">
+                                <label for="recommendations" class="form-label">Recomendaciones</label>
+                                <textarea name="recommendations" id="recommendations" class="form-control" rows="2"
+                                          placeholder="Recomendaciones clínicas..."></textarea>
+                            </div>
+                        </div>
+
+                        <!-- BOTONES -->
+                        <div class="row">
+                            <div class="col-12">
+                                <hr>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-save"></i> Guardar Prueba de Esfuerzo
+                                </button>
+                                <a href="{% url 'cardiology:stress_test_list' %}" class="btn btn-secondary">
+                                    <i class="bi bi-x-circle"></i> Cancelar
+                                </a>
+                            </div>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

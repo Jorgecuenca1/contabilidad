@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+{% block title %}Consultas Oftalmológicas{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-clipboard-pulse"></i> Consultas Oftalmológicas</h2>
+        <a href="{% url 'ophthalmology:consultation_create' %}" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> Nueva Consulta
+        </a>
+    </div>
+
+    <!-- Filtros -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-4">
+                    <label class="form-label">Buscar</label>
+                    <input type="text" name="search" class="form-control" value="{{ search }}"
+                           placeholder="Número, paciente, identificación...">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Estado</label>
+                    <select name="status" class="form-select">
+                        <option value="">Todos</option>
+                        <option value="scheduled" {% if status_filter == 'scheduled' %}selected{% endif %}>Programada</option>
+                        <option value="in_progress" {% if status_filter == 'in_progress' %}selected{% endif %}>En Proceso</option>
+                        <option value="completed" {% if status_filter == 'completed' %}selected{% endif %}>Completada</option>
+                        <option value="cancelled" {% if status_filter == 'cancelled' %}selected{% endif %}>Cancelada</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Desde Fecha</label>
+                    <input type="date" name="date_from" class="form-control" value="{{ date_from }}">
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-search"></i> Buscar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Tabla de Consultas -->
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Número</th>
+                            <th>Paciente</th>
+                            <th>Identificación</th>
+                            <th>Oftalmólogo</th>
+                            <th>Fecha</th>
+                            <th>Motivo de Consulta</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for consultation in page_obj %}
+                        <tr>
+                            <td><strong>{{ consultation.consultation_number }}</strong></td>
+                            <td>{{ consultation.patient.third_party.name }}</td>
+                            <td>{{ consultation.patient.third_party.identification_number }}</td>
+                            <td>{{ consultation.ophthalmologist.get_full_name }}</td>
+                            <td>{{ consultation.consultation_date|date:"d/m/Y H:i" }}</td>
+                            <td>{{ consultation.chief_complaint|truncatewords:8 }}</td>
+                            <td>
+                                {% if consultation.status == 'scheduled' %}
+                                    <span class="badge bg-warning">Programada</span>
+                                {% elif consultation.status == 'in_progress' %}
+                                    <span class="badge bg-primary">En Proceso</span>
+                                {% elif consultation.status == 'completed' %}
+                                    <span class="badge bg-success">Completada</span>
+                                {% elif consultation.status == 'cancelled' %}
+                                    <span class="badge bg-danger">Cancelada</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{% url 'ophthalmology:consultation_detail' consultation.id %}"
+                                   class="btn btn-sm btn-outline-primary" title="Ver Detalle">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="8" class="text-center text-muted py-4">
+                                No se encontraron consultas
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Paginación -->
+            {% if page_obj.has_other_pages %}
+            <nav aria-label="Navegación de páginas">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}&search={{ search }}&status={{ status_filter }}&date_from={{ date_from }}">Anterior</a>
+                    </li>
+                    {% endif %}
+
+                    {% for num in page_obj.paginator.page_range %}
+                    {% if page_obj.number == num %}
+                    <li class="page-item active">
+                        <span class="page-link">{{ num }}</span>
+                    </li>
+                    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ num }}&search={{ search }}&status={{ status_filter }}&date_from={{ date_from }}">{{ num }}</a>
+                    </li>
+                    {% endif %}
+                    {% endfor %}
+
+                    {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}&search={{ search }}&status={{ status_filter }}&date_from={{ date_from }}">Siguiente</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

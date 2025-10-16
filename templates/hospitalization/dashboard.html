@@ -1,0 +1,296 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard Hospitalización{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-hospital"></i> Módulo de Hospitalización</h2>
+        <div>
+            <a href="{% url 'hospitalization:admission_create' %}" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> Nueva Admisión
+            </a>
+            <a href="{% url 'hospitalization:admission_list' %}" class="btn btn-success">
+                <i class="bi bi-list"></i> Ver Admisiones
+            </a>
+        </div>
+    </div>
+
+    <!-- Estadísticas Principales -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card border-primary">
+                <div class="card-body text-center">
+                    <i class="bi bi-hospital-fill display-4 text-primary"></i>
+                    <h3 class="mt-2">{{ total_beds }}</h3>
+                    <p class="text-muted mb-0">Total Camas</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card border-success">
+                <div class="card-body text-center">
+                    <i class="bi bi-check-circle-fill display-4 text-success"></i>
+                    <h3 class="mt-2">{{ available_beds }}</h3>
+                    <p class="text-muted mb-0">Camas Disponibles</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card border-warning">
+                <div class="card-body text-center">
+                    <i class="bi bi-person-fill-check display-4 text-warning"></i>
+                    <h3 class="mt-2">{{ occupied_beds }}</h3>
+                    <p class="text-muted mb-0">Camas Ocupadas</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card border-info">
+                <div class="card-body text-center">
+                    <i class="bi bi-percent display-4 text-info"></i>
+                    <h3 class="mt-2">{{ occupancy_rate }}%</h3>
+                    <p class="text-muted mb-0">Tasa de Ocupación</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Segunda fila de estadísticas -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card border-primary">
+                <div class="card-body text-center">
+                    <i class="bi bi-people-fill display-4 text-primary"></i>
+                    <h3 class="mt-2">{{ total_active_admissions }}</h3>
+                    <p class="text-muted mb-0">Admisiones Activas</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card border-success">
+                <div class="card-body text-center">
+                    <i class="bi bi-box-arrow-right display-4 text-success"></i>
+                    <h3 class="mt-2">{{ today_discharges }}</h3>
+                    <p class="text-muted mb-0">Egresos Hoy</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card border-danger">
+                <div class="card-body text-center">
+                    <i class="bi bi-file-medical display-4 text-danger"></i>
+                    <h3 class="mt-2">{{ pending_orders }}</h3>
+                    <p class="text-muted mb-0">Órdenes Pendientes</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card border-info">
+                <div class="card-body text-center">
+                    <i class="bi bi-calendar-week display-4 text-info"></i>
+                    <h3 class="mt-2">{{ avg_stay_days }}</h3>
+                    <p class="text-muted mb-0">Promedio Estancia (días)</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Admisiones Activas -->
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <i class="bi bi-person-lines-fill"></i> Pacientes Hospitalizados
+                </div>
+                <div class="card-body" style="max-height: 500px; overflow-y: auto;">
+                    {% if active_admissions %}
+                    <div class="table-responsive">
+                        <table class="table table-sm table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Admisión</th>
+                                    <th>Paciente</th>
+                                    <th>Cama</th>
+                                    <th>Médico</th>
+                                    <th>Días</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for admission in active_admissions %}
+                                <tr>
+                                    <td><strong>{{ admission.admission_number }}</strong></td>
+                                    <td>
+                                        {{ admission.patient.third_party.name|truncatewords:3 }}<br>
+                                        <small class="text-muted">HC: {{ admission.patient.medical_record_number }}</small>
+                                    </td>
+                                    <td>
+                                        <strong>{{ admission.bed.code }}</strong><br>
+                                        <small class="text-muted">{{ admission.bed.ward.name|truncatewords:2 }}</small>
+                                    </td>
+                                    <td>
+                                        <small>{{ admission.attending_physician.get_full_name|default:admission.attending_physician.username|truncatewords:2 }}</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge {% if admission.get_stay_duration > 15 %}bg-danger{% elif admission.get_stay_duration > 7 %}bg-warning{% else %}bg-info{% endif %}">
+                                            {{ admission.get_stay_duration }} día(s)
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <a href="{% url 'hospitalization:admission_detail' admission.id %}" class="btn btn-sm btn-info">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <p class="text-muted">No hay pacientes hospitalizados actualmente</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Distribución por Pabellón -->
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-header bg-info text-white">
+                    <i class="bi bi-building"></i> Admisiones por Pabellón
+                </div>
+                <div class="card-body" style="max-height: 500px; overflow-y: auto;">
+                    {% if admissions_by_ward %}
+                    {% for item in admissions_by_ward %}
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <strong>{{ item.bed__ward__name|truncatewords:4 }}</strong>
+                        </div>
+                        <span class="badge bg-info rounded-pill">{{ item.total }}</span>
+                    </div>
+                    {% endfor %}
+                    {% else %}
+                    <p class="text-muted">Sin datos</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Estancias Prolongadas -->
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header bg-warning">
+                    <i class="bi bi-exclamation-triangle"></i> Estancias Prolongadas (>15 días)
+                </div>
+                <div class="card-body" style="max-height: 400px; overflow-y: auto;">
+                    {% if long_stay_patients %}
+                    <div class="list-group">
+                        {% for admission in long_stay_patients %}
+                        <a href="{% url 'hospitalization:admission_detail' admission.id %}" class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">{{ admission.patient.third_party.name|truncatewords:4 }}</h6>
+                                <span class="badge bg-danger">{{ admission.get_stay_duration }} días</span>
+                            </div>
+                            <p class="mb-1">
+                                <small>Admisión: {{ admission.admission_number }}</small><br>
+                                <small>Cama: {{ admission.bed.code }}</small>
+                            </p>
+                            <small class="text-muted">Desde: {{ admission.admission_date|date:"d/m/Y" }}</small>
+                        </a>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <p class="text-muted">No hay estancias prolongadas</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Admisiones Recientes -->
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header bg-success text-white">
+                    <i class="bi bi-clock-history"></i> Admisiones Recientes
+                </div>
+                <div class="card-body" style="max-height: 400px; overflow-y: auto;">
+                    {% if recent_admissions %}
+                    <div class="list-group">
+                        {% for admission in recent_admissions %}
+                        <a href="{% url 'hospitalization:admission_detail' admission.id %}" class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">{{ admission.patient.third_party.name|truncatewords:4 }}</h6>
+                                <small>{{ admission.admission_date|date:"d/m/Y H:i" }}</small>
+                            </div>
+                            <p class="mb-1">
+                                <small>Admisión: <strong>{{ admission.admission_number }}</strong></small><br>
+                                <small>Cama: {{ admission.bed.code }} - {{ admission.bed.ward.name|truncatewords:3 }}</small>
+                            </p>
+                            <small>
+                                {% if admission.status == 'active' %}
+                                <span class="badge bg-primary">Activa</span>
+                                {% elif admission.status == 'discharged' %}
+                                <span class="badge bg-success">Egresado</span>
+                                {% else %}
+                                <span class="badge bg-secondary">{{ admission.get_status_display }}</span>
+                                {% endif %}
+                            </small>
+                        </a>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <p class="text-muted">No hay admisiones recientes</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Accesos Rápidos -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <i class="bi bi-lightning"></i> Accesos Rápidos
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-2 mb-3">
+                            <a href="{% url 'hospitalization:admission_create' %}" class="btn btn-outline-primary w-100">
+                                <i class="bi bi-plus-circle"></i><br>Nueva Admisión
+                            </a>
+                        </div>
+                        <div class="col-md-2 mb-3">
+                            <a href="{% url 'hospitalization:admission_list' %}" class="btn btn-outline-success w-100">
+                                <i class="bi bi-list"></i><br>Admisiones
+                            </a>
+                        </div>
+                        <div class="col-md-2 mb-3">
+                            <a href="{% url 'hospitalization:bed_list' %}" class="btn btn-outline-info w-100">
+                                <i class="bi bi-hospital"></i><br>Camas
+                            </a>
+                        </div>
+                        <div class="col-md-2 mb-3">
+                            <a href="{% url 'hospitalization:ward_list' %}" class="btn btn-outline-warning w-100">
+                                <i class="bi bi-building"></i><br>Pabellones
+                            </a>
+                        </div>
+                        <div class="col-md-2 mb-3">
+                            <a href="{% url 'hospitalization:occupancy_report' %}" class="btn btn-outline-secondary w-100">
+                                <i class="bi bi-file-bar-graph"></i><br>Reporte Ocupación
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

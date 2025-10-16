@@ -1,0 +1,227 @@
+{% extends 'base.html' %}
+
+{% block title %}Crear Episodio de Atención - RIPS{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h2><i class="fas fa-plus-circle"></i> Crear Episodio de Atención</h2>
+                    <p class="text-muted">Registrar nuevo episodio de atención médica</p>
+                </div>
+                <div>
+                    <a href="{% url 'rips:episode_list' %}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Volver
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8 offset-lg-2">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <i class="fas fa-file-medical"></i> Datos del Episodio
+                </div>
+                <div class="card-body">
+                    <form method="post" id="episodeForm">
+                        {% csrf_token %}
+
+                        <!-- Selección de Paciente -->
+                        <div class="mb-4">
+                            <h5 class="border-bottom pb-2"><i class="fas fa-user-injured"></i> Paciente</h5>
+
+                            <div class="mb-3">
+                                <label for="patient_search" class="form-label">Buscar Paciente *</label>
+                                <input type="text" class="form-control" id="patient_search"
+                                       placeholder="Escriba nombre o documento del paciente..."
+                                       autocomplete="off">
+                                <small class="form-text text-muted">
+                                    Escriba al menos 2 caracteres para buscar
+                                </small>
+                            </div>
+
+                            <div id="patient_results" class="list-group mb-3" style="display: none;"></div>
+
+                            <div id="selected_patient" class="alert alert-info" style="display: none;">
+                                <strong>Paciente seleccionado:</strong>
+                                <div id="patient_info"></div>
+                            </div>
+
+                            <input type="hidden" name="patient_id" id="patient_id" required>
+                        </div>
+
+                        <!-- Tipo de Episodio -->
+                        <div class="mb-4">
+                            <h5 class="border-bottom pb-2"><i class="fas fa-clipboard-list"></i> Tipo de Atención</h5>
+
+                            <div class="mb-3">
+                                <label for="episode_type" class="form-label">Tipo de Episodio *</label>
+                                <select name="episode_type" id="episode_type" class="form-select" required>
+                                    <option value="">Seleccione...</option>
+                                    <option value="ambulatory">Ambulatorio (Consulta Externa)</option>
+                                    <option value="emergency">Urgencias</option>
+                                    <option value="hospitalization">Hospitalización</option>
+                                    <option value="surgery">Cirugía</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Información del Pagador -->
+                        <div class="mb-4">
+                            <h5 class="border-bottom pb-2"><i class="fas fa-hospital"></i> Pagador (EPS/Aseguradora)</h5>
+
+                            <div class="mb-3">
+                                <label for="payer_id" class="form-label">EPS/Aseguradora *</label>
+                                <select name="payer_id" id="payer_id" class="form-select" required>
+                                    <option value="">Seleccione...</option>
+                                    {% for payer in payers %}
+                                    <option value="{{ payer.id }}">
+                                        {{ payer.name }} - {{ payer.document_number }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="authorization_number" class="form-label">Número de Autorización</label>
+                                <input type="text" name="authorization_number" id="authorization_number"
+                                       class="form-control" maxlength="50"
+                                       placeholder="Opcional - número de autorización de la EPS">
+                            </div>
+                        </div>
+
+                        <!-- Diagnóstico de Ingreso -->
+                        <div class="mb-4">
+                            <h5 class="border-bottom pb-2"><i class="fas fa-stethoscope"></i> Diagnóstico</h5>
+
+                            <div class="mb-3">
+                                <label for="admission_diagnosis" class="form-label">Diagnóstico de Ingreso (CIE-10)</label>
+                                <input type="text" name="admission_diagnosis" id="admission_diagnosis"
+                                       class="form-control" maxlength="10"
+                                       placeholder="Ej: J06.9">
+                                <small class="form-text text-muted">
+                                    Código CIE-10 del diagnóstico principal al ingreso
+                                </small>
+                            </div>
+                        </div>
+
+                        <!-- Botones de Acción -->
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="{% url 'rips:episode_list' %}" class="btn btn-secondary">
+                                <i class="fas fa-times"></i> Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-save"></i> Crear Episodio
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Información Adicional -->
+            <div class="card mt-3">
+                <div class="card-header bg-info text-white">
+                    <i class="fas fa-info-circle"></i> Información Importante
+                </div>
+                <div class="card-body">
+                    <ul class="mb-0">
+                        <li>El episodio se creará con estado <strong>Activo</strong></li>
+                        <li>La fecha de ingreso será la fecha y hora actual</li>
+                        <li>Se generará un número de episodio automáticamente</li>
+                        <li>Podrá agregar servicios al episodio desde los módulos correspondientes</li>
+                        <li>Cuando termine la atención, debe <strong>cerrar el episodio</strong> antes de facturar</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Script para búsqueda de pacientes -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const patientSearch = document.getElementById('patient_search');
+    const patientResults = document.getElementById('patient_results');
+    const patientId = document.getElementById('patient_id');
+    const selectedPatient = document.getElementById('selected_patient');
+    const patientInfo = document.getElementById('patient_info');
+
+    let searchTimeout;
+
+    patientSearch.addEventListener('input', function() {
+        clearTimeout(searchTimeout);
+        const query = this.value.trim();
+
+        if (query.length < 2) {
+            patientResults.style.display = 'none';
+            return;
+        }
+
+        searchTimeout = setTimeout(function() {
+            fetch(`{% url 'rips:api_search_patients' %}?q=${encodeURIComponent(query)}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.results && data.results.length > 0) {
+                        let html = '';
+                        data.results.forEach(patient => {
+                            html += `
+                                <button type="button" class="list-group-item list-group-item-action patient-item"
+                                        data-id="${patient.id}"
+                                        data-name="${patient.name}"
+                                        data-document="${patient.document}"
+                                        data-medical-record="${patient.medical_record}">
+                                    <strong>${patient.name}</strong><br>
+                                    <small>Doc: ${patient.document} | HC: ${patient.medical_record}</small>
+                                </button>
+                            `;
+                        });
+                        patientResults.innerHTML = html;
+                        patientResults.style.display = 'block';
+
+                        // Agregar event listeners
+                        document.querySelectorAll('.patient-item').forEach(item => {
+                            item.addEventListener('click', function() {
+                                const id = this.getAttribute('data-id');
+                                const name = this.getAttribute('data-name');
+                                const document = this.getAttribute('data-document');
+                                const medicalRecord = this.getAttribute('data-medical-record');
+
+                                patientId.value = id;
+                                patientInfo.innerHTML = `
+                                    ${name}<br>
+                                    <small>Documento: ${document} | Historia Clínica: ${medicalRecord}</small>
+                                `;
+                                selectedPatient.style.display = 'block';
+                                patientResults.style.display = 'none';
+                                patientSearch.value = name;
+                            });
+                        });
+                    } else {
+                        patientResults.innerHTML = '<div class="list-group-item">No se encontraron pacientes</div>';
+                        patientResults.style.display = 'block';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    patientResults.innerHTML = '<div class="list-group-item text-danger">Error al buscar pacientes</div>';
+                    patientResults.style.display = 'block';
+                });
+        }, 300);
+    });
+
+    // Validación del formulario
+    document.getElementById('episodeForm').addEventListener('submit', function(e) {
+        if (!patientId.value) {
+            e.preventDefault();
+            alert('Debe seleccionar un paciente');
+            patientSearch.focus();
+            return false;
+        }
+    });
+});
+</script>
+{% endblock %}

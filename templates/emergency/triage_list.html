@@ -1,0 +1,181 @@
+{% extends 'base.html' %}
+{% block title %}Listado de Triages{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-list-ul"></i> Evaluaciones de Triage</h2>
+        <div>
+            <a href="{% url 'emergency:triage_create' %}" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> Nuevo Triage
+            </a>
+            <a href="{% url 'emergency:dashboard' %}" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Volver
+            </a>
+        </div>
+    </div>
+
+    <!-- Filtros -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-3">
+                    <label class="form-label">Buscar</label>
+                    <input type="text" name="search" class="form-control" placeholder="Número, paciente, queja..." value="{{ filters.search }}">
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Nivel de Triage</label>
+                    <select name="triage_level" class="form-select">
+                        <option value="">Todos</option>
+                        {% for level, label in level_choices %}
+                        <option value="{{ level }}" {% if filters.triage_level == level %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Estado Admisión</label>
+                    <select name="has_admission" class="form-select">
+                        <option value="">Todos</option>
+                        <option value="true" {% if filters.has_admission == 'true' %}selected{% endif %}>Con Admisión</option>
+                        <option value="false" {% if filters.has_admission == 'false' %}selected{% endif %}>Sin Admisión</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Fecha Desde</label>
+                    <input type="date" name="date_from" class="form-control" value="{{ filters.date_from }}">
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Fecha Hasta</label>
+                    <input type="date" name="date_to" class="form-control" value="{{ filters.date_to }}">
+                </div>
+                <div class="col-md-1 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Tabla de Triages -->
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Número</th>
+                            <th>Paciente</th>
+                            <th>Nivel de Triage</th>
+                            <th>Fecha/Hora Llegada</th>
+                            <th>Motivo de Consulta</th>
+                            <th>Signos Vitales</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for triage in triages %}
+                        <tr>
+                            <td><strong>{{ triage.triage_number }}</strong></td>
+                            <td>
+                                {{ triage.patient.third_party.name }}
+                                <br>
+                                <small class="text-muted">{{ triage.patient.medical_record_number }}</small>
+                            </td>
+                            <td>
+                                {% if triage.triage_level == 'I' %}
+                                <span class="badge bg-danger">
+                                    <i class="bi bi-exclamation-triangle-fill"></i> Nivel I - Rojo
+                                </span>
+                                <br><small class="text-muted">Inmediato</small>
+                                {% elif triage.triage_level == 'II' %}
+                                <span class="badge bg-warning text-dark">
+                                    <i class="bi bi-exclamation-circle-fill"></i> Nivel II - Naranja
+                                </span>
+                                <br><small class="text-muted">15 minutos</small>
+                                {% elif triage.triage_level == 'III' %}
+                                <span class="badge bg-info">
+                                    <i class="bi bi-info-circle-fill"></i> Nivel III - Amarillo
+                                </span>
+                                <br><small class="text-muted">30 minutos</small>
+                                {% elif triage.triage_level == 'IV' %}
+                                <span class="badge bg-success">
+                                    <i class="bi bi-check-circle-fill"></i> Nivel IV - Verde
+                                </span>
+                                <br><small class="text-muted">60 minutos</small>
+                                {% else %}
+                                <span class="badge bg-primary">
+                                    <i class="bi bi-circle-fill"></i> Nivel V - Azul
+                                </span>
+                                <br><small class="text-muted">120 minutos</small>
+                                {% endif %}
+                            </td>
+                            <td>{{ triage.arrival_datetime|date:"d/m/Y H:i" }}</td>
+                            <td>{{ triage.chief_complaint|truncatewords:10 }}</td>
+                            <td>
+                                <small>
+                                    {% if triage.blood_pressure %}PA: {{ triage.blood_pressure }}<br>{% endif %}
+                                    {% if triage.heart_rate %}FC: {{ triage.heart_rate }} lpm<br>{% endif %}
+                                    {% if triage.temperature %}T: {{ triage.temperature }}°C{% endif %}
+                                </small>
+                            </td>
+                            <td>
+                                {% if triage.admission %}
+                                <span class="badge bg-success">
+                                    <i class="bi bi-check-circle"></i> Admitido
+                                </span>
+                                {% else %}
+                                <span class="badge bg-warning text-dark">
+                                    <i class="bi bi-hourglass-split"></i> Pendiente
+                                </span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{% url 'emergency:triage_detail' triage.id %}" class="btn btn-sm btn-outline-primary" title="Ver detalle">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                {% if not triage.admission %}
+                                <a href="{% url 'emergency:admission_create' %}?triage={{ triage.id }}" class="btn btn-sm btn-outline-success" title="Crear admisión">
+                                    <i class="bi bi-clipboard-plus"></i>
+                                </a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="8" class="text-center text-muted py-4">
+                                No hay triages registrados. <a href="{% url 'emergency:triage_create' %}">Crear primer triage</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Paginación -->
+            {% if triages.has_other_pages %}
+            <nav class="mt-4">
+                <ul class="pagination justify-content-center">
+                    {% if triages.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ triages.previous_page_number }}{% if filters.search %}&search={{ filters.search }}{% endif %}{% if filters.triage_level %}&triage_level={{ filters.triage_level }}{% endif %}{% if filters.has_admission %}&has_admission={{ filters.has_admission }}{% endif %}{% if filters.date_from %}&date_from={{ filters.date_from }}{% endif %}{% if filters.date_to %}&date_to={{ filters.date_to }}{% endif %}">Anterior</a>
+                    </li>
+                    {% endif %}
+
+                    <li class="page-item active">
+                        <span class="page-link">Página {{ triages.number }} de {{ triages.paginator.num_pages }}</span>
+                    </li>
+
+                    {% if triages.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ triages.next_page_number }}{% if filters.search %}&search={{ filters.search }}{% endif %}{% if filters.triage_level %}&triage_level={{ filters.triage_level }}{% endif %}{% if filters.has_admission %}&has_admission={{ filters.has_admission }}{% endif %}{% if filters.date_from %}&date_from={{ filters.date_from }}{% endif %}{% if filters.date_to %}&date_to={{ filters.date_to }}{% endif %}">Siguiente</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

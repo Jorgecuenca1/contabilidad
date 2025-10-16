@@ -1,0 +1,238 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard Farmacia{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-capsule"></i> Módulo de Farmacia</h2>
+        <div>
+            <a href="{% url 'pharmacy:dispensing_create' %}" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> Nueva Dispensación
+            </a>
+            <a href="{% url 'pharmacy:medicine_list' %}" class="btn btn-success">
+                <i class="bi bi-list"></i> Ver Medicamentos
+            </a>
+        </div>
+    </div>
+
+    <!-- Estadísticas Principales -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card border-primary">
+                <div class="card-body text-center">
+                    <i class="bi bi-capsule-pill display-4 text-primary"></i>
+                    <h3 class="mt-2">{{ total_medicines }}</h3>
+                    <p class="text-muted mb-0">Medicamentos Activos</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card border-success">
+                <div class="card-body text-center">
+                    <i class="bi bi-cash-stack display-4 text-success"></i>
+                    <h3 class="mt-2">${{ total_stock_value|floatformat:0 }}</h3>
+                    <p class="text-muted mb-0">Valor del Stock</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card border-warning">
+                <div class="card-body text-center">
+                    <i class="bi bi-exclamation-triangle display-4 text-warning"></i>
+                    <h3 class="mt-2">{{ low_stock_medicines }}</h3>
+                    <p class="text-muted mb-0">Stock Bajo</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card border-danger">
+                <div class="card-body text-center">
+                    <i class="bi bi-calendar-x display-4 text-danger"></i>
+                    <h3 class="mt-2">{{ near_expiry_batches }}</h3>
+                    <p class="text-muted mb-0">Próximos a Vencer</p>
+                    <small class="text-muted">({{ expired_batches }} vencidos)</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Alertas Activas -->
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-header bg-danger text-white">
+                    <i class="bi bi-bell"></i> Alertas Activas ({{ active_alerts|length }})
+                </div>
+                <div class="card-body" style="max-height: 400px; overflow-y: auto;">
+                    {% if active_alerts %}
+                        {% for alert in active_alerts %}
+                        <div class="alert alert-{% if alert.priority == 'critical' %}danger{% elif alert.priority == 'high' %}warning{% else %}info{% endif %} py-2 mb-2">
+                            <strong>{{ alert.get_alert_type_display }}</strong><br>
+                            <small>{{ alert.medicine.generic_name|truncatewords:5 }}</small><br>
+                            <small class="text-muted">{{ alert.message|truncatewords:10 }}</small>
+                        </div>
+                        {% endfor %}
+                        <a href="{% url 'pharmacy:alerts_list' %}" class="btn btn-sm btn-primary w-100">Ver Todas</a>
+                    {% else %}
+                        <p class="text-muted">No hay alertas activas</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Lotes Próximos a Vencer -->
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-header bg-warning">
+                    <i class="bi bi-calendar-event"></i> Próximos a Vencer
+                </div>
+                <div class="card-body" style="max-height: 400px; overflow-y: auto;">
+                    {% if near_expiry_list %}
+                        <div class="list-group">
+                            {% for batch in near_expiry_list %}
+                            <div class="list-group-item">
+                                <strong>{{ batch.medicine.generic_name|truncatewords:3 }}</strong><br>
+                                <small>Lote: {{ batch.batch_number }}</small><br>
+                                <small class="text-danger">Vence: {{ batch.expiry_date|date:"d/m/Y" }} ({{ batch.days_to_expiry }} días)</small><br>
+                                <small>Stock: {{ batch.current_quantity }} unidades</small>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-muted">No hay lotes próximos a vencer</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Top Medicamentos Dispensados -->
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-header bg-info text-white">
+                    <i class="bi bi-graph-up"></i> Top 10 Más Dispensados
+                </div>
+                <div class="card-body" style="max-height: 400px; overflow-y: auto;">
+                    {% if top_medicines %}
+                        {% for med in top_medicines %}
+                        <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom">
+                            <div>
+                                <strong>{{ med.medicine__generic_name|truncatewords:4 }}</strong><br>
+                                <small class="text-muted">{{ med.dispensings_count }} dispensaciones</small>
+                            </div>
+                            <span class="badge bg-primary">{{ med.total_quantity }} und</span>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-muted">Sin datos</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Dispensaciones Recientes -->
+        <div class="col-md-12">
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <i class="bi bi-clock-history"></i> Dispensaciones Recientes
+                </div>
+                <div class="card-body">
+                    {% if recent_dispensings %}
+                    <div class="table-responsive">
+                        <table class="table table-hover table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Número</th>
+                                    <th>Fecha</th>
+                                    <th>Paciente</th>
+                                    <th>Estado</th>
+                                    <th class="text-end">Total</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for disp in recent_dispensings %}
+                                <tr>
+                                    <td><strong>{{ disp.dispensing_number }}</strong></td>
+                                    <td>{{ disp.dispensing_date|date:"d/m/Y H:i" }}</td>
+                                    <td>{{ disp.patient.name|truncatewords:3 }}</td>
+                                    <td>
+                                        {% if disp.status == 'delivered' %}
+                                            <span class="badge bg-success">Entregada</span>
+                                        {% elif disp.status == 'prepared' %}
+                                            <span class="badge bg-primary">Preparada</span>
+                                        {% elif disp.status == 'pending' %}
+                                            <span class="badge bg-warning">Pendiente</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">{{ disp.get_status_display }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-end">${{ disp.total_amount|floatformat:0 }}</td>
+                                    <td>
+                                        <a href="{% url 'pharmacy:dispensing_detail' disp.id %}" class="btn btn-sm btn-info">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                        <p class="text-muted">No hay dispensaciones recientes</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Accesos Rápidos -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <i class="bi bi-lightning"></i> Accesos Rápidos
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-2 mb-3">
+                            <a href="{% url 'pharmacy:dispensing_create' %}" class="btn btn-outline-primary w-100">
+                                <i class="bi bi-plus-circle"></i><br>Dispensar
+                            </a>
+                        </div>
+                        <div class="col-md-2 mb-3">
+                            <a href="{% url 'pharmacy:medicine_list' %}" class="btn btn-outline-success w-100">
+                                <i class="bi bi-capsule"></i><br>Medicamentos
+                            </a>
+                        </div>
+                        <div class="col-md-2 mb-3">
+                            <a href="{% url 'pharmacy:batch_create' %}" class="btn btn-outline-info w-100">
+                                <i class="bi bi-box-seam"></i><br>Nuevo Lote
+                            </a>
+                        </div>
+                        <div class="col-md-2 mb-3">
+                            <a href="{% url 'pharmacy:batch_list' %}" class="btn btn-outline-warning w-100">
+                                <i class="bi bi-calendar-check"></i><br>Vencimientos
+                            </a>
+                        </div>
+                        <div class="col-md-2 mb-3">
+                            <a href="{% url 'pharmacy:inventory_report' %}" class="btn btn-outline-secondary w-100">
+                                <i class="bi bi-file-bar-graph"></i><br>Inventario
+                            </a>
+                        </div>
+                        <div class="col-md-2 mb-3">
+                            <a href="{% url 'pharmacy:alerts_list' %}" class="btn btn-outline-danger w-100">
+                                <i class="bi bi-bell"></i><br>Alertas
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

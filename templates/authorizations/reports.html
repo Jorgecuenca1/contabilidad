@@ -1,0 +1,356 @@
+{% extends 'base.html' %}
+{% block title %}Reportes - Autorizaciones EPS{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'core:dashboard' %}">Dashboard</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'authorizations:index' %}">Autorizaciones EPS</a></li>
+            <li class="breadcrumb-item active">Reportes</li>
+        </ol>
+    </nav>
+
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-bar-chart"></i> Reportes y Estadísticas</h2>
+        <div>
+            <button onclick="window.print()" class="btn btn-primary">
+                <i class="bi bi-printer"></i> Imprimir
+            </button>
+            <a href="{% url 'authorizations:index' %}" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Volver
+            </a>
+        </div>
+    </div>
+
+    <!-- Filtro de Rango de Fechas -->
+    <div class="card mb-4">
+        <div class="card-header bg-light">
+            <h5 class="mb-0"><i class="bi bi-calendar-range"></i> Rango de Fechas</h5>
+        </div>
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-4">
+                    <label class="form-label">Fecha Desde</label>
+                    <input type="date" name="date_from" class="form-control" value="{{ date_from|date:'Y-m-d' }}">
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Fecha Hasta</label>
+                    <input type="date" name="date_to" class="form-control" value="{{ date_to|date:'Y-m-d' }}">
+                </div>
+                <div class="col-md-4 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-search"></i> Generar Reporte
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Autorizaciones por EPS -->
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0"><i class="bi bi-building"></i> Autorizaciones por EPS</h5>
+        </div>
+        <div class="card-body">
+            {% if auth_by_eps %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>EPS</th>
+                            <th class="text-center">Total</th>
+                            <th class="text-center">Aprobadas</th>
+                            <th class="text-center">Negadas</th>
+                            <th class="text-center">Tasa de Aprobación</th>
+                            <th>Gráfica</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in auth_by_eps %}
+                        {% widthratio item.approved item.total 100 as approval_rate %}
+                        <tr>
+                            <td><strong>{{ item.eps__name }}</strong></td>
+                            <td class="text-center"><span class="badge bg-primary">{{ item.total }}</span></td>
+                            <td class="text-center"><span class="badge bg-success">{{ item.approved }}</span></td>
+                            <td class="text-center"><span class="badge bg-danger">{{ item.denied }}</span></td>
+                            <td class="text-center"><strong>{{ approval_rate }}%</strong></td>
+                            <td>
+                                <div class="progress" style="height: 20px;">
+                                    <div class="progress-bar bg-success" style="width: {{ approval_rate }}%">{{ approval_rate }}%</div>
+                                    {% widthratio item.denied item.total 100 as denial_rate %}
+                                    <div class="progress-bar bg-danger" style="width: {{ denial_rate }}%">{{ denial_rate }}%</div>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <p class="text-muted text-center mb-0">No hay datos disponibles para el rango de fechas seleccionado.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Autorizaciones por Estado -->
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="bi bi-pie-chart"></i> Autorizaciones por Estado</h5>
+                </div>
+                <div class="card-body">
+                    {% if auth_by_status %}
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Estado</th>
+                                    <th class="text-center">Cantidad</th>
+                                    <th>Porcentaje</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in auth_by_status %}
+                                {% if forloop.first %}
+                                    {% widthratio item.total 1 1 as total_all %}
+                                {% endif %}
+                                <tr>
+                                    <td>
+                                        {% if item.status == 'draft' %}
+                                        <span class="badge bg-secondary">Borrador</span>
+                                        {% elif item.status == 'submitted' %}
+                                        <span class="badge bg-primary">Enviada</span>
+                                        {% elif item.status == 'under_review' %}
+                                        <span class="badge bg-warning">En Revisión</span>
+                                        {% elif item.status == 'approved' %}
+                                        <span class="badge bg-success">Aprobada</span>
+                                        {% elif item.status == 'partial_approved' %}
+                                        <span class="badge bg-success opacity-75">Parcialmente Aprobada</span>
+                                        {% elif item.status == 'denied' %}
+                                        <span class="badge bg-danger">Negada</span>
+                                        {% else %}
+                                        <span class="badge bg-dark">Cancelada</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-center"><strong>{{ item.total }}</strong></td>
+                                    <td>
+                                        {% with auth_by_status|first as first_item %}
+                                        {% with total=0 %}
+                                        {% for i in auth_by_status %}
+                                            {% if forloop.first %}{% widthratio i.total i.total 100 as base %}{% endif %}
+                                        {% endfor %}
+                                        {% endwith %}
+                                        {% endwith %}
+                                        <div class="progress" style="height: 20px;">
+                                            <div class="progress-bar bg-primary" style="width: 100%">{{ item.total }}</div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <p class="text-muted text-center mb-0">No hay datos disponibles.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Autorizaciones por Mes -->
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="bi bi-graph-up"></i> Autorizaciones por Mes</h5>
+                </div>
+                <div class="card-body">
+                    {% if auth_by_month %}
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Mes</th>
+                                    <th class="text-center">Total</th>
+                                    <th>Tendencia</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in auth_by_month %}
+                                <tr>
+                                    <td>{{ item.month|date:"F Y" }}</td>
+                                    <td class="text-center"><span class="badge bg-success">{{ item.total }}</span></td>
+                                    <td>
+                                        {% if auth_by_month|length > 1 %}
+                                        {% with auth_by_month|last as last_item %}
+                                        {% widthratio item.total last_item.total 100 as percent %}
+                                        <div class="progress" style="height: 15px;">
+                                            <div class="progress-bar bg-success" style="width: {{ percent }}%"></div>
+                                        </div>
+                                        {% endwith %}
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <p class="text-muted text-center mb-0">No hay datos disponibles.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tiempo Promedio de Respuesta por EPS -->
+    <div class="card mb-4">
+        <div class="card-header bg-warning text-dark">
+            <h5 class="mb-0"><i class="bi bi-clock-history"></i> Tiempo Promedio de Respuesta por EPS</h5>
+        </div>
+        <div class="card-body">
+            {% if avg_response_by_eps %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>EPS</th>
+                            <th class="text-center">Promedio (días)</th>
+                            <th class="text-center">Cantidad Evaluada</th>
+                            <th>Indicador</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in avg_response_by_eps %}
+                        <tr>
+                            <td><strong>{{ item.eps }}</strong></td>
+                            <td class="text-center">
+                                <span class="badge {% if item.avg_days <= 3 %}bg-success{% elif item.avg_days <= 7 %}bg-warning{% else %}bg-danger{% endif %}">
+                                    {{ item.avg_days }} días
+                                </span>
+                            </td>
+                            <td class="text-center">{{ item.count }}</td>
+                            <td>
+                                {% if item.avg_days <= 3 %}
+                                <span class="text-success"><i class="bi bi-check-circle-fill"></i> Excelente</span>
+                                {% elif item.avg_days <= 7 %}
+                                <span class="text-warning"><i class="bi bi-exclamation-circle-fill"></i> Aceptable</span>
+                                {% else %}
+                                <span class="text-danger"><i class="bi bi-x-circle-fill"></i> Lento</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <p class="text-muted text-center mb-0">No hay datos de tiempo de respuesta disponibles.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Autorizaciones Próximas a Vencer -->
+    <div class="card mb-4">
+        <div class="card-header bg-danger text-white">
+            <h5 class="mb-0"><i class="bi bi-exclamation-triangle"></i> Autorizaciones Próximas a Vencer (15 días)</h5>
+        </div>
+        <div class="card-body">
+            {% if expiring_authorizations %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Nº Autorización</th>
+                            <th>Paciente</th>
+                            <th>EPS</th>
+                            <th>Servicio</th>
+                            <th>Fecha de Vencimiento</th>
+                            <th class="text-center">Días Restantes</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for auth in expiring_authorizations %}
+                        {% with days_remaining=auth.expiration_date|timeuntil %}
+                        <tr>
+                            <td><strong>{{ auth.authorization_number }}</strong></td>
+                            <td>{{ auth.patient.get_full_name }}</td>
+                            <td>{{ auth.eps.name }}</td>
+                            <td>{{ auth.service_description|truncatewords:5 }}</td>
+                            <td>{{ auth.expiration_date|date:"d/m/Y" }}</td>
+                            <td class="text-center">
+                                {% now "Y-m-d" as today_date %}
+                                {% with auth.expiration_date|date:"Y-m-d" as exp_date %}
+                                    <span class="badge bg-warning">{{ days_remaining }}</span>
+                                {% endwith %}
+                            </td>
+                            <td>
+                                <a href="{% url 'authorizations:authorization_detail' auth.id %}"
+                                   class="btn btn-sm btn-outline-primary">
+                                    <i class="bi bi-eye"></i> Ver
+                                </a>
+                            </td>
+                        </tr>
+                        {% endwith %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="alert alert-success mb-0">
+                <i class="bi bi-check-circle"></i> No hay autorizaciones próximas a vencer en los próximos 15 días.
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+@media print {
+    .btn, nav, .breadcrumb {
+        display: none !important;
+    }
+    .card {
+        border: 1px solid #000 !important;
+        page-break-inside: avoid;
+    }
+    .card-header {
+        background-color: #f0f0f0 !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+<script>
+// Opcional: Se pueden agregar gráficos interactivos con Chart.js aquí
+document.addEventListener('DOMContentLoaded', function() {
+    // Ejemplo de gráfico (descomentar si se desea usar)
+    /*
+    const ctx = document.getElementById('myChart');
+    if (ctx) {
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['EPS 1', 'EPS 2', 'EPS 3'],
+                datasets: [{
+                    label: 'Autorizaciones',
+                    data: [12, 19, 3],
+                    backgroundColor: ['rgba(75, 192, 192, 0.2)'],
+                    borderColor: ['rgba(75, 192, 192, 1)'],
+                    borderWidth: 1
+                }]
+            }
+        });
+    }
+    */
+});
+</script>
+{% endblock %}

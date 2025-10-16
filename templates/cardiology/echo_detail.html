@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block title %}Detalle Ecocardiograma{% endblock %}
+{% block content %}
+<div class="container-fluid">
+    <h2><i class="bi bi-soundwave"></i> Eco {{ echo.echo_number }}</h2>
+    <div class="card mt-3">
+        <div class="card-body">
+            <p><strong>Paciente:</strong> {{ echo.patient.nombre }}</p>
+            <p><strong>Fecha:</strong> {{ echo.echo_date|date:"d/m/Y" }}</p>
+            {% if echo.ejection_fraction %}<p><strong>FEVI:</strong> {{ echo.ejection_fraction }}%</p>{% endif %}
+        </div>
+    </div>
+    <a href="{% url 'cardiology:echo_list' %}" class="btn btn-secondary mt-3">Volver</a>
+</div>
+{% endblock %}

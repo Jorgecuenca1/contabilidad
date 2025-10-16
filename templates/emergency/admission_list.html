@@ -1,0 +1,188 @@
+{% extends 'base.html' %}
+{% block title %}Listado de Admisiones{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-clipboard2-pulse"></i> Admisiones de Urgencias</h2>
+        <div>
+            <a href="{% url 'emergency:admission_create' %}" class="btn btn-success">
+                <i class="bi bi-plus-circle"></i> Nueva Admisión
+            </a>
+            <a href="{% url 'emergency:dashboard' %}" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Volver
+            </a>
+        </div>
+    </div>
+
+    <!-- Filtros -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-3">
+                    <label class="form-label">Buscar</label>
+                    <input type="text" name="search" class="form-control" placeholder="Número, paciente, área, cama..." value="{{ filters.search }}">
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Estado</label>
+                    <select name="status" class="form-select">
+                        <option value="">Todos</option>
+                        {% for value, label in status_choices %}
+                        <option value="{{ value }}" {% if filters.status == value %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Nivel Triage</label>
+                    <select name="triage_level" class="form-select">
+                        <option value="">Todos</option>
+                        {% for value, label in triage_level_choices %}
+                        <option value="{{ value }}" {% if filters.triage_level == value %}selected{% endif %}>Nivel {{ value }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Médico</label>
+                    <select name="physician" class="form-select">
+                        <option value="">Todos</option>
+                        {% for physician in physicians %}
+                        <option value="{{ physician.id }}" {% if filters.physician == physician.id|stringformat:"s" %}selected{% endif %}>
+                            {{ physician.get_full_name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Fecha Desde</label>
+                    <input type="date" name="date_from" class="form-control" value="{{ filters.date_from }}">
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Fecha Hasta</label>
+                    <input type="date" name="date_to" class="form-control" value="{{ filters.date_to }}">
+                </div>
+                <div class="col-md-1 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Tabla de Admisiones -->
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Número</th>
+                            <th>Paciente</th>
+                            <th>Nivel Triage</th>
+                            <th>Fecha Admisión</th>
+                            <th>Estado</th>
+                            <th>Médico Tratante</th>
+                            <th>Área / Cama</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for admission in admissions %}
+                        <tr>
+                            <td><strong>{{ admission.admission_number }}</strong></td>
+                            <td>
+                                {{ admission.patient.third_party.name }}
+                                <br>
+                                <small class="text-muted">HC: {{ admission.patient.medical_record_number }}</small>
+                            </td>
+                            <td>
+                                {% if admission.triage.triage_level == 'I' %}
+                                <span class="badge bg-danger">
+                                    <i class="bi bi-exclamation-triangle-fill"></i> I - Rojo
+                                </span>
+                                {% elif admission.triage.triage_level == 'II' %}
+                                <span class="badge bg-warning text-dark">
+                                    <i class="bi bi-exclamation-circle-fill"></i> II - Naranja
+                                </span>
+                                {% elif admission.triage.triage_level == 'III' %}
+                                <span class="badge bg-info">
+                                    <i class="bi bi-info-circle-fill"></i> III - Amarillo
+                                </span>
+                                {% elif admission.triage.triage_level == 'IV' %}
+                                <span class="badge bg-success">
+                                    <i class="bi bi-check-circle-fill"></i> IV - Verde
+                                </span>
+                                {% else %}
+                                <span class="badge bg-primary">
+                                    <i class="bi bi-circle-fill"></i> V - Azul
+                                </span>
+                                {% endif %}
+                            </td>
+                            <td>{{ admission.admission_datetime|date:"d/m/Y H:i" }}</td>
+                            <td>
+                                {% if admission.status == 'waiting' %}
+                                <span class="badge bg-info">En Espera</span>
+                                {% elif admission.status == 'in_attention' %}
+                                <span class="badge bg-warning text-dark">En Atención</span>
+                                {% elif admission.status == 'observation' %}
+                                <span class="badge bg-primary">En Observación</span>
+                                {% elif admission.status == 'discharged' %}
+                                <span class="badge bg-success">Alta</span>
+                                {% elif admission.status == 'hospitalized' %}
+                                <span class="badge bg-secondary">Hospitalizado</span>
+                                {% elif admission.status == 'transferred' %}
+                                <span class="badge bg-dark">Trasladado</span>
+                                {% elif admission.status == 'deceased' %}
+                                <span class="badge bg-dark">Fallecido</span>
+                                {% else %}
+                                <span class="badge bg-danger">Salió sin Atención</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ admission.attending_physician.get_full_name }}</td>
+                            <td>
+                                {% if admission.emergency_area %}{{ admission.emergency_area }}{% else %}-{% endif %}
+                                {% if admission.bed_number %} / {{ admission.bed_number }}{% endif %}
+                            </td>
+                            <td>
+                                <a href="{% url 'emergency:admission_detail' admission.id %}" class="btn btn-sm btn-outline-primary" title="Ver detalle">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="8" class="text-center text-muted py-4">
+                                No hay admisiones registradas. <a href="{% url 'emergency:admission_create' %}">Crear primera admisión</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Paginación -->
+            {% if admissions.has_other_pages %}
+            <nav class="mt-4">
+                <ul class="pagination justify-content-center">
+                    {% if admissions.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ admissions.previous_page_number }}{% if filters.search %}&search={{ filters.search }}{% endif %}{% if filters.status %}&status={{ filters.status }}{% endif %}{% if filters.triage_level %}&triage_level={{ filters.triage_level }}{% endif %}{% if filters.physician %}&physician={{ filters.physician }}{% endif %}{% if filters.date_from %}&date_from={{ filters.date_from }}{% endif %}{% if filters.date_to %}&date_to={{ filters.date_to }}{% endif %}">Anterior</a>
+                    </li>
+                    {% endif %}
+
+                    <li class="page-item active">
+                        <span class="page-link">Página {{ admissions.number }} de {{ admissions.paginator.num_pages }}</span>
+                    </li>
+
+                    {% if admissions.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ admissions.next_page_number }}{% if filters.search %}&search={{ filters.search }}{% endif %}{% if filters.status %}&status={{ filters.status }}{% endif %}{% if filters.triage_level %}&triage_level={{ filters.triage_level }}{% endif %}{% if filters.physician %}&physician={{ filters.physician }}{% endif %}{% if filters.date_from %}&date_from={{ filters.date_from }}{% endif %}{% if filters.date_to %}&date_to={{ filters.date_to }}{% endif %}">Siguiente</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

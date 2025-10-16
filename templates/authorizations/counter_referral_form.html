@@ -1,0 +1,288 @@
+{% extends 'base.html' %}
+{% block title %}{% if counter_referral %}Editar{% else %}Nueva{% endif %} Contrarreferencia - Autorizaciones EPS{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'core:dashboard' %}">Dashboard</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'authorizations:index' %}">Autorizaciones EPS</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'authorizations:counter_referral_list' %}">Contrarreferencias</a></li>
+            <li class="breadcrumb-item active">{% if counter_referral %}Editar{% else %}Nueva{% endif %}</li>
+        </ol>
+    </nav>
+
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>
+            <i class="bi bi-arrow-left-right"></i>
+            {% if counter_referral %}Editar Contrarreferencia{% else %}Nueva Contrarreferencia{% endif %}
+        </h2>
+        <div>
+            <a href="{% if counter_referral %}{% url 'authorizations:counter_referral_detail' counter_referral.id %}{% else %}{% url 'authorizations:counter_referral_list' %}{% endif %}"
+               class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Cancelar
+            </a>
+        </div>
+    </div>
+
+    <!-- Messages -->
+    {% if messages %}
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    {% endfor %}
+    {% endif %}
+
+    <!-- Formulario -->
+    <form method="post" id="counterReferralForm">
+        {% csrf_token %}
+
+        <div class="row">
+            <!-- Columna Principal -->
+            <div class="col-md-8">
+                <!-- Autorización de Referencia -->
+                {% if not counter_referral %}
+                <div class="card mb-3">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0"><i class="bi bi-file-earmark-check"></i> Autorización de Referencia</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="form-label">Autorización <span class="text-danger">*</span></label>
+                            <select name="authorization_request" class="form-select" id="authorizationSelect" required>
+                                <option value="">Seleccione una autorización aprobada...</option>
+                                {% for auth in approved_authorizations %}
+                                <option value="{{ auth.id }}">
+                                    {{ auth.authorization_number }} - {{ auth.patient.get_full_name }} - {{ auth.service_description|truncatewords:8 }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                            <small class="text-muted">Solo se muestran autorizaciones aprobadas</small>
+                        </div>
+
+                        <!-- Información de Autorización (dinámica) -->
+                        <div id="authInfo" class="alert alert-info" style="display: none;">
+                            <h6><i class="bi bi-info-circle"></i> Información de la Autorización</h6>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <small><strong>Paciente:</strong></small>
+                                    <p class="mb-0" id="authPatient"></p>
+                                </div>
+                                <div class="col-md-4">
+                                    <small><strong>EPS:</strong></small>
+                                    <p class="mb-0" id="authEPS"></p>
+                                </div>
+                                <div class="col-md-4">
+                                    <small><strong>Servicio:</strong></small>
+                                    <p class="mb-0" id="authService"></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Médico y Fecha -->
+                <div class="card mb-3">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0"><i class="bi bi-person-badge"></i> Información del Médico</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Médico Referente <span class="text-danger">*</span></label>
+                                <select name="referring_physician" class="form-select" required>
+                                    <option value="">Seleccione un médico...</option>
+                                    {% for physician in physicians %}
+                                    <option value="{{ physician.id }}"
+                                            {% if counter_referral and counter_referral.referring_physician.id == physician.id %}selected{% endif %}>
+                                        {{ physician.get_full_name }}
+                                        {% if physician.professional_card %}- TP: {{ physician.professional_card }}{% endif %}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Fecha de Servicio <span class="text-danger">*</span></label>
+                                <input type="date" name="service_date" class="form-control"
+                                       value="{% if counter_referral %}{{ counter_referral.service_date|date:'Y-m-d' }}{% endif %}" required>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Servicios Prestados -->
+                <div class="card mb-3">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0"><i class="bi bi-clipboard2-pulse"></i> Servicios Prestados</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="form-label">Descripción de Servicios Prestados <span class="text-danger">*</span></label>
+                            <textarea name="services_provided" class="form-control" rows="4" required>{% if counter_referral %}{{ counter_referral.services_provided }}{% endif %}</textarea>
+                            <small class="text-muted">Describa los servicios médicos que se brindaron al paciente</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Resultados y Evolución -->
+                <div class="card mb-3">
+                    <div class="card-header bg-warning text-dark">
+                        <h5 class="mb-0"><i class="bi bi-graph-up-arrow"></i> Resultados y Evolución</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="form-label">Resultados del Tratamiento <span class="text-danger">*</span></label>
+                            <textarea name="treatment_results" class="form-control" rows="4" required>{% if counter_referral %}{{ counter_referral.treatment_results }}{% endif %}</textarea>
+                            <small class="text-muted">Describa los resultados obtenidos con el tratamiento</small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Evolución del Paciente</label>
+                            <textarea name="patient_evolution" class="form-control" rows="3">{% if counter_referral %}{{ counter_referral.patient_evolution }}{% endif %}</textarea>
+                            <small class="text-muted">Opcional - Describa cómo ha evolucionado el paciente</small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Diagnóstico Final <span class="text-danger">*</span></label>
+                            <input type="text" name="final_diagnosis" class="form-control"
+                                   value="{% if counter_referral %}{{ counter_referral.final_diagnosis }}{% endif %}" required>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recomendaciones y Seguimiento -->
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="bi bi-file-text"></i> Recomendaciones y Seguimiento</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="form-label">Recomendaciones <span class="text-danger">*</span></label>
+                            <textarea name="recommendations" class="form-control" rows="4" required>{% if counter_referral %}{{ counter_referral.recommendations }}{% endif %}</textarea>
+                            <small class="text-muted">Recomendaciones para el médico tratante</small>
+                        </div>
+
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" name="requires_followup" class="form-check-input" id="requiresFollowup"
+                                   {% if counter_referral and counter_referral.requires_followup %}checked{% endif %}>
+                            <label class="form-check-label" for="requiresFollowup">
+                                <strong>Requiere seguimiento</strong>
+                            </label>
+                        </div>
+
+                        <div id="followupSection" style="{% if not counter_referral or not counter_referral.requires_followup %}display: none;{% endif %}">
+                            <div class="mb-3">
+                                <label class="form-label">Instrucciones de Seguimiento</label>
+                                <textarea name="followup_instructions" class="form-control" rows="3">{% if counter_referral %}{{ counter_referral.followup_instructions }}{% endif %}</textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Columna Lateral -->
+            <div class="col-md-4">
+                <!-- Información de Ayuda -->
+                <div class="card mb-3 border-info">
+                    <div class="card-header bg-info text-white">
+                        <h6 class="mb-0"><i class="bi bi-info-circle"></i> Ayuda</h6>
+                    </div>
+                    <div class="card-body">
+                        <h6>¿Qué es una Contrarreferencia?</h6>
+                        <p class="small">Es el documento que se envía a la EPS informando sobre los servicios prestados al paciente y los resultados obtenidos.</p>
+
+                        <h6>Campos Obligatorios</h6>
+                        <p class="small">Los campos marcados con <span class="text-danger">*</span> son obligatorios.</p>
+
+                        <h6>Información a Incluir</h6>
+                        <ul class="small">
+                            <li>Servicios realizados</li>
+                            <li>Resultados obtenidos</li>
+                            <li>Diagnóstico final</li>
+                            <li>Recomendaciones para continuar tratamiento</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Acciones -->
+                <div class="card">
+                    <div class="card-header bg-success text-white">
+                        <h6 class="mb-0"><i class="bi bi-check-circle"></i> Guardar</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-success">
+                                <i class="bi bi-save"></i> Guardar Contrarreferencia
+                            </button>
+                            <a href="{% if counter_referral %}{% url 'authorizations:counter_referral_detail' counter_referral.id %}{% else %}{% url 'authorizations:counter_referral_list' %}{% endif %}"
+                               class="btn btn-outline-secondary">
+                                <i class="bi bi-x-circle"></i> Cancelar
+                            </a>
+                        </div>
+
+                        <hr>
+
+                        <div class="alert alert-info small mb-0">
+                            <strong><i class="bi bi-info-circle"></i> Nota:</strong>
+                            La contrarreferencia se guardará en estado "Pendiente". Podrá marcarla como enviada posteriormente.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Mostrar/ocultar sección de seguimiento
+    const requiresFollowup = document.getElementById('requiresFollowup');
+    const followupSection = document.getElementById('followupSection');
+
+    if (requiresFollowup) {
+        requiresFollowup.addEventListener('change', function() {
+            followupSection.style.display = this.checked ? 'block' : 'none';
+        });
+    }
+
+    // Cargar información de autorización
+    const authSelect = document.getElementById('authorizationSelect');
+    const authInfo = document.getElementById('authInfo');
+
+    if (authSelect) {
+        authSelect.addEventListener('change', function() {
+            const authId = this.value;
+
+            if (authId) {
+                fetch(`/autorizaciones/api/authorization/${authId}/`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.error) {
+                            authInfo.style.display = 'none';
+                        } else {
+                            document.getElementById('authPatient').textContent = data.patient_name;
+                            document.getElementById('authEPS').textContent = data.eps_name;
+                            document.getElementById('authService').textContent = data.service_description;
+                            authInfo.style.display = 'block';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        authInfo.style.display = 'none';
+                    });
+            } else {
+                authInfo.style.display = 'none';
+            }
+        });
+    }
+});
+</script>
+{% endblock %}

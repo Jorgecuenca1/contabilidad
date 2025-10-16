@@ -1,0 +1,430 @@
+{% extends 'base.html' %}
+{% block title %}Consulta {{ consultation.consultation_number }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-clipboard-pulse"></i> Consulta {{ consultation.consultation_number }}</h2>
+        <div>
+            <a href="{% url 'psychology:session_create' %}?consultation={{ consultation.id }}" class="btn btn-success">
+                <i class="bi bi-plus-circle"></i> Nueva Sesión
+            </a>
+            <a href="{% url 'psychology:treatment_plan_create' %}?consultation={{ consultation.id }}" class="btn btn-info">
+                <i class="bi bi-clipboard-plus"></i> Crear Plan
+            </a>
+            <a href="{% url 'psychology:consultation_list' %}" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Volver
+            </a>
+        </div>
+    </div>
+
+    <!-- Información del Paciente -->
+    <div class="card mb-3">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0"><i class="bi bi-person"></i> Información del Paciente</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>Paciente:</strong> {{ consultation.patient.third_party.name }}</p>
+                    <p><strong>Documento:</strong> {{ consultation.patient.third_party.identification_number }}</p>
+                    <p><strong>Fecha de Nacimiento:</strong> {{ consultation.patient.birth_date|date:"d/m/Y" }}</p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>Psicólogo:</strong> {{ consultation.psychologist.get_full_name }}</p>
+                    <p><strong>Fecha de Consulta:</strong> {{ consultation.consultation_date|date:"d/m/Y H:i" }}</p>
+                    <p><strong>Estado:</strong>
+                        {% if consultation.status == 'completed' %}
+                        <span class="badge bg-success">Completada</span>
+                        {% elif consultation.status == 'scheduled' %}
+                        <span class="badge bg-warning text-dark">Programada</span>
+                        {% elif consultation.status == 'cancelled' %}
+                        <span class="badge bg-danger">Cancelada</span>
+                        {% endif %}
+                    </p>
+                    {% if consultation.referred_by %}
+                    <p><strong>Referido por:</strong> {{ consultation.referred_by }}</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Motivo de Consulta -->
+    <div class="card mb-3">
+        <div class="card-header">
+            <h6 class="mb-0"><i class="bi bi-chat-left-text"></i> Motivo de Consulta</h6>
+        </div>
+        <div class="card-body">
+            <p>{{ consultation.chief_complaint }}</p>
+        </div>
+    </div>
+
+    <!-- Historia -->
+    <div class="card mb-3">
+        <div class="card-header">
+            <h6 class="mb-0"><i class="bi bi-clock-history"></i> Historia</h6>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                {% if consultation.personal_history %}
+                <div class="col-md-6 mb-3">
+                    <h6 class="text-muted">Historia Personal</h6>
+                    <p>{{ consultation.personal_history|linebreaks }}</p>
+                </div>
+                {% endif %}
+                {% if consultation.family_history %}
+                <div class="col-md-6 mb-3">
+                    <h6 class="text-muted">Historia Familiar</h6>
+                    <p>{{ consultation.family_history|linebreaks }}</p>
+                </div>
+                {% endif %}
+                {% if consultation.medical_history %}
+                <div class="col-md-6 mb-3">
+                    <h6 class="text-muted">Historia Médica</h6>
+                    <p>{{ consultation.medical_history|linebreaks }}</p>
+                </div>
+                {% endif %}
+                {% if consultation.psychiatric_history %}
+                <div class="col-md-6 mb-3">
+                    <h6 class="text-muted">Antecedentes Psiquiátricos</h6>
+                    <p>{{ consultation.psychiatric_history|linebreaks }}</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Medicación y Sustancias -->
+    {% if consultation.current_medications or consultation.substance_use %}
+    <div class="card mb-3">
+        <div class="card-header">
+            <h6 class="mb-0"><i class="bi bi-capsule"></i> Medicación y Sustancias</h6>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                {% if consultation.current_medications %}
+                <div class="col-md-6">
+                    <h6 class="text-muted">Medicación Actual</h6>
+                    <p>{{ consultation.current_medications|linebreaks }}</p>
+                </div>
+                {% endif %}
+                {% if consultation.substance_use %}
+                <div class="col-md-6">
+                    <h6 class="text-muted">Uso de Sustancias</h6>
+                    <p>{{ consultation.substance_use|linebreaks }}</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Examen del Estado Mental -->
+    <div class="card mb-3">
+        <div class="card-header">
+            <h6 class="mb-0"><i class="bi bi-clipboard-heart"></i> Examen del Estado Mental</h6>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                {% if consultation.appearance %}
+                <div class="col-md-4 mb-2">
+                    <strong>Apariencia:</strong> {{ consultation.appearance }}
+                </div>
+                {% endif %}
+                {% if consultation.behavior %}
+                <div class="col-md-4 mb-2">
+                    <strong>Conducta:</strong> {{ consultation.behavior }}
+                </div>
+                {% endif %}
+                {% if consultation.speech %}
+                <div class="col-md-4 mb-2">
+                    <strong>Lenguaje:</strong> {{ consultation.speech }}
+                </div>
+                {% endif %}
+                {% if consultation.mood %}
+                <div class="col-md-4 mb-2">
+                    <strong>Estado de Ánimo:</strong> {{ consultation.mood }}
+                </div>
+                {% endif %}
+                {% if consultation.affect %}
+                <div class="col-md-4 mb-2">
+                    <strong>Afecto:</strong> {{ consultation.affect }}
+                </div>
+                {% endif %}
+                {% if consultation.insight %}
+                <div class="col-md-4 mb-2">
+                    <strong>Insight:</strong> {{ consultation.insight }}
+                </div>
+                {% endif %}
+                {% if consultation.thought_process %}
+                <div class="col-md-6 mb-2">
+                    <strong>Proceso de Pensamiento:</strong> {{ consultation.thought_process }}
+                </div>
+                {% endif %}
+                {% if consultation.thought_content %}
+                <div class="col-md-6 mb-2">
+                    <strong>Contenido del Pensamiento:</strong> {{ consultation.thought_content }}
+                </div>
+                {% endif %}
+                {% if consultation.perception %}
+                <div class="col-md-4 mb-2">
+                    <strong>Percepción:</strong> {{ consultation.perception }}
+                </div>
+                {% endif %}
+                {% if consultation.cognition %}
+                <div class="col-md-4 mb-2">
+                    <strong>Cognición:</strong> {{ consultation.cognition }}
+                </div>
+                {% endif %}
+                {% if consultation.judgment %}
+                <div class="col-md-4 mb-2">
+                    <strong>Juicio:</strong> {{ consultation.judgment }}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Evaluación de Riesgo -->
+    <div class="card mb-3">
+        <div class="card-header bg-warning">
+            <h6 class="mb-0"><i class="bi bi-exclamation-triangle"></i> Evaluación de Riesgo</h6>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <strong>Riesgo Suicida:</strong>
+                    {% if consultation.suicide_risk == 'none' %}
+                    <span class="badge bg-success">Sin riesgo</span>
+                    {% elif consultation.suicide_risk == 'low' %}
+                    <span class="badge bg-info">Bajo</span>
+                    {% elif consultation.suicide_risk == 'medium' %}
+                    <span class="badge bg-warning text-dark">Medio</span>
+                    {% elif consultation.suicide_risk == 'high' %}
+                    <span class="badge bg-danger">Alto</span>
+                    {% endif %}
+                </div>
+                <div class="col-md-6">
+                    <strong>Riesgo Homicida:</strong>
+                    {% if consultation.homicide_risk == 'none' %}
+                    <span class="badge bg-success">Sin riesgo</span>
+                    {% elif consultation.homicide_risk == 'low' %}
+                    <span class="badge bg-info">Bajo</span>
+                    {% elif consultation.homicide_risk == 'medium' %}
+                    <span class="badge bg-warning text-dark">Medio</span>
+                    {% elif consultation.homicide_risk == 'high' %}
+                    <span class="badge bg-danger">Alto</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Diagnóstico -->
+    <div class="card mb-3">
+        <div class="card-header bg-info text-white">
+            <h6 class="mb-0"><i class="bi bi-file-medical"></i> Diagnóstico</h6>
+        </div>
+        <div class="card-body">
+            <p>{{ consultation.diagnosis|linebreaks }}</p>
+            {% if consultation.dsm_code %}
+            <p><strong>Código DSM-5:</strong> {{ consultation.dsm_code }}</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Plan de Tratamiento -->
+    <div class="card mb-3">
+        <div class="card-header bg-success text-white">
+            <h6 class="mb-0"><i class="bi bi-clipboard-check"></i> Recomendaciones de Tratamiento</h6>
+        </div>
+        <div class="card-body">
+            <p>{{ consultation.treatment_recommendations|linebreaks }}</p>
+            <div class="row mt-2">
+                {% if consultation.therapy_type %}
+                <div class="col-md-6">
+                    <p><strong>Tipo de Terapia:</strong> {{ consultation.therapy_type }}</p>
+                </div>
+                {% endif %}
+                {% if consultation.frequency %}
+                <div class="col-md-6">
+                    <p><strong>Frecuencia:</strong> {{ consultation.frequency }}</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Observaciones -->
+    {% if consultation.observations %}
+    <div class="card mb-3">
+        <div class="card-header">
+            <h6 class="mb-0"><i class="bi bi-pencil-square"></i> Observaciones</h6>
+        </div>
+        <div class="card-body">
+            <p>{{ consultation.observations|linebreaks }}</p>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Sesiones Terapéuticas -->
+    {% if sessions %}
+    <div class="card mb-3">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h6 class="mb-0"><i class="bi bi-chat-square-text"></i> Sesiones Terapéuticas</h6>
+            <a href="{% url 'psychology:session_create' %}?consultation={{ consultation.id }}" class="btn btn-sm btn-success">
+                <i class="bi bi-plus"></i> Nueva Sesión
+            </a>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-sm">
+                    <thead>
+                        <tr>
+                            <th>Número</th>
+                            <th>Fecha</th>
+                            <th>Tipo</th>
+                            <th>Duración</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for session in sessions %}
+                        <tr>
+                            <td>{{ session.session_number }}</td>
+                            <td>{{ session.session_date|date:"d/m/Y" }}</td>
+                            <td>{{ session.get_session_type_display }}</td>
+                            <td>{{ session.session_duration }} min</td>
+                            <td>
+                                {% if session.status == 'completed' %}
+                                <span class="badge bg-success">Completada</span>
+                                {% elif session.status == 'scheduled' %}
+                                <span class="badge bg-warning text-dark">Programada</span>
+                                {% elif session.status == 'cancelled' %}
+                                <span class="badge bg-danger">Cancelada</span>
+                                {% elif session.status == 'no_show' %}
+                                <span class="badge bg-secondary">No asistió</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{% url 'psychology:session_detail' session.id %}" class="btn btn-sm btn-info">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Planes de Tratamiento -->
+    {% if treatment_plans %}
+    <div class="card mb-3">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h6 class="mb-0"><i class="bi bi-clipboard-pulse"></i> Planes de Tratamiento</h6>
+            <a href="{% url 'psychology:treatment_plan_create' %}?consultation={{ consultation.id }}" class="btn btn-sm btn-info">
+                <i class="bi bi-plus"></i> Nuevo Plan
+            </a>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-sm">
+                    <thead>
+                        <tr>
+                            <th>Número</th>
+                            <th>Fecha</th>
+                            <th>Enfoque</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for plan in treatment_plans %}
+                        <tr>
+                            <td>{{ plan.plan_number }}</td>
+                            <td>{{ plan.start_date|date:"d/m/Y" }}</td>
+                            <td>{{ plan.therapeutic_approach|truncatewords:3 }}</td>
+                            <td>
+                                {% if plan.status == 'active' %}
+                                <span class="badge bg-success">Activo</span>
+                                {% elif plan.status == 'completed' %}
+                                <span class="badge bg-info">Completado</span>
+                                {% elif plan.status == 'discontinued' %}
+                                <span class="badge bg-danger">Discontinuado</span>
+                                {% elif plan.status == 'on_hold' %}
+                                <span class="badge bg-warning text-dark">En pausa</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{% url 'psychology:treatment_plan_detail' plan.id %}" class="btn btn-sm btn-info">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Evaluaciones Psicológicas -->
+    {% if assessments %}
+    <div class="card mb-3">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h6 class="mb-0"><i class="bi bi-file-earmark-text"></i> Evaluaciones Psicológicas</h6>
+            <a href="{% url 'psychology:assessment_create' %}?consultation={{ consultation.id }}" class="btn btn-sm btn-primary">
+                <i class="bi bi-plus"></i> Nueva Evaluación
+            </a>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-sm">
+                    <thead>
+                        <tr>
+                            <th>Número</th>
+                            <th>Fecha</th>
+                            <th>Tipo</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for assessment in assessments %}
+                        <tr>
+                            <td>{{ assessment.assessment_number }}</td>
+                            <td>{{ assessment.assessment_date|date:"d/m/Y" }}</td>
+                            <td>{{ assessment.get_assessment_type_display }}</td>
+                            <td>
+                                <a href="{% url 'psychology:assessment_detail' assessment.id %}" class="btn btn-sm btn-info">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Metadatos -->
+    <div class="card">
+        <div class="card-body">
+            <small class="text-muted">
+                <strong>Creado por:</strong> {{ consultation.created_by.get_full_name }} |
+                <strong>Fecha:</strong> {{ consultation.created_at|date:"d/m/Y H:i" }}
+                {% if consultation.updated_at != consultation.created_at %}
+                | <strong>Última actualización:</strong> {{ consultation.updated_at|date:"d/m/Y H:i" }}
+                {% endif %}
+            </small>
+        </div>
+    </div>
+</div>
+{% endblock %}

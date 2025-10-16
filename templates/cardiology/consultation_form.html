@@ -1,0 +1,187 @@
+{% extends 'base.html' %}
+
+{% block title %}Nueva Consulta Cardiológica{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'core:dashboard' %}">Dashboard</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'cardiology:dashboard' %}">Cardiología</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'cardiology:consultation_list' %}">Consultas</a></li>
+            <li class="breadcrumb-item active">Nueva</li>
+        </ol>
+    </nav>
+
+    <h2 class="mb-4"><i class="bi bi-clipboard2-pulse"></i> Nueva Consulta Cardiológica</h2>
+
+    <form method="post" class="needs-validation" novalidate>
+        {% csrf_token %}
+
+        <div class="row">
+            <!-- Información Básica -->
+            <div class="col-md-6">
+                <div class="card mb-3">
+                    <div class="card-header bg-danger text-white">
+                        <h5 class="mb-0">Información Básica</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="form-label">Paciente *</label>
+                            <select name="patient_id" class="form-select" required>
+                                <option value="">Seleccione paciente...</option>
+                                {% for patient in patients %}
+                                    <option value="{{ patient.id }}">{{ patient.nombre }} - {{ patient.document_number }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Tipo de Consulta *</label>
+                            <select name="consultation_type" class="form-select" required>
+                                {% for value, label in consultation_type_choices %}
+                                    <option value="{{ value }}">{{ label }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Cardiólogo *</label>
+                            <select name="cardiologist_id" class="form-select" required>
+                                <option value="">Seleccione cardiólogo...</option>
+                                {% for cardiologist in cardiologists %}
+                                    <option value="{{ cardiologist.id }}">{{ cardiologist.full_name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Fecha y Hora de Consulta</label>
+                            <input type="datetime-local" name="consultation_date" class="form-control">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Estado</label>
+                            <select name="status" class="form-select">
+                                {% for value, label in status_choices %}
+                                    <option value="{{ value }}">{{ label }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Motivo de Consulta -->
+            <div class="col-md-6">
+                <div class="card mb-3">
+                    <div class="card-header bg-danger text-white">
+                        <h5 class="mb-0">Motivo de Consulta</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="form-label">Motivo de Consulta *</label>
+                            <textarea name="chief_complaint" class="form-control" rows="3" required></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Antecedentes Cardiovasculares</label>
+                            <textarea name="cardiovascular_history" class="form-control" rows="3"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Factores de Riesgo Cardiovascular -->
+        <div class="card mb-3">
+            <div class="card-header bg-warning">
+                <h5 class="mb-0">Factores de Riesgo Cardiovascular</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="form-check">
+                            <input type="checkbox" name="has_hypertension" class="form-check-input" id="has_hypertension">
+                            <label class="form-check-label" for="has_hypertension">Hipertensión</label>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-check">
+                            <input type="checkbox" name="has_diabetes" class="form-check-input" id="has_diabetes">
+                            <label class="form-check-label" for="has_diabetes">Diabetes</label>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-check">
+                            <input type="checkbox" name="has_dyslipidemia" class="form-check-input" id="has_dyslipidemia">
+                            <label class="form-check-label" for="has_dyslipidemia">Dislipidemia</label>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-check">
+                            <input type="checkbox" name="is_smoker" class="form-check-input" id="is_smoker">
+                            <label class="form-check-label" for="is_smoker">Fumador</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-2">
+                    <div class="col-md-3">
+                        <div class="form-check">
+                            <input type="checkbox" name="has_family_history_cvd" class="form-check-input" id="has_family_history_cvd">
+                            <label class="form-check-label" for="has_family_history_cvd">Antecedente Familiar ECV</label>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-check">
+                            <input type="checkbox" name="is_sedentary" class="form-check-input" id="is_sedentary">
+                            <label class="form-check-label" for="is_sedentary">Sedentarismo</label>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-check">
+                            <input type="checkbox" name="has_obesity" class="form-check-input" id="has_obesity">
+                            <label class="form-check-label" for="has_obesity">Obesidad</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Signos Vitales -->
+        <div class="card mb-3">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0">Signos Vitales</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        <label class="form-label">PA Sistólica (mmHg)</label>
+                        <input type="number" name="blood_pressure_systolic" class="form-control">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">PA Diastólica (mmHg)</label>
+                        <input type="number" name="blood_pressure_diastolic" class="form-control">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Frecuencia Cardíaca (lpm)</label>
+                        <input type="number" name="heart_rate" class="form-control">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Saturación O2 (%)</label>
+                        <input type="number" name="oxygen_saturation" class="form-control" min="0" max="100">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Botones -->
+        <div class="d-flex justify-content-end gap-2">
+            <a href="{% url 'cardiology:consultation_list' %}" class="btn btn-secondary">Cancelar</a>
+            <button type="submit" class="btn btn-danger">
+                <i class="bi bi-save"></i> Guardar Consulta
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}

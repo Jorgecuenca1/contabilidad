@@ -1,0 +1,150 @@
+{% extends 'base.html' %}
+{% block title %}Aptitudes Laborales{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-award"></i> Aptitudes Laborales</h2>
+        <a href="{% url 'occupational_health:dashboard' %}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Volver
+        </a>
+    </div>
+
+    <!-- Filtros -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-4">
+                    <label class="form-label">Buscar</label>
+                    <input type="text" name="search" class="form-control" placeholder="Número, trabajador..." value="{{ request.GET.search }}">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Aptitud</label>
+                    <select name="aptitude" class="form-select">
+                        <option value="">Todas</option>
+                        <option value="apto" {% if request.GET.aptitude == 'apto' %}selected{% endif %}>Apto</option>
+                        <option value="apto_con_restricciones" {% if request.GET.aptitude == 'apto_con_restricciones' %}selected{% endif %}>Apto con Restricciones</option>
+                        <option value="apto_con_recomendaciones" {% if request.GET.aptitude == 'apto_con_recomendaciones' %}selected{% endif %}>Apto con Recomendaciones</option>
+                        <option value="no_apto_temporal" {% if request.GET.aptitude == 'no_apto_temporal' %}selected{% endif %}>No Apto Temporal</option>
+                        <option value="no_apto_permanente" {% if request.GET.aptitude == 'no_apto_permanente' %}selected{% endif %}>No Apto Permanente</option>
+                        <option value="aplazado" {% if request.GET.aptitude == 'aplazado' %}selected{% endif %}>Aplazado</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Fecha Desde</label>
+                    <input type="date" name="date_from" class="form-control" value="{{ request.GET.date_from }}">
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Fecha Hasta</label>
+                    <input type="date" name="date_to" class="form-control" value="{{ request.GET.date_to }}">
+                </div>
+                <div class="col-md-1 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Tabla de Aptitudes -->
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Número</th>
+                            <th>Trabajador</th>
+                            <th>Empresa</th>
+                            <th>Cargo</th>
+                            <th>Aptitud</th>
+                            <th>Fecha Emisión</th>
+                            <th>Vigencia</th>
+                            <th>Seguimiento</th>
+                            <th>Examen</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for aptitude in aptitudes %}
+                        <tr>
+                            <td><strong>{{ aptitude.aptitude_number }}</strong></td>
+                            <td>{{ aptitude.exam.patient.third_party.name }}</td>
+                            <td>{{ aptitude.exam.company_name|truncatewords:3 }}</td>
+                            <td>{{ aptitude.exam.job_position|truncatewords:2 }}</td>
+                            <td>
+                                {% if aptitude.aptitude == 'apto' %}
+                                <span class="badge bg-success">Apto</span>
+                                {% elif aptitude.aptitude == 'apto_con_restricciones' %}
+                                <span class="badge bg-warning text-dark">Apto con Restricciones</span>
+                                {% elif aptitude.aptitude == 'apto_con_recomendaciones' %}
+                                <span class="badge bg-info">Apto con Recomendaciones</span>
+                                {% elif aptitude.aptitude == 'no_apto_temporal' %}
+                                <span class="badge bg-danger">No Apto Temporal</span>
+                                {% elif aptitude.aptitude == 'no_apto_permanente' %}
+                                <span class="badge bg-dark">No Apto Permanente</span>
+                                {% elif aptitude.aptitude == 'aplazado' %}
+                                <span class="badge bg-secondary">Aplazado</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ aptitude.issue_date|date:"d/m/Y" }}</td>
+                            <td>
+                                {% if aptitude.valid_until %}
+                                {{ aptitude.valid_until|date:"d/m/Y" }}
+                                {% else %}
+                                <span class="text-muted">-</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if aptitude.requires_follow_up %}
+                                <span class="badge bg-warning text-dark"><i class="bi bi-calendar-check"></i> Sí</span>
+                                {% if aptitude.follow_up_date %}
+                                <br><small>{{ aptitude.follow_up_date|date:"d/m/Y" }}</small>
+                                {% endif %}
+                                {% else %}
+                                <span class="badge bg-secondary">No</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{% url 'occupational_health:exam_detail' aptitude.exam.id %}" class="btn btn-sm btn-outline-primary" title="Ver examen">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="9" class="text-center text-muted py-4">
+                                No hay aptitudes laborales registradas.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Paginación -->
+            {% if aptitudes.has_other_pages %}
+            <nav class="mt-4">
+                <ul class="pagination justify-content-center">
+                    {% if aptitudes.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ aptitudes.previous_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.aptitude %}&aptitude={{ request.GET.aptitude }}{% endif %}">Anterior</a>
+                    </li>
+                    {% endif %}
+
+                    <li class="page-item active">
+                        <span class="page-link">Página {{ aptitudes.number }} de {{ aptitudes.paginator.num_pages }}</span>
+                    </li>
+
+                    {% if aptitudes.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ aptitudes.next_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.aptitude %}&aptitude={{ request.GET.aptitude }}{% endif %}">Siguiente</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

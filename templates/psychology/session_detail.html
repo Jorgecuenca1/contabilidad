@@ -1,0 +1,210 @@
+{% extends 'base.html' %}
+{% block title %}Sesión {{ session.session_number }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-chat-square-text"></i> Sesión {{ session.session_number }}</h2>
+        <div>
+            <a href="{% url 'psychology:session_list' %}" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Volver
+            </a>
+        </div>
+    </div>
+
+    <!-- Información Básica -->
+    <div class="card mb-3">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0"><i class="bi bi-info-circle"></i> Información de la Sesión</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>Paciente:</strong> {{ session.patient.third_party.name }}</p>
+                    <p><strong>Documento:</strong> {{ session.patient.third_party.identification_number }}</p>
+                    <p><strong>Psicólogo:</strong> {{ session.psychologist.get_full_name }}</p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>Fecha:</strong> {{ session.session_date|date:"d/m/Y H:i" }}</p>
+                    <p><strong>Duración:</strong> {{ session.session_duration }} minutos</p>
+                    <p><strong>Estado:</strong>
+                        {% if session.status == 'completed' %}
+                        <span class="badge bg-success">Completada</span>
+                        {% elif session.status == 'scheduled' %}
+                        <span class="badge bg-warning text-dark">Programada</span>
+                        {% elif session.status == 'cancelled' %}
+                        <span class="badge bg-danger">Cancelada</span>
+                        {% elif session.status == 'no_show' %}
+                        <span class="badge bg-secondary">No asistió</span>
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+            <div class="row mt-2">
+                <div class="col-md-6">
+                    <p><strong>Tipo de Sesión:</strong> {{ session.get_session_type_display }}</p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>Modalidad:</strong> {{ session.get_modality_display }}</p>
+                </div>
+            </div>
+            {% if session.consultation %}
+            <div class="row mt-2">
+                <div class="col-12">
+                    <p><strong>Consulta Relacionada:</strong>
+                        <a href="{% url 'psychology:consultation_detail' session.consultation.id %}">
+                            {{ session.consultation.consultation_number }}
+                        </a>
+                    </p>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Contenido de la Sesión -->
+    <div class="card mb-3">
+        <div class="card-header bg-info text-white">
+            <h6 class="mb-0"><i class="bi bi-chat-dots"></i> Contenido de la Sesión</h6>
+        </div>
+        <div class="card-body">
+            <h6 class="text-muted">Temas Presentados</h6>
+            <p>{{ session.presenting_issues|linebreaks }}</p>
+
+            <hr>
+
+            <h6 class="text-muted mt-3">Intervenciones Realizadas</h6>
+            <p>{{ session.interventions|linebreaks }}</p>
+
+            {% if session.patient_response %}
+            <hr>
+            <h6 class="text-muted mt-3">Respuesta del Paciente</h6>
+            <p>{{ session.patient_response|linebreaks }}</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Progreso -->
+    {% if session.progress_summary or session.goals_addressed %}
+    <div class="card mb-3">
+        <div class="card-header bg-success text-white">
+            <h6 class="mb-0"><i class="bi bi-graph-up"></i> Progreso</h6>
+        </div>
+        <div class="card-body">
+            {% if session.progress_summary %}
+            <h6 class="text-muted">Resumen de Progreso</h6>
+            <p>{{ session.progress_summary|linebreaks }}</p>
+            {% endif %}
+
+            {% if session.goals_addressed %}
+            <hr>
+            <h6 class="text-muted mt-3">Objetivos Abordados</h6>
+            <p>{{ session.goals_addressed|linebreaks }}</p>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Tareas -->
+    {% if session.homework_assigned %}
+    <div class="card mb-3">
+        <div class="card-header">
+            <h6 class="mb-0"><i class="bi bi-clipboard-check"></i> Tareas Asignadas</h6>
+        </div>
+        <div class="card-body">
+            <p>{{ session.homework_assigned|linebreaks }}</p>
+            <p class="mt-2">
+                <strong>Tareas previas completadas:</strong>
+                {% if session.homework_completed %}
+                <span class="badge bg-success">Sí</span>
+                {% else %}
+                <span class="badge bg-warning text-dark">No</span>
+                {% endif %}
+            </p>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Siguiente Sesión -->
+    {% if session.next_session_date or session.next_session_goals %}
+    <div class="card mb-3">
+        <div class="card-header">
+            <h6 class="mb-0"><i class="bi bi-calendar-plus"></i> Siguiente Sesión</h6>
+        </div>
+        <div class="card-body">
+            {% if session.next_session_date %}
+            <p><strong>Fecha Programada:</strong> {{ session.next_session_date|date:"d/m/Y" }}</p>
+            {% endif %}
+            {% if session.next_session_goals %}
+            <p><strong>Objetivos:</strong></p>
+            <p>{{ session.next_session_goals|linebreaks }}</p>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Observaciones -->
+    {% if session.observations %}
+    <div class="card mb-3">
+        <div class="card-header">
+            <h6 class="mb-0"><i class="bi bi-pencil-square"></i> Observaciones</h6>
+        </div>
+        <div class="card-body">
+            <p>{{ session.observations|linebreaks }}</p>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Nota de Progreso -->
+    {% if progress_note %}
+    <div class="card mb-3">
+        <div class="card-header bg-warning">
+            <h6 class="mb-0"><i class="bi bi-file-earmark-medical"></i> Nota de Progreso (SOAP)</h6>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <h6 class="text-muted">Subjetivo (S)</h6>
+                    <p>{{ progress_note.subjective|linebreaks }}</p>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <h6 class="text-muted">Objetivo (O)</h6>
+                    <p>{{ progress_note.objective|linebreaks }}</p>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <h6 class="text-muted">Evaluación (A)</h6>
+                    <p>{{ progress_note.assessment|linebreaks }}</p>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <h6 class="text-muted">Plan (P)</h6>
+                    <p>{{ progress_note.plan|linebreaks }}</p>
+                </div>
+            </div>
+            {% if progress_note.goals_progress %}
+            <hr>
+            <h6 class="text-muted">Progreso hacia Objetivos</h6>
+            <p>{{ progress_note.goals_progress|linebreaks }}</p>
+            {% endif %}
+            {% if progress_note.plan_modifications %}
+            <hr>
+            <h6 class="text-muted">Modificaciones al Plan</h6>
+            <p>{{ progress_note.plan_modifications|linebreaks }}</p>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Metadatos -->
+    <div class="card">
+        <div class="card-body">
+            <small class="text-muted">
+                <strong>Creado por:</strong> {{ session.created_by.get_full_name }} |
+                <strong>Fecha:</strong> {{ session.created_at|date:"d/m/Y H:i" }}
+                {% if session.updated_at != session.created_at %}
+                | <strong>Última actualización:</strong> {{ session.updated_at|date:"d/m/Y H:i" }}
+                {% endif %}
+            </small>
+        </div>
+    </div>
+</div>
+{% endblock %}

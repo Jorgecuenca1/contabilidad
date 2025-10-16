@@ -1,0 +1,154 @@
+{% extends 'base.html' %}
+{% block title %}Registrar Procedimiento{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <h2 class="mb-4">
+        <i class="bi bi-tools"></i> Registrar Procedimiento de Urgencias
+    </h2>
+
+    <!-- Información de Atención -->
+    <div class="card mb-3">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-4">
+                    <strong>Paciente:</strong> {{ attention.patient.third_party.name }}
+                </div>
+                <div class="col-md-4">
+                    <strong>Atención:</strong> {{ attention.attention_number }}
+                </div>
+                <div class="col-md-4">
+                    <strong>Admisión:</strong> {{ attention.admission.admission_number }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <form method="post" id="procedureForm">
+        {% csrf_token %}
+
+        <!-- Información del Procedimiento -->
+        <div class="card mb-3">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="bi bi-info-circle"></i> Información del Procedimiento</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Tipo de Procedimiento <span class="text-danger">*</span></label>
+                        <select name="procedure_type" class="form-select" required>
+                            <option value="">Seleccionar tipo...</option>
+                            {% for value, label in procedure_type_choices %}
+                            <option value="{{ value }}">{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Nombre del Procedimiento <span class="text-danger">*</span></label>
+                        <input type="text" name="procedure_name" class="form-control" required placeholder="Ej: Sutura de herida en antebrazo">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Fecha y Hora del Procedimiento <span class="text-danger">*</span></label>
+                        <input type="datetime-local" name="procedure_datetime" id="procedureDatetime" class="form-control" required>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Indicación y Descripción -->
+        <div class="card mb-3">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0"><i class="bi bi-file-text"></i> Indicación y Descripción</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-12">
+                        <label class="form-label">Indicación <span class="text-danger">*</span></label>
+                        <textarea name="indication" class="form-control" rows="2" required placeholder="Motivo por el cual se realiza el procedimiento"></textarea>
+                    </div>
+                    <div class="col-md-12">
+                        <label class="form-label">Descripción del Procedimiento <span class="text-danger">*</span></label>
+                        <textarea name="procedure_description" class="form-control" rows="5" required placeholder="Descripción detallada del procedimiento realizado, técnica utilizada, hallazgos..."></textarea>
+                    </div>
+                    <div class="col-md-12">
+                        <label class="form-label">Materiales Utilizados</label>
+                        <textarea name="materials_used" class="form-control" rows="3" placeholder="Lista de materiales, instrumental y medicamentos utilizados"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Personal -->
+        <div class="card mb-3">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0"><i class="bi bi-people"></i> Personal</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Realizado por <span class="text-danger">*</span></label>
+                        <select name="performed_by" class="form-select" required>
+                            <option value="">Seleccionar profesional...</option>
+                            {% for professional in professionals %}
+                            <option value="{{ professional.id }}">{{ professional.get_full_name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Asistido por</label>
+                        <input type="text" name="assisted_by" class="form-control" placeholder="Nombre(s) del personal que asistió">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Resultado y Complicaciones -->
+        <div class="card mb-3">
+            <div class="card-header bg-warning text-dark">
+                <h5 class="mb-0"><i class="bi bi-clipboard-check"></i> Resultado y Complicaciones</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-12">
+                        <label class="form-label">Complicaciones</label>
+                        <textarea name="complications" class="form-control" rows="2" placeholder="Complicaciones durante o después del procedimiento (dejar en blanco si no hubo)"></textarea>
+                        <small class="text-muted">Solo completar si hubo complicaciones</small>
+                    </div>
+                    <div class="col-md-12">
+                        <label class="form-label">Resultado del Procedimiento</label>
+                        <textarea name="outcome" class="form-control" rows="2" placeholder="Resultado del procedimiento, estado del paciente post-procedimiento"></textarea>
+                    </div>
+                    <div class="col-md-12">
+                        <label class="form-label">Observaciones</label>
+                        <textarea name="observations" class="form-control" rows="2" placeholder="Observaciones adicionales"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Botones -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <button type="submit" class="btn btn-success btn-lg">
+                    <i class="bi bi-save"></i> Guardar Procedimiento
+                </button>
+                <a href="{% url 'emergency:attention_detail' attention.id %}" class="btn btn-secondary btn-lg">
+                    <i class="bi bi-x-circle"></i> Cancelar
+                </a>
+            </div>
+        </div>
+    </form>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Set current datetime
+    const now = new Date();
+    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+    document.getElementById('procedureDatetime').value = now.toISOString().slice(0, 16);
+});
+</script>
+{% endblock %}

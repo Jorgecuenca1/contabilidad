@@ -1,0 +1,456 @@
+{% extends 'base.html' %}
+{% block title %}Factura {{ invoice.invoice_number }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-receipt"></i> Factura {{ invoice.invoice_number }}</h2>
+        <div>
+            <a href="{% url 'billing_health:invoice_list' %}" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Volver
+            </a>
+            {% if invoice.status == 'draft' %}
+            <a href="{% url 'billing_health:invoice_approve' invoice.id %}"
+               class="btn btn-success"
+               onclick="return confirm('¿Aprobar esta factura?')">
+                <i class="bi bi-check-circle"></i> Aprobar
+            </a>
+            {% endif %}
+            {% if invoice.status in 'approved,paid' and not invoice.rips_generated %}
+            <a href="{% url 'billing_health:generate_rips' invoice.id %}"
+               class="btn btn-info">
+                <i class="bi bi-file-earmark-code"></i> Generar RIPS
+            </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Información de la Factura -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <i class="bi bi-info-circle"></i> Información General
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <strong>Número:</strong> {{ invoice.invoice_number }}<br>
+                            <strong>Fecha:</strong> {{ invoice.invoice_date|date:"d/m/Y" }}<br>
+                            <strong>Tipo:</strong> {{ invoice.get_invoice_type_display }}<br>
+                            <strong>Estado:</strong>
+                            {% if invoice.status == 'paid' %}
+                                <span class="badge bg-success">Pagada</span>
+                            {% elif invoice.status == 'approved' %}
+                                <span class="badge bg-primary">Aprobada</span>
+                            {% elif invoice.status == 'issued' %}
+                                <span class="badge bg-info">Emitida</span>
+                            {% elif invoice.status == 'draft' %}
+                                <span class="badge bg-secondary">Borrador</span>
+                            {% elif invoice.status == 'glosa' %}
+                                <span class="badge bg-danger">Glosa</span>
+                            {% elif invoice.status == 'cancelled' %}
+                                <span class="badge bg-dark">Anulada</span>
+                            {% else %}
+                                <span class="badge bg-warning">{{ invoice.get_status_display }}</span>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Pagador:</strong> {{ invoice.payer.name }}<br>
+                            <strong>Paciente:</strong> {{ invoice.patient.name }}<br>
+                            <strong>Documento:</strong> {{ invoice.patient.document_number }}<br>
+                            <strong>Contrato:</strong> {{ invoice.contract_number|default:"-" }}
+                        </div>
+                    </div>
+                    {% if invoice.dian_resolution %}
+                    <hr>
+                    <div class="row">
+                        <div class="col-12">
+                            <h6>Resolución DIAN</h6>
+                            <strong>Resolución:</strong> {{ invoice.dian_resolution }}<br>
+                            <strong>Rango:</strong> {{ invoice.authorized_range_from }} - {{ invoice.authorized_range_to }}<br>
+                            <strong>Fecha Resolución:</strong> {{ invoice.resolution_date|date:"d/m/Y"|default:"-" }}
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card border-success">
+                <div class="card-header bg-success text-white">
+                    <i class="bi bi-cash-stack"></i> Resumen Financiero
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Subtotal:</span>
+                        <strong>${{ invoice.subtotal|floatformat:0 }}</strong>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Copago:</span>
+                        <span class="text-danger">-${{ invoice.copayment_amount|floatformat:0 }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Cuota Moderadora:</span>
+                        <span class="text-danger">-${{ invoice.moderator_fee_amount|floatformat:0 }}</span>
+                    </div>
+                    {% if invoice.discount_amount > 0 %}
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Descuento:</span>
+                        <span class="text-warning">-${{ invoice.discount_amount|floatformat:0 }}</span>
+                    </div>
+                    {% endif %}
+                    <hr>
+                    <div class="d-flex justify-content-between mb-3">
+                        <h5>Total:</h5>
+                        <h5><strong>${{ invoice.total_amount|floatformat:0 }}</strong></h5>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Pagado:</span>
+                        <strong class="text-success">${{ total_paid|floatformat:0 }}</strong>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span>Pendiente:</span>
+                        <strong class="text-warning">${{ pending_amount|floatformat:0 }}</strong>
+                    </div>
+                    {% if invoice.has_glosa %}
+                    <hr>
+                    <div class="alert alert-danger p-2 mb-0">
+                        <small><i class="bi bi-exclamation-triangle"></i> <strong>Glosa:</strong> ${{ invoice.glosa_amount|floatformat:0 }}</small>
+                    </div>
+                    {% endif %}
+                    {% if invoice.rips_generated %}
+                    <hr>
+                    <div class="alert alert-info p-2 mb-0">
+                        <small><i class="bi bi-check-circle"></i> <strong>RIPS generados:</strong><br>{{ invoice.rips_generation_date|date:"d/m/Y H:i" }}</small>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Items de la Factura -->
+    <div class="card mb-4">
+        <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+            <span><i class="bi bi-list-ul"></i> Items de la Factura ({{ total_items }})</span>
+            {% if invoice.status in 'draft,pending' %}
+            <button class="btn btn-sm btn-light" data-bs-toggle="modal" data-bs-target="#addItemModal">
+                <i class="bi bi-plus-circle"></i> Agregar Item
+            </button>
+            {% endif %}
+        </div>
+        <div class="card-body">
+            {% if items %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Tipo</th>
+                            <th>Código</th>
+                            <th>Descripción</th>
+                            <th>Cantidad</th>
+                            <th class="text-end">Precio Unit.</th>
+                            <th class="text-end">Subtotal</th>
+                            <th class="text-end">Copago</th>
+                            <th class="text-end">C. Mod.</th>
+                            <th class="text-end">Total</th>
+                            {% if invoice.status in 'draft,pending' %}
+                            <th>Acciones</th>
+                            {% endif %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in items %}
+                        <tr {% if item.is_glosa %}class="table-danger"{% endif %}>
+                            <td>{{ item.line_number }}</td>
+                            <td><small>{{ item.get_service_type_display }}</small></td>
+                            <td><strong>{{ item.service_code }}</strong></td>
+                            <td>{{ item.service_name|truncatewords:8 }}</td>
+                            <td>{{ item.quantity }}</td>
+                            <td class="text-end">${{ item.unit_price|floatformat:0 }}</td>
+                            <td class="text-end">${{ item.subtotal|floatformat:0 }}</td>
+                            <td class="text-end text-danger">${{ item.copayment|floatformat:0 }}</td>
+                            <td class="text-end text-danger">${{ item.moderator_fee|floatformat:0 }}</td>
+                            <td class="text-end"><strong>${{ item.total|floatformat:0 }}</strong></td>
+                            {% if invoice.status in 'draft,pending' %}
+                            <td>
+                                <a href="{% url 'billing_health:invoice_delete_item' invoice.id item.id %}"
+                                   class="btn btn-sm btn-danger"
+                                   onclick="return confirm('¿Eliminar este item?')">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                            </td>
+                            {% endif %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="alert alert-warning">
+                <i class="bi bi-exclamation-triangle"></i> No hay items en esta factura.
+                {% if invoice.status in 'draft,pending' %}
+                Agregue items para poder aprobarla.
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Pagos -->
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+                    <span><i class="bi bi-cash"></i> Pagos Realizados</span>
+                    {% if invoice.status not in 'draft,cancelled' and pending_amount > 0 %}
+                    <button class="btn btn-sm btn-light" data-bs-toggle="modal" data-bs-target="#addPaymentModal">
+                        <i class="bi bi-plus-circle"></i> Registrar Pago
+                    </button>
+                    {% endif %}
+                </div>
+                <div class="card-body">
+                    {% if payments %}
+                    <div class="list-group">
+                        {% for payment in payments %}
+                        <div class="list-group-item">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <strong>{{ payment.get_payment_method_display }}</strong><br>
+                                    <small class="text-muted">{{ payment.payment_date|date:"d/m/Y" }}</small>
+                                    {% if payment.reference %}
+                                    <br><small>Ref: {{ payment.reference }}</small>
+                                    {% endif %}
+                                </div>
+                                <div class="text-end">
+                                    <h5 class="mb-0 text-success">${{ payment.amount|floatformat:0 }}</h5>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <p class="text-muted">No se han registrado pagos</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Glosas -->
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header bg-danger text-white d-flex justify-content-between align-items-center">
+                    <span><i class="bi bi-exclamation-triangle"></i> Glosas</span>
+                    {% if invoice.status not in 'draft,cancelled' %}
+                    <button class="btn btn-sm btn-light" data-bs-toggle="modal" data-bs-target="#addGlosaModal">
+                        <i class="bi bi-plus-circle"></i> Registrar Glosa
+                    </button>
+                    {% endif %}
+                </div>
+                <div class="card-body">
+                    {% if glosas %}
+                    <div class="list-group">
+                        {% for glosa in glosas %}
+                        <div class="list-group-item">
+                            <div class="d-flex justify-content-between mb-2">
+                                <div>
+                                    <strong>{{ glosa.get_glosa_type_display }}</strong>
+                                    {% if glosa.glosa_code %}
+                                    <br><small>Código: {{ glosa.glosa_code }}</small>
+                                    {% endif %}
+                                </div>
+                                <div class="text-end">
+                                    <h6 class="mb-0 text-danger">${{ glosa.glosa_amount|floatformat:0 }}</h6>
+                                    {% if glosa.status == 'accepted' %}
+                                        <span class="badge bg-danger">Aceptada</span>
+                                    {% elif glosa.status == 'rejected' %}
+                                        <span class="badge bg-success">Rechazada</span>
+                                    {% elif glosa.status == 'in_review' %}
+                                        <span class="badge bg-info">En Revisión</span>
+                                    {% else %}
+                                        <span class="badge bg-warning">{{ glosa.get_status_display }}</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <p class="mb-2"><small>{{ glosa.reason }}</small></p>
+                            {% if glosa.status == 'pending' %}
+                            <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#respondGlosaModal{{ glosa.id }}">
+                                <i class="bi bi-reply"></i> Responder
+                            </button>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <p class="text-muted">No hay glosas registradas</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Agregar Item -->
+<div class="modal fade" id="addItemModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form method="post" action="{% url 'billing_health:invoice_add_item' invoice.id %}">
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h5 class="modal-title">Agregar Item</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Tipo de Servicio</label>
+                            <select class="form-select" name="service_type" required>
+                                <option value="">Seleccione...</option>
+                                <option value="consultation">Consulta</option>
+                                <option value="procedure">Procedimiento</option>
+                                <option value="surgery">Cirugía</option>
+                                <option value="medication">Medicamento</option>
+                                <option value="laboratory">Laboratorio</option>
+                                <option value="imaging">Imágenes</option>
+                                <option value="hospitalization">Hospitalización</option>
+                                <option value="other">Otro</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Código CUPS</label>
+                            <input type="text" class="form-control" name="service_code" required>
+                        </div>
+                        <div class="col-md-12 mb-3">
+                            <label class="form-label">Descripción del Servicio</label>
+                            <input type="text" class="form-control" name="service_name" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Código Diagnóstico (CIE-10)</label>
+                            <input type="text" class="form-control" name="diagnosis_code">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Número de Autorización</label>
+                            <input type="text" class="form-control" name="authorization_number">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Cantidad</label>
+                            <input type="number" step="0.01" class="form-control" name="quantity" value="1" required>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Precio Unitario</label>
+                            <input type="number" step="0.01" class="form-control" name="unit_price" required>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Copago</label>
+                            <input type="number" step="0.01" class="form-control" name="copayment" value="0">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Cuota Moderadora</label>
+                            <input type="number" step="0.01" class="form-control" name="moderator_fee" value="0">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Agregar Item</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Registrar Pago -->
+<div class="modal fade" id="addPaymentModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="post" action="{% url 'billing_health:invoice_add_payment' invoice.id %}">
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h5 class="modal-title">Registrar Pago</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Fecha de Pago</label>
+                        <input type="date" class="form-control" name="payment_date" value="{{ today|date:'Y-m-d' }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Método de Pago</label>
+                        <select class="form-select" name="payment_method" required>
+                            <option value="cash">Efectivo</option>
+                            <option value="transfer">Transferencia</option>
+                            <option value="check">Cheque</option>
+                            <option value="card">Tarjeta</option>
+                            <option value="other">Otro</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Monto</label>
+                        <input type="number" step="0.01" class="form-control" name="amount" max="{{ pending_amount }}" required>
+                        <small class="text-muted">Pendiente: ${{ pending_amount|floatformat:0 }}</small>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Referencia</label>
+                        <input type="text" class="form-control" name="reference">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Notas</label>
+                        <textarea class="form-control" name="notes" rows="2"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-success">Registrar Pago</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Registrar Glosa -->
+<div class="modal fade" id="addGlosaModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="post" action="{% url 'billing_health:invoice_add_glosa' invoice.id %}">
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h5 class="modal-title">Registrar Glosa</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Tipo de Glosa</label>
+                        <select class="form-select" name="glosa_type" required>
+                            <option value="administrative">Administrativa</option>
+                            <option value="technical">Técnica</option>
+                            <option value="financial">Financiera</option>
+                            <option value="coverage">Cobertura</option>
+                            <option value="authorization">Autorización</option>
+                            <option value="other">Otra</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Código de Glosa</label>
+                        <input type="text" class="form-control" name="glosa_code">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Monto Glosado</label>
+                        <input type="number" step="0.01" class="form-control" name="glosa_amount" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Motivo de la Glosa</label>
+                        <textarea class="form-control" name="reason" rows="3" required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-danger">Registrar Glosa</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

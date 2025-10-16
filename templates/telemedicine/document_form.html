@@ -1,0 +1,182 @@
+{% extends 'base.html' %}
+{% block title %}Crear Documento{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <h2 class="mb-4">
+        <i class="bi bi-file-earmark-plus"></i> Nuevo Documento de Telemedicina
+    </h2>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <!-- Información Básica -->
+        <div class="card mb-3">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="bi bi-info-circle"></i> Información del Documento</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label">Tipo de Documento <span class="text-danger">*</span></label>
+                        <select name="document_type" class="form-select" required>
+                            <option value="">Seleccionar tipo...</option>
+                            <option value="prescription">Receta Médica</option>
+                            <option value="medical_certificate">Certificado Médico</option>
+                            <option value="sick_leave">Incapacidad Laboral</option>
+                            <option value="lab_order">Orden de Laboratorio</option>
+                            <option value="imaging_order">Orden de Imágenes</option>
+                            <option value="referral">Remisión a Especialista</option>
+                            <option value="consent">Consentimiento Informado</option>
+                            <option value="report">Informe Médico</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Paciente <span class="text-danger">*</span></label>
+                        <select name="patient" class="form-select" required>
+                            <option value="">Seleccionar paciente...</option>
+                            {% for patient in patients %}
+                            <option value="{{ patient.id }}">{{ patient.third_party.name }} - {{ patient.third_party.identification_number }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Médico/Profesional <span class="text-danger">*</span></label>
+                        <select name="doctor" class="form-select" required>
+                            <option value="">Seleccionar médico...</option>
+                            {% for doctor in doctors %}
+                            <option value="{{ doctor.id }}">{{ doctor.third_party.name }} - {{ doctor.specialty }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contenido del Documento -->
+        <div class="card mb-3">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0"><i class="bi bi-file-text"></i> Contenido del Documento</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-12">
+                        <label class="form-label">Título del Documento <span class="text-danger">*</span></label>
+                        <input type="text" name="title" class="form-control" required placeholder="Ej: Receta médica para tratamiento de hipertensión">
+                    </div>
+                    <div class="col-md-12">
+                        <label class="form-label">Contenido <span class="text-danger">*</span></label>
+                        <textarea name="content" class="form-control" rows="10" required placeholder="Contenido detallado del documento..."></textarea>
+                        <small class="text-muted">Describa el contenido completo del documento. Para recetas, incluya nombre del medicamento, dosis, frecuencia y duración.</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Información Clínica -->
+        <div class="card mb-3">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0"><i class="bi bi-clipboard-data"></i> Información Clínica</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Diagnóstico</label>
+                        <textarea name="diagnosis" class="form-control" rows="3" placeholder="Diagnóstico relacionado (CIE-10)"></textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Observaciones Adicionales</label>
+                        <textarea name="observations" class="form-control" rows="3" placeholder="Observaciones clínicas adicionales"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Fechas y Validez -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-calendar-event"></i> Fechas y Validez</h6>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label">Fecha de Emisión <span class="text-danger">*</span></label>
+                        <input type="date" name="issue_date" class="form-control" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Válido Hasta</label>
+                        <input type="date" name="valid_until" class="form-control">
+                        <small class="text-muted">Opcional. Aplica para recetas, certificados temporales, etc.</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Relación con Consultas/Visitas -->
+        {% if consultation or visit %}
+        <div class="card mb-3">
+            <div class="card-header bg-warning text-dark">
+                <h6 class="mb-0"><i class="bi bi-link-45deg"></i> Documento Relacionado</h6>
+            </div>
+            <div class="card-body">
+                {% if consultation %}
+                <input type="hidden" name="virtual_consultation" value="{{ consultation.id }}">
+                <div class="alert alert-info mb-0">
+                    <i class="bi bi-laptop"></i> Este documento está relacionado con la consulta virtual: <strong>{{ consultation.consultation_number }}</strong>
+                </div>
+                {% endif %}
+                {% if visit %}
+                <input type="hidden" name="home_care_visit" value="{{ visit.id }}">
+                <div class="alert alert-info mb-0">
+                    <i class="bi bi-house-heart"></i> Este documento está relacionado con la visita domiciliaria: <strong>{{ visit.visit_number }}</strong>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% else %}
+        <div class="card mb-3">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-link-45deg"></i> Relación con Consulta/Visita (Opcional)</h6>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Consulta Virtual Relacionada</label>
+                        <select name="virtual_consultation" class="form-select">
+                            <option value="">Ninguna</option>
+                            {% for cons in recent_consultations %}
+                            <option value="{{ cons.id }}">{{ cons.consultation_number }} - {{ cons.patient.third_party.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Visita Domiciliaria Relacionada</label>
+                        <select name="home_care_visit" class="form-select">
+                            <option value="">Ninguna</option>
+                            {% for vis in recent_visits %}
+                            <option value="{{ vis.id }}">{{ vis.visit_number }} - {{ vis.patient.third_party.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Botones -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <button type="submit" class="btn btn-primary btn-lg">
+                    <i class="bi bi-save"></i> Guardar Documento
+                </button>
+                <button type="submit" name="save_and_sign" value="1" class="btn btn-success btn-lg">
+                    <i class="bi bi-pen"></i> Guardar y Firmar
+                </button>
+                <a href="{% url 'telemedicine:document_list' %}" class="btn btn-secondary btn-lg">
+                    <i class="bi bi-x-circle"></i> Cancelar
+                </a>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}

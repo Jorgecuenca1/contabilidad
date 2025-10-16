@@ -1,0 +1,215 @@
+{% extends 'base.html' %}
+{% block title %}Nuevo Monitoreo Holter{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2><i class="bi bi-reception-4"></i> Nuevo Monitoreo Holter</h2>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'cardiology:dashboard' %}">Cardiología</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'cardiology:holter_list' %}">Holter</a></li>
+                    <li class="breadcrumb-item active">Nuevo</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <i class="bi bi-reception-4"></i> Formulario de Monitoreo Holter
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+
+                        <!-- INFORMACIÓN DEL PACIENTE -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h5 class="border-bottom pb-2"><i class="bi bi-person"></i> Información del Paciente</h5>
+                            </div>
+
+                            <div class="col-md-12">
+                                <label for="patient_id" class="form-label">Paciente <span class="text-danger">*</span></label>
+                                <select name="patient_id" id="patient_id" class="form-select" required>
+                                    <option value="">Seleccione un paciente...</option>
+                                    {% for patient in patients %}
+                                    <option value="{{ patient.id }}">
+                                        {{ patient.third_party.first_name }} {{ patient.third_party.last_name }}
+                                        ({{ patient.third_party.document_number }})
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- INFORMACIÓN DEL ESTUDIO -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h5 class="border-bottom pb-2"><i class="bi bi-calendar-event"></i> Información del Estudio</h5>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label for="start_datetime" class="form-label">Fecha y Hora Inicio <span class="text-danger">*</span></label>
+                                <input type="datetime-local" name="start_datetime" id="start_datetime" class="form-control" required>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label for="end_datetime" class="form-label">Fecha y Hora Fin <span class="text-danger">*</span></label>
+                                <input type="datetime-local" name="end_datetime" id="end_datetime" class="form-control" required>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label for="duration" class="form-label">Duración <span class="text-danger">*</span></label>
+                                <select name="duration" id="duration" class="form-select" required>
+                                    {% for value, label in duration_choices %}
+                                    <option value="{{ value }}">{{ label }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- PERSONAL -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h5 class="border-bottom pb-2"><i class="bi bi-people"></i> Personal</h5>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="placed_by_id" class="form-label">Colocado Por <span class="text-danger">*</span></label>
+                                <select name="placed_by_id" id="placed_by_id" class="form-select" required>
+                                    <option value="">Seleccione...</option>
+                                    {% for tech in technicians %}
+                                    <option value="{{ tech.id }}">{{ tech.first_name }} {{ tech.last_name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="interpreted_by_id" class="form-label">Interpretado Por <span class="text-danger">*</span></label>
+                                <select name="interpreted_by_id" id="interpreted_by_id" class="form-select" required>
+                                    <option value="">Seleccione...</option>
+                                    {% for tech in technicians %}
+                                    <option value="{{ tech.id }}">{{ tech.first_name }} {{ tech.last_name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- ANÁLISIS DEL RITMO -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h5 class="border-bottom pb-2"><i class="bi bi-activity"></i> Análisis del Ritmo</h5>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="predominant_rhythm" class="form-label">Ritmo Predominante <span class="text-danger">*</span></label>
+                                <input type="text" name="predominant_rhythm" id="predominant_rhythm"
+                                       class="form-control" placeholder="Ej: Ritmo sinusal" required>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="total_beats" class="form-label">Total de Latidos <span class="text-danger">*</span></label>
+                                <input type="number" name="total_beats" id="total_beats"
+                                       class="form-control" placeholder="100000" required>
+                            </div>
+                        </div>
+
+                        <!-- FRECUENCIA CARDÍACA -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h5 class="border-bottom pb-2"><i class="bi bi-heart-pulse"></i> Frecuencia Cardíaca</h5>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label for="min_heart_rate" class="form-label">FC Mínima (lpm) <span class="text-danger">*</span></label>
+                                <input type="number" name="min_heart_rate" id="min_heart_rate"
+                                       class="form-control" placeholder="45" required>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label for="max_heart_rate" class="form-label">FC Máxima (lpm) <span class="text-danger">*</span></label>
+                                <input type="number" name="max_heart_rate" id="max_heart_rate"
+                                       class="form-control" placeholder="140" required>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label for="average_heart_rate" class="form-label">FC Promedio (lpm) <span class="text-danger">*</span></label>
+                                <input type="number" name="average_heart_rate" id="average_heart_rate"
+                                       class="form-control" placeholder="75" required>
+                            </div>
+                        </div>
+
+                        <!-- ARRITMIAS -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h5 class="border-bottom pb-2"><i class="bi bi-exclamation-triangle"></i> Arritmias</h5>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="total_supraventricular_ectopics" class="form-label">Extrasístoles Supraventriculares</label>
+                                <input type="number" name="total_supraventricular_ectopics" id="total_supraventricular_ectopics"
+                                       class="form-control" placeholder="0" value="0">
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="total_ventricular_ectopics" class="form-label">Extrasístoles Ventriculares</label>
+                                <input type="number" name="total_ventricular_ectopics" id="total_ventricular_ectopics"
+                                       class="form-control" placeholder="0" value="0">
+                            </div>
+                        </div>
+
+                        <!-- HALLAZGOS E INTERPRETACIÓN -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h5 class="border-bottom pb-2"><i class="bi bi-clipboard-data"></i> Hallazgos e Interpretación</h5>
+                            </div>
+
+                            <div class="col-md-12 mb-3">
+                                <label for="findings" class="form-label">Hallazgos <span class="text-danger">*</span></label>
+                                <textarea name="findings" id="findings" class="form-control" rows="4" required
+                                          placeholder="Describa los hallazgos del monitoreo Holter..."></textarea>
+                            </div>
+
+                            <div class="col-md-12 mb-3">
+                                <label for="interpretation" class="form-label">Interpretación <span class="text-danger">*</span></label>
+                                <textarea name="interpretation" id="interpretation" class="form-control" rows="3" required
+                                          placeholder="Interpretación del estudio..."></textarea>
+                            </div>
+
+                            <div class="col-md-12 mb-3">
+                                <label for="conclusion" class="form-label">Conclusión <span class="text-danger">*</span></label>
+                                <textarea name="conclusion" id="conclusion" class="form-control" rows="2" required
+                                          placeholder="Conclusión diagnóstica..."></textarea>
+                            </div>
+
+                            <div class="col-md-12">
+                                <label for="recommendations" class="form-label">Recomendaciones</label>
+                                <textarea name="recommendations" id="recommendations" class="form-control" rows="2"
+                                          placeholder="Recomendaciones clínicas..."></textarea>
+                            </div>
+                        </div>
+
+                        <!-- BOTONES -->
+                        <div class="row">
+                            <div class="col-12">
+                                <hr>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-save"></i> Guardar Holter
+                                </button>
+                                <a href="{% url 'cardiology:holter_list' %}" class="btn btn-secondary">
+                                    <i class="bi bi-x-circle"></i> Cancelar
+                                </a>
+                            </div>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

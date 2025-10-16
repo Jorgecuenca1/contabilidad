@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block title %}Detalle Holter{% endblock %}
+{% block content %}
+<div class="container-fluid">
+    <h2><i class="bi bi-reception-4"></i> Holter {{ holter.holter_number }}</h2>
+    <div class="card mt-3">
+        <div class="card-body">
+            <p><strong>Paciente:</strong> {{ holter.patient.nombre }}</p>
+            <p><strong>Inicio:</strong> {{ holter.start_datetime|date:"d/m/Y H:i" }}</p>
+            <p><strong>Fin:</strong> {{ holter.end_datetime|date:"d/m/Y H:i" }}</p>
+            <p><strong>Duración:</strong> {{ holter.get_duration_display }}</p>
+        </div>
+    </div>
+    <a href="{% url 'cardiology:holter_list' %}" class="btn btn-secondary mt-3">Volver</a>
+</div>
+{% endblock %}

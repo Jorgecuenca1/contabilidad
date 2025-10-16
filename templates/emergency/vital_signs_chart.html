@@ -1,0 +1,316 @@
+{% extends 'base.html' %}
+{% block title %}Gráfica de Signos Vitales{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-graph-up"></i> Gráfica de Signos Vitales</h2>
+        <div>
+            <a href="{% url 'emergency:vital_signs_list' admission.id %}" class="btn btn-primary">
+                <i class="bi bi-list"></i> Ver Lista
+            </a>
+            <a href="{% url 'emergency:admission_detail' admission.id %}" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Volver
+            </a>
+        </div>
+    </div>
+
+    <!-- Información del Paciente -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-4">
+                    <strong>Paciente:</strong> {{ admission.patient.third_party.name }}
+                </div>
+                <div class="col-md-4">
+                    <strong>Admisión:</strong> {{ admission.admission_number }}
+                </div>
+                <div class="col-md-4">
+                    <strong>Estado:</strong> {{ admission.get_status_display }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Gráfica de Presión Arterial -->
+    <div class="card mb-4">
+        <div class="card-header bg-danger text-white">
+            <h5 class="mb-0"><i class="bi bi-heart"></i> Presión Arterial</h5>
+        </div>
+        <div class="card-body">
+            <canvas id="bloodPressureChart" height="80"></canvas>
+        </div>
+    </div>
+
+    <!-- Gráfica de Frecuencia Cardíaca y Respiratoria -->
+    <div class="card mb-4">
+        <div class="card-header bg-warning text-dark">
+            <h5 class="mb-0"><i class="bi bi-heart-pulse"></i> Frecuencias</h5>
+        </div>
+        <div class="card-body">
+            <canvas id="frequenciesChart" height="80"></canvas>
+        </div>
+    </div>
+
+    <!-- Gráfica de Temperatura y Saturación -->
+    <div class="card mb-4">
+        <div class="card-header bg-info text-white">
+            <h5 class="mb-0"><i class="bi bi-thermometer"></i> Temperatura y Saturación de O2</h5>
+        </div>
+        <div class="card-body">
+            <canvas id="tempOxygenChart" height="80"></canvas>
+        </div>
+    </div>
+
+    <!-- Gráfica de Dolor -->
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0"><i class="bi bi-emoji-frown"></i> Escala de Dolor</h5>
+        </div>
+        <div class="card-body">
+            <canvas id="painChart" height="80"></canvas>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_css %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Preparar datos
+const vitalSignsData = {{ vital_signs_data|safe }};
+
+// Extraer timestamps y convertir a formato legible
+const timestamps = vitalSignsData.map(vs => {
+    const date = new Date(vs.recorded_datetime);
+    return date.toLocaleString('es-CO', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
+});
+
+// Configuración común de gráficas
+const commonOptions = {
+    responsive: true,
+    maintainAspectRatio: true,
+    plugins: {
+        legend: {
+            display: true,
+            position: 'top',
+        }
+    },
+    scales: {
+        x: {
+            display: true,
+            title: {
+                display: true,
+                text: 'Fecha y Hora'
+            }
+        }
+    }
+};
+
+// Gráfica de Presión Arterial
+const bpCtx = document.getElementById('bloodPressureChart').getContext('2d');
+new Chart(bpCtx, {
+    type: 'line',
+    data: {
+        labels: timestamps,
+        datasets: [
+            {
+                label: 'Presión Sistólica',
+                data: vitalSignsData.map(vs => vs.blood_pressure_systolic),
+                borderColor: 'rgb(220, 53, 69)',
+                backgroundColor: 'rgba(220, 53, 69, 0.1)',
+                tension: 0.3
+            },
+            {
+                label: 'Presión Diastólica',
+                data: vitalSignsData.map(vs => vs.blood_pressure_diastolic),
+                borderColor: 'rgb(255, 99, 71)',
+                backgroundColor: 'rgba(255, 99, 71, 0.1)',
+                tension: 0.3
+            }
+        ]
+    },
+    options: {
+        ...commonOptions,
+        scales: {
+            ...commonOptions.scales,
+            y: {
+                display: true,
+                title: {
+                    display: true,
+                    text: 'mmHg'
+                },
+                suggestedMin: 40,
+                suggestedMax: 180
+            }
+        }
+    }
+});
+
+// Gráfica de Frecuencias
+const freqCtx = document.getElementById('frequenciesChart').getContext('2d');
+new Chart(freqCtx, {
+    type: 'line',
+    data: {
+        labels: timestamps,
+        datasets: [
+            {
+                label: 'Frecuencia Cardíaca (lpm)',
+                data: vitalSignsData.map(vs => vs.heart_rate),
+                borderColor: 'rgb(255, 193, 7)',
+                backgroundColor: 'rgba(255, 193, 7, 0.1)',
+                tension: 0.3,
+                yAxisID: 'y'
+            },
+            {
+                label: 'Frecuencia Respiratoria (rpm)',
+                data: vitalSignsData.map(vs => vs.respiratory_rate),
+                borderColor: 'rgb(13, 110, 253)',
+                backgroundColor: 'rgba(13, 110, 253, 0.1)',
+                tension: 0.3,
+                yAxisID: 'y1'
+            }
+        ]
+    },
+    options: {
+        ...commonOptions,
+        scales: {
+            ...commonOptions.scales,
+            y: {
+                type: 'linear',
+                display: true,
+                position: 'left',
+                title: {
+                    display: true,
+                    text: 'FC (lpm)'
+                },
+                suggestedMin: 40,
+                suggestedMax: 120
+            },
+            y1: {
+                type: 'linear',
+                display: true,
+                position: 'right',
+                title: {
+                    display: true,
+                    text: 'FR (rpm)'
+                },
+                suggestedMin: 10,
+                suggestedMax: 30,
+                grid: {
+                    drawOnChartArea: false
+                }
+            }
+        }
+    }
+});
+
+// Gráfica de Temperatura y Oxígeno
+const tempOxyCtx = document.getElementById('tempOxygenChart').getContext('2d');
+new Chart(tempOxyCtx, {
+    type: 'line',
+    data: {
+        labels: timestamps,
+        datasets: [
+            {
+                label: 'Temperatura (°C)',
+                data: vitalSignsData.map(vs => vs.temperature),
+                borderColor: 'rgb(220, 53, 69)',
+                backgroundColor: 'rgba(220, 53, 69, 0.1)',
+                tension: 0.3,
+                yAxisID: 'y'
+            },
+            {
+                label: 'Saturación O2 (%)',
+                data: vitalSignsData.map(vs => vs.oxygen_saturation),
+                borderColor: 'rgb(23, 162, 184)',
+                backgroundColor: 'rgba(23, 162, 184, 0.1)',
+                tension: 0.3,
+                yAxisID: 'y1'
+            }
+        ]
+    },
+    options: {
+        ...commonOptions,
+        scales: {
+            ...commonOptions.scales,
+            y: {
+                type: 'linear',
+                display: true,
+                position: 'left',
+                title: {
+                    display: true,
+                    text: 'Temperatura (°C)'
+                },
+                suggestedMin: 35,
+                suggestedMax: 40
+            },
+            y1: {
+                type: 'linear',
+                display: true,
+                position: 'right',
+                title: {
+                    display: true,
+                    text: 'O2 (%)'
+                },
+                suggestedMin: 85,
+                suggestedMax: 100,
+                grid: {
+                    drawOnChartArea: false
+                }
+            }
+        }
+    }
+});
+
+// Gráfica de Dolor
+const painCtx = document.getElementById('painChart').getContext('2d');
+new Chart(painCtx, {
+    type: 'bar',
+    data: {
+        labels: timestamps,
+        datasets: [
+            {
+                label: 'Escala de Dolor (0-10)',
+                data: vitalSignsData.map(vs => vs.pain_scale),
+                backgroundColor: vitalSignsData.map(vs => {
+                    if (!vs.pain_scale) return 'rgba(108, 117, 125, 0.5)';
+                    if (vs.pain_scale >= 7) return 'rgba(220, 53, 69, 0.7)';
+                    if (vs.pain_scale >= 4) return 'rgba(255, 193, 7, 0.7)';
+                    return 'rgba(25, 135, 84, 0.7)';
+                }),
+                borderColor: vitalSignsData.map(vs => {
+                    if (!vs.pain_scale) return 'rgb(108, 117, 125)';
+                    if (vs.pain_scale >= 7) return 'rgb(220, 53, 69)';
+                    if (vs.pain_scale >= 4) return 'rgb(255, 193, 7)';
+                    return 'rgb(25, 135, 84)';
+                }),
+                borderWidth: 2
+            }
+        ]
+    },
+    options: {
+        ...commonOptions,
+        scales: {
+            ...commonOptions.scales,
+            y: {
+                display: true,
+                title: {
+                    display: true,
+                    text: 'Nivel de Dolor'
+                },
+                min: 0,
+                max: 10,
+                ticks: {
+                    stepSize: 1
+                }
+            }
+        }
+    }
+});
+</script>
+{% endblock %}

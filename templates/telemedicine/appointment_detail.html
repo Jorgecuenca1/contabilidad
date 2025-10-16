@@ -1,0 +1,283 @@
+{% extends 'base.html' %}
+{% block title %}Detalle de Cita - {{ appointment.appointment_number }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-calendar-event"></i> Detalle de Cita: {{ appointment.appointment_number }}</h2>
+        <div>
+            <a href="{% url 'telemedicine:appointment_list' %}" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Volver
+            </a>
+        </div>
+    </div>
+
+    <!-- Información Principal -->
+    <div class="row">
+        <div class="col-md-8">
+            <!-- Detalles de la Cita -->
+            <div class="card mb-3">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="bi bi-info-circle"></i> Información de la Cita</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <strong>Número de Cita:</strong>
+                            <p class="mb-0">{{ appointment.appointment_number }}</p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <strong>Estado:</strong>
+                            <p class="mb-0">
+                                {% if appointment.status == 'completed' %}
+                                <span class="badge bg-success">Completada</span>
+                                {% elif appointment.status == 'in_progress' %}
+                                <span class="badge bg-warning text-dark">En Progreso</span>
+                                {% elif appointment.status == 'scheduled' %}
+                                <span class="badge bg-info">Programada</span>
+                                {% else %}
+                                <span class="badge bg-danger">Cancelada</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <strong>Paciente:</strong>
+                            <p class="mb-0">{{ appointment.patient.third_party.name }}</p>
+                            <small class="text-muted">{{ appointment.patient.third_party.identification_number }}</small>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <strong>Médico:</strong>
+                            <p class="mb-0">{{ appointment.doctor.third_party.name }}</p>
+                            <small class="text-muted">{{ appointment.doctor.specialty }}</small>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <strong>Tipo de Cita:</strong>
+                            <p class="mb-0">
+                                {% if appointment.appointment_type == 'virtual' %}
+                                <span class="badge bg-success"><i class="bi bi-laptop"></i> Consulta Virtual</span>
+                                {% elif appointment.appointment_type == 'home_care' %}
+                                <span class="badge bg-info"><i class="bi bi-house-heart"></i> Atención Domiciliaria</span>
+                                {% elif appointment.appointment_type == 'phone' %}
+                                <span class="badge bg-primary"><i class="bi bi-telephone"></i> Llamada Telefónica</span>
+                                {% else %}
+                                <span class="badge bg-secondary"><i class="bi bi-chat-dots"></i> Chat en Línea</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <strong>Prioridad:</strong>
+                            <p class="mb-0">
+                                {% if appointment.priority == 'urgent' %}
+                                <span class="badge bg-danger">Urgente</span>
+                                {% elif appointment.priority == 'high' %}
+                                <span class="badge bg-warning text-dark">Alta</span>
+                                {% elif appointment.priority == 'medium' %}
+                                <span class="badge bg-info">Media</span>
+                                {% else %}
+                                <span class="badge bg-secondary">Baja</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <strong>Fecha y Hora:</strong>
+                            <p class="mb-0">{{ appointment.appointment_date|date:"d/m/Y H:i" }}</p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <strong>Duración:</strong>
+                            <p class="mb-0">{{ appointment.duration_minutes }} minutos</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Detalles Específicos según Tipo -->
+            {% if appointment.appointment_type == 'virtual' %}
+            <div class="card mb-3">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="bi bi-laptop"></i> Detalles de Consulta Virtual</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <strong>Link de la Reunión:</strong>
+                            <p class="mb-0">
+                                <a href="{{ appointment.meeting_link }}" target="_blank" class="btn btn-success btn-sm">
+                                    <i class="bi bi-box-arrow-up-right"></i> Unirse a la Reunión
+                                </a>
+                                <button class="btn btn-outline-secondary btn-sm" onclick="copyToClipboard('{{ appointment.meeting_link }}')">
+                                    <i class="bi bi-clipboard"></i> Copiar Link
+                                </button>
+                            </p>
+                        </div>
+                        {% if appointment.meeting_id %}
+                        <div class="col-md-6 mb-3">
+                            <strong>ID de la Reunión:</strong>
+                            <p class="mb-0"><code>{{ appointment.meeting_id }}</code></p>
+                        </div>
+                        {% endif %}
+                        {% if appointment.meeting_password %}
+                        <div class="col-md-6 mb-3">
+                            <strong>Contraseña:</strong>
+                            <p class="mb-0"><code>{{ appointment.meeting_password }}</code></p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% elif appointment.appointment_type == 'home_care' %}
+            <div class="card mb-3">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="bi bi-house-heart"></i> Detalles de Atención Domiciliaria</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <strong>Dirección:</strong>
+                            <p class="mb-0">{{ appointment.home_address }}</p>
+                            <p class="mb-0">{{ appointment.home_city }}, {{ appointment.home_state }} {% if appointment.home_postal_code %}{{ appointment.home_postal_code }}{% endif %}</p>
+                        </div>
+                        {% if appointment.address_reference %}
+                        <div class="col-md-12 mb-3">
+                            <strong>Referencias:</strong>
+                            <p class="mb-0">{{ appointment.address_reference }}</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Motivo e Instrucciones -->
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h6 class="mb-0"><i class="bi bi-file-text"></i> Motivo e Instrucciones</h6>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <strong>Motivo de la Cita:</strong>
+                        <p class="mb-0">{{ appointment.reason }}</p>
+                    </div>
+                    {% if appointment.special_instructions %}
+                    <div class="mb-3">
+                        <strong>Instrucciones para el Paciente:</strong>
+                        <p class="mb-0">{{ appointment.special_instructions }}</p>
+                    </div>
+                    {% endif %}
+                    {% if appointment.internal_notes %}
+                    <div class="mb-3">
+                        <strong>Notas Internas:</strong>
+                        <div class="alert alert-secondary mb-0">
+                            {{ appointment.internal_notes }}
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Consulta/Visita Relacionada -->
+            {% if appointment.virtual_consultation or appointment.home_care_visit %}
+            <div class="card mb-3">
+                <div class="card-header bg-success text-white">
+                    <h6 class="mb-0"><i class="bi bi-link-45deg"></i> Registro Relacionado</h6>
+                </div>
+                <div class="card-body">
+                    {% if appointment.virtual_consultation %}
+                    <p class="mb-0">
+                        <strong>Consulta Virtual:</strong>
+                        <a href="{% url 'telemedicine:virtual_consultation_detail' appointment.virtual_consultation.id %}" class="btn btn-sm btn-success">
+                            <i class="bi bi-eye"></i> Ver Consulta
+                        </a>
+                    </p>
+                    {% endif %}
+                    {% if appointment.home_care_visit %}
+                    <p class="mb-0">
+                        <strong>Visita Domiciliaria:</strong>
+                        <a href="{% url 'telemedicine:home_care_visit_detail' appointment.home_care_visit.id %}" class="btn btn-sm btn-info">
+                            <i class="bi bi-eye"></i> Ver Visita
+                        </a>
+                    </p>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Panel Lateral -->
+        <div class="col-md-4">
+            <!-- Acciones -->
+            <div class="card mb-3">
+                <div class="card-header bg-warning text-dark">
+                    <h6 class="mb-0"><i class="bi bi-gear"></i> Acciones</h6>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        {% if appointment.status == 'scheduled' %}
+                        <form method="post" action="{% url 'telemedicine:appointment_start' appointment.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-success w-100">
+                                <i class="bi bi-play-circle"></i> Iniciar Cita
+                            </button>
+                        </form>
+                        {% endif %}
+
+                        {% if appointment.status == 'scheduled' and appointment.appointment_type == 'virtual' %}
+                        <a href="{% url 'telemedicine:virtual_consultation_create' %}?appointment={{ appointment.id }}" class="btn btn-primary">
+                            <i class="bi bi-laptop"></i> Crear Consulta
+                        </a>
+                        {% elif appointment.status == 'scheduled' and appointment.appointment_type == 'home_care' %}
+                        <a href="{% url 'telemedicine:home_care_visit_create' %}?appointment={{ appointment.id }}" class="btn btn-info">
+                            <i class="bi bi-house-heart"></i> Crear Visita
+                        </a>
+                        {% endif %}
+
+                        {% if appointment.status == 'in_progress' %}
+                        <form method="post" action="{% url 'telemedicine:appointment_complete' appointment.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-success w-100">
+                                <i class="bi bi-check-circle"></i> Completar Cita
+                            </button>
+                        </form>
+                        {% endif %}
+
+                        {% if appointment.status != 'cancelled' and appointment.status != 'completed' %}
+                        <form method="post" action="{% url 'telemedicine:appointment_cancel' appointment.id %}" onsubmit="return confirm('¿Está seguro de cancelar esta cita?');">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger w-100">
+                                <i class="bi bi-x-circle"></i> Cancelar Cita
+                            </button>
+                        </form>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Información del Sistema -->
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="mb-0"><i class="bi bi-clock-history"></i> Información del Sistema</h6>
+                </div>
+                <div class="card-body">
+                    <small class="text-muted">
+                        <p class="mb-2"><strong>Creado:</strong><br>{{ appointment.created_at|date:"d/m/Y H:i" }}</p>
+                        <p class="mb-2"><strong>Creado por:</strong><br>{{ appointment.created_by.get_full_name }}</p>
+                        <p class="mb-0"><strong>Última modificación:</strong><br>{{ appointment.updated_at|date:"d/m/Y H:i" }}</p>
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function copyToClipboard(text) {
+    navigator.clipboard.writeText(text).then(function() {
+        alert('Link copiado al portapapeles');
+    }, function(err) {
+        console.error('Error al copiar: ', err);
+    });
+}
+</script>
+{% endblock %}

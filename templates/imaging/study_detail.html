@@ -1,0 +1,234 @@
+{% extends 'base.html' %}
+{% block title %}Estudio {{ study.study_number }} - Imágenes Diagnósticas{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-camera-video"></i> Estudio {{ study.study_number }}</h2>
+        <div>
+            {% if not report and study.status == 'completed' %}
+            <a href="{% url 'imaging:report_create' study.id %}" class="btn btn-primary">
+                <i class="bi bi-file-earmark-text"></i> Crear Informe
+            </a>
+            {% endif %}
+            <a href="{% url 'imaging:order_detail' study.order.id %}" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i> Volver a Orden
+            </a>
+        </div>
+    </div>
+
+    <div class="row g-3">
+        <!-- Información Principal -->
+        <div class="col-md-8">
+            <div class="card mb-3">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="bi bi-info-circle"></i> Información del Estudio</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Número de Estudio:</strong> {{ study.study_number }}</p>
+                            <p><strong>Orden Relacionada:</strong>
+                                <a href="{% url 'imaging:order_detail' study.order.id %}">{{ study.order.order_number }}</a>
+                            </p>
+                            <p><strong>Estado:</strong>
+                                {% if study.status == 'completed' %}
+                                <span class="badge bg-success">Completado</span>
+                                {% elif study.status == 'in_progress' %}
+                                <span class="badge bg-primary">En Proceso</span>
+                                {% elif study.status == 'scheduled' %}
+                                <span class="badge bg-info">Programado</span>
+                                {% elif study.status == 'cancelled' %}
+                                <span class="badge bg-danger">Cancelado</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Fecha del Estudio:</strong> {{ study.study_date|date:"d/m/Y H:i" }}</p>
+                            <p><strong>Equipo Utilizado:</strong> {{ study.equipment_used.name }}</p>
+                            <p><strong>Tecnólogo:</strong> {{ study.performing_technologist.get_full_name }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Información del Paciente -->
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-person"></i> Información del Paciente</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Nombre:</strong> {{ study.order.patient.third_party.name }}</p>
+                            <p><strong>Documento:</strong> {{ study.order.patient.third_party.get_identification_type_display }} {{ study.order.patient.third_party.identification_number }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Historia Clínica:</strong> {{ study.order.patient.medical_record_number }}</p>
+                            <p><strong>Procedimiento:</strong> {{ study.order.procedure_description }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Detalles Técnicos -->
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-gear"></i> Detalles Técnicos</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Número de Imágenes:</strong> {{ study.number_of_images }}</p>
+                            <p><strong>Contraste Utilizado:</strong>
+                                {% if study.contrast_used %}
+                                <span class="badge bg-warning">Sí</span>
+                                {% if study.contrast_type %}
+                                - {{ study.contrast_type }}
+                                {% endif %}
+                                {% else %}
+                                <span class="badge bg-secondary">No</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                        <div class="col-md-6">
+                            {% if study.dicom_stored %}
+                            <p><strong>DICOM Almacenado:</strong> <span class="badge bg-success"><i class="bi bi-check-circle"></i> Sí</span></p>
+                            {% endif %}
+                            {% if study.study_instance_uid %}
+                            <p><strong>DICOM UID:</strong><br><small class="font-monospace">{{ study.study_instance_uid }}</small></p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% if study.technical_notes %}
+                    <hr>
+                    <p><strong>Notas Técnicas:</strong><br>{{ study.technical_notes }}</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Informe Radiológico -->
+            {% if report %}
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="bi bi-file-earmark-text"></i> Informe Radiológico - {{ report.report_number }}</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <p><strong>Radiólogo:</strong> {{ report.radiologist.get_full_name }}</p>
+                            <p><strong>Fecha del Informe:</strong> {{ report.report_date|date:"d/m/Y H:i" }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Estado:</strong>
+                                {% if report.status == 'draft' %}
+                                <span class="badge bg-secondary">Borrador</span>
+                                {% elif report.status == 'preliminary' %}
+                                <span class="badge bg-warning">Preliminar</span>
+                                {% elif report.status == 'final' %}
+                                <span class="badge bg-success">Final</span>
+                                {% elif report.status == 'amended' %}
+                                <span class="badge bg-info">Enmendado</span>
+                                {% endif %}
+                            </p>
+                            {% if report.is_critical %}
+                            <p><span class="badge bg-danger"><i class="bi bi-exclamation-triangle"></i> Hallazgo Crítico</span></p>
+                            {% endif %}
+                            {% if report.is_normal %}
+                            <p><span class="badge bg-success"><i class="bi bi-check-circle"></i> Estudio Normal</span></p>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <div class="mb-3">
+                        <h6><strong>Técnica:</strong></h6>
+                        <p>{{ report.technique|linebreaks }}</p>
+                    </div>
+
+                    <div class="mb-3">
+                        <h6><strong>Hallazgos:</strong></h6>
+                        <p>{{ report.findings|linebreaks }}</p>
+                    </div>
+
+                    <div class="mb-3">
+                        <h6><strong>Impresión Diagnóstica:</strong></h6>
+                        <p>{{ report.impression|linebreaks }}</p>
+                    </div>
+
+                    {% if report.recommendations %}
+                    <div class="mb-3">
+                        <h6><strong>Recomendaciones:</strong></h6>
+                        <p>{{ report.recommendations|linebreaks }}</p>
+                    </div>
+                    {% endif %}
+
+                    {% if report.digitally_signed %}
+                    <div class="alert alert-success mt-3">
+                        <i class="bi bi-shield-check"></i> Este informe ha sido firmado digitalmente
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% else %}
+            <div class="card">
+                <div class="card-body text-center text-muted">
+                    <i class="bi bi-file-earmark-text" style="font-size: 3rem;"></i>
+                    <p class="mt-2">Este estudio aún no tiene un informe radiológico</p>
+                    {% if study.status == 'completed' %}
+                    <a href="{% url 'imaging:report_create' study.id %}" class="btn btn-primary">
+                        <i class="bi bi-plus-circle"></i> Crear Informe Ahora
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Panel Lateral -->
+        <div class="col-md-4">
+            <!-- Radiólogo Asignado -->
+            {% if study.radiologist_assigned %}
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h6 class="mb-0"><i class="bi bi-person-badge"></i> Radiólogo Asignado</h6>
+                </div>
+                <div class="card-body">
+                    <p>{{ study.radiologist_assigned.get_full_name }}</p>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Estado del Informe -->
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h6 class="mb-0"><i class="bi bi-clipboard-check"></i> Estado del Informe</h6>
+                </div>
+                <div class="card-body">
+                    {% if report %}
+                    <p class="text-success"><i class="bi bi-check-circle"></i> Informe Disponible</p>
+                    <p><small>{{ report.report_number }}</small></p>
+                    {% else %}
+                    <p class="text-warning"><i class="bi bi-exclamation-triangle"></i> Informe Pendiente</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Auditoría -->
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="mb-0"><i class="bi bi-clock-history"></i> Auditoría</h6>
+                </div>
+                <div class="card-body">
+                    <p><small><strong>Creado por:</strong> {{ study.created_by.get_full_name }}</small></p>
+                    <p><small><strong>Fecha creación:</strong> {{ study.created_at|date:"d/m/Y H:i" }}</small></p>
+                    {% if study.completion_date %}
+                    <p><small><strong>Fecha finalización:</strong> {{ study.completion_date|date:"d/m/Y H:i" }}</small></p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

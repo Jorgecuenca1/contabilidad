@@ -1,0 +1,218 @@
+{% extends 'base.html' %}
+{% block title %}{% if plan %}Editar{% else %}Nuevo{% endif %} Plan de Rehabilitación{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <h2 class="mb-4">
+        <i class="bi bi-clipboard-check"></i>
+        {% if plan %}Editar Plan {{ plan.plan_number }}{% else %}Nuevo Plan de Rehabilitación{% endif %}
+    </h2>
+
+    {% if consultation %}
+    <div class="alert alert-info">
+        <strong>Paciente:</strong> {{ consultation.patient.third_party.name }} |
+        <strong>Consulta:</strong> {{ consultation.consultation_number }} |
+        <strong>Fecha:</strong> {{ consultation.consultation_date|date:"d/m/Y" }}
+    </div>
+    {% endif %}
+
+    <form method="post">
+        {% csrf_token %}
+
+        <!-- Información del Paciente -->
+        <div class="card mb-3">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="bi bi-person"></i> Información del Paciente</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Paciente <span class="text-danger">*</span></label>
+                        <select name="patient" class="form-select" required {% if plan or consultation %}disabled{% endif %}>
+                            <option value="">Seleccione un paciente...</option>
+                            {% for patient in patients %}
+                            <option value="{{ patient.id }}"
+                                {% if plan and plan.patient.id == patient.id %}selected
+                                {% elif consultation and consultation.patient.id == patient.id %}selected{% endif %}>
+                                {{ patient.third_party.name }} - {{ patient.third_party.identification_number }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Fecha del Plan <span class="text-danger">*</span></label>
+                        <input type="date" name="plan_date" class="form-control" required value="{{ plan.plan_date|date:'Y-m-d'|default:'' }}">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Fecha de Inicio <span class="text-danger">*</span></label>
+                        <input type="date" name="start_date" class="form-control" required value="{{ plan.start_date|date:'Y-m-d'|default:'' }}">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Diagnóstico -->
+        <div class="card mb-3">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0"><i class="bi bi-file-medical"></i> Diagnóstico</h5>
+            </div>
+            <div class="card-body">
+                <textarea name="diagnosis" class="form-control" rows="2" required placeholder="Diagnóstico fisioterapéutico...">{{ plan.diagnosis|default:'' }}</textarea>
+            </div>
+        </div>
+
+        <!-- Objetivos -->
+        <div class="card mb-3">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0"><i class="bi bi-bullseye"></i> Objetivos</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Objetivos a Corto Plazo <span class="text-danger">*</span></label>
+                        <textarea name="short_term_goals" class="form-control" rows="4" required placeholder="Objetivos a alcanzar en 2-4 semanas...">{{ plan.short_term_goals|default:'' }}</textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Objetivos a Largo Plazo <span class="text-danger">*</span></label>
+                        <textarea name="long_term_goals" class="form-control" rows="4" required placeholder="Objetivos a alcanzar en 2-3 meses...">{{ plan.long_term_goals|default:'' }}</textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modalidades de Tratamiento -->
+        <div class="card mb-3">
+            <div class="card-header bg-warning">
+                <h5 class="mb-0"><i class="bi bi-activity"></i> Modalidades de Tratamiento</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-12">
+                        <label class="form-label">Modalidades Físicas</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="modality_heat" id="modality_heat" {% if 'calor' in plan.treatment_modalities|default:'' %}checked{% endif %}>
+                            <label class="form-check-label" for="modality_heat">Calor</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="modality_cold" id="modality_cold" {% if 'frío' in plan.treatment_modalities|default:'' %}checked{% endif %}>
+                            <label class="form-check-label" for="modality_cold">Frío</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="modality_ultrasound" id="modality_ultrasound" {% if 'ultrasonido' in plan.treatment_modalities|default:'' %}checked{% endif %}>
+                            <label class="form-check-label" for="modality_ultrasound">Ultrasonido</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="modality_tens" id="modality_tens" {% if 'TENS' in plan.treatment_modalities|default:'' %}checked{% endif %}>
+                            <label class="form-check-label" for="modality_tens">TENS (Estimulación Eléctrica)</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="modality_laser" id="modality_laser" {% if 'láser' in plan.treatment_modalities|default:'' %}checked{% endif %}>
+                            <label class="form-check-label" for="modality_laser">Láser</label>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">Descripción de Modalidades</label>
+                        <textarea name="treatment_modalities" class="form-control" rows="3" placeholder="Detalles adicionales sobre las modalidades seleccionadas...">{{ plan.treatment_modalities|default:'' }}</textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Técnicas de Terapia Manual -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-hand-index"></i> Técnicas de Terapia Manual</h6>
+            </div>
+            <div class="card-body">
+                <textarea name="manual_therapy_techniques" class="form-control" rows="3" placeholder="Masaje, movilización articular, estiramiento, manipulación...">{{ plan.manual_therapy_techniques|default:'' }}</textarea>
+            </div>
+        </div>
+
+        <!-- Ejercicios Terapéuticos -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-clipboard-pulse"></i> Ejercicios Terapéuticos</h6>
+            </div>
+            <div class="card-body">
+                <textarea name="therapeutic_exercises_description" class="form-control" rows="4" placeholder="Descripción general del programa de ejercicios terapéuticos...">{{ plan.therapeutic_exercises_description|default:'' }}</textarea>
+                <small class="text-muted">Nota: Los ejercicios específicos se pueden agregar después en el detalle del plan.</small>
+            </div>
+        </div>
+
+        <!-- Frecuencia y Duración -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-calendar3"></i> Frecuencia y Duración</h6>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label">Frecuencia por Semana <span class="text-danger">*</span></label>
+                        <input type="number" name="frequency_per_week" class="form-control" min="1" max="7" required value="{{ plan.frequency_per_week|default:'3' }}">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Sesiones Estimadas <span class="text-danger">*</span></label>
+                        <input type="number" name="estimated_sessions" class="form-control" min="1" required value="{{ plan.estimated_sessions|default:'12' }}">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Duración por Sesión (minutos) <span class="text-danger">*</span></label>
+                        <input type="number" name="session_duration" class="form-control" min="15" required value="{{ plan.session_duration|default:'45' }}">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Precauciones y Contraindicaciones -->
+        <div class="card mb-3">
+            <div class="card-header bg-danger text-white">
+                <h6 class="mb-0"><i class="bi bi-exclamation-triangle"></i> Precauciones y Contraindicaciones</h6>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Precauciones</label>
+                        <textarea name="precautions" class="form-control" rows="3" placeholder="Limitaciones, advertencias, consideraciones especiales...">{{ plan.precautions|default:'' }}</textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Contraindicaciones</label>
+                        <textarea name="contraindications" class="form-control" rows="3" placeholder="Actividades o técnicas contraindicadas...">{{ plan.contraindications|default:'' }}</textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Observaciones y Estado -->
+        <div class="card mb-3">
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-9">
+                        <label class="form-label">Observaciones Adicionales</label>
+                        <textarea name="observations" class="form-control" rows="2" placeholder="Notas adicionales...">{{ plan.observations|default:'' }}</textarea>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Estado <span class="text-danger">*</span></label>
+                        <select name="status" class="form-select" required>
+                            <option value="active" {% if not plan or plan.status == 'active' %}selected{% endif %}>Activo</option>
+                            <option value="completed" {% if plan and plan.status == 'completed' %}selected{% endif %}>Completado</option>
+                            <option value="discontinued" {% if plan and plan.status == 'discontinued' %}selected{% endif %}>Discontinuado</option>
+                            <option value="on_hold" {% if plan and plan.status == 'on_hold' %}selected{% endif %}>En pausa</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Botones de Acción -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <button type="submit" class="btn btn-primary btn-lg">
+                    <i class="bi bi-save"></i> Guardar Plan
+                </button>
+                <a href="{% url 'rehabilitation:plan_list' %}" class="btn btn-secondary btn-lg">
+                    <i class="bi bi-x-circle"></i> Cancelar
+                </a>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+{% block title %}Nota Postoperatoria{% endblock %}
+{% block content %}
+<div class="container-fluid">
+    <h2><i class="bi bi-clipboard-check"></i> Nota Postoperatoria</h2>
+    <p class="text-muted">Cirugía: {{ surgery.surgery_number }} - Paciente: {{ surgery.patient.nombre }}</p>
+
+    <form method="post" class="mt-4">
+        {% csrf_token %}
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card mb-3">
+                    <div class="card-header bg-success text-white">Condición del Paciente</div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="form-label">Condición del Paciente *</label>
+                            <textarea class="form-control" name="patient_condition" rows="2" required>{% if postop_note %}{{ postop_note.patient_condition }}{% endif %}</textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Nivel de Conciencia *</label>
+                            <input type="text" class="form-control" name="consciousness_level" value="{% if postop_note %}{{ postop_note.consciousness_level }}{% endif %}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Escala de Dolor (0-10) *</label>
+                            <input type="number" class="form-control" name="pain_scale" value="{% if postop_note %}{{ postop_note.pain_scale }}{% else %}0{% endif %}" min="0" max="10" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card mb-3">
+                    <div class="card-header bg-primary text-white">Signos Vitales Postoperatorios</div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">PA Sistólica</label>
+                                <input type="number" class="form-control" name="blood_pressure_systolic" value="{% if postop_note %}{{ postop_note.blood_pressure_systolic }}{% endif %}">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">PA Diastólica</label>
+                                <input type="number" class="form-control" name="blood_pressure_diastolic" value="{% if postop_note %}{{ postop_note.blood_pressure_diastolic }}{% endif %}">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Frec. Cardíaca</label>
+                                <input type="number" class="form-control" name="heart_rate" value="{% if postop_note %}{{ postop_note.heart_rate }}{% endif %}">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Frec. Respiratoria</label>
+                                <input type="number" class="form-control" name="respiratory_rate" value="{% if postop_note %}{{ postop_note.respiratory_rate }}{% endif %}">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Saturación O2 (%)</label>
+                                <input type="number" class="form-control" name="oxygen_saturation" value="{% if postop_note %}{{ postop_note.oxygen_saturation }}{% endif %}" min="0" max="100">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Temperatura (°C)</label>
+                                <input type="number" class="form-control" name="temperature" value="{% if postop_note %}{{ postop_note.temperature }}{% endif %}" step="0.1">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card mb-3">
+                    <div class="card-header bg-warning text-white">Órdenes Postoperatorias</div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="form-label">Plan Analgésico</label>
+                            <textarea class="form-control" name="analgesic_plan" rows="2">{% if postop_note %}{{ postop_note.analgesic_plan }}{% endif %}</textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Órdenes de Dieta</label>
+                            <textarea class="form-control" name="diet_orders" rows="2">{% if postop_note %}{{ postop_note.diet_orders }}{% endif %}</textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Órdenes de Actividad</label>
+                            <textarea class="form-control" name="activity_orders" rows="2">{% if postop_note %}{{ postop_note.activity_orders }}{% endif %}</textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Órdenes de Medicamentos</label>
+                            <textarea class="form-control" name="medication_orders" rows="3">{% if postop_note %}{{ postop_note.medication_orders }}{% endif %}</textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card mb-3">
+                    <div class="card-header bg-info text-white">Seguimiento</div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="form-label">Próxima Evaluación</label>
+                            <input type="datetime-local" class="form-control" name="next_evaluation_time" value="{% if postop_note and postop_note.next_evaluation_time %}{{ postop_note.next_evaluation_time|date:'Y-m-d\TH:i' }}{% endif %}">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Advertencias</label>
+                            <textarea class="form-control" name="warnings" rows="2">{% if postop_note %}{{ postop_note.warnings }}{% endif %}</textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Observaciones</label>
+                            <textarea class="form-control" name="observations" rows="2">{% if postop_note %}{{ postop_note.observations }}{% endif %}</textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-lg"><i class="bi bi-save"></i> Guardar Nota</button>
+        <a href="{% url 'surgery:surgery_detail' surgery.id %}" class="btn btn-secondary btn-lg">Cancelar</a>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,232 @@
+{% extends 'base.html' %}
+{% block title %}Registrar Signos Vitales{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <h2 class="mb-4">
+        <i class="bi bi-activity"></i> Registrar Signos Vitales
+    </h2>
+
+    <!-- Información del Paciente -->
+    <div class="card mb-3">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-4">
+                    <strong>Paciente:</strong> {{ admission.patient.third_party.name }}
+                </div>
+                <div class="col-md-4">
+                    <strong>Admisión:</strong> {{ admission.admission_number }}
+                </div>
+                <div class="col-md-4">
+                    <strong>Estado:</strong> {{ admission.get_status_display }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <form method="post" id="vitalSignsForm">
+        {% csrf_token %}
+
+        <!-- Fecha y Hora del Registro -->
+        <div class="card mb-3">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="bi bi-clock"></i> Fecha y Hora del Registro</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Fecha y Hora del Registro <span class="text-danger">*</span></label>
+                        <input type="datetime-local" name="recorded_datetime" id="recordedDatetime" class="form-control" required>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Signos Vitales Principales -->
+        <div class="card mb-3">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0"><i class="bi bi-heart-pulse"></i> Signos Vitales Principales</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Presión Arterial (mmHg)</label>
+                        <div class="input-group">
+                            <input type="number" name="blood_pressure_systolic" class="form-control" placeholder="Sistólica" min="50" max="250">
+                            <span class="input-group-text">/</span>
+                            <input type="number" name="blood_pressure_diastolic" class="form-control" placeholder="Diastólica" min="30" max="150">
+                        </div>
+                        <small class="text-muted">Normal: 120/80 mmHg</small>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Frecuencia Cardíaca</label>
+                        <div class="input-group">
+                            <input type="number" name="heart_rate" class="form-control" placeholder="75" min="30" max="250">
+                            <span class="input-group-text">lpm</span>
+                        </div>
+                        <small class="text-muted">Normal: 60-100 lpm</small>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Frecuencia Respiratoria</label>
+                        <div class="input-group">
+                            <input type="number" name="respiratory_rate" class="form-control" placeholder="18" min="5" max="60">
+                            <span class="input-group-text">rpm</span>
+                        </div>
+                        <small class="text-muted">Normal: 12-20 rpm</small>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Temperatura</label>
+                        <div class="input-group">
+                            <input type="number" step="0.1" name="temperature" class="form-control" placeholder="36.5" min="30" max="45">
+                            <span class="input-group-text">°C</span>
+                        </div>
+                        <small class="text-muted">Normal: 36.5-37.5°C</small>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Saturación de O2</label>
+                        <div class="input-group">
+                            <input type="number" name="oxygen_saturation" class="form-control" placeholder="98" min="50" max="100">
+                            <span class="input-group-text">%</span>
+                        </div>
+                        <small class="text-muted">Normal: >92%</small>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Escala de Dolor</label>
+                        <div class="input-group">
+                            <input type="number" name="pain_scale" class="form-control" placeholder="0" min="0" max="10">
+                            <span class="input-group-text">/10</span>
+                        </div>
+                        <small class="text-muted">0: Sin dolor - 10: Máximo dolor</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Datos Antropométricos -->
+        <div class="card mb-3">
+            <div class="card-header bg-info text-white">
+                <h6 class="mb-0"><i class="bi bi-rulers"></i> Datos Antropométricos</h6>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label">Peso</label>
+                        <div class="input-group">
+                            <input type="number" step="0.01" name="weight" class="form-control" placeholder="70.5" min="0" max="300">
+                            <span class="input-group-text">kg</span>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Talla/Altura</label>
+                        <div class="input-group">
+                            <input type="number" step="0.01" name="height" class="form-control" placeholder="170" min="0" max="250">
+                            <span class="input-group-text">cm</span>
+                        </div>
+                    </div>
+                    <div class="col-md-4" id="imcDisplay" style="display: none;">
+                        <label class="form-label">IMC (Calculado)</label>
+                        <div class="form-control-plaintext" id="imcValue"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Evaluación Neurológica -->
+        <div class="card mb-3">
+            <div class="card-header bg-warning text-dark">
+                <h6 class="mb-0"><i class="bi bi-brain"></i> Evaluación Neurológica</h6>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Escala de Glasgow</label>
+                        <div class="input-group">
+                            <input type="number" name="glasgow_score" class="form-control" placeholder="15" min="3" max="15">
+                            <span class="input-group-text">/15</span>
+                        </div>
+                        <small class="text-muted">3: Mínimo - 15: Máximo (normal)</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Observaciones -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-journal-text"></i> Observaciones</h6>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-12">
+                        <label class="form-label">Observaciones del Registro</label>
+                        <textarea name="observations" class="form-control" rows="3" placeholder="Observaciones adicionales sobre los signos vitales"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Botones -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <button type="submit" class="btn btn-success btn-lg">
+                    <i class="bi bi-save"></i> Guardar Signos Vitales
+                </button>
+                <a href="{% url 'emergency:admission_detail' admission.id %}" class="btn btn-secondary btn-lg">
+                    <i class="bi bi-x-circle"></i> Cancelar
+                </a>
+            </div>
+        </div>
+    </form>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Set current datetime
+    const now = new Date();
+    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+    document.getElementById('recordedDatetime').value = now.toISOString().slice(0, 16);
+
+    // Calculate IMC
+    const weightInput = document.querySelector('input[name="weight"]');
+    const heightInput = document.querySelector('input[name="height"]');
+    const imcDisplay = document.getElementById('imcDisplay');
+    const imcValue = document.getElementById('imcValue');
+
+    function calculateIMC() {
+        const weight = parseFloat(weightInput.value);
+        const height = parseFloat(heightInput.value) / 100; // Convert cm to m
+
+        if (weight > 0 && height > 0) {
+            const imc = weight / (height * height);
+            let category = '';
+            let badgeClass = '';
+
+            if (imc < 18.5) {
+                category = 'Bajo peso';
+                badgeClass = 'warning';
+            } else if (imc < 25) {
+                category = 'Normal';
+                badgeClass = 'success';
+            } else if (imc < 30) {
+                category = 'Sobrepeso';
+                badgeClass = 'warning';
+            } else {
+                category = 'Obesidad';
+                badgeClass = 'danger';
+            }
+
+            imcValue.innerHTML = `<strong>${imc.toFixed(2)}</strong> <span class="badge bg-${badgeClass}">${category}</span>`;
+            imcDisplay.style.display = 'block';
+        } else {
+            imcDisplay.style.display = 'none';
+        }
+    }
+
+    weightInput.addEventListener('input', calculateIMC);
+    heightInput.addEventListener('input', calculateIMC);
+});
+</script>
+{% endblock %}

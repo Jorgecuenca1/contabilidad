@@ -1,0 +1,219 @@
+{% extends 'base.html' %}
+{% block title %}Historial de Uso - Autorización {{ authorization.authorization_number }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'core:dashboard' %}">Dashboard</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'authorizations:index' %}">Autorizaciones EPS</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'authorizations:authorization_list' %}">Solicitudes</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'authorizations:authorization_detail' authorization.id %}">{{ authorization.authorization_number }}</a></li>
+            <li class="breadcrumb-item active">Historial de Uso</li>
+        </ol>
+    </nav>
+
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-graph-up"></i> Historial de Uso - Autorización {{ authorization.authorization_number }}</h2>
+        <div>
+            <a href="{% url 'authorizations:authorization_detail' authorization.id %}" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Volver
+            </a>
+        </div>
+    </div>
+
+    <!-- Resumen de la Autorización -->
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0"><i class="bi bi-file-earmark-check"></i> Información de la Autorización</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-3">
+                    <strong>Paciente:</strong>
+                    <p class="mb-0">{{ authorization.patient.get_full_name }}</p>
+                </div>
+                <div class="col-md-3">
+                    <strong>EPS:</strong>
+                    <p class="mb-0">{{ authorization.eps.name }}</p>
+                </div>
+                <div class="col-md-6">
+                    <strong>Servicio:</strong>
+                    <p class="mb-0">{{ authorization.service_description }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Estadísticas de Uso -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <h6>Cantidad Aprobada</h6>
+                    <h2 class="mb-0">{{ authorization.approved_quantity }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-warning text-dark">
+                <div class="card-body">
+                    <h6>Cantidad Usada</h6>
+                    <h2 class="mb-0">{{ total_used }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card {% if available > 0 %}bg-success{% else %}bg-danger{% endif %} text-white">
+                <div class="card-body">
+                    <h6>Disponible</h6>
+                    <h2 class="mb-0">{{ available }}</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Barra de Progreso -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <h6>Progreso de Uso</h6>
+            {% widthratio total_used authorization.approved_quantity 100 as usage_percent %}
+            <div class="progress" style="height: 30px;">
+                <div class="progress-bar {% if usage_percent >= 100 %}bg-danger{% elif usage_percent >= 75 %}bg-warning{% else %}bg-success{% endif %}"
+                     role="progressbar"
+                     style="width: {% if usage_percent > 100 %}100{% else %}{{ usage_percent }}{% endif %}%">
+                    {{ usage_percent }}% Usado
+                </div>
+            </div>
+            <small class="text-muted mt-2 d-block">{{ total_used }} de {{ authorization.approved_quantity }} utilizados</small>
+        </div>
+    </div>
+
+    <!-- Botón Registrar Uso -->
+    {% if available > 0 %}
+    <div class="text-center mb-4">
+        <button type="button" class="btn btn-success btn-lg" data-bs-toggle="modal" data-bs-target="#registerUsageModal">
+            <i class="bi bi-plus-circle"></i> Registrar Nuevo Uso
+        </button>
+    </div>
+    {% else %}
+    <div class="alert alert-warning text-center">
+        <i class="bi bi-exclamation-triangle"></i> No hay cantidad disponible para registrar más usos.
+    </div>
+    {% endif %}
+
+    <!-- Tabla de Historial -->
+    <div class="card">
+        <div class="card-header bg-info text-white">
+            <h5 class="mb-0"><i class="bi bi-clock-history"></i> Historial de Registros</h5>
+        </div>
+        <div class="card-body">
+            {% if usage_history %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Fecha de Uso</th>
+                            <th>Cantidad Usada</th>
+                            <th>Registrado por</th>
+                            <th>Fecha de Registro</th>
+                            <th>Notas</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for usage in usage_history %}
+                        <tr>
+                            <td>{{ usage.usage_date|date:"d/m/Y H:i" }}</td>
+                            <td><span class="badge bg-primary">{{ usage.quantity_used }}</span></td>
+                            <td>{{ usage.created_by.get_full_name }}</td>
+                            <td>{{ usage.created_at|date:"d/m/Y H:i" }}</td>
+                            <td>{{ usage.notes|default:"-" }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot class="table-light">
+                        <tr>
+                            <td><strong>Total Usado:</strong></td>
+                            <td><strong><span class="badge bg-warning text-dark">{{ total_used }}</span></strong></td>
+                            <td colspan="3"></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center text-muted py-4">
+                <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+                No se han registrado usos de esta autorización.
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Modal Registrar Uso -->
+<div class="modal fade" id="registerUsageModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="post" action="{% url 'authorizations:usage_create' authorization.id %}" id="usageForm">
+                {% csrf_token %}
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title"><i class="bi bi-plus-circle"></i> Registrar Uso</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-info">
+                        <strong>Disponible:</strong> {{ available }} de {{ authorization.approved_quantity }}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Fecha de Uso <span class="text-danger">*</span></label>
+                        <input type="date" name="usage_date" class="form-control" value="{{ today|date:'Y-m-d' }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Cantidad Usada <span class="text-danger">*</span></label>
+                        <input type="number" name="quantity_used" class="form-control"
+                               min="1" max="{{ available }}" value="1" required id="quantityUsed">
+                        <div id="quantityError" class="text-danger small mt-1" style="display: none;">
+                            La cantidad excede lo disponible ({{ available }})
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Notas</label>
+                        <textarea name="notes" class="form-control" rows="3" placeholder="Información adicional sobre el uso..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-success" id="submitBtn">Registrar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const usageForm = document.getElementById('usageForm');
+    if (usageForm) {
+        const quantityInput = document.getElementById('quantityUsed');
+        const quantityError = document.getElementById('quantityError');
+        const submitBtn = document.getElementById('submitBtn');
+        const maxAvailable = {{ available }};
+
+        quantityInput.addEventListener('input', function() {
+            if (parseInt(this.value) > maxAvailable) {
+                quantityError.style.display = 'block';
+                submitBtn.disabled = true;
+            } else {
+                quantityError.style.display = 'none';
+                submitBtn.disabled = false;
+            }
+        });
+    }
+});
+</script>
+{% endblock %}

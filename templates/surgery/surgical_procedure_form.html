@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+{% block title %}{% if procedure %}Editar{% else %}Nuevo{% endif %} Procedimiento{% endblock %}
+{% block content %}
+<div class="container-fluid">
+    <h2><i class="bi bi-journal-medical"></i> {% if procedure %}Editar{% else %}Nuevo{% endif %} Procedimiento</h2>
+
+    <form method="post" class="mt-4">
+        {% csrf_token %}
+        <div class="row">
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label class="form-label">Código CUPS *</label>
+                    <input type="text" class="form-control" name="code" value="{% if procedure %}{{ procedure.code }}{% endif %}" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Nombre *</label>
+                    <input type="text" class="form-control" name="name" value="{% if procedure %}{{ procedure.name }}{% endif %}" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Especialidad *</label>
+                    <select class="form-select" name="specialty" required>
+                        <option value="general">Cirugía General</option>
+                        <option value="orthopedics">Ortopedia</option>
+                        <option value="neurosurgery">Neurocirugía</option>
+                        <option value="cardiac">Cirugía Cardíaca</option>
+                        <option value="vascular">Cirugía Vascular</option>
+                        <option value="thoracic">Cirugía Torácica</option>
+                        <option value="plastic">Cirugía Plástica</option>
+                        <option value="urology">Urología</option>
+                        <option value="gynecology">Ginecología</option>
+                        <option value="ophthalmology">Oftalmología</option>
+                        <option value="otolaryngology">Otorrinolaringología</option>
+                        <option value="maxillofacial">Cirugía Maxilofacial</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Complejidad *</label>
+                    <select class="form-select" name="complexity" required>
+                        <option value="low">Baja</option>
+                        <option value="medium">Media</option>
+                        <option value="high">Alta</option>
+                        <option value="very_high">Muy Alta</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label class="form-label">Duración Estimada (minutos) *</label>
+                    <input type="number" class="form-control" name="estimated_duration_minutes" value="{% if procedure %}{{ procedure.estimated_duration_minutes }}{% else %}60{% endif %}" min="15" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Tipo de Anestesia Recomendado</label>
+                    <input type="text" class="form-control" name="anesthesia_type_recommended" value="{% if procedure %}{{ procedure.anesthesia_type_recommended }}{% endif %}">
+                </div>
+                <div class="mb-3 form-check">
+                    <input type="checkbox" class="form-check-input" name="requires_icu" {% if procedure and procedure.requires_icu %}checked{% endif %}>
+                    <label class="form-check-label">Requiere UCI</label>
+                </div>
+                <div class="mb-3 form-check">
+                    <input type="checkbox" class="form-check-input" name="requires_blood_bank" {% if procedure and procedure.requires_blood_bank %}checked{% endif %}>
+                    <label class="form-check-label">Requiere Banco de Sangre</label>
+                </div>
+            </div>
+            <div class="col-12">
+                <div class="mb-3">
+                    <label class="form-label">Descripción</label>
+                    <textarea class="form-control" name="description" rows="3">{% if procedure %}{{ procedure.description }}{% endif %}</textarea>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Requisitos Preoperatorios</label>
+                    <textarea class="form-control" name="pre_operative_requirements" rows="2">{% if procedure %}{{ procedure.pre_operative_requirements }}{% endif %}</textarea>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Cuidados Postoperatorios</label>
+                    <textarea class="form-control" name="post_operative_care" rows="2">{% if procedure %}{{ procedure.post_operative_care }}{% endif %}</textarea>
+                </div>
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary"><i class="bi bi-save"></i> Guardar</button>
+        <a href="{% url 'surgery:surgical_procedure_list' %}" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>
+{% endblock %}

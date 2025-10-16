@@ -1,0 +1,169 @@
+{% extends 'base.html' %}
+{% block title %}Documentos - Telemedicina{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-file-earmark-text"></i> Documentos de Telemedicina</h2>
+        <div>
+            <a href="{% url 'telemedicine:document_create' %}" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> Nuevo Documento
+            </a>
+            <a href="{% url 'telemedicine:dashboard' %}" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Volver
+            </a>
+        </div>
+    </div>
+
+    <!-- Filtros -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-3">
+                    <label class="form-label">Buscar</label>
+                    <input type="text" name="search" class="form-control" placeholder="Número, paciente, título..." value="{{ request.GET.search }}">
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Tipo de Documento</label>
+                    <select name="document_type" class="form-select">
+                        <option value="">Todos</option>
+                        <option value="prescription" {% if request.GET.document_type == 'prescription' %}selected{% endif %}>Receta Médica</option>
+                        <option value="medical_certificate" {% if request.GET.document_type == 'medical_certificate' %}selected{% endif %}>Certificado Médico</option>
+                        <option value="sick_leave" {% if request.GET.document_type == 'sick_leave' %}selected{% endif %}>Incapacidad</option>
+                        <option value="lab_order" {% if request.GET.document_type == 'lab_order' %}selected{% endif %}>Orden de Laboratorio</option>
+                        <option value="imaging_order" {% if request.GET.document_type == 'imaging_order' %}selected{% endif %}>Orden de Imágenes</option>
+                        <option value="referral" {% if request.GET.document_type == 'referral' %}selected{% endif %}>Remisión</option>
+                        <option value="consent" {% if request.GET.document_type == 'consent' %}selected{% endif %}>Consentimiento</option>
+                        <option value="report" {% if request.GET.document_type == 'report' %}selected{% endif %}>Informe Médico</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Estado</label>
+                    <select name="is_signed" class="form-select">
+                        <option value="">Todos</option>
+                        <option value="true" {% if request.GET.is_signed == 'true' %}selected{% endif %}>Firmado</option>
+                        <option value="false" {% if request.GET.is_signed == 'false' %}selected{% endif %}>Sin Firmar</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Fecha Desde</label>
+                    <input type="date" name="date_from" class="form-control" value="{{ request.GET.date_from }}">
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Fecha Hasta</label>
+                    <input type="date" name="date_to" class="form-control" value="{{ request.GET.date_to }}">
+                </div>
+                <div class="col-md-1 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Tabla de Documentos -->
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Número</th>
+                            <th>Paciente</th>
+                            <th>Tipo</th>
+                            <th>Título</th>
+                            <th>Fecha Emisión</th>
+                            <th>Válido Hasta</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for document in documents %}
+                        <tr>
+                            <td><strong>{{ document.document_number }}</strong></td>
+                            <td>{{ document.patient.third_party.name }}</td>
+                            <td>
+                                {% if document.document_type == 'prescription' %}
+                                <span class="badge bg-primary">Receta</span>
+                                {% elif document.document_type == 'medical_certificate' %}
+                                <span class="badge bg-success">Certificado</span>
+                                {% elif document.document_type == 'sick_leave' %}
+                                <span class="badge bg-warning text-dark">Incapacidad</span>
+                                {% elif document.document_type == 'lab_order' %}
+                                <span class="badge bg-info">Orden Lab</span>
+                                {% elif document.document_type == 'imaging_order' %}
+                                <span class="badge bg-secondary">Orden Imagen</span>
+                                {% elif document.document_type == 'referral' %}
+                                <span class="badge bg-danger">Remisión</span>
+                                {% elif document.document_type == 'consent' %}
+                                <span class="badge bg-dark">Consentimiento</span>
+                                {% else %}
+                                <span class="badge bg-primary">Informe</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ document.title|truncatewords:5 }}</td>
+                            <td>{{ document.issue_date|date:"d/m/Y" }}</td>
+                            <td>
+                                {% if document.valid_until %}
+                                {{ document.valid_until|date:"d/m/Y" }}
+                                {% else %}
+                                <span class="text-muted">-</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if document.is_signed %}
+                                <span class="badge bg-success"><i class="bi bi-check-circle"></i> Firmado</span>
+                                {% else %}
+                                <span class="badge bg-warning text-dark"><i class="bi bi-clock"></i> Sin Firmar</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{% url 'telemedicine:document_detail' document.id %}" class="btn btn-sm btn-outline-primary" title="Ver detalle">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                {% if not document.is_signed %}
+                                <a href="{% url 'telemedicine:document_sign' document.id %}" class="btn btn-sm btn-outline-success" title="Firmar">
+                                    <i class="bi bi-pen"></i>
+                                </a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="8" class="text-center text-muted py-4">
+                                No hay documentos registrados. <a href="{% url 'telemedicine:document_create' %}">Crear primer documento</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Paginación -->
+            {% if documents.has_other_pages %}
+            <nav class="mt-4">
+                <ul class="pagination justify-content-center">
+                    {% if documents.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ documents.previous_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.document_type %}&document_type={{ request.GET.document_type }}{% endif %}{% if request.GET.is_signed %}&is_signed={{ request.GET.is_signed }}{% endif %}">Anterior</a>
+                    </li>
+                    {% endif %}
+
+                    <li class="page-item active">
+                        <span class="page-link">Página {{ documents.number }} de {{ documents.paginator.num_pages }}</span>
+                    </li>
+
+                    {% if documents.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ documents.next_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.document_type %}&document_type={{ request.GET.document_type }}{% endif %}{% if request.GET.is_signed %}&is_signed={{ request.GET.is_signed }}{% endif %}">Siguiente</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

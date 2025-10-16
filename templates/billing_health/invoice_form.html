@@ -1,0 +1,166 @@
+{% extends 'base.html' %}
+{% block title %}Crear Factura{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-plus-circle"></i> Nueva Factura de Salud</h2>
+        <div>
+            <a href="{% url 'billing_health:invoice_list' %}" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Volver
+            </a>
+        </div>
+    </div>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <i class="bi bi-info-circle"></i> Información Básica
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <label class="form-label">Número de Factura <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" name="invoice_number"
+                               value="{{ suggested_number }}" required>
+                        <small class="text-muted">Número sugerido: {{ suggested_number }}</small>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label">Fecha de Factura <span class="text-danger">*</span></label>
+                        <input type="date" class="form-control" name="invoice_date"
+                               value="{{ today|date:'Y-m-d' }}" required>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label">Tipo de Factura <span class="text-danger">*</span></label>
+                        <select class="form-select" name="invoice_type" required>
+                            <option value="">Seleccione...</option>
+                            <option value="ambulatory">Ambulatoria</option>
+                            <option value="hospitalization">Hospitalización</option>
+                            <option value="emergency">Urgencias</option>
+                            <option value="surgery">Cirugía</option>
+                            <option value="consultation">Consulta Externa</option>
+                            <option value="procedure">Procedimiento</option>
+                            <option value="laboratory">Laboratorio</option>
+                            <option value="imaging">Imágenes Diagnósticas</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header bg-success text-white">
+                <i class="bi bi-people"></i> Pagador y Paciente
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <label class="form-label">Pagador (EPS/Aseguradora) <span class="text-danger">*</span></label>
+                        <select class="form-select" name="payer_id" required>
+                            <option value="">Seleccione...</option>
+                            {% for payer in payers %}
+                            <option value="{{ payer.id }}">{{ payer.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label">Paciente <span class="text-danger">*</span></label>
+                        <select class="form-select" name="patient_id" required>
+                            <option value="">Seleccione...</option>
+                            {% for patient in patients %}
+                            <option value="{{ patient.id }}">{{ patient.name }} - {{ patient.document_number }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label">Número de Contrato</label>
+                        <input type="text" class="form-control" name="contract_number"
+                               placeholder="Número de contrato con el pagador">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header bg-info text-white">
+                <i class="bi bi-calculator"></i> Tarifario
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <label class="form-label">Tarifario a Aplicar <span class="text-danger">*</span></label>
+                        <select class="form-select" name="tariff_id" required>
+                            <option value="">Seleccione...</option>
+                            {% for tariff in tariffs %}
+                            <option value="{{ tariff.id }}">
+                                {{ tariff.name }} - {{ tariff.get_tariff_type_display }}
+                                (Efectivo desde {{ tariff.effective_date|date:"d/m/Y" }})
+                            </option>
+                            {% endfor %}
+                        </select>
+                        {% if not tariffs %}
+                        <div class="alert alert-warning mt-2">
+                            <i class="bi bi-exclamation-triangle"></i>
+                            No hay tarifarios activos. <a href="{% url 'billing_health:tariff_create' %}">Crear uno aquí</a>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header bg-warning">
+                <i class="bi bi-file-text"></i> Resolución DIAN (Opcional)
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        <label class="form-label">Resolución DIAN</label>
+                        <input type="text" class="form-control" name="dian_resolution"
+                               placeholder="Ej: 180001234567">
+                    </div>
+
+                    <div class="col-md-3">
+                        <label class="form-label">Rango Autorizado Desde</label>
+                        <input type="number" class="form-control" name="authorized_range_from"
+                               placeholder="Ej: 1">
+                    </div>
+
+                    <div class="col-md-3">
+                        <label class="form-label">Rango Autorizado Hasta</label>
+                        <input type="number" class="form-control" name="authorized_range_to"
+                               placeholder="Ej: 10000">
+                    </div>
+
+                    <div class="col-md-3">
+                        <label class="form-label">Fecha de Resolución</label>
+                        <input type="date" class="form-control" name="resolution_date">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-end">
+            <a href="{% url 'billing_health:invoice_list' %}" class="btn btn-secondary me-2">
+                <i class="bi bi-x-circle"></i> Cancelar
+            </a>
+            <button type="submit" class="btn btn-primary">
+                <i class="bi bi-save"></i> Crear Factura
+            </button>
+        </div>
+    </form>
+</div>
+
+<style>
+    .form-label .text-danger {
+        font-weight: bold;
+    }
+</style>
+{% endblock %}

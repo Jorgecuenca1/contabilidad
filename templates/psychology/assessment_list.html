@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+{% block title %}Evaluaciones Psicológicas{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-file-earmark-text"></i> Evaluaciones Psicológicas</h2>
+        <a href="{% url 'psychology:assessment_create' %}" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> Nueva Evaluación
+        </a>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-4">
+                    <input type="text" name="search" class="form-control" placeholder="Buscar por paciente, psicólogo o número..." value="{{ search }}">
+                </div>
+                <div class="col-md-3">
+                    <select name="assessment_type" class="form-select">
+                        <option value="">Todos los tipos</option>
+                        <option value="cognitive" {% if type_filter == 'cognitive' %}selected{% endif %}>Evaluación Cognitiva</option>
+                        <option value="personality" {% if type_filter == 'personality' %}selected{% endif %}>Evaluación de Personalidad</option>
+                        <option value="neuropsychological" {% if type_filter == 'neuropsychological' %}selected{% endif %}>Evaluación Neuropsicológica</option>
+                        <option value="vocational" {% if type_filter == 'vocational' %}selected{% endif %}>Evaluación Vocacional</option>
+                        <option value="forensic" {% if type_filter == 'forensic' %}selected{% endif %}>Evaluación Forense</option>
+                        <option value="clinical" {% if type_filter == 'clinical' %}selected{% endif %}>Evaluación Clínica</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <input type="date" name="date_from" class="form-control" placeholder="Desde" value="{{ date_from }}">
+                </div>
+                <div class="col-md-1">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Número</th>
+                            <th>Paciente</th>
+                            <th>Psicólogo</th>
+                            <th>Fecha</th>
+                            <th>Tipo de Evaluación</th>
+                            <th>Propósito</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for assessment in page_obj %}
+                        <tr>
+                            <td><strong>{{ assessment.assessment_number }}</strong></td>
+                            <td>{{ assessment.patient.third_party.name|truncatewords:3 }}</td>
+                            <td><small>{{ assessment.psychologist.get_full_name|truncatewords:2 }}</small></td>
+                            <td><small>{{ assessment.assessment_date|date:"d/m/Y" }}</small></td>
+                            <td><span class="badge bg-info">{{ assessment.get_assessment_type_display }}</span></td>
+                            <td><small>{{ assessment.purpose|truncatewords:5 }}</small></td>
+                            <td>
+                                <a href="{% url 'psychology:assessment_detail' assessment.id %}" class="btn btn-sm btn-info" title="Ver detalle">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="7" class="text-center text-muted py-4">No se encontraron evaluaciones</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Paginación -->
+            {% if page_obj.has_other_pages %}
+            <nav aria-label="Paginación">
+                <ul class="pagination justify-content-center mt-3">
+                    {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page=1{% if search %}&search={{ search }}{% endif %}{% if type_filter %}&assessment_type={{ type_filter }}{% endif %}{% if date_from %}&date_from={{ date_from }}{% endif %}">Primera</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if search %}&search={{ search }}{% endif %}{% if type_filter %}&assessment_type={{ type_filter }}{% endif %}{% if date_from %}&date_from={{ date_from }}{% endif %}">Anterior</a>
+                    </li>
+                    {% endif %}
+
+                    <li class="page-item active">
+                        <span class="page-link">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+                    </li>
+
+                    {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if search %}&search={{ search }}{% endif %}{% if type_filter %}&assessment_type={{ type_filter }}{% endif %}{% if date_from %}&date_from={{ date_from }}{% endif %}">Siguiente</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if search %}&search={{ search }}{% endif %}{% if type_filter %}&assessment_type={{ type_filter }}{% endif %}{% if date_from %}&date_from={{ date_from }}{% endif %}">Última</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,337 @@
+{% extends 'base.html' %}
+{% block title %}{% if authorization %}Editar{% else %}Nueva{% endif %} Autorización - Autorizaciones EPS{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'core:dashboard' %}">Dashboard</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'authorizations:index' %}">Autorizaciones EPS</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'authorizations:authorization_list' %}">Solicitudes</a></li>
+            <li class="breadcrumb-item active">{% if authorization %}Editar{% else %}Nueva{% endif %}</li>
+        </ol>
+    </nav>
+
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>
+            <i class="bi bi-file-earmark-plus"></i>
+            {% if authorization %}Editar Autorización{% else %}Nueva Solicitud de Autorización{% endif %}
+        </h2>
+        <div>
+            <a href="{% if authorization %}{% url 'authorizations:authorization_detail' authorization.id %}{% else %}{% url 'authorizations:authorization_list' %}{% endif %}"
+               class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Cancelar
+            </a>
+        </div>
+    </div>
+
+    <!-- Messages -->
+    {% if messages %}
+    <div class="row mb-3">
+        <div class="col-12">
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Formulario -->
+    <form method="post" id="authorizationForm">
+        {% csrf_token %}
+
+        <div class="row">
+            <!-- Columna Principal -->
+            <div class="col-md-8">
+                <!-- Información Básica -->
+                <div class="card mb-3">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0"><i class="bi bi-person-badge"></i> Información del Paciente y EPS</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Paciente <span class="text-danger">*</span></label>
+                                <select name="patient" class="form-select" id="patientSelect" required {% if authorization %}disabled{% endif %}>
+                                    <option value="">Seleccione un paciente...</option>
+                                    {% for patient in patients %}
+                                    <option value="{{ patient.id }}"
+                                            {% if authorization and authorization.patient.id == patient.id %}selected{% endif %}>
+                                        {{ patient.get_full_name }} - {{ patient.document_number }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                                {% if authorization %}
+                                <input type="hidden" name="patient" value="{{ authorization.patient.id }}">
+                                {% endif %}
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">EPS <span class="text-danger">*</span></label>
+                                <select name="eps" class="form-select" required>
+                                    <option value="">Seleccione una EPS...</option>
+                                    {% for eps in eps_list %}
+                                    <option value="{{ eps.id }}"
+                                            {% if authorization and authorization.eps.id == eps.id %}selected{% endif %}>
+                                        {{ eps.name }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Médico Solicitante <span class="text-danger">*</span></label>
+                                <select name="requesting_physician" class="form-select" required>
+                                    <option value="">Seleccione un médico...</option>
+                                    {% for physician in physicians %}
+                                    <option value="{{ physician.id }}"
+                                            {% if authorization and authorization.requesting_physician.id == physician.id %}selected{% endif %}>
+                                        {{ physician.get_full_name }}
+                                        {% if physician.professional_card %}- TP: {{ physician.professional_card }}{% endif %}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Prioridad <span class="text-danger">*</span></label>
+                                <select name="priority" class="form-select" required>
+                                    {% for value, label in priority_choices %}
+                                    <option value="{{ value }}"
+                                            {% if authorization and authorization.priority == value %}selected{% elif value == 'normal' and not authorization %}selected{% endif %}>
+                                        {{ label }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Información del Paciente (dinamica) -->
+                        <div id="patientInfo" class="alert alert-info" style="display: none;">
+                            <h6><i class="bi bi-info-circle"></i> Información del Paciente</h6>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <small><strong>Documento:</strong></small>
+                                    <p class="mb-0" id="patientDocument"></p>
+                                </div>
+                                <div class="col-md-4">
+                                    <small><strong>Teléfono:</strong></small>
+                                    <p class="mb-0" id="patientPhone"></p>
+                                </div>
+                                <div class="col-md-4">
+                                    <small><strong>Email:</strong></small>
+                                    <p class="mb-0" id="patientEmail"></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Detalles del Servicio -->
+                <div class="card mb-3">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0"><i class="bi bi-clipboard2-pulse"></i> Detalles del Servicio Solicitado</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Tipo de Servicio <span class="text-danger">*</span></label>
+                                <select name="service_type" class="form-select" required>
+                                    <option value="">Seleccione...</option>
+                                    {% for value, label in service_type_choices %}
+                                    <option value="{{ value }}"
+                                            {% if authorization and authorization.service_type == value %}selected{% endif %}>
+                                        {{ label }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Código CUPS</label>
+                                <input type="text" name="cups_code" class="form-control"
+                                       placeholder="Ej: 890201"
+                                       value="{% if authorization %}{{ authorization.cups_code }}{% endif %}">
+                                <small class="text-muted">Opcional - Código del procedimiento según clasificación CUPS</small>
+                            </div>
+
+                            <div class="col-md-12 mb-3">
+                                <label class="form-label">Descripción del Servicio <span class="text-danger">*</span></label>
+                                <textarea name="service_description" class="form-control" rows="3" required>{% if authorization %}{{ authorization.service_description }}{% endif %}</textarea>
+                                <small class="text-muted">Describa claramente el servicio, procedimiento o tratamiento solicitado</small>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Cantidad <span class="text-danger">*</span></label>
+                                <input type="number" name="quantity" class="form-control"
+                                       min="1" value="{% if authorization %}{{ authorization.quantity }}{% else %}1{% endif %}" required>
+                                <small class="text-muted">Número de sesiones, procedimientos o unidades</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Diagnóstico -->
+                <div class="card mb-3">
+                    <div class="card-header bg-warning text-dark">
+                        <h5 class="mb-0"><i class="bi bi-file-medical"></i> Diagnóstico</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Código CIE-10 <span class="text-danger">*</span></label>
+                                <input type="text" name="diagnosis_code" class="form-control"
+                                       placeholder="Ej: J45.9" maxlength="10"
+                                       value="{% if authorization %}{{ authorization.diagnosis_code }}{% endif %}" required>
+                                <small class="text-muted">Código de diagnóstico CIE-10</small>
+                            </div>
+
+                            <div class="col-md-8 mb-3">
+                                <label class="form-label">Descripción del Diagnóstico <span class="text-danger">*</span></label>
+                                <input type="text" name="diagnosis_description" class="form-control"
+                                       placeholder="Ej: Asma, no especificada" maxlength="500"
+                                       value="{% if authorization %}{{ authorization.diagnosis_description }}{% endif %}" required>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Justificación Médica -->
+                <div class="card mb-3">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0"><i class="bi bi-file-text"></i> Justificación Médica</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="form-label">Justificación Médica <span class="text-danger">*</span></label>
+                            <textarea name="medical_justification" class="form-control" rows="5" required>{% if authorization %}{{ authorization.medical_justification }}{% endif %}</textarea>
+                            <small class="text-muted">Explique detalladamente por qué es necesario el servicio solicitado</small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Resumen de Historia Clínica</label>
+                            <textarea name="clinical_history_summary" class="form-control" rows="4">{% if authorization %}{{ authorization.clinical_history_summary }}{% endif %}</textarea>
+                            <small class="text-muted">Opcional - Antecedentes relevantes del paciente</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Columna Lateral - Ayuda -->
+            <div class="col-md-4">
+                <!-- Información de Ayuda -->
+                <div class="card mb-3 border-info">
+                    <div class="card-header bg-info text-white">
+                        <h6 class="mb-0"><i class="bi bi-info-circle"></i> Ayuda</h6>
+                    </div>
+                    <div class="card-body">
+                        <h6>Campos Obligatorios</h6>
+                        <p class="small">Los campos marcados con <span class="text-danger">*</span> son obligatorios.</p>
+
+                        <h6>Código CUPS</h6>
+                        <p class="small">El código CUPS es opcional pero recomendado. Permite una mejor clasificación del procedimiento.</p>
+
+                        <h6>Código CIE-10</h6>
+                        <p class="small">Ingrese el código de diagnóstico según la Clasificación Internacional de Enfermedades versión 10.</p>
+
+                        <h6>Justificación Médica</h6>
+                        <p class="small">Incluya:</p>
+                        <ul class="small">
+                            <li>Estado actual del paciente</li>
+                            <li>Necesidad del procedimiento</li>
+                            <li>Beneficios esperados</li>
+                            <li>Riesgos de no realizarlo</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Acciones -->
+                <div class="card">
+                    <div class="card-header bg-success text-white">
+                        <h6 class="mb-0"><i class="bi bi-check-circle"></i> Guardar</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-success">
+                                <i class="bi bi-save"></i> Guardar Autorización
+                            </button>
+                            <a href="{% if authorization %}{% url 'authorizations:authorization_detail' authorization.id %}{% else %}{% url 'authorizations:authorization_list' %}{% endif %}"
+                               class="btn btn-outline-secondary">
+                                <i class="bi bi-x-circle"></i> Cancelar
+                            </a>
+                        </div>
+
+                        <hr>
+
+                        <div class="alert alert-warning small mb-0">
+                            <strong><i class="bi bi-exclamation-triangle"></i> Nota:</strong>
+                            La autorización se guardará en estado "Borrador". Podrá enviarla a la EPS posteriormente.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const patientSelect = document.getElementById('patientSelect');
+    const patientInfo = document.getElementById('patientInfo');
+
+    if (patientSelect) {
+        patientSelect.addEventListener('change', function() {
+            const patientId = this.value;
+
+            if (patientId) {
+                // Llamar a la API para obtener información del paciente
+                fetch(`/autorizaciones/api/patient/${patientId}/`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.error) {
+                            patientInfo.style.display = 'none';
+                        } else {
+                            document.getElementById('patientDocument').textContent = data.document_number || 'N/A';
+                            document.getElementById('patientPhone').textContent = data.phone || 'N/A';
+                            document.getElementById('patientEmail').textContent = data.email || 'N/A';
+                            patientInfo.style.display = 'block';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        patientInfo.style.display = 'none';
+                    });
+            } else {
+                patientInfo.style.display = 'none';
+            }
+        });
+
+        // Si hay un paciente preseleccionado, mostrar su info
+        if (patientSelect.value) {
+            patientSelect.dispatchEvent(new Event('change'));
+        }
+    }
+
+    // Validación del formulario
+    const form = document.getElementById('authorizationForm');
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            // Validaciones adicionales si es necesario
+            const quantity = form.querySelector('[name="quantity"]').value;
+            if (quantity < 1) {
+                e.preventDefault();
+                alert('La cantidad debe ser al menos 1');
+                return false;
+            }
+        });
+    }
+});
+</script>
+{% endblock %}

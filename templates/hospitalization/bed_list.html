@@ -1,0 +1,137 @@
+{% extends 'base.html' %}
+{% block title %}Listado de Camas{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-hospital"></i> Gestión de Camas Hospitalarias</h2>
+    </div>
+
+    <!-- Filtros -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-3">
+                    <input type="text" name="search" class="form-control"
+                           placeholder="Buscar cama, habitación..."
+                           value="{{ search }}">
+                </div>
+                <div class="col-md-2">
+                    <select name="ward" class="form-select">
+                        <option value="">Todos los Pabellones</option>
+                        {% for ward in wards %}
+                        <option value="{{ ward.id }}" {% if ward_filter == ward.id|stringformat:"s" %}selected{% endif %}>
+                            {{ ward.name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <select name="status" class="form-select">
+                        <option value="">Todos los Estados</option>
+                        <option value="available" {% if status_filter == 'available' %}selected{% endif %}>Disponible</option>
+                        <option value="occupied" {% if status_filter == 'occupied' %}selected{% endif %}>Ocupada</option>
+                        <option value="maintenance" {% if status_filter == 'maintenance' %}selected{% endif %}>Mantenimiento</option>
+                        <option value="cleaning" {% if status_filter == 'cleaning' %}selected{% endif %}>Limpieza</option>
+                    </select>
+                </div>
+                <div class="col-md-1">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Tabla de Camas -->
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Código</th>
+                            <th>Pabellón</th>
+                            <th>Habitación</th>
+                            <th>Tipo</th>
+                            <th>Características</th>
+                            <th>Estado</th>
+                            <th>Paciente Actual</th>
+                            <th>Tarifa/Día</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for bed in page_obj %}
+                        <tr>
+                            <td><strong>{{ bed.code }}</strong></td>
+                            <td>{{ bed.ward.name|truncatewords:3 }}</td>
+                            <td>{{ bed.room_number }}</td>
+                            <td><small>{{ bed.get_bed_type_display }}</small></td>
+                            <td>
+                                {% if bed.has_oxygen %}<span class="badge bg-info" title="Oxígeno">O2</span>{% endif %}
+                                {% if bed.has_monitor %}<span class="badge bg-primary" title="Monitor">MON</span>{% endif %}
+                                {% if bed.has_ventilator %}<span class="badge bg-danger" title="Ventilador">VENT</span>{% endif %}
+                                {% if bed.is_private %}<span class="badge bg-success" title="Privada">PRIV</span>{% endif %}
+                            </td>
+                            <td>
+                                {% if bed.status == 'available' %}
+                                <span class="badge bg-success">Disponible</span>
+                                {% elif bed.status == 'occupied' %}
+                                <span class="badge bg-danger">Ocupada</span>
+                                {% elif bed.status == 'maintenance' %}
+                                <span class="badge bg-warning">Mantenimiento</span>
+                                {% elif bed.status == 'cleaning' %}
+                                <span class="badge bg-info">Limpieza</span>
+                                {% else %}
+                                <span class="badge bg-secondary">{{ bed.get_status_display }}</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if bed.status == 'occupied' and bed.current_admission %}
+                                <small>{{ bed.current_admission.patient.third_party.name|truncatewords:3 }}</small>
+                                {% else %}
+                                -
+                                {% endif %}
+                            </td>
+                            <td>${{ bed.daily_rate|floatformat:0 }}</td>
+                            <td>
+                                <a href="{% url 'hospitalization:bed_detail' bed.id %}" class="btn btn-sm btn-info">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="9" class="text-center text-muted">No se encontraron camas</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Paginación -->
+            {% if page_obj.has_other_pages %}
+            <nav class="mt-4">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if search %}&search={{ search }}{% endif %}{% if ward_filter %}&ward={{ ward_filter }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}">Anterior</a>
+                    </li>
+                    {% endif %}
+                    <li class="page-item active">
+                        <span class="page-link">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+                    </li>
+                    {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if search %}&search={{ search }}{% endif %}{% if ward_filter %}&ward={{ ward_filter }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}">Siguiente</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

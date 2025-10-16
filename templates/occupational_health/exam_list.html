@@ -1,0 +1,168 @@
+{% extends 'base.html' %}
+{% block title %}Listado de Exámenes Ocupacionales{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-clipboard-check"></i> Exámenes Ocupacionales</h2>
+        <div>
+            <a href="{% url 'occupational_health:exam_create' %}" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> Nuevo Examen
+            </a>
+            <a href="{% url 'occupational_health:dashboard' %}" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Volver
+            </a>
+        </div>
+    </div>
+
+    <!-- Filtros -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-3">
+                    <label class="form-label">Buscar</label>
+                    <input type="text" name="search" class="form-control" placeholder="Número, trabajador, empresa..." value="{{ request.GET.search }}">
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Tipo de Examen</label>
+                    <select name="exam_type" class="form-select">
+                        <option value="">Todos</option>
+                        <option value="ingreso" {% if request.GET.exam_type == 'ingreso' %}selected{% endif %}>Ingreso</option>
+                        <option value="periodico" {% if request.GET.exam_type == 'periodico' %}selected{% endif %}>Periódico</option>
+                        <option value="retiro" {% if request.GET.exam_type == 'retiro' %}selected{% endif %}>Retiro</option>
+                        <option value="reingreso" {% if request.GET.exam_type == 'reingreso' %}selected{% endif %}>Reingreso</option>
+                        <option value="cambio_ocupacion" {% if request.GET.exam_type == 'cambio_ocupacion' %}selected{% endif %}>Cambio de Ocupación</option>
+                        <option value="post_incapacidad" {% if request.GET.exam_type == 'post_incapacidad' %}selected{% endif %}>Post-Incapacidad</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Estado</label>
+                    <select name="status" class="form-select">
+                        <option value="">Todos</option>
+                        <option value="programado" {% if request.GET.status == 'programado' %}selected{% endif %}>Programado</option>
+                        <option value="en_proceso" {% if request.GET.status == 'en_proceso' %}selected{% endif %}>En Proceso</option>
+                        <option value="completado" {% if request.GET.status == 'completado' %}selected{% endif %}>Completado</option>
+                        <option value="cancelado" {% if request.GET.status == 'cancelado' %}selected{% endif %}>Cancelado</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Fecha Desde</label>
+                    <input type="date" name="date_from" class="form-control" value="{{ request.GET.date_from }}">
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Fecha Hasta</label>
+                    <input type="date" name="date_to" class="form-control" value="{{ request.GET.date_to }}">
+                </div>
+                <div class="col-md-1 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Tabla de Exámenes -->
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Número</th>
+                            <th>Trabajador</th>
+                            <th>Documento</th>
+                            <th>Empresa</th>
+                            <th>Cargo</th>
+                            <th>Tipo</th>
+                            <th>Fecha Examen</th>
+                            <th>Estado</th>
+                            <th>Aptitud</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for exam in exams %}
+                        <tr>
+                            <td><strong>{{ exam.exam_number }}</strong></td>
+                            <td>{{ exam.patient.third_party.name }}</td>
+                            <td>{{ exam.patient.third_party.identification_number }}</td>
+                            <td>{{ exam.company_name|truncatewords:3 }}</td>
+                            <td>{{ exam.job_position|truncatewords:2 }}</td>
+                            <td>
+                                {% if exam.exam_type == 'ingreso' %}
+                                <span class="badge bg-primary">Ingreso</span>
+                                {% elif exam.exam_type == 'periodico' %}
+                                <span class="badge bg-info">Periódico</span>
+                                {% elif exam.exam_type == 'retiro' %}
+                                <span class="badge bg-secondary">Retiro</span>
+                                {% elif exam.exam_type == 'reingreso' %}
+                                <span class="badge bg-success">Reingreso</span>
+                                {% elif exam.exam_type == 'cambio_ocupacion' %}
+                                <span class="badge bg-warning text-dark">Cambio Ocupación</span>
+                                {% elif exam.exam_type == 'post_incapacidad' %}
+                                <span class="badge bg-danger">Post-Incapacidad</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ exam.exam_date|date:"d/m/Y H:i" }}</td>
+                            <td>
+                                {% if exam.status == 'completado' %}
+                                <span class="badge bg-success">Completado</span>
+                                {% elif exam.status == 'en_proceso' %}
+                                <span class="badge bg-warning text-dark">En Proceso</span>
+                                {% elif exam.status == 'programado' %}
+                                <span class="badge bg-info">Programado</span>
+                                {% else %}
+                                <span class="badge bg-danger">Cancelado</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if exam.work_aptitude %}
+                                <span class="badge bg-success"><i class="bi bi-check-circle"></i> Emitida</span>
+                                {% else %}
+                                <span class="badge bg-secondary">Pendiente</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{% url 'occupational_health:exam_detail' exam.id %}" class="btn btn-sm btn-outline-primary" title="Ver detalle">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="10" class="text-center text-muted py-4">
+                                No hay exámenes registrados. <a href="{% url 'occupational_health:exam_create' %}">Crear primer examen</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Paginación -->
+            {% if exams.has_other_pages %}
+            <nav class="mt-4">
+                <ul class="pagination justify-content-center">
+                    {% if exams.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ exams.previous_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.exam_type %}&exam_type={{ request.GET.exam_type }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}">Anterior</a>
+                    </li>
+                    {% endif %}
+
+                    <li class="page-item active">
+                        <span class="page-link">Página {{ exams.number }} de {{ exams.paginator.num_pages }}</span>
+                    </li>
+
+                    {% if exams.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ exams.next_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.exam_type %}&exam_type={{ request.GET.exam_type }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}">Siguiente</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

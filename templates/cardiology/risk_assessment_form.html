@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% block title %}Nueva Evaluación de Riesgo{% endblock %}
+{% block content %}
+<div class="container-fluid">
+    <h2><i class="bi bi-speedometer2"></i> Nueva Evaluación de Riesgo Cardiovascular</h2>
+    <div class="alert alert-info mt-3">Formulario de evaluación de riesgo disponible</div>
+    <a href="{% url 'cardiology:risk_assessment_list' %}" class="btn btn-secondary">Volver</a>
+</div>
+{% endblock %}

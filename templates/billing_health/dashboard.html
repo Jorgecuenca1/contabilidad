@@ -1,0 +1,333 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard Facturación Salud{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-receipt"></i> Facturación de Salud</h2>
+        <div>
+            <a href="{% url 'billing_health:invoice_create' %}" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> Nueva Factura
+            </a>
+            <a href="{% url 'billing_health:invoice_list' %}" class="btn btn-success">
+                <i class="bi bi-list"></i> Ver Facturas
+            </a>
+        </div>
+    </div>
+
+    <!-- Filtro de Mes/Año -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-4">
+                    <label class="form-label">Mes</label>
+                    <select name="month" class="form-select">
+                        {% for m in "123456789101112" %}
+                        <option value="{{ forloop.counter }}" {% if month == forloop.counter %}selected{% endif %}>
+                            {{ forloop.counter|date:"F" }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Año</label>
+                    <select name="year" class="form-select">
+                        {% for y in "202520242023" %}
+                        <option value="{{ y }}" {% if year|stringformat:"s" == y %}selected{% endif %}>{{ y }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-4 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-search"></i> Filtrar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Estadísticas Principales -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card border-primary">
+                <div class="card-body text-center">
+                    <i class="bi bi-receipt display-4 text-primary"></i>
+                    <h3 class="mt-2">${{ total_invoiced|floatformat:0|default:"0" }}</h3>
+                    <p class="text-muted mb-0">Total Facturado</p>
+                    <small class="text-muted">({{ total_invoices }} facturas)</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card border-success">
+                <div class="card-body text-center">
+                    <i class="bi bi-check-circle display-4 text-success"></i>
+                    <h3 class="mt-2">${{ total_paid|floatformat:0|default:"0" }}</h3>
+                    <p class="text-muted mb-0">Total Pagado</p>
+                    <small class="text-muted">Recaudado</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card border-warning">
+                <div class="card-body text-center">
+                    <i class="bi bi-clock display-4 text-warning"></i>
+                    <h3 class="mt-2">${{ pending_amount|floatformat:0|default:"0" }}</h3>
+                    <p class="text-muted mb-0">Pendiente</p>
+                    <small class="text-muted">Por cobrar</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card border-danger">
+                <div class="card-body text-center">
+                    <i class="bi bi-exclamation-triangle display-4 text-danger"></i>
+                    <h3 class="mt-2">${{ glosa_amount|floatformat:0|default:"0" }}</h3>
+                    <p class="text-muted mb-0">Glosas</p>
+                    <small class="text-muted">En disputa</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Facturas por Estado -->
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <i class="bi bi-pie-chart"></i> Facturas por Estado
+                </div>
+                <div class="card-body">
+                    {% if invoices_by_status %}
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Estado</th>
+                                <th class="text-end">Cantidad</th>
+                                <th class="text-end">Monto</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for status in invoices_by_status %}
+                            <tr>
+                                <td>{{ status.status|upper }}</td>
+                                <td class="text-end">{{ status.count }}</td>
+                                <td class="text-end">${{ status.amount|floatformat:0|default:"0" }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    {% else %}
+                    <p class="text-muted">No hay facturas en este período</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Facturas por Tipo -->
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header bg-success text-white">
+                    <i class="bi bi-bar-chart"></i> Facturas por Tipo
+                </div>
+                <div class="card-body">
+                    {% if invoices_by_type %}
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Tipo</th>
+                                <th class="text-end">Cantidad</th>
+                                <th class="text-end">Monto</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for type in invoices_by_type %}
+                            <tr>
+                                <td>{{ type.invoice_type|upper }}</td>
+                                <td class="text-end">{{ type.count }}</td>
+                                <td class="text-end">${{ type.amount|floatformat:0|default:"0" }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    {% else %}
+                    <p class="text-muted">No hay facturas por tipo</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Facturas Recientes -->
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-header bg-info text-white">
+                    <i class="bi bi-clock-history"></i> Facturas Recientes
+                </div>
+                <div class="card-body">
+                    {% if recent_invoices %}
+                    <div class="table-responsive">
+                        <table class="table table-hover table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Número</th>
+                                    <th>Fecha</th>
+                                    <th>Pagador</th>
+                                    <th>Paciente</th>
+                                    <th>Estado</th>
+                                    <th class="text-end">Total</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for invoice in recent_invoices %}
+                                <tr>
+                                    <td><strong>{{ invoice.invoice_number }}</strong></td>
+                                    <td>{{ invoice.invoice_date|date:"d/m/Y" }}</td>
+                                    <td>{{ invoice.payer.name|truncatewords:3 }}</td>
+                                    <td>{{ invoice.patient.name|truncatewords:3 }}</td>
+                                    <td>
+                                        {% if invoice.status == 'paid' %}
+                                            <span class="badge bg-success">Pagada</span>
+                                        {% elif invoice.status == 'approved' %}
+                                            <span class="badge bg-primary">Aprobada</span>
+                                        {% elif invoice.status == 'draft' %}
+                                            <span class="badge bg-secondary">Borrador</span>
+                                        {% elif invoice.status == 'glosa' %}
+                                            <span class="badge bg-danger">Glosa</span>
+                                        {% else %}
+                                            <span class="badge bg-info">{{ invoice.get_status_display }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-end">${{ invoice.total_amount|floatformat:0 }}</td>
+                                    <td>
+                                        <a href="{% url 'billing_health:invoice_detail' invoice.id %}"
+                                           class="btn btn-sm btn-info">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <p class="text-muted">No hay facturas recientes</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Top Pagadores -->
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-header bg-warning">
+                    <i class="bi bi-trophy"></i> Top 5 Pagadores
+                </div>
+                <div class="card-body">
+                    {% if top_payers %}
+                    <div class="list-group">
+                        {% for payer in top_payers %}
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>{{ payer.payer__name|truncatewords:4 }}</strong><br>
+                                <small class="text-muted">{{ payer.count }} facturas</small>
+                            </div>
+                            <span class="badge bg-primary rounded-pill">
+                                ${{ payer.total|floatformat:0 }}
+                            </span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <p class="text-muted">No hay pagadores</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Facturas con Glosa -->
+            {% if glosa_invoices %}
+            <div class="card mb-4">
+                <div class="card-header bg-danger text-white">
+                    <i class="bi bi-exclamation-triangle"></i> Facturas con Glosa
+                </div>
+                <div class="card-body">
+                    <div class="list-group">
+                        {% for invoice in glosa_invoices %}
+                        <a href="{% url 'billing_health:invoice_detail' invoice.id %}"
+                           class="list-group-item list-group-item-action">
+                            <strong>{{ invoice.invoice_number }}</strong><br>
+                            <small class="text-muted">
+                                {{ invoice.payer.name|truncatewords:3 }} -
+                                ${{ invoice.glosa_amount|floatformat:0 }}
+                            </small>
+                        </a>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Tarifario Activo -->
+    {% if active_tariff %}
+    <div class="alert alert-info">
+        <i class="bi bi-info-circle"></i>
+        <strong>Tarifario Activo:</strong> {{ active_tariff.name }}
+        ({{ active_tariff.tariff_type|upper }}) -
+        UVR: ${{ active_tariff.uvr_value|floatformat:0 }} -
+        Efectivo desde: {{ active_tariff.effective_date|date:"d/m/Y" }}
+    </div>
+    {% else %}
+    <div class="alert alert-warning">
+        <i class="bi bi-exclamation-triangle"></i>
+        <strong>Atención:</strong> No hay un tarifario activo configurado.
+        <a href="{% url 'billing_health:tariff_create' %}">Crear tarifario aquí</a>
+    </div>
+    {% endif %}
+
+    <!-- Accesos Rápidos -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <i class="bi bi-lightning"></i> Accesos Rápidos
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3 mb-3">
+                            <a href="{% url 'billing_health:invoice_create' %}" class="btn btn-outline-primary w-100">
+                                <i class="bi bi-plus-circle"></i><br>
+                                Nueva Factura
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <a href="{% url 'billing_health:invoice_list' %}" class="btn btn-outline-success w-100">
+                                <i class="bi bi-list"></i><br>
+                                Ver Facturas
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <a href="{% url 'billing_health:tariff_list' %}" class="btn btn-outline-info w-100">
+                                <i class="bi bi-calculator"></i><br>
+                                Tarifarios
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <a href="#" class="btn btn-outline-warning w-100">
+                                <i class="bi bi-file-earmark-text"></i><br>
+                                Reportes
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,322 @@
+{% extends 'base.html' %}
+{% block title %}Plan {{ plan.plan_number }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-clipboard-check"></i> Plan {{ plan.plan_number }}</h2>
+        <div>
+            <a href="{% url 'rehabilitation:session_create' plan.id %}" class="btn btn-success">
+                <i class="bi bi-plus-circle"></i> Nueva Sesión
+            </a>
+            <a href="{% url 'rehabilitation:exercise_create' plan.id %}" class="btn btn-warning">
+                <i class="bi bi-plus"></i> Agregar Ejercicio
+            </a>
+            <a href="{% url 'rehabilitation:progress_measurement_create' plan.id %}" class="btn btn-info">
+                <i class="bi bi-graph-up"></i> Medir Progreso
+            </a>
+            <a href="{% url 'rehabilitation:plan_list' %}" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Volver
+            </a>
+        </div>
+    </div>
+
+    <!-- Información del Paciente -->
+    <div class="card mb-3">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0"><i class="bi bi-person"></i> Información del Paciente</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>Paciente:</strong> {{ plan.patient.third_party.name }}</p>
+                    <p><strong>Documento:</strong> {{ plan.patient.third_party.identification_number }}</p>
+                    <p><strong>Fecha de Nacimiento:</strong> {{ plan.patient.birth_date|date:"d/m/Y" }}</p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>Fisioterapeuta:</strong> {{ plan.physiotherapist.get_full_name }}</p>
+                    <p><strong>Fecha del Plan:</strong> {{ plan.plan_date|date:"d/m/Y" }}</p>
+                    <p><strong>Fecha de Inicio:</strong> {{ plan.start_date|date:"d/m/Y" }}</p>
+                    <p><strong>Estado:</strong>
+                        {% if plan.status == 'active' %}
+                        <span class="badge bg-success">Activo</span>
+                        {% elif plan.status == 'completed' %}
+                        <span class="badge bg-info">Completado</span>
+                        {% elif plan.status == 'discontinued' %}
+                        <span class="badge bg-danger">Discontinuado</span>
+                        {% elif plan.status == 'on_hold' %}
+                        <span class="badge bg-warning text-dark">En pausa</span>
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Diagnóstico -->
+    <div class="card mb-3">
+        <div class="card-header bg-info text-white">
+            <h6 class="mb-0"><i class="bi bi-file-medical"></i> Diagnóstico</h6>
+        </div>
+        <div class="card-body">
+            <p>{{ plan.diagnosis|linebreaks }}</p>
+        </div>
+    </div>
+
+    <!-- Objetivos -->
+    <div class="card mb-3">
+        <div class="card-header bg-success text-white">
+            <h6 class="mb-0"><i class="bi bi-bullseye"></i> Objetivos del Tratamiento</h6>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <h6 class="text-muted">Objetivos a Corto Plazo</h6>
+                    <p>{{ plan.short_term_goals|linebreaks }}</p>
+                </div>
+                <div class="col-md-6">
+                    <h6 class="text-muted">Objetivos a Largo Plazo</h6>
+                    <p>{{ plan.long_term_goals|linebreaks }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modalidades de Tratamiento -->
+    {% if plan.treatment_modalities %}
+    <div class="card mb-3">
+        <div class="card-header bg-warning">
+            <h6 class="mb-0"><i class="bi bi-activity"></i> Modalidades de Tratamiento</h6>
+        </div>
+        <div class="card-body">
+            <p>{{ plan.treatment_modalities|linebreaks }}</p>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Terapia Manual -->
+    {% if plan.manual_therapy_techniques %}
+    <div class="card mb-3">
+        <div class="card-header">
+            <h6 class="mb-0"><i class="bi bi-hand-index"></i> Técnicas de Terapia Manual</h6>
+        </div>
+        <div class="card-body">
+            <p>{{ plan.manual_therapy_techniques|linebreaks }}</p>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Ejercicios Terapéuticos -->
+    <div class="card mb-3">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h6 class="mb-0"><i class="bi bi-clipboard-pulse"></i> Ejercicios Prescritos</h6>
+            <a href="{% url 'rehabilitation:exercise_create' plan.id %}" class="btn btn-sm btn-warning">
+                <i class="bi bi-plus"></i> Agregar Ejercicio
+            </a>
+        </div>
+        <div class="card-body">
+            {% if plan.therapeutic_exercises_description %}
+            <p class="mb-3">{{ plan.therapeutic_exercises_description|linebreaks }}</p>
+            {% endif %}
+
+            {% if exercises %}
+            <div class="table-responsive">
+                <table class="table table-sm">
+                    <thead>
+                        <tr>
+                            <th>Ejercicio</th>
+                            <th>Tipo</th>
+                            <th>Series x Repeticiones</th>
+                            <th>Frecuencia</th>
+                            <th>Activo</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for exercise in exercises %}
+                        <tr>
+                            <td><strong>{{ exercise.exercise_name }}</strong></td>
+                            <td>{{ exercise.get_exercise_type_display }}</td>
+                            <td>{{ exercise.sets }} x {{ exercise.repetitions }}</td>
+                            <td>{{ exercise.frequency_per_day }}x/día, {{ exercise.days_per_week }} días/semana</td>
+                            <td>
+                                {% if exercise.is_active %}
+                                <span class="badge bg-success">Sí</span>
+                                {% else %}
+                                <span class="badge bg-secondary">No</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <p class="text-muted text-center">No hay ejercicios prescritos aún. <a href="{% url 'rehabilitation:exercise_create' plan.id %}">Agregar ejercicio</a></p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Frecuencia y Duración -->
+    <div class="card mb-3">
+        <div class="card-header">
+            <h6 class="mb-0"><i class="bi bi-calendar3"></i> Frecuencia y Duración</h6>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-4">
+                    <p><strong>Frecuencia por Semana:</strong> {{ plan.frequency_per_week }}x</p>
+                </div>
+                <div class="col-md-4">
+                    <p><strong>Sesiones Estimadas:</strong> {{ plan.estimated_sessions }}</p>
+                </div>
+                <div class="col-md-4">
+                    <p><strong>Duración por Sesión:</strong> {{ plan.session_duration }} minutos</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Precauciones y Contraindicaciones -->
+    {% if plan.precautions or plan.contraindications %}
+    <div class="card mb-3">
+        <div class="card-header bg-danger text-white">
+            <h6 class="mb-0"><i class="bi bi-exclamation-triangle"></i> Precauciones y Contraindicaciones</h6>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                {% if plan.precautions %}
+                <div class="col-md-6">
+                    <h6 class="text-muted">Precauciones</h6>
+                    <p>{{ plan.precautions|linebreaks }}</p>
+                </div>
+                {% endif %}
+                {% if plan.contraindications %}
+                <div class="col-md-6">
+                    <h6 class="text-muted">Contraindicaciones</h6>
+                    <p>{{ plan.contraindications|linebreaks }}</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Sesiones de Rehabilitación -->
+    {% if sessions %}
+    <div class="card mb-3">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h6 class="mb-0"><i class="bi bi-heart-pulse"></i> Sesiones de Rehabilitación</h6>
+            <a href="{% url 'rehabilitation:session_create' plan.id %}" class="btn btn-sm btn-success">
+                <i class="bi bi-plus"></i> Nueva Sesión
+            </a>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-sm">
+                    <thead>
+                        <tr>
+                            <th>Número</th>
+                            <th>Fecha</th>
+                            <th>Sesión #</th>
+                            <th>Dolor Pre/Post</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for session in sessions %}
+                        <tr>
+                            <td>{{ session.session_number }}</td>
+                            <td>{{ session.session_date|date:"d/m/Y" }}</td>
+                            <td>{{ session.session_number_in_plan }}/{{ plan.estimated_sessions }}</td>
+                            <td>
+                                <span class="badge bg-warning">{{ session.pain_level_pre }}/10</span> →
+                                <span class="badge bg-success">{{ session.pain_level_post }}/10</span>
+                            </td>
+                            <td>
+                                {% if session.status == 'completed' %}
+                                <span class="badge bg-success">Completada</span>
+                                {% elif session.status == 'scheduled' %}
+                                <span class="badge bg-warning text-dark">Programada</span>
+                                {% elif session.status == 'cancelled' %}
+                                <span class="badge bg-danger">Cancelada</span>
+                                {% elif session.status == 'no_show' %}
+                                <span class="badge bg-secondary">No asistió</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{% url 'rehabilitation:session_detail' session.id %}" class="btn btn-sm btn-info">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Mediciones de Progreso -->
+    {% if progress_measurements %}
+    <div class="card mb-3">
+        <div class="card-header d-flex justify-content-between align-items-center bg-info text-white">
+            <h6 class="mb-0"><i class="bi bi-graph-up"></i> Mediciones de Progreso</h6>
+            <a href="{% url 'rehabilitation:progress_measurement_create' plan.id %}" class="btn btn-sm btn-light">
+                <i class="bi bi-plus"></i> Nueva Medición
+            </a>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-sm">
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Dolor</th>
+                            <th>Mejoría Reportada</th>
+                            <th>Medido por</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for measurement in progress_measurements %}
+                        <tr>
+                            <td>{{ measurement.measurement_date|date:"d/m/Y" }}</td>
+                            <td><span class="badge bg-secondary">{{ measurement.pain_level }}/10</span></td>
+                            <td><span class="badge bg-success">{{ measurement.patient_reported_improvement }}%</span></td>
+                            <td>{{ measurement.measured_by.get_full_name }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Observaciones -->
+    {% if plan.observations %}
+    <div class="card mb-3">
+        <div class="card-header">
+            <h6 class="mb-0"><i class="bi bi-pencil-square"></i> Observaciones</h6>
+        </div>
+        <div class="card-body">
+            <p>{{ plan.observations|linebreaks }}</p>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Metadatos -->
+    <div class="card">
+        <div class="card-body">
+            <small class="text-muted">
+                <strong>Creado por:</strong> {{ plan.created_by.get_full_name }} |
+                <strong>Fecha:</strong> {{ plan.created_at|date:"d/m/Y H:i" }}
+                {% if plan.updated_at != plan.created_at %}
+                | <strong>Última actualización:</strong> {{ plan.updated_at|date:"d/m/Y H:i" }}
+                {% endif %}
+            </small>
+        </div>
+    </div>
+</div>
+{% endblock %}

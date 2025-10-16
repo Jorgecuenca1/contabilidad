@@ -1,0 +1,206 @@
+{% extends 'base.html' %}
+{% block title %}Sesión {{ session.session_number }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-heart-pulse"></i> Sesión {{ session.session_number }}</h2>
+        <div>
+            <a href="{% url 'rehabilitation:session_list' %}" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Volver
+            </a>
+        </div>
+    </div>
+
+    <!-- Información del Paciente -->
+    <div class="card mb-3">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0"><i class="bi bi-person"></i> Información de la Sesión</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>Paciente:</strong> {{ session.patient.third_party.name }}</p>
+                    <p><strong>Documento:</strong> {{ session.patient.third_party.identification_number }}</p>
+                    <p><strong>Plan de Rehabilitación:</strong> <a href="{% url 'rehabilitation:plan_detail' session.plan.id %}">{{ session.plan.plan_number }}</a></p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>Fisioterapeuta:</strong> {{ session.physiotherapist.get_full_name }}</p>
+                    <p><strong>Fecha de Sesión:</strong> {{ session.session_date|date:"d/m/Y H:i" }}</p>
+                    <p><strong>Duración:</strong> {{ session.session_duration }} minutos</p>
+                    <p><strong>Sesión #:</strong> {{ session.session_number_in_plan }} de {{ session.plan.estimated_sessions }}</p>
+                    <p><strong>Estado:</strong>
+                        {% if session.status == 'completed' %}
+                        <span class="badge bg-success">Completada</span>
+                        {% elif session.status == 'scheduled' %}
+                        <span class="badge bg-warning text-dark">Programada</span>
+                        {% elif session.status == 'cancelled' %}
+                        <span class="badge bg-danger">Cancelada</span>
+                        {% elif session.status == 'no_show' %}
+                        <span class="badge bg-secondary">No asistió</span>
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Evaluación de Dolor -->
+    <div class="card mb-3">
+        <div class="card-header bg-warning">
+            <h6 class="mb-0"><i class="bi bi-exclamation-circle"></i> Evaluación de Dolor</h6>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5><strong>Dolor Pre-Sesión:</strong> <span class="badge bg-warning">{{ session.pain_level_pre }}/10</span></h5>
+                </div>
+                <div class="col-md-6">
+                    <h5><strong>Dolor Post-Sesión:</strong> <span class="badge bg-success">{{ session.pain_level_post }}/10</span></h5>
+                </div>
+            </div>
+            {% if session.pain_level_pre and session.pain_level_post %}
+            <div class="mt-3">
+                {% if session.pain_level_post < session.pain_level_pre %}
+                <div class="alert alert-success">
+                    <i class="bi bi-check-circle"></i> Mejoría de {{ session.pain_level_pre|add:"-"|add:session.pain_level_post }} puntos en nivel de dolor
+                </div>
+                {% elif session.pain_level_post > session.pain_level_pre %}
+                <div class="alert alert-warning">
+                    <i class="bi bi-exclamation-triangle"></i> Aumento de {{ session.pain_level_post|add:"-"|add:session.pain_level_pre }} puntos en nivel de dolor
+                </div>
+                {% else %}
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle"></i> Nivel de dolor sin cambios
+                </div>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Modalidades Aplicadas -->
+    {% if session.modalities_applied %}
+    <div class="card mb-3">
+        <div class="card-header bg-info text-white">
+            <h6 class="mb-0"><i class="bi bi-activity"></i> Modalidades Aplicadas</h6>
+        </div>
+        <div class="card-body">
+            <p>{{ session.modalities_applied|linebreaks }}</p>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Terapia Manual -->
+    {% if session.manual_therapy_performed %}
+    <div class="card mb-3">
+        <div class="card-header">
+            <h6 class="mb-0"><i class="bi bi-hand-index"></i> Terapia Manual Realizada</h6>
+        </div>
+        <div class="card-body">
+            <p>{{ session.manual_therapy_performed|linebreaks }}</p>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Ejercicios Realizados -->
+    {% if session.exercises_performed %}
+    <div class="card mb-3">
+        <div class="card-header bg-success text-white">
+            <h6 class="mb-0"><i class="bi bi-clipboard-pulse"></i> Ejercicios Realizados</h6>
+        </div>
+        <div class="card-body">
+            <p>{{ session.exercises_performed|linebreaks }}</p>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Tolerancia y Respuesta del Paciente -->
+    {% if session.patient_tolerance or session.patient_response %}
+    <div class="card mb-3">
+        <div class="card-header">
+            <h6 class="mb-0"><i class="bi bi-person-check"></i> Tolerancia y Respuesta del Paciente</h6>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                {% if session.patient_tolerance %}
+                <div class="col-md-6">
+                    <h6 class="text-muted">Tolerancia</h6>
+                    <p>{{ session.patient_tolerance|linebreaks }}</p>
+                </div>
+                {% endif %}
+                {% if session.patient_response %}
+                <div class="col-md-6">
+                    <h6 class="text-muted">Respuesta al Tratamiento</h6>
+                    <p>{{ session.patient_response|linebreaks }}</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Resumen de Progreso -->
+    {% if session.progress_summary %}
+    <div class="card mb-3">
+        <div class="card-header">
+            <h6 class="mb-0"><i class="bi bi-graph-up"></i> Resumen de Progreso</h6>
+        </div>
+        <div class="card-body">
+            <p>{{ session.progress_summary|linebreaks }}</p>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Plan para la Próxima Sesión -->
+    {% if session.homework_assigned or session.next_session_goals or session.next_session_date %}
+    <div class="card mb-3">
+        <div class="card-header">
+            <h6 class="mb-0"><i class="bi bi-calendar-plus"></i> Plan para la Próxima Sesión</h6>
+        </div>
+        <div class="card-body">
+            {% if session.homework_assigned %}
+            <div class="mb-3">
+                <h6 class="text-muted">Tareas para Casa</h6>
+                <p>{{ session.homework_assigned|linebreaks }}</p>
+            </div>
+            {% endif %}
+            {% if session.next_session_goals %}
+            <div class="mb-3">
+                <h6 class="text-muted">Objetivos para Próxima Sesión</h6>
+                <p>{{ session.next_session_goals|linebreaks }}</p>
+            </div>
+            {% endif %}
+            {% if session.next_session_date %}
+            <p><strong>Fecha Próxima Sesión:</strong> {{ session.next_session_date|date:"d/m/Y" }}</p>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Observaciones -->
+    {% if session.observations %}
+    <div class="card mb-3">
+        <div class="card-header">
+            <h6 class="mb-0"><i class="bi bi-pencil-square"></i> Observaciones</h6>
+        </div>
+        <div class="card-body">
+            <p>{{ session.observations|linebreaks }}</p>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Metadatos -->
+    <div class="card">
+        <div class="card-body">
+            <small class="text-muted">
+                <strong>Creado por:</strong> {{ session.created_by.get_full_name }} |
+                <strong>Fecha:</strong> {{ session.created_at|date:"d/m/Y H:i" }}
+                {% if session.updated_at != session.created_at %}
+                | <strong>Última actualización:</strong> {{ session.updated_at|date:"d/m/Y H:i" }}
+                {% endif %}
+            </small>
+        </div>
+    </div>
+</div>
+{% endblock %}
